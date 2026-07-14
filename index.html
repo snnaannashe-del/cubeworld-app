@@ -189,15 +189,15 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   <!-- Stats -->
   <div class="stats">
     <div>
-      <div class="sv">8</div>
+      <div class="sv" id="sc">–</div>
       <div class="slab" id="el-sc">active cubes</div>
     </div>
     <div>
-      <div class="sv" id="so">0</div>
+      <div class="sv" id="so">–</div>
       <div class="slab" id="el-so">online</div>
     </div>
     <div>
-      <div class="sv">0</div>
+      <div class="sv" id="sm">–</div>
       <div class="slab" id="el-sm">messages/day</div>
     </div>
   </div>
@@ -594,12 +594,19 @@ async function loginKey() {
   }
   btn.disabled = true;
   btn.innerHTML = '<span class="sp"></span>';
-  st.className = 'smsg ld'; st.textContent = '...';
+  st.className = 'smsg ld'; st.textContent = 'Connecting...';
+  // Add timeout for Render cold start
+  var loginCtrl = new AbortController();
+  var loginTid = setTimeout(function(){
+    st.textContent = 'Backend waking up (~30s)...';
+  }, 5000);
   try {
     var res  = await fetch(API + '/auth/login', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({key:key})
+      body: JSON.stringify({key:key}),
+      signal: loginCtrl.signal
     });
+    clearTimeout(loginTid);
     var data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Key not found');
     localStorage.setItem('cw_key', key);
@@ -618,10 +625,18 @@ async function loginKey() {
 /* ── Stats ── */
 async function loadStats() {
   try {
-    var res  = await fetch(API + '/stats');
+    var ctrl = new AbortController();
+    var tid = setTimeout(function(){ctrl.abort();}, 8000);
+    var res  = await fetch(API + '/stats', {signal: ctrl.signal});
+    clearTimeout(tid);
     var data = await res.json();
     var fmt  = function(n){return n>=1000?(n/1000).toFixed(1)+'K':String(n);};
-    document.getElementById('so').textContent = fmt(data.online_users || 0);
+    var el_sc = document.getElementById('sc');
+    var el_so = document.getElementById('so');
+    var el_sm = document.getElementById('sm');
+    if(el_sc) el_sc.textContent = fmt(data.total_cubes || data.cubes_count || 0);
+    if(el_so) el_so.textContent = fmt(data.online_users || 0);
+    if(el_sm) el_sm.textContent = fmt(data.messages_today || data.total_messages || 0);
   } catch(e) {}
 }
 
