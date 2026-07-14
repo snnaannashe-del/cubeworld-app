@@ -2,116 +2,102 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CubeWorld</title>
 <style>
-:root{--bg:#080c18;--sf:rgba(255,255,255,.04);--br:rgba(255,255,255,.08);--ac:#7c6aff;--gd:#f5c842;--pm:#7ad4ff;--tx:#e8e8f0;--mt:rgba(232,232,240,.45);--ok:#4af0a0;--r:16px}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
-#cv{position:fixed;inset:0;z-index:0;pointer-events:none}
-.amb{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 70% 55% at 25% 20%,rgba(124,106,255,.11) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 80% 80%,rgba(122,212,255,.07) 0%,transparent 60%)}
-.ldd{position:fixed;top:20px;left:24px;z-index:100}
-.ldb{background:rgba(20,20,40,.85);border:1px solid rgba(124,106,255,.3);border-radius:10px;padding:7px 12px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--tx);backdrop-filter:blur(10px);transition:all .2s;white-space:nowrap}
-.ldb:hover{background:rgba(124,106,255,.2);border-color:rgba(124,106,255,.5)}
-.ldc{font-size:11px;font-weight:700;letter-spacing:1px;opacity:.8}
-.ldarr{font-size:9px;opacity:.5;transition:transform .2s}
-.ldd.open .ldarr{transform:rotate(180deg)}
-.ldm{position:absolute;top:calc(100% + 6px);left:0;background:rgba(13,18,37,.97);border:1px solid rgba(124,106,255,.25);border-radius:12px;padding:6px;display:none;min-width:110px;box-shadow:0 8px 32px rgba(0,0,0,.6);backdrop-filter:blur(16px)}
-.ldd.open .ldm{display:block}
-.ldm button{display:flex;align-items:center;gap:8px;width:100%;padding:8px 12px;background:transparent;border:none;border-radius:7px;color:var(--tx);font-size:14px;cursor:pointer;transition:background .15s;white-space:nowrap}
-.ldm button:hover{background:rgba(124,106,255,.18)}
-.ldm button.cur{background:rgba(124,106,255,.12);color:var(--ac)}
-.lfi{font-size:17px;line-height:1}
-.pg{position:relative;z-index:1}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.hero{text-align:center;padding:90px 24px 36px;max-width:700px;margin:0 auto}
-.hl{font-size:11px;letter-spacing:3px;color:var(--mt);text-transform:uppercase;margin-bottom:30px;animation:fadeUp .6s both}
-.hero h1{font-size:clamp(44px,8vw,86px);font-weight:800;line-height:1.05;background:linear-gradient(135deg,#d8d0ff 0%,#a89cff 45%,#7ad4ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:28px;animation:fadeUp .6s .1s both}
-.hs{color:var(--mt);font-size:16px;line-height:1.7;animation:fadeUp .6s .2s both}
-.htag{color:rgba(232,232,240,.7);font-size:15px;margin-top:8px;animation:fadeUp .6s .3s both}
-.atr{margin-top:30px;animation:fadeUp .6s .4s both}
-.abt{background:rgba(124,106,255,.12);border:1px solid rgba(124,106,255,.25);color:var(--tx);font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:100px;transition:all .25s}
-.abt:hover{background:rgba(124,106,255,.22);border-color:rgba(124,106,255,.45);transform:translateY(-1px)}
-.abt .ar{transition:transform .3s;font-size:16px}
-.abt.op .ar{transform:rotate(90deg)}
-@keyframes slideDown{from{opacity:0;transform:translateY(-10px);max-height:0}to{opacity:1;transform:translateY(0);max-height:240px}}
-.lsl{max-width:440px;margin:14px auto 0;overflow:hidden;display:none}
-.lsl.op{display:block;animation:slideDown .35s cubic-bezier(.16,1,.3,1) both}
-.si{background:rgba(255,255,255,.04);border:1px solid rgba(124,106,255,.2);border-radius:var(--r);padding:22px;backdrop-filter:blur(12px)}
-.slbl{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--mt);text-transform:uppercase;margin-bottom:10px}
-.krow{display:flex;gap:10px}
-.ki{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--br);border-radius:10px;padding:13px 16px;color:var(--tx);font-size:15px;font-family:'Courier New',monospace;letter-spacing:1px;outline:none;transition:border-color .2s;text-transform:uppercase}
-.ki:focus{border-color:var(--ac);background:rgba(124,106,255,.08)}
-.ki::placeholder{color:var(--mt);text-transform:none;font-family:inherit;font-size:14px;letter-spacing:0}
-.be{background:var(--ac);color:#fff;border:none;border-radius:10px;padding:13px 20px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s}
-.be:hover{background:#6a58f0}
-.be:disabled{opacity:.5;cursor:not-allowed}
-.sst{margin-top:10px;font-size:13px;padding:10px 14px;border-radius:8px;display:none}
-.sst.er{display:block;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);color:#ff8fa3}
-.sst.ok{display:block;background:rgba(74,240,160,.1);border:1px solid rgba(74,240,160,.3);color:var(--ok)}
-.sst.ld{display:block;background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.2);color:var(--ac)}
-.kc{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:700px;margin:31px auto 0;padding:0 24px;animation:fadeUp .6s .5s both}
-@media(max-width:520px){.kc{grid-template-columns:1fr}}
-.card{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:32px 28px;text-align:left;cursor:pointer;position:relative;overflow:hidden;transition:border-color .25s,transform .25s,box-shadow .25s}
-.card::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;background:radial-gradient(ellipse at 50% 0%,rgba(124,106,255,.13) 0%,transparent 70%)}
-.card.pr::after{background:radial-gradient(ellipse at 50% 0%,rgba(122,212,255,.11) 0%,transparent 70%)}
-.card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4);border-color:rgba(255,255,255,.18)}
-.card:hover::after{opacity:1}
-.card.pr{border-color:rgba(122,212,255,.2)}
-.card.pr:hover{border-color:rgba(122,212,255,.45)}
-.ci{font-size:32px;margin-bottom:18px;display:block}
-.cb{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
-.fb{color:var(--gd)}.pb{color:var(--pm)}
-.card h3{font-size:20px;font-weight:700;margin-bottom:10px}
-.card p{font-size:14px;color:var(--mt);line-height:1.6}
-.cta{margin-top:20px;font-size:13px;font-weight:700;color:var(--ac)}
-.card.pr .cta{color:var(--pm)}
-.stats{display:flex;justify-content:center;gap:48px;margin:56px auto 80px;padding:0 24px;max-width:600px;animation:fadeUp .6s .6s both}
-.sv{font-size:32px;font-weight:800;letter-spacing:-1px}
-.slab{font-size:13px;color:var(--mt);margin-top:4px}
-.mo{position:fixed;inset:0;background:rgba(8,12,24,.88);backdrop-filter:blur(10px);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .3s}
-.mo.op{opacity:1;pointer-events:all}
-@keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.mb{background:#0d1225;border:1px solid var(--br);border-radius:22px;padding:40px;max-width:440px;width:100%;position:relative;animation:modalIn .4s cubic-bezier(.16,1,.3,1) both}
-.mc{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.06);border:none;border-radius:8px;color:var(--mt);cursor:pointer;padding:8px 11px;font-size:18px;line-height:1;transition:all .2s}
-.mc:hover{background:rgba(255,255,255,.12);color:var(--tx)}
-.mbg{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
-.mb h2{font-size:24px;font-weight:800;margin-bottom:8px}
-.mds{font-size:14px;color:var(--mt);line-height:1.6;margin-bottom:24px}
-.mst{padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:18px;display:none;line-height:1.5}
-.mst.ld{display:block;background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.2);color:var(--ac)}
-.mst.er{display:block;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);color:#ff8fa3}
-.rv{display:none;border-radius:14px;padding:24px;text-align:center;margin-bottom:20px;background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.25)}
-.rv.vis{display:block}
-.rv.pr{background:rgba(122,212,255,.08);border-color:rgba(122,212,255,.25)}
-.rl{font-size:11px;letter-spacing:2px;color:var(--ac);text-transform:uppercase;margin-bottom:14px}
-.rv.pr .rl{color:var(--pm)}
-.rk{font-size:20px;font-weight:800;font-family:'Courier New',monospace;color:#fff;letter-spacing:3px;margin-bottom:14px}
-.rw{font-size:12px;color:var(--gd);background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.2);border-radius:8px;padding:10px 14px;margin-bottom:18px;line-height:1.5}
-.ra{display:flex;gap:8px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;width:100%}
-.bpr{background:var(--ac);color:#fff}
-.bpr:hover{background:#6a58f0;transform:translateY(-1px)}
-.bpm{background:rgba(122,212,255,.12);color:var(--pm);border:1px solid rgba(122,212,255,.28)}
-.bpm:hover{background:rgba(122,212,255,.22);transform:translateY(-1px)}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.bsm{background:rgba(255,255,255,.07);color:var(--tx);flex:1;font-size:13px;padding:11px;width:auto}
-.bsm:hover{background:rgba(255,255,255,.12)}
-.bgo{background:var(--ok);color:#0a1a14;flex:1;font-size:13px;padding:11px;font-weight:700;width:auto}
-.bgo:hover{background:#3de090}
-@keyframes spin{to{transform:rotate(360deg)}}
-.sp{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
-.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:rgba(124,106,255,.92);color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;transition:opacity .3s}
+:root{--bg:#080c18;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#7c6aff;--gold:#f5c842;--premium:#7ad4ff;--text:#e8e8f0;--muted:rgba(232,232,240,0.45);--radius:16px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden;}
+#cv{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.amb{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(ellipse at center,rgba(124,106,255,0.07) 0%,transparent 70%);z-index:0;pointer-events:none;}
+/* Language dropdown */
+.ldd{position:fixed;top:20px;left:20px;z-index:100;}
+.ldb{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px 12px;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s;}
+.ldb:hover{background:rgba(255,255,255,0.1);}
+.lfi{font-size:18px;line-height:1;}
+.ldarr{font-size:10px;color:var(--muted);margin-left:2px;transition:transform .2s;}
+.ldd.open .ldarr{transform:rotate(180deg);}
+.ldm{display:none;flex-direction:column;gap:2px;background:rgba(16,20,40,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:6px;margin-top:6px;backdrop-filter:blur(12px);min-width:120px;}
+.ldd.open .ldm{display:flex;}
+.ldm button{background:none;border:none;color:var(--text);font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;transition:background .2s;}
+.ldm button:hover,.ldm button.cur{background:rgba(124,106,255,0.2);}
+/* Page */
+.page{position:relative;z-index:1;}
+/* Hero */
+.hero{text-align:center;padding:72px 24px 48px;max-width:700px;margin:0 auto;}
+.hero-label{font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:32px;}
+.hero h1{font-size:clamp(48px,8vw,88px);font-weight:800;line-height:1.05;color:#d8d0ff;margin-bottom:32px;}
+.hero-sub{color:var(--muted);font-size:16px;line-height:1.7;margin-bottom:8px;}
+.hero-tag{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:40px;}
+.btn-cta{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:16px 36px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
+.btn-cta:hover{background:#6a58f0;transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,106,255,.4);}
+/* Key cards */
+.kc{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:700px;margin:31px auto 0;padding:0 24px;}
+@media(max-width:520px){.kc{grid-template-columns:1fr;}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;text-align:left;cursor:pointer;transition:border-color .2s,transform .2s;}
+.card.pr{border-color:rgba(122,212,255,.2);}
+.card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-2px);}
+.ci{font-size:32px;margin-bottom:16px;display:block;}
+.cbadge{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.cbadge.f{color:var(--gold);}
+.cbadge.p{color:var(--premium);}
+.card h3{font-size:20px;font-weight:700;margin-bottom:10px;}
+.card p{font-size:14px;color:var(--muted);line-height:1.6;}
+/* Stats */
+.stats{display:flex;justify-content:center;gap:48px;margin:64px auto;padding:0 24px;max-width:600px;}
+.sv{font-size:32px;font-weight:800;color:var(--text);letter-spacing:-1px;}
+.slab{font-size:13px;color:var(--muted);margin-top:4px;}
+/* Auth */
+#auth{max-width:480px;margin:0 auto 80px;padding:0 24px;}
+.atabs{display:flex;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px;}
+.atab{flex:1;padding:14px;background:none;border:none;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;}
+.atab.active{background:var(--accent);color:#fff;}
+.apanel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px;}
+.apanel h2{font-size:22px;font-weight:700;margin-bottom:8px;}
+.apanel>.pdesc{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.6;}
+/* Key display */
+.kdbox{display:none;background:rgba(124,106,255,.12);border:1px solid rgba(124,106,255,.3);border-radius:12px;padding:20px;margin-bottom:20px;text-align:center;}
+.kdbox.show{display:block;}
+.kdlbl{font-size:11px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:12px;}
+.kdval{font-size:22px;font-weight:800;font-family:'Courier New',monospace;color:#fff;letter-spacing:2px;margin-bottom:16px;word-break:break-all;}
+.kdwarn{font-size:12px;color:var(--gold);background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;line-height:1.5;}
+.kdact{display:flex;gap:10px;}
+/* Input */
+.ig{margin-bottom:20px;}
+.ig label{display:block;font-size:12px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.ig input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-size:16px;font-family:'Courier New',monospace;letter-spacing:1px;outline:none;transition:border-color .2s;text-transform:uppercase;}
+.ig input:focus{border-color:var(--accent);}
+.ig input::placeholder{color:var(--muted);text-transform:none;font-size:14px;}
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-p{background:var(--accent);color:#fff;width:100%;}
+.btn-p:hover{background:#6a58f0;transform:translateY(-1px);}
+.btn-p:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-g{background:rgba(255,255,255,.06);color:var(--text);flex:1;font-size:13px;padding:11px;}
+.btn-g:hover{background:rgba(255,255,255,.1);}
+.btn-s{background:#4af0a0;color:#0a1a14;flex:1;font-size:13px;padding:11px;font-weight:700;}
+/* Status */
+.smsg{display:none;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;line-height:1.5;}
+.smsg.err{display:block;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);color:#ff8fa3;}
+.smsg.ok{display:block;background:rgba(74,240,160,.1);border:1px solid rgba(74,240,160,.3);color:#4af0a0;}
+.smsg.ld{display:block;background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.2);color:var(--accent);}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sp{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+/* Saved hint */
+.skhint{display:none;background:rgba(74,240,160,.06);border:1px solid rgba(74,240,160,.2);border-radius:12px;padding:16px 20px;margin-bottom:20px;font-size:13px;color:#4af0a0;}
+.skhint.show{display:flex;align-items:center;gap:12px;}
 </style>
 </head>
 <body>
+
 <canvas id="cv"></canvas>
 <div class="amb"></div>
 
+<!-- Language dropdown -->
 <div class="ldd" id="ldd">
   <button class="ldb" onclick="togDD(event)">
     <span class="lfi" id="lflag">&#127468;&#127463;</span>
-    <span class="ldc" id="lcode">EN</span>
+    <span id="lcode">EN</span>
     <span class="ldarr">&#9660;</span>
   </button>
   <div class="ldm" id="ldm">
@@ -123,190 +109,456 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSyst
   </div>
 </div>
 
-<div class="pg">
+<div class="page">
+
   <section class="hero">
-    <div class="hl" id="el-lbl">CubeWorld &middot; Digital Land Protocol</div>
+    <div class="hero-label" id="el-lbl">CubeWorld &middot; Digital Land Protocol</div>
     <h1 id="el-h1">Your Digital Universe</h1>
-    <p class="hs" id="el-s1">No email. No phone. No IP.</p>
-    <p class="hs" id="el-s2">Only a key &mdash; that is you.</p>
-    <p class="htag" id="el-tag">Every cube is land. Yours.</p>
-    <div class="atr">
-      <button class="abt" id="abtn" onclick="togL()">
-        <span>&#128272;</span><span id="el-ab">Key Authorization</span><span class="ar">&#8250;</span>
-      </button>
-    </div>
-    <div class="lsl" id="lsl">
-      <div class="si">
-        <div class="slbl" id="el-sl">Enter your CUBE key</div>
-        <div class="krow">
-          <input class="ki" id="ki" placeholder="CUBE-XXXX-XXXX-XXXX" maxlength="19"
-            oninput="fmtK(this)" onkeydown="if(event.key==='Enter')doL()" autocomplete="off" spellcheck="false">
-          <button class="be" id="bel" onclick="doL()"><span id="el-eb">Enter &#8594;</span></button>
-        </div>
-        <div class="sst" id="lst"></div>
-      </div>
-    </div>
+    <p class="hero-sub" id="el-s1">No email. No phone. No IP.</p>
+    <p class="hero-sub" id="el-s2">Only a key &mdash; that is you.</p>
+    <p class="hero-tag" id="el-tag">Every cube is land. Yours.</p>
+    <button class="btn-cta" id="el-ab" onclick="document.getElementById('auth').scrollIntoView({behavior:'smooth'})">Key Authorization</button>
   </section>
 
   <div class="kc">
-    <div class="card" onclick="openM('free')">
+    <div class="card" onclick="switchTab('create');document.getElementById('auth').scrollIntoView({behavior:'smooth'})">
       <span class="ci">&#128273;</span>
-      <div class="cb fb">Free Key</div>
-      <h3 id="el-ft">Basic Access</h3>
-      <p id="el-fd">Chats &middot; Feed &middot; Public cubes &middot; 3 groups</p>
-      <div class="cta" id="el-fc">Get key &#8594;</div>
+      <div class="cbadge f">FREE KEY</div>
+      <h3 id="el-ft">Free Key</h3>
+      <p id="el-fd">No registration. No email. Just a key.</p>
     </div>
-    <div class="card pr" onclick="openM('premium')">
+    <div class="card pr" onclick="switchTab('create');document.getElementById('auth').scrollIntoView({behavior:'smooth'})">
       <span class="ci">&#128142;</span>
-      <div class="cb pb">Premium Key</div>
-      <h3 id="el-pt">Full Access</h3>
-      <p id="el-pd">E2E encryption &middot; Unlimited &middot; Signals &middot; Files &middot; Video</p>
-      <div class="cta" id="el-pc">Get key &#8594;</div>
+      <div class="cbadge p">PREMIUM KEY</div>
+      <h3 id="el-pt">Premium Key</h3>
+      <p id="el-pd">Extended space. Priority. More cubes.</p>
     </div>
   </div>
 
   <div class="stats">
-    <div><div class="sv" id="sc">8</div><div class="slab" id="el-sc">active cubes</div></div>
-    <div><div class="sv" id="so">0</div><div class="slab" id="el-so">online</div></div>
-    <div><div class="sv" id="sm">0</div><div class="slab" id="el-sm">messages/day</div></div>
+    <div>
+      <div class="sv">8</div>
+      <div class="slab" id="el-sc">active cubes</div>
+    </div>
+    <div>
+      <div class="sv" id="so">0</div>
+      <div class="slab" id="el-so">online</div>
+    </div>
+    <div>
+      <div class="sv">0</div>
+      <div class="slab" id="el-sm">messages/day</div>
+    </div>
   </div>
+
+  <section id="auth">
+    <div class="atabs">
+      <button class="atab active" onclick="switchTab('create')" id="el-tc">Create Key</button>
+      <button class="atab" onclick="switchTab('login')" id="el-tl">Login with Key</button>
+    </div>
+
+    <!-- Create -->
+    <div class="apanel" id="tab-create">
+      <h2 id="el-ch">Create Account</h2>
+      <p class="pdesc" id="el-cd">We will generate a unique CUBE key. This is your only way to log in &mdash; save it in a safe place.</p>
+      <div class="smsg" id="create-status"></div>
+      <div class="kdbox" id="kdbox">
+        <div class="kdlbl" id="el-kl">Your CUBE Key</div>
+        <div class="kdval" id="kdval">CUBE-XXXX-XXXX-XXXX</div>
+        <div class="kdwarn" id="el-rw">&#9888;&#65039; The key is shown only once. Copy or download it now &mdash; we cannot recover a lost key.</div>
+        <div class="kdact">
+          <button class="btn btn-g" onclick="copyKey()" id="el-cp">&#128203; Copy</button>
+          <button class="btn btn-g" onclick="downloadKey()" id="el-dl">&#128190; Download</button>
+          <button class="btn btn-s" onclick="enterWorld()" id="el-go">Enter &#8250;</button>
+        </div>
+      </div>
+      <button class="btn btn-p" id="btn-gen" onclick="generateKey()">&#10024; Generate Key</button>
+    </div>
+
+    <!-- Login -->
+    <div class="apanel" id="tab-login" style="display:none">
+      <h2 id="el-lh">Login by Key</h2>
+      <p class="pdesc" id="el-ld">Enter your CUBE key to return to your account.</p>
+      <div class="skhint" id="skhint">
+        <span>&#128273;</span>
+        <div>
+          <span id="el-sf">Saved key:</span> <span id="saved-short" style="font-family:monospace;font-weight:700"></span>
+          <br><small style="color:var(--muted)" id="el-sa">Login automatically?</small>
+        </div>
+        <button class="btn btn-g" style="flex:0;padding:8px 14px;font-size:12px" onclick="autoLogin()" id="el-al">Login</button>
+      </div>
+      <div class="smsg" id="login-status"></div>
+      <div class="ig">
+        <label id="el-sl">CUBE Key</label>
+        <input type="text" id="key-input" placeholder="CUBE-XXXX-XXXX-XXXX"
+               maxlength="19" oninput="fmtKey(this)" onkeydown="if(event.key==='Enter')loginKey()">
+      </div>
+      <button class="btn btn-p" id="btn-login" onclick="loginKey()"><span id="el-eb">Login</span> &#8250;</button>
+    </div>
+  </section>
+
 </div>
 
-<div class="mo" id="mo" onclick="cOut(event)">
-  <div class="mb" id="mb">
-    <button class="mc" onclick="cM()">&#215;</button>
-    <div class="mbg" id="mbg"></div>
-    <h2 id="mttl"></h2>
-    <p class="mds" id="mds"></p>
-    <div class="mst" id="mst"></div>
-    <div class="rv" id="rv">
-      <div class="rl">Your CUBE key</div>
-      <div class="rk" id="rk">CUBE-XXXX-XXXX-XXXX</div>
-      <div class="rw" id="el-rw">Key shown only once. Save it now.</div>
-      <div class="ra">
-        <button class="btn bsm" id="el-cp" onclick="cpK()">&#128203; Copy</button>
-        <button class="btn bsm" id="el-dl" onclick="dlK()">&#128190; Download</button>
-        <button class="btn bgo" id="el-go" onclick="goW()">Enter &#8594;</button>
-      </div>
-    </div>
-    <button class="btn" id="mgen" onclick="genK()">&#10024; Generate key</button>
-  </div>
-</div>
+<script id="tr" type="application/json">
+{
+  "en":{
+    "lbl":"CubeWorld · Digital Land Protocol","h1":"Your Digital Universe",
+    "s1":"No email. No phone. No IP.","s2":"Only a key — that is you.",
+    "tag":"Every cube is land. Yours.","ab":"Key Authorization",
+    "ft":"Free Key","fd":"No registration. No email. Just a key.",
+    "pt":"Premium Key","pd":"Extended space. Priority. More cubes.",
+    "sc":"active cubes","so":"online","sm":"messages/day",
+    "tc":"Create Key","tl":"Login with Key",
+    "ch":"Create Account","cd":"We will generate a unique CUBE key. This is your only way to log in — save it in a safe place.",
+    "kl":"Your CUBE Key","rw":"⚠️ The key is shown only once. Copy or download it now — we cannot recover a lost key.",
+    "cp":"📋 Copy","dl":"💾 Download","go":"Enter ›",
+    "lh":"Login by Key","ld":"Enter your CUBE key to return to your account.",
+    "sl":"CUBE Key","eb":"Login",
+    "sf":"Saved key:","sa":"Login automatically?","al":"Login"
+  },
+  "ru":{
+    "lbl":"CubeWorld · Digital Land Protocol","h1":"Your Digital Universe",
+    "s1":"Никакой почты. Никакого телефона. Никакого IP.",
+    "s2":"Только ключ — он и есть ты.",
+    "tag":"Временные зашифрованные пространства в трёхмерном мире. Каждый куб — это земля. Используй её с умом.",
+    "ab":"Авторизация по ключу",
+    "ft":"Бесплатный ключ",
+    "fd":"Без регистрации. Без почты. Только ключ.",
+    "pt":"Premium ключ",
+    "pd":"Расширенное пространство. Приоритет. Больше кубов.",
+    "sc":"активных кубов","so":"онлайн","sm":"сообщений/день",
+    "tc":"Создать ключ","tl":"Войти по ключу",
+    "ch":"Создать аккаунт",
+    "cd":"Мы сгенерируем уникальный С�UBE-ключ. Это твой единственный способ войти — сохрани его.",
+    "kl":"Твой CUBE-ключ",
+    "rw":"v⚠️ Клюх показывается только один раз. Скопируй или скачай его сейчас.",
+    "cp":"📋 Копировать","dl":"💾 Скачать","go":"Войти ›",
+    "lh":"Войти по ключу",
+    "ld":"Введи свой CUBE-ключ, чтобы вернуться.",
+    "sl":"CUBE-ключ","eb":"Войти",
+    "sf":"Сохранённый ключ:","sa":"Войти автоматически?","al":"Войти"
+  },
+  "es":{
+    "lbl":"CubeWorld · Protocolo Tierra Digital","h1":"Tu Universo Digital",
+    "s1":"Sin email. Sin teléfono. Sin IP.","s2":"Solo una clave — esa eres tú.",
+    "tag":"Cada cubo es tierra. La tuya.","ab":"Autorización por clave",
+    "ft":"Clave Gratuita","fd":"Sin registro. Sin email. Solo una clave.",
+    "pt":"Clave Premium","pd":"Espacio ampliado. Prioridad. Más cubos.",
+    "sc":"cubos activos","so":"en línea","sm":"mensajes/día",
+    "tc":"Crear clave","tl":"Iniciar sesión",
+    "ch":"Crear cuenta","cd":"Generaremos una clave CUBE única. Gúrdala en un lugar seguro.",
+    "kl":"Tu clave CUBE","rw":"⚠️ La clave se muestra solo una vez. Cópiala ahora.",
+    "cp":"📋 Copiar","dl":"💾 Descargar","go":"Entrar ›",
+    "lh":"Iniciar sesión","ld":"Introduce tu clave CUBE para volver.",
+    "sl":"Clave CUBE","eb":"Entrar",
+    "sf":"Clave guardada:","sa":"u¿Iniciar sesión automáticamente?","al":"Entrar"
+  },
+  "zh"z:{
+    "lbl":"CubeWorld · 数字土圳协议","h1":"您的数字殇宙",
+    "s1":"无邀窰。无电话。无IP。","s2":"只有密鑰 —!那山是你。",
+    "tag":"每个��杗块都是地块。属与你的。","ab":"密鑰授靃",
+    "ft":"免费密鑰","fd":"无最注册。无最邮窰。��最密鑰。",
+    "pt":"集g��密鑰","pd":"扩展繦閴用。优先繧。曵多方块。",
+    "sc":"活跃方块","so":"在线","sm":"消息/天",
+    "tc":"创建密鑰","tl":"密鑰登录",
+    "ch":"创建账户","cd":"我们将瓗成唯一的CUBE密鑰。请保存它。",
+    "kl":"您的CUBE密鑰","rw":"v⚠️ 密鑰只显示丁ꬡ。请现地复制或下载。",
+    "cp":"📋 复制","dl":"💾 下载","go":"进冥 ›",
+    "lh":"密鑰登录","ld":"输入您的CUBE密鑰以，输入回。",
+    "sl":"CUBE密鑰","eb":"登录",
+    "sf":"已保存的密鑰:","sa":"自动登录?v","al":"登录"
+  },
+  "fr":{
+    "lbl":"CubeWorld · Protocole Terre Numérique","h1":"Votre Univers Numérique",
+    "s1":"Pas d’email. Pas de téléphone. Pas d’IP.","s2":"Une clé seulement — c’est vous.",
+    "tag":"Chaque cube est une terre. La vôtre.","ab":"Autorisation par clé",
+    "ft":"Clé Gratuite","fd":"Sans inscription. Sans email. Juste une clé.",
+    "pt":"Clé Premium","pd":"Espace étendu. Priorité. Plus de cubes.",
+    "sc":"cubes actifs","so":"en ligne","sm":"messages/jour",
+    "tc":"Créer une clé","tl":"Se connecter",
+    "ch":"Créer un compte","cd":"Nous générerons une clé CUBE unique. Sauvegardez-la.",
+    "kl":"Votre clé CUBE","rw":"⚠️ La clé n’est affichée qu’une fois. Copiez-la maintenant.",
+    "cp":"📋 Copier","dl":"💾 Télécharger","go":"Entrer ›",
+    "lh":"Se connecter","ld":"Entrez votre clé CUBE pour revenir.",
+    "sl":"Clé CUBE","eb":"Entrer",
+    "sf":"Clé sauvegardée:","sa":"Se connecter automatiquement?","al":"Entrer"
+  }
+}
+</script>
 
 <script>
 var API = 'https://cubeworld-backend.onrender.com';
+var LANGS = JSON.parse(document.getElementById('tr').textContent);
+var FLAGS = {en:'&#127468;&#127463;',ru:'&#127479;&#127482;',es:'&#127466;&#127480;',zh:'&#127464;&#127475;',fr:'&#127467;&#127479;'};
+var CODES = {en:'EN',ru:'RU',es:'ES',zh:'ZH',fr:'FR'};
+var lang = 'en';
+var ddOpen = false;
 
-/* Rotating cube */
+var ELMAP = {
+  'el-lbl':'lbl','el-h1':'h1','el-s1':'s1','el-s2':'s2','el-tag':'tag','el-ab':'ab',
+  'el-ft':'ft','el-fd':'fd','el-pt':'pt','el-pd':'pd',
+  'el-sc':'sc','el-so':'so','el-sm':'sm',
+  'el-tc':'tc','el-tl':'tl','el-ch':'ch','el-cd':'cd',
+  'el-kl':'kl','el-rw':'rw','el-cp':'cp','el-dl':'dl','el-go':'go',
+  'el-lh':'lh','el-ld':'ld','el-sl':'sl','el-eb':'eb',
+  'el-sf':'sf','el-sa':'sa','el-al':'al'
+};
+
+function setLang(l) {
+  lang = l;
+  var t = LANGS[l]; if (!t) return;
+  var ids = Object.keys(ELMAP);
+  for (var i = 0; i < ids.length; i++) {
+    var el = document.getElementById(ids[i]);
+    if (el) el.innerHTML = t[ELMAP[ids[i]]] || '';
+  }
+  localStorage.setItem('cw_lang', l);
+}
+
+function togDD(e) {
+  if (e) e.stopPropagation();
+  ddOpen = !ddOpen;
+  document.getElementById('ldd').classList.toggle('open', ddOpen);
+}
+
+function pickL(l) {
+  document.getElementById('lflag').innerHTML = FLAGS[l];
+  document.getElementById('lcode').textContent = CODES[l];
+  ddOpen = false;
+  document.getElementById('ldd').classList.remove('open');
+  var langs = ['en','ru','es','zh','fr'];
+  for (var i = 0; i < langs.length; i++) {
+    document.getElementById('lo-' + langs[i]).classList.toggle('cur', langs[i] === l);
+  }
+  setLang(l);
+}
+
+document.addEventListener('click', function() {
+  if (ddOpen) { ddOpen = false; document.getElementById('ldd').classList.remove('open'); }
+});
+
+/* ── Canvas: twinkling stars + rotating 3D cube ── */
 (function() {
-  var c = document.getElementById('cv'), x = c.getContext('2d');
+  var c = document.getElementById('cv');
+  var ctx = c.getContext('2d');
   var W, H, cx, cy, sz, a = 0;
-  function rs() { W = c.width = innerWidth; H = c.height = innerHeight; cx = W/2; cy = H*0.44; sz = Math.min(W,H)*0.27; }
-  rs(); addEventListener('resize', rs);
-  var V=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
-  var E=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  var stars = [];
+
+  function mkStars() {
+    stars = [];
+    for (var i = 0; i < 130; i++) {
+      stars.push({
+        x: Math.random(), y: Math.random(),
+        r: Math.random() * 1.3 + 0.2,
+        o: Math.random() * 0.5 + 0.15,
+        p: Math.random() * 6.28
+      });
+    }
+  }
+
+  function rs() {
+    W = c.width = innerWidth;
+    H = c.height = innerHeight;
+    cx = W / 2; cy = H * 0.44;
+    sz = Math.min(W, H) * 0.27;
+    mkStars();
+  }
+  rs();
+  window.addEventListener('resize', rs);
+
+  var V = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+  var E = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+
   function ry(v,t){return[v[0]*Math.cos(t)+v[2]*Math.sin(t),v[1],-v[0]*Math.sin(t)+v[2]*Math.cos(t)];}
   function rx(v,t){return[v[0],v[1]*Math.cos(t)-v[2]*Math.sin(t),v[1]*Math.sin(t)+v[2]*Math.cos(t)];}
-  (function draw(){
-    x.clearRect(0,0,W,H); a+=0.003;
-    var p=V.map(function(v){var r=rx(ry(v,a),a*0.4);var z=4/(4+r[2]*0.4);return[cx+r[0]*sz*z,cy+r[1]*sz*z];});
-    x.strokeStyle='rgba(124,106,255,0.16)'; x.lineWidth=1;
-    E.forEach(function(e){x.beginPath();x.moveTo(p[e[0]][0],p[e[0]][1]);x.lineTo(p[e[1]][0],p[e[1]][1]);x.stroke();});
-    p.forEach(function(v){x.beginPath();x.arc(v[0],v[1],2.5,0,6.28);x.fillStyle='rgba(124,106,255,0.36)';x.fill();});
+  function proj(v){var f=sz/(v[2]+3);return[cx+v[0]*f,cy+v[1]*f];}
+
+  (function draw() {
+    ctx.clearRect(0, 0, W, H);
+    a += 0.003;
+    var i, s, tw;
+    for (i = 0; i < stars.length; i++) {
+      s = stars[i];
+      tw = 0.65 + 0.35 * Math.sin(a * 1.8 + s.p);
+      ctx.beginPath();
+      ctx.arc(s.x * W, s.y * H, s.r, 0, 6.283);
+      ctx.fillStyle = 'rgba(255,255,255,' + (s.o * tw) + ')';
+      ctx.fill();
+    }
+    var pts = [];
+    for (i = 0; i < V.length; i++) pts.push(proj(rx(ry(V[i], a), a * 0.4)));
+    ctx.strokeStyle = 'rgba(124,106,255,0.35)';
+    ctx.lineWidth = 1;
+    for (i = 0; i < E.length; i++) {
+      ctx.beginPath();
+      ctx.moveTo(pts[E[i][0]][0], pts[E[i][0]][1]);
+      ctx.lineTo(pts[E[i][1]][0], pts[E[i][1]][1]);
+      ctx.stroke();
+    }
     requestAnimationFrame(draw);
   })();
 })();
 
-/* Translations */
-var LANGS={
-  en:{lbl:'CubeWorld · Digital Land Protocol',h1:'Your Digital Universe',s1:'No email. No phone. No IP.',s2:'Only a key — that is you.',tag:'Every cube is land. Yours.',ab:'Key Authorization',sl:'Enter your CUBE key',eb:'Enter →',ft:'Basic Access',fd:'Chats · Feed · Public cubes · 3 groups',fc:'Get key →',pt:'Full Access',pd:'E2E encryption · Unlimited · Signals · Files · Video',pc:'Get key →',sc:'active cubes',so:'online',sm:'messages/day',gd:'Chats, feed and public cubes. Key created instantly.',gp:'E2E encryption, unlimited, signals, files and video.',rw:'Key shown only once. Save it now.',cp:'Copy',dl:'Download',go:'Enter →'},
-  ru:{lbl:'CubeWorld · Digital Land Protocol',h1:'Your Digital Universe',s1:'Никакой почты. Никакого телефона. Никакого IP.',s2:'Только ключ — он и есть ты.',tag:'Каждый куб — это земля. Твоя.',ab:'Авторизация по ключу',sl:'Введи свой CUBE-ключ',eb:'Войти →',ft:'Базовый доступ',fd:'Чаты · Лента · Публичные кубы · 3 группы',fc:'Получить ключ →',pt:'Полный доступ',pd:'E2E шифрование · Безлимит · Сигналы · Файлы · Видео',pc:'Получить ключ →',sc:'активных кубов',so:'онлайн',sm:'сообщений/день',gd:'Чаты, лента и публичные кубы. Ключ создаётся мгновенно.',gp:'E2E шифрование, безлимит, сигналы, файлы и видео.',rw:'Ключ показывается один раз. Сохрани прямо сейчас.',cp:'Копировать',dl:'Скачать',go:'Войти →'},
-  es:{lbl:'CubeWorld · Protocolo Tierra Digital',h1:'Tu Universo Digital',s1:'Sin email. Sin teléfono. Sin IP.',s2:'Solo una clave — esa eres tú.',tag:'Cada cubo es tierra. La tuya.',ab:'Autorización por clave',sl:'Introduce tu clave CUBE',eb:'Entrar →',ft:'Acceso Básico',fd:'Chats · Feed · Cubos públicos · 3 grupos',fc:'Obtener clave →',pt:'Acceso Completo',pd:'Cifrado E2E · Ilimitado · Señales · Archivos · Video',pc:'Obtener clave →',sc:'cubos activos',so:'en línea',sm:'mensajes/día',gd:'Chats, feed y cubos públicos. Clave al instante.',gp:'Cifrado E2E, ilimitado, señales de trading.',rw:'La clave se muestra solo una vez. Guárdala.',cp:'Copiar',dl:'Descargar',go:'Entrar →'},
-  zh:{lbl:'CubeWorld · 数字土地协议',h1:'你的数字宇宙',s1:'无邮箱。无手机。无IP。',s2:'只有密钥 — 那就是你。',tag:'每个方块都是土地。属于你的。',ab:'密钥授权',sl:'输入你的CUBE密钥',eb:'进入 →',ft:'基础访问',fd:'聊天 · 动态 · 公开方块 · 3个群组',fc:'获取密钥 →',pt:'完整访问',pd:'E2E加密 · 无限制 · 信号 · 文件 · 视频',pc:'获取密钥 →',sc:'活跃方块',so:'在线',sm:'消息/天',gd:'聊天、动态和公开方块。密钥即时创建。',gp:'E2E加密，无限制，交易信号。',rw:'密钥只显示一次。请立即保存。',cp:'复制',dl:'下载',go:'进入 →'},
-  fr:{lbl:'CubeWorld · Protocole Terre Numérique',h1:'Votre Univers Numérique',s1:"Pas d'email. Pas de téléphone. Pas d'IP.",s2:"Seulement une clé — c'est vous.",tag:'Chaque cube est une terre. La vôtre.',ab:'Autorisation par clé',sl:'Entrez votre clé CUBE',eb:'Entrer →',ft:'Accès Basique',fd:'Chats · Fil · Cubes publics · 3 groupes',fc:'Obtenir la clé →',pt:'Accès Complet',pd:'Chiffrement E2E · Illimité · Signaux · Fichiers · Vidéo',pc:'Obtenir la clé →',sc:'cubes actifs',so:'en ligne',sm:'messages/jour',gd:'Chats, fil et cubes publics. Clé créée instantanément.',gp:'Chiffrement E2E, illimité, signaux de trading.',rw:"La clé n'est affichée qu'une seule fois. Sauvegardez-la.",cp:'Copier',dl:'Télécharger',go:'Entrer →'}
-};
-var FLAGS={en:'&#127468;&#127463;',ru:'&#127479;&#127482;',es:'&#127466;&#127480;',zh:'&#127464;&#127475;',fr:'&#127467;&#127479;'};
-var CODES={en:'EN',ru:'RU',es:'ES',zh:'ZH',fr:'FR'};
-var lang='en',tier='free',gKey=null,sData=null;
-
-var ELIDS=['el-lbl','el-h1','el-s1','el-s2','el-tag','el-ab','el-sl','el-eb','el-ft','el-fd','el-fc','el-pt','el-pd','el-pc','el-sc','el-so','el-sm','el-rw','el-cp','el-dl','el-go'];
-var TKEYS=['lbl','h1','s1','s2','tag','ab','sl','eb','ft','fd','fc','pt','pd','pc','sc','so','sm','rw','cp','dl','go'];
-function setLang(l){
-  lang=l;
-  var t=LANGS[l]; if(!t)return;
-  for(var i=0;i<ELIDS.length;i++){var el=document.getElementById(ELIDS[i]);if(el)el.textContent=t[TKEYS[i]];}
-  localStorage.setItem('cw_lang',l);
+/* ── Tabs ── */
+function switchTab(tab) {
+  var tabs = document.querySelectorAll('.atab');
+  tabs[0].classList.toggle('active', tab === 'create');
+  tabs[1].classList.toggle('active', tab === 'login');
+  document.getElementById('tab-create').style.display = tab === 'create' ? 'block' : 'none';
+  document.getElementById('tab-login').style.display  = tab === 'login'  ? 'block' : 'none';
+  if (tab === 'login') checkSavedKey();
 }
 
-/* Dropdown */
-var ddOpen=false;
-function togDD(e){e&&e.stopPropagation();ddOpen=!ddOpen;document.getElementById('ldd').classList.toggle('open',ddOpen);}
-function pickL(l){
-  document.getElementById('lflag').innerHTML=FLAGS[l];
-  document.getElementById('lcode').textContent=CODES[l];
-  ddOpen=false;document.getElementById('ldd').classList.remove('open');
-  ['en','ru','es','zh','fr'].forEach(function(k){document.getElementById('lo-'+k).classList.toggle('cur',k===l);});
-  setLang(l);
-}
-document.addEventListener('click',function(e){if(!document.getElementById('ldd').contains(e.target)){ddOpen=false;document.getElementById('ldd').classList.remove('open');}});
-
-/* Login */
-var lop=false;
-function togL(){lop=!lop;var s=document.getElementById('lsl'),b=document.getElementById('abtn');b.classList.toggle('op',lop);if(lop){s.classList.add('op');setTimeout(function(){document.getElementById('ki').focus();},350);var sv=localStorage.getItem('cw_key');if(sv)document.getElementById('ki').value=sv;}else s.classList.remove('op');}
-function fmtK(el){var v=el.value.replace(/[^A-Z0-9]/gi,'').toUpperCase();var p=[v.slice(0,4),v.slice(4,8),v.slice(8,12),v.slice(12,16)].filter(Boolean);el.value='CUBE-'+p.join('-');if(el.value.length<5)el.value='CUBE-';}
-async function doL(){
-  var key=document.getElementById('ki').value.trim().toUpperCase();
-  var btn=document.getElementById('bel'),st=document.getElementById('lst');
-  if(key.length<19){st.className='sst er';st.textContent='❌ CUBE-XXXX-XXXX-XXXX';return;}
-  btn.disabled=true;btn.innerHTML='<span class="sp"></span>';st.className='sst ld';st.textContent='…';
-  try{
-    var r=await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:key})});
-    var d=await r.json();if(!r.ok)throw new Error(d.detail||'Key not found');
-    localStorage.setItem('cw_key',key);localStorage.setItem('cw_access_token',d.access_token);
-    localStorage.setItem('cw_refresh_token',d.refresh_token);localStorage.setItem('cw_key_type',d.key_type);
-    st.className='sst ok';st.textContent='✅ '+(d.key_type==='premium'?'💎 Premium':'🔑 Free')+' · '+d.cube_balance+' CUBE';
-    setTimeout(function(){location.href='world.html';},700);
-  }catch(e){st.className='sst er';st.textContent='❌ '+e.message;btn.innerHTML='<span id="el-eb">'+LANGS[lang].eb+'</span>';btn.disabled=false;}
+/* ── Key formatter ── */
+function fmtKey(el) {
+  var v = el.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+  var parts = [v.slice(0,4)];
+  if (v.length > 4) parts.push(v.slice(4,8));
+  if (v.length > 8) parts.push(v.slice(8,12));
+  if (v.length > 12) parts.push(v.slice(12,16));
+  el.value = 'CUBE-' + parts.filter(Boolean).join('-');
+  if (el.value.length < 5) el.value = 'CUBE-';
 }
 
-/* Modal */
-function openM(t){
-  tier=t;gKey=null;sData=null;
-  var rv=document.getElementById('rv'),st=document.getElementById('mst'),bn=document.getElementById('mgen'),mb=document.getElementById('mb'),tl=LANGS[lang];
-  rv.className='rv'+(t==='premium'?' pr':'');st.className='mst';st.textContent='';
-  if(t==='premium'){document.getElementById('mbg').style.color='var(--pm)';document.getElementById('mbg').textContent='💎 PREMIUM KEY';document.getElementById('mttl').textContent=tl.pt;document.getElementById('mds').textContent=tl.gp;bn.className='btn bpm';bn.textContent='💎 '+tl.pc;mb.style.borderColor='rgba(122,212,255,.28)';}
-  else{document.getElementById('mbg').style.color='var(--gd)';document.getElementById('mbg').textContent='🔑 FREE KEY';document.getElementById('mttl').textContent=tl.ft;document.getElementById('mds').textContent=tl.gd;bn.className='btn bpr';bn.textContent='✨ '+tl.fc;mb.style.borderColor='var(--br)';}
-  document.getElementById('mo').classList.add('op');document.body.style.overflow='hidden';
+/* ── Generate ── */
+var gKey = null;
+var gData = null;
+
+async function generateKey() {
+  var btn = document.getElementById('btn-gen');
+  var st  = document.getElementById('create-status');
+  var box = document.getElementById('kdbox');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="sp"></span>';
+  st.className = 'smsg ld'; st.textContent = '...';
+  box.classList.remove('show');
+  try {
+    var res  = await fetch(API + '/auth/generate', {method:'POST'});
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    gKey = data.key; gData = data;
+    document.getElementById('kdval').textContent = data.key;
+    box.classList.add('show');
+    st.className = 'smsg ok';
+    st.textContent = 'OK  +' + (data.cube_balance || 0) + ' CUBE';
+    btn.innerHTML = '&#10024; ' + (LANGS[lang].tc || 'New Key');
+    btn.disabled = false;
+    localStorage.setItem('cw_key', data.key);
+    localStorage.setItem('cw_access_token', data.access_token);
+    localStorage.setItem('cw_refresh_token', data.refresh_token);
+    localStorage.setItem('cw_key_type', data.key_type);
+  } catch(e) {
+    st.className = 'smsg err'; st.textContent = e.message;
+    btn.innerHTML = '&#10024; Generate Key'; btn.disabled = false;
+  }
 }
-function cM(){document.getElementById('mo').classList.remove('op');document.body.style.overflow='';}
-function cOut(e){if(e.target===document.getElementById('mo'))cM();}
-async function genK(){
-  var bn=document.getElementById('mgen'),st=document.getElementById('mst'),rv=document.getElementById('rv'),tl=LANGS[lang];
-  bn.disabled=true;bn.innerHTML='<span class="sp"></span>';st.className='mst ld';st.textContent='…';
-  try{
-    var r=await fetch(API+'/auth/generate',{method:'POST'});var d=await r.json();if(!r.ok)throw new Error(d.detail||'Server error');
-    gKey=d.key;sData=d;document.getElementById('rk').textContent=d.key;rv.classList.add('vis');st.className='mst';
-    localStorage.setItem('cw_key',d.key);localStorage.setItem('cw_access_token',d.access_token);localStorage.setItem('cw_refresh_token',d.refresh_token);localStorage.setItem('cw_key_type',d.key_type);
-    bn.textContent='🔄 Regenerate';bn.disabled=false;
-  }catch(e){st.className='mst er';st.textContent='❌ '+e.message;bn.textContent=tier==='premium'?('💎 '+tl.pc):('✨ '+tl.fc);bn.disabled=false;}
+
+function copyKey() {
+  if (!gKey) return;
+  navigator.clipboard.writeText(gKey).then(function() { showToast('Copied!'); });
 }
-function cpK(){if(!gKey)return;navigator.clipboard.writeText(gKey).then(function(){showT('Copied ✓');});}
-function dlK(){if(!gKey)return;var c='CubeWorld CUBE Key
-==================
 
-'+gKey+'
+function downloadKey() {
+  if (!gKey) return;
+  var lines = [
+    'CubeWorld - Your CUBE Key',
+    '================================', '',
+    gKey, '',
+    'IMPORTANT: This is the only way to access your account.',
+    'Do not share this key with anyone.', '',
+    'Created: ' + new Date().toISOString(),
+    'cubeworld.app'
+  ];
+  var blob = new Blob([lines.join('\n')], {type:'text/plain'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'cube-key.txt'; a.click();
+}
 
-'+new Date().toLocaleString();var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:'text/plain'}));a.download='cube-key.txt';a.click();}
-function goW(){if(sData)location.href='world.html';}
-function showT(m){var t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.remove();},300);},2000);}
+function enterWorld() { window.location.href = 'world.html'; }
 
-/* Stats */
-async function loadStats(){try{var r=await fetch(API+'/stats');var d=await r.json();var f=function(n){return n>=1000?(n/1000).toFixed(1)+'K':String(n);};if(d.online_users!==undefined)document.getElementById('so').textContent=f(d.online_users);}catch(e){}}
-async function chkSess(){var t=localStorage.getItem('cw_access_token');if(!t)return;try{var r=await fetch(API+'/me',{headers:{Authorization:'Bearer '+t}});if(r.ok)location.href='world.html';}catch(e){}}
+/* ── Login ── */
+async function loginKey() {
+  var key = document.getElementById('key-input').value.trim().toUpperCase();
+  var btn = document.getElementById('btn-login');
+  var st  = document.getElementById('login-status');
+  if (key.length < 14) {
+    st.className = 'smsg err'; st.textContent = 'Enter full key: CUBE-XXXX-XXXX-XXXX'; return;
+  }
+  btn.disabled = true;
+  btn.innerHTML = '<span class="sp"></span>';
+  st.className = 'smsg ld'; st.textContent = '...';
+  try {
+    var res  = await fetch(API + '/auth/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({key:key})
+    });
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Key not found');
+    localStorage.setItem('cw_key', key);
+    localStorage.setItem('cw_access_token', data.access_token);
+    localStorage.setItem('cw_refresh_token', data.refresh_token);
+    localStorage.setItem('cw_key_type', data.key_type);
+    st.className = 'smsg ok';
+    st.textContent = 'OK! Balance: ' + (data.cube_balance || 0) + ' CUBE';
+    setTimeout(function() { window.location.href = 'world.html'; }, 800);
+  } catch(e) {
+    st.className = 'smsg err'; st.textContent = e.message;
+    btn.innerHTML = (LANGS[lang].eb || 'Login') + ' &#8250;'; btn.disabled = false;
+  }
+}
 
-/* Init */
-var sl=localStorage.getItem('cw_lang')||'en';
-if(sl!=='en')pickL(sl);
-chkSess();loadStats();setInterval(loadStats,30000);
+function checkSavedKey() {
+  var saved = localStorage.getItem('cw_key'); if (!saved) return;
+  document.getElementById('saved-short').textContent = saved.slice(0,9) + '-****';
+  document.getElementById('skhint').classList.add('show');
+}
+
+async function autoLogin() {
+  var key = localStorage.getItem('cw_key'); if (!key) return;
+  document.getElementById('key-input').value = key;
+  await loginKey();
+}
+
+/* ── Toast ── */
+function showToast(msg) {
+  var t = document.createElement('div');
+  t.textContent = msg;
+  Object.assign(t.style, {
+    position:'fixed',bottom:'32px',left:'50%',transform:'translateX(-50%)',
+    background:'rgba(124,106,255,.9)',color:'#fff',padding:'12px 24px',
+    borderRadius:'12px',fontSize:'14px',fontWeight:'600',zIndex:'9999',
+    backdropFilter:'blur(8px)',transition:'opacity .3s'
+  });
+  document.body.appendChild(t);
+  setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.remove();},300);},2000);
+}
+
+/* ── Stats ── */
+async function loadStats() {
+  try {
+    var res  = await fetch(API + '/stats');
+    var data = await res.json();
+    var fmt  = function(n){return n>=1000?(n/1000).toFixed(1)+'K':String(n);};
+    document.getElementById('so').textContent = fmt(data.online_users || 0);
+  } catch(e) {}
+}
+
+/* ── Session check ── */
+async function checkSession() {
+  var token = localStorage.getItem('cw_access_token'); if (!token) return;
+  try {
+    var res = await fetch(API + '/me', {headers:{Authorization:'Bearer '+token}});
+    if (res.ok) window.location.href = 'world.html';
+  } catch(e) {}
+}
+
+/* ── Init ── */
+(function init() {
+  var saved = localStorage.getItem('cw_lang') || 'en';
+  if (saved !== 'en') pickL(saved);
+  checkSession();
+  loadStats();
+  setInterval(loadStats, 30000);
+})();
 </script>
 </body>
 </html>
