@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CubeWorld</title>
+<style>
+:root{--bg:#080c18;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#7c6aff;--text:#e8e8f0;--muted:rgba(232,232,240,0.45);--radius:16px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
+#cv{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.page{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;}
+/* Header */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);background:rgba(8,12,24,0.8);backdrop-filter:blur(12px);position:sticky;top:0;z-index:10;}
+.hdr-logo{font-size:18px;font-weight:800;color:var(--accent);letter-spacing:-0.5px;}
+.hdr-key{font-size:12px;color:var(--muted);font-family:'Courier New',monospace;background:rgba(255,255,255,0.05);padding:4px 10px;border-radius:8px;border:1px solid var(--border);}
+.hdr-right{display:flex;align-items:center;gap:12px;}
+.hdr-out{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;transition:all .2s;}
+.hdr-out:hover{border-color:rgba(255,255,255,0.2);color:var(--text);}
+/* Main grid */
+.world{flex:1;display:grid;grid-template-columns:220px 1fr;min-height:0;}
+@media(max-width:640px){.world{grid-template-columns:1fr;}}
+/* Sidebar */
+.sidebar{border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:8px;}
+.snav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--muted);font-size:14px;font-weight:500;transition:all .2s;border:none;background:none;width:100%;text-align:left;}
+.snav:hover,.snav.active{background:rgba(124,106,255,.12);color:var(--text);}
+.snav.active{color:var(--accent);}
+.snav-ico{font-size:18px;width:24px;text-align:center;}
+.sidebar-sep{height:1px;background:var(--border);margin:8px 0;}
+/* Content */
+.content{padding:32px;overflow-y:auto;}
+.content-title{font-size:22px;font-weight:700;margin-bottom:24px;}
+/* Cube grid */
+.cube-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;}
+.cube-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .2s;text-align:center;}
+.cube-card:hover{border-color:rgba(124,106,255,.4);transform:translateY(-2px);}
+.cube-icon{font-size:36px;margin-bottom:12px;}
+.cube-name{font-size:14px;font-weight:600;margin-bottom:4px;}
+.cube-info{font-size:12px;color:var(--muted);}
+.cube-new{border:2px dashed rgba(124,106,255,.3);background:rgba(124,106,255,.04);}
+.cube-new:hover{border-color:rgba(124,106,255,.6);}
+/* Badge */
+.badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:6px;text-transform:uppercase;}
+.badge-free{background:rgba(245,200,66,.1);color:#f5c842;border:1px solid rgba(245,200,66,.2);}
+.badge-premium{background:rgba(122,212,255,.1);color:#7ad4ff;border:1px solid rgba(122,212,255,.2);}
+/* Balance bar */
+.balance-bar{display:flex;align-items:center;gap:8px;background:rgba(124,106,255,.08);border:1px solid rgba(124,106,255,.15);border-radius:10px;padding:8px 14px;font-size:13px;}
+.balance-val{font-weight:700;color:var(--accent);}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div class="page">
+  <header class="hdr">
+    <div class="hdr-logo">&#9632; CubeWorld</div>
+    <div class="hdr-right">
+      <div class="balance-bar"><span>&#128142;</span> <span class="balance-val" id="bal">100</span> CUBE</div>
+      <div class="hdr-key" id="hdr-key">CUBE-????-????-????</div>
+      <button class="hdr-out" onclick="logout()">Exit</button>
+    </div>
+  </header>
+  <div class="world">
+    <aside class="sidebar">
+      <button class="snav active" onclick="showSection('cubes')"><span class="snav-ico">&#9632;</span> My Cubes</button>
+      <button class="snav" onclick="showSection('feed')"><span class="snav-ico">&#127759;</span> Feed</button>
+      <button class="snav" onclick="showSection('chat')"><span class="snav-ico">&#128172;</span> Chats</button>
+      <button class="snav" onclick="showSection('explore')"><span class="snav-ico">&#128269;</span> Explore</button>
+      <div class="sidebar-sep"></div>
+      <button class="snav" onclick="showSection('settings')"><span class="snav-ico">&#9881;</span> Settings</button>
+    </aside>
+    <main class="content" id="main-content">
+      <div class="content-title">My Cubes</div>
+      <div class="cube-grid" id="cube-grid">
+        <div class="cube-card">
+          <div class="cube-icon">&#127968;</div>
+          <div class="cube-name">Home Cube</div>
+          <div class="cube-info" style="margin-bottom:8px">Private &middot; Online</div>
+          <span class="badge badge-free">FREE</span>
+        </div>
+        <div class="cube-card cube-new" onclick="alert('Coming soon')">
+          <div class="cube-icon" style="opacity:.4">&#43;</div>
+          <div class="cube-name" style="color:var(--muted)">New Cube</div>
+          <div class="cube-info">Add a space</div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script>
+var API = 'https://cubeworld-backend.onrender.com';
+var key = localStorage.getItem('cw_key') || '';
+var token = localStorage.getItem('cw_access_token') || '';
+
+// Guard: if no token, back to landing
+if (!token) { window.location.href = 'index.html'; }
+
+// Show key in header
+if (key) document.getElementById('hdr-key').textContent = key.slice(0,14) + '-****';
+
+// Load balance
+(async function(){
+  try {
+    var r = await fetch(API+'/me', {headers:{Authorization:'Bearer '+token}});
+    if (!r.ok) { window.location.href = 'index.html'; return; }
+    var d = await r.json();
+    document.getElementById('bal').textContent = d.cube_balance || 100;
+  } catch(e){}
+})();
+
+function logout() {
+  localStorage.removeItem('cw_access_token');
+  localStorage.removeItem('cw_refresh_token');
+  localStorage.removeItem('cw_key');
+  window.location.href = 'index.html';
+}
+
+function showSection(s) {
+  document.querySelectorAll('.snav').forEach(function(b){ b.classList.remove('active'); });
+  event.currentTarget.classList.add('active');
+  var titles = {cubes:'My Cubes',feed:'Feed',chat:'Chats',explore:'Explore',settings:'Settings'};
+  document.querySelector('.content-title').textContent = titles[s] || s;
+  document.getElementById('main-content').querySelector('.cube-grid') && (document.getElementById('cube-grid').style.display = s==='cubes'?'':'none');
+}
+
+// Canvas stars
+(function(){
+  var c=document.getElementById('cv'),ctx=c.getContext('2d'),W,H,a=0,stars=[];
+  function mk(){stars=[];for(var i=0;i<80;i++)stars.push({x:Math.random(),y:Math.random(),r:Math.random()*1.2+0.2,o:Math.random()*0.4+0.1,p:Math.random()*6.28});}
+  function rs(){W=c.width=innerWidth;H=c.height=innerHeight;mk();}
+  rs();window.addEventListener('resize',rs);
+  (function draw(){ctx.clearRect(0,0,W,H);a+=0.002;
+    for(var i=0;i<stars.length;i++){var s=stars[i],tw=0.6+0.4*Math.sin(a*1.5+s.p);ctx.beginPath();ctx.arc(s.x*W,s.y*H,s.r,0,6.283);ctx.fillStyle='rgba(255,255,255,'+(s.o*tw)+')';ctx.fill();}
+    requestAnimationFrame(draw);})();
+})();
+</script>
+</body>
+</html>
