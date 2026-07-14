@@ -132,9 +132,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .uni-cube-type{font-size:10px;color:var(--text3);margin-top:2px}
 .uni-toggle{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .18s}
 .uni-cube-card.in-universe .uni-toggle{background:var(--accent);border-color:var(--accent);color:#fff}
-.uni-save-btn{width:100%;margin-top:16px;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s}
+.uni-save-btn{padding:12px 16px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;flex:2}
 .uni-save-btn:hover{background:#6a58f0}
+.uni-create-btn{padding:12px 16px;background:rgba(124,111,205,.18);color:var(--accent);border:1px solid rgba(124,111,205,.4);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;flex:1}
+.uni-create-btn:hover{background:rgba(124,111,205,.3)}
 .uni-hint{font-size:11px;color:var(--text3);margin-top:8px;text-align:center}
+.uni-search{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:#e0e0f8;font-size:13px;margin-bottom:2px;outline:none;transition:border-color .2s}
+.uni-search:focus{border-color:rgba(124,111,205,.6)}
+.uni-search::placeholder{color:var(--text3)}
 #cube-tooltip{position:fixed;z-index:100;pointer-events:none;display:none}
 .ct-inner{background:rgba(5,5,26,.95);border:1px solid var(--col,var(--border));border-radius:11px;padding:12px 14px;backdrop-filter:blur(10px);min-width:170px}
 .ct-name{font-size:14px;font-weight:700;color:#e0e0f8;margin-bottom:3px}
@@ -4805,7 +4810,16 @@ function toggleUniCard(id, el){
 
 function updateUniHint(){
   const selected = document.querySelectorAll('#uni-grid .uni-cube-card.in-universe').length;
+  const visible = document.querySelectorAll('#uni-grid .uni-cube-card').length;
   document.getElementById('uni-hint').textContent = `Выбрано: ${selected} из ${app.cubes.length} кубов`;
+}
+
+function filterUniGrid(query){
+  const q = query.toLowerCase().trim();
+  document.querySelectorAll('#uni-grid .uni-cube-card').forEach(card=>{
+    const name = card.querySelector('.uni-cube-name').textContent.toLowerCase();
+    card.style.display = (!q || name.includes(q)) ? '' : 'none';
+  });
 }
 
 function saveUniverse(){
@@ -4904,12 +4918,14 @@ function saveUniverse(){
 <div class="modal-backdrop" id="modal-universe">
   <div class="modal" style="max-width:560px">
     <h3>⬡ Моя вселенная</h3>
-    <p style="font-size:12px;color:var(--text2);margin-bottom:4px">Выбери кубы которые вращаются в твоём мире. Нажми на куб чтобы добавить/убрать.</p>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Выбери кубы которые вращаются в твоём мире. Нажми на куб чтобы добавить/убрать.</p>
+    <input class="uni-search" id="uni-search" type="text" placeholder="🔍 Поиск кубов по названию..." oninput="filterUniGrid(this.value)">
     <div class="uni-grid" id="uni-grid"></div>
     <div class="uni-hint" id="uni-hint"></div>
     <div style="display:flex;gap:8px;margin-top:16px">
-      <button class="btn btn-ghost" onclick="closeModal('modal-universe')" style="flex:1">Отмена</button>
-      <button class="uni-save-btn" style="flex:2" onclick="saveUniverse()">✓ Сохранить вселенную</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-universe')" style="flex:0 0 auto;padding:12px 16px">Отмена</button>
+      <button class="uni-create-btn" onclick="closeModal('modal-universe');openCreateCube()">+ Создать куб</button>
+      <button class="uni-save-btn" onclick="saveUniverse()">✓ Сохранить</button>
     </div>
   </div>
 </div>
