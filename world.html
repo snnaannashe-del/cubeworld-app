@@ -2785,7 +2785,7 @@ async function loadRealSignals(){
 }
 
 // Create a new signal and POST to backend
-async async function submitSignal(){
+async function submitSignal(){
   const ticker    = (document.getElementById('sig-ticker')?.value||'BTC').trim().toUpperCase();
   const direction = document.getElementById('sig-dir')?.value||'LONG';
   const entry     = parseFloat(document.getElementById('sig-entry')?.value||0);
