@@ -119,6 +119,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #world-fab{position:absolute;bottom:20px;right:20px;z-index:10}
 #world-fab button{width:46px;height:46px;border-radius:50%;background:rgba(124,111,205,.65);border:1px solid rgba(124,111,205,.85);color:#fff;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 4px 24px rgba(124,111,205,.35)}
 #world-fab button:hover{transform:scale(1.08);background:rgba(124,111,205,.85)}
+
+/* ── UNIVERSE MANAGER ── */
+#modal-universe .modal{max-width:560px;width:95%}
+.uni-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;max-height:380px;overflow-y:auto;padding-right:4px}
+.uni-cube-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .18s}
+.uni-cube-card.in-universe{border-color:rgba(124,111,205,.5);background:rgba(124,111,205,.08)}
+.uni-cube-card:hover{border-color:rgba(255,255,255,.18)}
+.uni-cube-icon{font-size:22px;flex-shrink:0}
+.uni-cube-info{flex:1;min-width:0}
+.uni-cube-name{font-size:13px;font-weight:600;color:#e0e0f8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uni-cube-type{font-size:10px;color:var(--text3);margin-top:2px}
+.uni-toggle{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .18s}
+.uni-cube-card.in-universe .uni-toggle{background:var(--accent);border-color:var(--accent);color:#fff}
+.uni-save-btn{width:100%;margin-top:16px;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s}
+.uni-save-btn:hover{background:#6a58f0}
+.uni-hint{font-size:11px;color:var(--text3);margin-top:8px;text-align:center}
 #cube-tooltip{position:fixed;z-index:100;pointer-events:none;display:none}
 .ct-inner{background:rgba(5,5,26,.95);border:1px solid var(--col,var(--border));border-radius:11px;padding:12px 14px;backdrop-filter:blur(10px);min-width:170px}
 .ct-name{font-size:14px;font-weight:700;color:#e0e0f8;margin-bottom:3px}
@@ -684,8 +700,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .ab-badge.locked{background:rgba(255,255,255,.02);border-color:var(--border);filter:grayscale(1);opacity:.3}
 
 /* ══ CRYPTO TICKER ══════════════════════════ */
-#crypto-ticker{flex:1;overflow:hidden;height:22px;position:relative;cursor:default;min-width:0}
-.ticker-track{display:flex;gap:0;position:absolute;top:0;left:0;height:100%;animation:tickerScroll 45s linear infinite;white-space:nowrap;will-change:transform}
+#crypto-ticker{flex:1;overflow:hidden;height:44px;position:relative;min-width:0;display:flex;align-items:center}
+#crypto-ticker .tradingview-widget-container{height:44px!important;width:100%!important}
+#crypto-ticker .tradingview-widget-container__widget{height:44px!important}
 @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .ticker-item{display:inline-flex;align-items:center;gap:5px;padding:0 14px;height:100%;font-size:11px;font-weight:700;border-right:1px solid var(--border2)}
 .ticker-sym{color:var(--text3)}
@@ -1034,7 +1051,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div class="wb-key mono badge" id="wb-key-badge" style="font-size:10px;padding:3px 9px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;color:var(--text2)"></div>
     <span class="wb-online"><span id="wb-online">8,391</span> онлайн</span>
     <span style="font-size:11px;color:var(--text2)" id="wb-count"></span>
-    <div id="crypto-ticker"><div class="ticker-track" id="ticker-track"></div></div>
+    <div id="crypto-ticker">
+      <div class="tradingview-widget-container">
+        <div class="tradingview-widget-container__widget"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+        {"symbols":[
+          {"proName":"BINANCE:BTCUSDT","title":"BTC"},
+          {"proName":"BINANCE:ETHUSDT","title":"ETH"},
+          {"proName":"BINANCE:BNBUSDT","title":"BNB"},
+          {"proName":"BINANCE:ADAUSDT","title":"ADA"},
+          {"proName":"BINANCE:SOLUSDT","title":"SOL"},
+          {"proName":"BINANCE:DOGEUSDT","title":"DOGE"},
+          {"proName":"BINANCE:XRPUSDT","title":"XRP"},
+          {"proName":"BINANCE:TONUSDT","title":"TON"}
+        ],"showSymbolLogo":false,"isTransparent":true,"displayMode":"compact","colorTheme":"dark","locale":"ru"}
+        </script>
+      </div>
+    </div>
     <div class="wb-games" onclick="openGamesHub()">🎮 Игры</div>
     <div class="wb-ghost" id="wb-ghost-btn" onclick="openGhostMode()">👻 Ghost Mode</div>
     <div class="wb-wallet" id="wb-wallet-btn" onclick="openWalletModal()">
@@ -1047,7 +1080,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div id="world-overlay"></div>
     <div id="world-hint">Вращай мышью · Скролл для зума · Клик для входа в куб</div>
     <div id="cube-tooltip"><div class="ct-inner" id="ct-inner"></div></div>
-    <div id="world-fab"><button onclick="openCreateCube()" title="Создать куб">+</button></div>
+    <div id="world-fab">
+      <button onclick="openUniverseManager()" title="Моя вселенная / Создать куб" style="font-size:20px">⬡</button>
+    </div>
   </div>
 </section>
 
@@ -1775,6 +1810,7 @@ function openRoomWS(roomId){
 const app = {
   keyType: null, userKey: null,
   cubes: [], currentCubeId: null,
+  myUniverse: JSON.parse(localStorage.getItem('cw_universe')||'["c0","c1","c2","c3","c4","c5","c6","c7"]'),
   chatMessages: {},
   currentRoomId: null,
   feedPosts: [],
@@ -2041,7 +2077,7 @@ function initWorld(){
   // Create objects
   wObjects=[];
   const ov=document.getElementById('world-overlay');ov.innerHTML='';
-  app.cubes.forEach((cube,i)=>{if(cube.life<=0)return;_addObjToWorld(cube,i);});
+  app.cubes.forEach((cube,i)=>{if(cube.life<=0)return;if(!app.myUniverse.includes(cube.id))return;_addObjToWorld(cube,i);});
   // Size canvas
   const rsz=()=>{wW=cv.width=wrap.clientWidth||window.innerWidth;wH=cv.height=wrap.clientHeight||(window.innerHeight-44);};
   rsz();new ResizeObserver(rsz).observe(wrap);
@@ -2093,7 +2129,6 @@ function enterWorld(){
   document.getElementById('wb-count').textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
   showView('v-world');
   if(!wDone){wDone=true;requestAnimationFrame(initWorld);}
-  setTimeout(initTicker, 100);
 }
 
 document.addEventListener('mousemove',e=>{const t=document.getElementById('cube-tooltip');if(t.style.display==='block'){t.style.left=(e.clientX+14)+'px';t.style.top=(e.clientY-20)+'px';}});
@@ -4740,6 +4775,54 @@ window.onEnterInterior=function(){
 };
 
 // ════════════════════════════════════════════════
+//  UNIVERSE MANAGER
+// ════════════════════════════════════════════════
+function openUniverseManager(){
+  const grid = document.getElementById('uni-grid');
+  const tmpUni = [...app.myUniverse]; // working copy
+  grid.innerHTML = app.cubes.map(cube => {
+    const inUni = tmpUni.includes(cube.id);
+    return `<div class="uni-cube-card${inUni?' in-universe':''}" id="uni-card-${cube.id}" onclick="toggleUniCard('${cube.id}',this)">
+      <span class="uni-cube-icon">${cube.icon}</span>
+      <div class="uni-cube-info">
+        <div class="uni-cube-name">${cube.name}</div>
+        <div class="uni-cube-type">${cube.type==='public'?'🌐 Публичный':'🔐 Закрытый'} · ${fmtTime(cube.life)}</div>
+      </div>
+      <div class="uni-toggle">${inUni?'✓':''}</div>
+    </div>`;
+  }).join('');
+  updateUniHint();
+  openModal('modal-universe');
+}
+
+function toggleUniCard(id, el){
+  el.classList.toggle('in-universe');
+  const tog = el.querySelector('.uni-toggle');
+  if(el.classList.contains('in-universe')){ tog.textContent='✓'; }
+  else { tog.textContent=''; }
+  updateUniHint();
+}
+
+function updateUniHint(){
+  const selected = document.querySelectorAll('#uni-grid .uni-cube-card.in-universe').length;
+  document.getElementById('uni-hint').textContent = `Выбрано: ${selected} из ${app.cubes.length} кубов`;
+}
+
+function saveUniverse(){
+  const selected = [...document.querySelectorAll('#uni-grid .uni-cube-card.in-universe')]
+    .map(el => el.id.replace('uni-card-',''));
+  if(selected.length === 0){ showToast('Выбери хотя бы 1 куб'); return; }
+  app.myUniverse = selected;
+  localStorage.setItem('cw_universe', JSON.stringify(selected));
+  // Refresh world
+  wObjects = []; wDone = false;
+  document.getElementById('world-overlay').innerHTML = '';
+  requestAnimationFrame(initWorld);
+  closeModal('modal-universe');
+  showToast(`⬡ Вселенная обновлена — ${selected.length} кубов`);
+}
+
+// ════════════════════════════════════════════════
 //  AUTO-LOGIN: если пришли с index.html (уже есть токен)
 // ════════════════════════════════════════════════
 (function autoLogin(){
@@ -4816,5 +4899,20 @@ window.onEnterInterior=function(){
     </div>
   </div>
 </div>
+
+<!-- ══ UNIVERSE MANAGER ══════════════════════════════ -->
+<div class="modal-backdrop" id="modal-universe">
+  <div class="modal" style="max-width:560px">
+    <h3>⬡ Моя вселенная</h3>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:4px">Выбери кубы которые вращаются в твоём мире. Нажми на куб чтобы добавить/убрать.</p>
+    <div class="uni-grid" id="uni-grid"></div>
+    <div class="uni-hint" id="uni-hint"></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-ghost" onclick="closeModal('modal-universe')" style="flex:1">Отмена</button>
+      <button class="uni-save-btn" style="flex:2" onclick="saveUniverse()">✓ Сохранить вселенную</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
