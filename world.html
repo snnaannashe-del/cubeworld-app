@@ -1765,6 +1765,73 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 // ════════════════════════════════════════════════
 const CUBE_API = 'https://cubeworld-backend.onrender.com';
 const CUBE_WS  = 'wss://cubeworld-backend.onrender.com';
+const API_BASE = 'https://cubeworld-backend.onrender.com';
+
+// ── Backend API helper ────────────────────────────────────────────────────
+async function apiCall(path, opts={}){
+  const token = localStorage.getItem('cw_access_token');
+  const headers = {'Content-Type':'application/json'};
+  if(token) headers['Authorization'] = 'Bearer '+token;
+  try{
+    const r = await fetch(API_BASE+path, {...opts, headers:{...headers,...(opts.headers||{})}});
+    if(!r.ok) return null;
+    return await r.json();
+  }catch(e){ return null; }
+}
+
+// ── Sync real data from backend ───────────────────────────────────────────
+async function syncFromBackend(){
+  // 1. Balance + key type
+  const bal = await apiCall('/cube/balance');
+  if(bal){
+    app.wallet.balance = Math.floor(bal.balance);
+    app.keyType = bal.key_type;
+    localStorage.setItem('cw_cube_balance', app.wallet.balance);
+    const wb = document.getElementById('wb-balance');
+    if(wb) wb.textContent = app.wallet.balance+' CUBE';
+  }
+  // 2. User profile
+  const me = await apiCall('/me');
+  if(me){
+    app.displayName = me.display_name || '';
+    if(me.display_name){
+      const dn = document.getElementById('wb-key-badge');
+      if(dn) dn.textContent = me.display_name;
+    }
+    if(me.id) localStorage.setItem('cw_user_id', me.id);
+  }
+  // 3. Stats (online count)
+  const st = await apiCall('/stats');
+  if(st){
+    const cnt = document.getElementById('wb-count');
+    const oc  = document.getElementById('wb-online');
+    if(cnt) cnt.textContent = (st.total_cubes||app.cubes.filter(c=>c.life>0).length)+' кубов';
+    if(oc)  oc.textContent  = st.online_users+' онлайн';
+  }
+  // 4. Real cubes from backend — append to SEED_CUBES
+  const cubesData = await apiCall('/cubes');
+  if(cubesData && cubesData.length > 0){
+    const existIds = new Set(app.cubes.map(c=>c.backendId).filter(Boolean));
+    const newCubes = cubesData
+      .filter(c => !existIds.has(c.id))
+      .map(c=>({
+        id:'bc'+c.id, backendId:c.id,
+        name:c.name, desc:c.description||'',
+        icon:c.icon||'📦', col:c.color||'#7c6fcd',
+        type:c.type||'public',
+        life:c.life_left_seconds||3600,
+        x:Math.random()*80+10, y:Math.random()*70+15,
+        rotX:Math.random()*360, rotY:Math.random()*360,
+        speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1
+      }));
+    if(newCubes.length > 0){
+      app.cubes = [...app.cubes, ...newCubes];
+      if(wDone){ newCubes.forEach(c=>addCubeToWorld(c)); }
+      const cnt = document.getElementById('wb-count');
+      if(cnt) cnt.textContent = app.cubes.filter(c=>c.life>0).length+' кубов';
+    }
+  }
+}
 
 // Generic fetch helper with error swallowing (falls back silently)
 async function apiFetch(path, opts){
@@ -1783,7 +1850,10 @@ function openRoomWS(roomId){
   if(_ws && _wsRoom===roomId) return; // already open
   if(_ws){ try{_ws.close();}catch(e){} }
   _wsRoom = roomId;
-  _ws = new WebSocket(`${CUBE_WS}/ws/${roomId}/${encodeURIComponent(app.userKey)}`);
+  const token = localStorage.getItem('cw_access_token') || app.userKey;
+  const cubeNumId = (app.currentCubeId||'').replace(/^[a-z]+/,''); // strip prefix for seed cubes
+  const wsRoomId = cubeNumId || roomId;
+  _ws = new WebSocket(`${CUBE_WS}/ws/${encodeURIComponent(token)}/${wsRoomId}`);
   _ws.onmessage = e => {
     try{
       const msg = JSON.parse(e.data);
@@ -1791,22 +1861,68 @@ function openRoomWS(roomId){
       if(!cubeId) return;
       if(!app.chatMessages[cubeId]) app.chatMessages[cubeId]={};
       if(!app.chatMessages[cubeId][roomId]) app.chatMessages[cubeId][roomId]=[];
-      if(msg.type==='message'||msg.type==='system'){
+
+      if(msg.type==='joined'){
+        const badge=document.getElementById('chat-online');
+        if(badge) badge.textContent=msg.online+' онлайн';
+      } else if(msg.type==='user_joined'||msg.type==='user_left'){
+        const badge=document.getElementById('chat-online');
+        if(badge) badge.textContent=msg.online+' онлайн';
+        const sysText = msg.type==='user_joined'
+          ? (msg.display_name||'Аноним')+' вошёл'
+          : (msg.display_name||'Аноним')+' вышел';
+        app.chatMessages[cubeId][roomId].push({sender:'system',text:sysText,time:'',type:'system'});
+        if(app.currentRoomId===roomId) renderChatMsgs(roomId);
+      } else if(msg.type==='message'){
+        // New backend format: content + display_name + user_id
+        const myUserId = localStorage.getItem('cw_user_id');
+        const isMe = msg.user_id && String(msg.user_id)===String(myUserId);
+        const text = msg.content || msg.text || '';
+        const time = msg.created_at
+          ? new Date(msg.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})
+          : '';
         app.chatMessages[cubeId][roomId].push({
-          sender: msg.author===app.userKey.slice(0,4)+'CUBE' ? 'me' : 'them',
-          author: msg.author||'system', text: msg.text, time: msg.time||'', type:'text'
+          sender: isMe ? 'me' : 'them',
+          author: msg.display_name || 'Аноним',
+          text, time, type:'text'
         });
         if(app.currentRoomId===roomId) renderChatMsgs(roomId);
-        // update online badge
-        if(msg.online!=null){
-          const badge=document.getElementById('chat-online');
-          if(badge) badge.textContent=msg.online+' онлайн';
-        }
+      } else if(msg.type==='system'){
+        app.chatMessages[cubeId][roomId].push({sender:'system',text:msg.text||'',time:'',type:'system'});
+        if(app.currentRoomId===roomId) renderChatMsgs(roomId);
       }
-    }catch(e){}
+    }catch(err){}
+  };
+  _ws.onopen = ()=>{
+    // Load message history after connecting
+    loadChatHistory(roomId);
   };
   _ws.onerror = ()=>{ _ws=null; };
   _ws.onclose = ()=>{ if(_wsRoom===roomId) _ws=null; };
+}
+
+// Load message history from backend
+async function loadChatHistory(roomId){
+  const cubeId = app.currentCubeId;
+  if(!cubeId) return;
+  const numId = cubeId.replace(/^[a-z]+/,'');
+  if(!numId || isNaN(numId)) return; // seed cubes have no backend history
+  const msgs = await apiCall('/cubes/'+numId+'/messages');
+  if(!msgs || !msgs.length) return;
+  if(!app.chatMessages[cubeId]) app.chatMessages[cubeId]={};
+  if(!app.chatMessages[cubeId][roomId]) app.chatMessages[cubeId][roomId]=[];
+  // Only prepend if history not loaded yet
+  if(app.chatMessages[cubeId][roomId].length===0){
+    const myUserId = localStorage.getItem('cw_user_id');
+    const history = msgs.map(m=>({
+      sender: String(m.user_id)===String(myUserId) ? 'me' : 'them',
+      author: m.display_name||'Аноним',
+      text: m.content, time: new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+      type:'text'
+    }));
+    app.chatMessages[cubeId][roomId] = [...history, ...app.chatMessages[cubeId][roomId]];
+    if(app.currentRoomId===roomId) renderChatMsgs(roomId);
+  }
 }
 
 // ════════════════════════════════════════════════
@@ -2134,6 +2250,10 @@ function enterWorld(){
   document.getElementById('wb-count').textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
   showView('v-world');
   if(!wDone){wDone=true;requestAnimationFrame(initWorld);}
+  // Fetch real data in background
+  syncFromBackend();
+  // Refresh stats every 60s
+  if(!window._statInterval) window._statInterval = setInterval(syncFromBackend, 60000);
 }
 
 document.addEventListener('mousemove',e=>{const t=document.getElementById('cube-tooltip');if(t.style.display==='block'){t.style.left=(e.clientX+14)+'px';t.style.top=(e.clientY-20)+'px';}});
@@ -2146,16 +2266,42 @@ function submitEntryKey(){
 }
 document.getElementById('mke-input').addEventListener('keydown',e=>{if(e.key==='Enter')submitEntryKey();});
 function openCreateCube(){openModal('modal-create-cube');}
-function submitCreateCube(){
+async function submitCreateCube(){
   const name=(document.getElementById('cc-name').value.trim()||'Куб '+(app.cubes.length+1)).slice(0,32);
-  const type=document.getElementById('cc-type').value,life=+document.getElementById('cc-life').value;
-  const key=(document.getElementById('cc-key').value.trim()||'CUBE-'+Math.random().toString(36).slice(2,6).toUpperCase()).toUpperCase();
-  const cols=['#e879f9','#f97316','#06b6d4','#84cc16'];
-  const icons=['🔮','🔥','💧','🌿'];const ci=Math.floor(Math.random()*4);
-  const cube={id:'u'+Date.now(),name,type,life,key:type==='private'?key:undefined,colorCss:cols[ci],icon:icons[ci],desc:'Создано тобой'};
-  app.cubes.push(cube);closeModal('modal-create-cube');
-  if(wDone)addCubeToWorld(cube);
+  const type=document.getElementById('cc-type').value||'public';
+  const lifeEl=document.getElementById('cc-life');
+  const life_hours = lifeEl ? parseInt(lifeEl.value)||24 : 24;
+  const iconEl=document.getElementById('cc-icon');
+  const colorEl=document.getElementById('cc-color');
+  const cols=['#e879f9','#f97316','#06b6d4','#84cc16','#7c6fcd','#4ade80'];
+  const icons=['🔮','🔥','💧','🌿','🧠','🌐'];
+  const ci=Math.floor(Math.random()*icons.length);
+  const icon  = iconEl  ? iconEl.value  : icons[ci];
+  const color = colorEl ? colorEl.value : cols[ci];
+
+  // Optimistic local add
+  const localId='u'+Date.now();
+  const cube={
+    id:localId, backendId:null,
+    name, type, life:life_hours*3600,
+    col:color, icon, desc:'Создано тобой'
+  };
+  app.cubes.push(cube);
+  closeModal('modal-create-cube');
+  if(wDone) addCubeToWorld(cube);
   document.getElementById('wb-count').textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
+  showToast('⬡ Куб "'+name+'" создан!');
+
+  // POST to backend
+  const res = await apiCall('/cubes',{
+    method:'POST',
+    body: JSON.stringify({name,description:'',icon,color,type,life_hours})
+  });
+  if(res && res.id){
+    cube.backendId = res.id;
+    cube.id = 'bc'+res.id;
+    showToast('✓ Куб синхронизирован с сервером');
+  }
 }
 
 // ════════════════════════════════════════════════
@@ -2172,6 +2318,9 @@ function enterInterior(cubeId){
   initInteriorData(cubeId);
   switchSection('feed',document.querySelector('.sn-item.active'));
   onEnterInterior();
+  // Load real backend data for this cube
+  loadRealPosts();
+  loadRealSignals();
 }
 function exitInterior(){ if(liveInterval){clearInterval(liveInterval);liveInterval=null;} showView('v-world'); }
 
@@ -2326,6 +2475,9 @@ function switchSection(name,el){
   document.getElementById('sec-'+name).classList.add('active');
   document.querySelectorAll('.sn-item').forEach(i=>i.classList.remove('active'));
   if(el)el.classList.add('active');
+  // Load real data from backend when switching tabs
+  if(name==='feed')    { renderFeed(); loadRealPosts(); }
+  if(name==='signals') { renderSignals(); loadRealSignals(); }
 }
 
 // renderFeed defined later (enhanced version with tip button)
@@ -2345,18 +2497,60 @@ function switchFeedTab(tab,el){
   renderFeed();
 }
 function openNewPost(){openModal('modal-new-post');}
-function submitPost(){
+async function submitPost(){
   const type=document.getElementById('np-type').value;
   const text=document.getElementById('np-content').value.trim();if(!text)return;
   const localId='u'+Date.now();
   const author=(app.userKey||'ANON').slice(0,4)+'•••CUBE';
-  app.feedPosts.unshift({id:localId,author,avatar:'👤',time:'только что',text,reactions:{fire:0,rocket:0,like:0,heart:0,eyes:0,thinking:0},type});
+  // Optimistic local update
+  app.feedPosts.unshift({id:localId,backendId:null,author,avatar:'👤',time:'только что',text,reactions:{fire:0,rocket:0,like:0,heart:0,eyes:0,thinking:0},type});
   closeModal('modal-new-post');document.getElementById('np-content').value='';renderFeed();
   earnCube(10,'Создал пост','📝'); completeTaskById('t1');
-  unlockAchievement('a2'); pushNotification('📝','Твой пост опубликован анонимно · +10 CUBE');
-  // Sync to server
-  if(app.userKey)
-    apiFetch('/api/feed',{method:'POST',body:JSON.stringify({user_key:app.userKey,text,post_type:type||'text'})});
+  unlockAchievement('a2'); pushNotification('📝','Твой пост опубликован · +10 CUBE');
+  // POST to backend
+  const cubeNumId = (app.currentCubeId||'').replace(/^[a-z]+/,'');
+  if(cubeNumId && !isNaN(cubeNumId)){
+    const res = await apiCall('/cubes/'+cubeNumId+'/posts',{
+      method:'POST', body:JSON.stringify({content:text})
+    });
+    if(res && res.id){
+      // Update local post with real backend id
+      const lp = app.feedPosts.find(p=>p.id===localId);
+      if(lp) lp.backendId = res.id;
+    }
+  }
+}
+
+// Load real posts from backend for current cube
+async function loadRealPosts(){
+  const cubeId = app.currentCubeId;
+  if(!cubeId) return;
+  const numId = cubeId.replace(/^[a-z]+/,'');
+  if(!numId || isNaN(numId)) return;
+  const posts = await apiCall('/cubes/'+numId+'/posts');
+  if(!posts || !posts.length) return;
+  const backendPosts = posts.map(p=>({
+    id:'bp'+p.id, backendId:p.id,
+    author: p.display_name||'Аноним',
+    avatar:'👤', time: _fmtRelTime(p.created_at),
+    text:p.content, reactions:{fire:p.likes||0}, type:'text'
+  }));
+  // Only replace if more posts from backend
+  if(backendPosts.length > 0){
+    app.feedPosts = [...backendPosts, ...app.feedPosts.filter(p=>p.id.startsWith('u'))];
+    renderFeed();
+  }
+}
+
+function _fmtRelTime(isoStr){
+  if(!isoStr) return '';
+  try{
+    const diff = Math.floor((Date.now()-new Date(isoStr+'Z').getTime())/1000);
+    if(diff<60) return diff+'с';
+    if(diff<3600) return Math.floor(diff/60)+'м';
+    if(diff<86400) return Math.floor(diff/3600)+'ч';
+    return Math.floor(diff/86400)+'д';
+  }catch(e){return '';}
 }
 
 // ════════════════════════════════════════════════
@@ -2425,13 +2619,10 @@ function sendChatMsg(){
   const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
   const msg={sender:'me',text,time,type:'text'};
   addCubeRoomMsg(msg);renderRoomMessages(app.currentRoomId);
-  // Send via real WebSocket if connected, otherwise simulate reply
   if(_ws && _ws.readyState===WebSocket.OPEN){
-    _ws.send(JSON.stringify({type:'message',text}));
+    _ws.send(JSON.stringify({type:'message', content:text}));
   } else {
-    // Try to open WS first
     openRoomWS(app.currentRoomId);
-    setTimeout(()=>simulateReply(app.currentRoomId),1200+Math.random()*1800);
   }
 }
 function addCubeRoomMsg(msg){
@@ -2521,28 +2712,97 @@ function openCreateGroup(){alert('Создать группу:\nВведи на�
 // ════════════════════════════════════════════════
 //  SIGNALS
 // ════════════════════════════════════════════════
-function renderSignals(){
-  document.getElementById('signals-grid').innerHTML=app.signals.map(s=>`
-    <div class="sig-card">
-      <div class="sig-header">
-        <span class="sig-dir ${s.dir}">${s.dir==='long'?'LONG ↑':'SHORT ↓'}</span>
-        <span class="sig-pair">${s.pair}</span>
-        <span class="sig-pnl ${s.pnl.startsWith('+')?'pos':'neg'}">${s.pnl}</span>
-        <span class="sig-author">${s.author}</span>
-      </div>
-      <div class="sig-body">
-        <div class="sig-field"><div class="sig-field-lbl">Вход</div><div class="sig-field-val entry">$${s.entry}</div></div>
-        <div class="sig-field"><div class="sig-field-lbl">Take Profit</div><div class="sig-field-val tp">$${s.tp}</div></div>
-        <div class="sig-field"><div class="sig-field-lbl">Stop Loss</div><div class="sig-field-val sl">$${s.sl}</div></div>
-      </div>
-      <div class="sig-footer">
-        <button class="sig-react" onclick="this.textContent='🚀 '+(parseInt(this.textContent.replace(/\D/g,''))+1)">🚀 ${Object.values(s.reactions)[0]}</button>
-        <button class="sig-react" onclick="this.textContent='🔥 '+(parseInt(this.textContent.replace(/\D/g,''))+1)">🔥 ${Object.values(s.reactions)[1]||0}</button>
-        <span class="sig-time">${s.time} назад</span>
-      </div>
-    </div>`).join('');
+function _renderOneSig(s){
+  // Supports both local seed format and backend format
+  const dir    = s.dir || (s.direction||'').toLowerCase() || 'long';
+  const pair   = s.pair || s.ticker || 'BTC/USDT';
+  const entry  = s.entry || (s.entry_price ? s.entry_price.toLocaleString() : '—');
+  const tp     = s.tp   || (s.tp_price    ? s.tp_price.toLocaleString()    : '—');
+  const sl     = s.sl   || (s.sl_price    ? s.sl_price.toLocaleString()    : '—');
+  const pnl    = s.pnl  || '';
+  const author = s.author || s.display_name || 'Аноним';
+  const time   = s.time  || _fmtRelTime(s.created_at) || '';
+  const react0 = s.reactions ? Object.values(s.reactions)[0]||0 : 0;
+  const react1 = s.reactions ? Object.values(s.reactions)[1]||0 : 0;
+  const sigId  = s.backendId || s.id || '';
+  return `<div class="sig-card">
+    <div class="sig-header">
+      <span class="sig-dir ${dir}">${dir==='long'?'LONG ↑':'SHORT ↓'}</span>
+      <span class="sig-pair">${pair}</span>
+      ${pnl ? `<span class="sig-pnl ${pnl.startsWith('+')?'pos':'neg'}">${pnl}</span>` : ''}
+      <span class="sig-author">${author}</span>
+    </div>
+    <div class="sig-body">
+      <div class="sig-field"><div class="sig-field-lbl">Вход</div><div class="sig-field-val entry">$${entry}</div></div>
+      <div class="sig-field"><div class="sig-field-lbl">Take Profit</div><div class="sig-field-val tp">$${tp}</div></div>
+      <div class="sig-field"><div class="sig-field-lbl">Stop Loss</div><div class="sig-field-val sl">$${sl}</div></div>
+    </div>
+    <div class="sig-footer">
+      <button class="sig-react" onclick="this.textContent='🚀 '+(parseInt(this.textContent.replace(/\D/g,''))+1)">🚀 ${react0}</button>
+      <button class="sig-react" onclick="this.textContent='🔥 '+(parseInt(this.textContent.replace(/\D/g,''))+1)">🔥 ${react1}</button>
+      <span class="sig-time">${time}${time?' назад':''}</span>
+    </div>
+  </div>`;
 }
-function openNewSignal(){openModal('modal-signal');}
+function renderSignals(){
+  const el = document.getElementById('signals-grid');
+  if(!el) return;
+  el.innerHTML = app.signals.map(_renderOneSig).join('');
+}
+
+// Load real signals from backend
+async function loadRealSignals(){
+  const cubeId = app.currentCubeId;
+  if(!cubeId) return;
+  const numId = cubeId.replace(/^[a-z]+/,'');
+  if(!numId || isNaN(numId)) return;
+  const sigs = await apiCall('/cubes/'+numId+'/signals');
+  if(!sigs || !sigs.length) return;
+  const backendSigs = sigs.map(s=>({
+    id:'bs'+s.id, backendId:s.id,
+    dir: (s.direction||'LONG').toLowerCase(),
+    pair: s.ticker+'/USDT',
+    entry: s.entry_price ? '$'+s.entry_price.toLocaleString() : '—',
+    tp: s.tp_price ? '$'+s.tp_price.toLocaleString() : '—',
+    sl: s.sl_price ? '$'+s.sl_price.toLocaleString() : '—',
+    author: s.display_name || 'Аноним',
+    time: _fmtRelTime(s.created_at),
+    reactions:{rocket:0, fire:0}, pnl:''
+  }));
+  if(backendSigs.length > 0){
+    // Prepend backend signals
+    app.signals = [...backendSigs, ...app.signals.filter(s=>!String(s.id).startsWith('bs'))];
+    renderSignals();
+  }
+}
+
+// Create a new signal and POST to backend
+async async function submitSignal(){
+  const ticker    = (document.getElementById('sig-ticker')?.value||'BTC').trim().toUpperCase();
+  const direction = document.getElementById('sig-dir')?.value||'LONG';
+  const entry     = parseFloat(document.getElementById('sig-entry')?.value||0);
+  const tp        = parseFloat(document.getElementById('sig-tp')?.value||0);
+  const sl        = parseFloat(document.getElementById('sig-sl')?.value||0);
+  const content   = (document.getElementById('sig-content')?.value||'').trim();
+  if(!ticker) return;
+
+  // Optimistic local add
+  app.signals.unshift({id:'ls'+Date.now(),dir:direction.toLowerCase(),pair:ticker+'/USDT',
+    entry:'$'+entry,tp:'$'+tp,sl:'$'+sl,author:(app.userKey||'ANON').slice(0,4)+'•••',
+    time:'только что',reactions:{rocket:0,fire:0},pnl:''});
+  renderSignals();
+  closeModal('modal-new-signal');
+  earnCube(5,'Опубликовал сигнал','📡');
+
+  const cubeNumId = (app.currentCubeId||'').replace(/^[a-z]+/,'');
+  if(cubeNumId && !isNaN(cubeNumId)){
+    await apiCall('/cubes/'+cubeNumId+'/signals',{
+      method:'POST',
+      body:JSON.stringify({ticker,direction,entry_price:entry,tp_price:tp,sl_price:sl,content})
+    });
+  }
+}
+function openNewSignal(){openModal('modal-new-signal');}
 function submitSignal(){
   const pair=document.getElementById('sig-pair').value||'BTC/USDT';
   const dir=document.getElementById('sig-dir').value;
@@ -4847,6 +5107,12 @@ function saveUniverse(){
     app.keyType = localStorage.getItem('cw_key_type') || 'free';
     const bal = localStorage.getItem('cw_cube_balance');
     if (bal) app.wallet.balance = parseInt(bal) || 250;
+    // Fetch user_id from /me and store for WS message matching
+    fetch('https://cubeworld-backend.onrender.com/me',{
+      headers:{'Authorization':'Bearer '+token}
+    }).then(r=>r.ok?r.json():null).then(me=>{
+      if(me && me.id) localStorage.setItem('cw_user_id', me.id);
+    }).catch(()=>{});
     setTimeout(function(){ enterWorld(); }, 0);
   }
 })();
