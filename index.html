@@ -10,10 +10,18 @@
 body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
 #cv{position:fixed;inset:0;z-index:0;pointer-events:none}
 .amb{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 70% 55% at 25% 20%,rgba(124,106,255,.11) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 80% 80%,rgba(122,212,255,.07) 0%,transparent 60%)}
-.lang-bar{position:fixed;top:20px;left:24px;z-index:10;display:flex;gap:6px}
-.lb{background:rgba(255,255,255,.05);border:1px solid var(--br);border-radius:8px;padding:5px 9px;font-size:16px;cursor:pointer;transition:all .2s;line-height:1;color:inherit}
-.lb:hover{background:rgba(255,255,255,.1)}
-.lb.on{background:rgba(124,106,255,.2);border-color:rgba(124,106,255,.5)}
+.ldd{position:fixed;top:20px;left:24px;z-index:100}
+.ldb{background:rgba(20,20,40,.85);border:1px solid rgba(124,106,255,.3);border-radius:10px;padding:7px 12px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--tx);backdrop-filter:blur(10px);transition:all .2s;white-space:nowrap}
+.ldb:hover{background:rgba(124,106,255,.2);border-color:rgba(124,106,255,.5)}
+.ldc{font-size:11px;font-weight:700;letter-spacing:1px;opacity:.8}
+.ldarr{font-size:9px;opacity:.5;transition:transform .2s}
+.ldd.open .ldarr{transform:rotate(180deg)}
+.ldm{position:absolute;top:calc(100% + 6px);left:0;background:rgba(13,18,37,.97);border:1px solid rgba(124,106,255,.25);border-radius:12px;padding:6px;display:none;min-width:110px;box-shadow:0 8px 32px rgba(0,0,0,.6);backdrop-filter:blur(16px)}
+.ldd.open .ldm{display:block}
+.ldm button{display:flex;align-items:center;gap:8px;width:100%;padding:8px 12px;background:transparent;border:none;border-radius:7px;color:var(--tx);font-size:14px;cursor:pointer;transition:background .15s;white-space:nowrap}
+.ldm button:hover{background:rgba(124,106,255,.18)}
+.ldm button.cur{background:rgba(124,106,255,.12);color:var(--ac)}
+.lfi{font-size:17px;line-height:1}
 .pg{position:relative;z-index:1}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .hero{text-align:center;padding:90px 24px 36px;max-width:700px;margin:0 auto}
@@ -61,7 +69,7 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSyst
 .stats{display:flex;justify-content:center;gap:48px;margin:56px auto 80px;padding:0 24px;max-width:600px;animation:fadeUp .6s .6s both}
 .sv{font-size:32px;font-weight:800;letter-spacing:-1px}
 .slab{font-size:13px;color:var(--mt);margin-top:4px}
-.mo{position:fixed;inset:0;background:rgba(8,12,24,.88);backdrop-filter:blur(10px);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .3s}
+.mo{position:fixed;inset:0;background:rgba(8,12,24,.88);backdrop-filter:blur(10px);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .3s}
 .mo.op{opacity:1;pointer-events:all}
 @keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .mb{background:#0d1225;border:1px solid var(--br);border-radius:22px;padding:40px;max-width:440px;width:100%;position:relative;animation:modalIn .4s cubic-bezier(.16,1,.3,1) both}
@@ -100,33 +108,40 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSyst
 <canvas id="cv"></canvas>
 <div class="amb"></div>
 
-<div class="lang-bar">
-  <button class="lb on" onclick="setLang('en')" title="English">&#127482;&#127480;</button>
-  <button class="lb" onclick="setLang('ru')" title="&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;">&#127479;&#127482;</button>
-  <button class="lb" onclick="setLang('es')" title="Espa&#241;ol">&#127466;&#127480;</button>
-  <button class="lb" onclick="setLang('zh')" title="&#20013;&#25991;">&#127464;&#127475;</button>
-  <button class="lb" onclick="setLang('fr')" title="Fran&#231;ais">&#127467;&#127479;</button>
+<div class="ldd" id="ldd">
+  <button class="ldb" onclick="togDD(event)">
+    <span class="lfi" id="lflag">&#127468;&#127463;</span>
+    <span class="ldc" id="lcode">EN</span>
+    <span class="ldarr">&#9660;</span>
+  </button>
+  <div class="ldm" id="ldm">
+    <button onclick="pickL('en')" id="lo-en" class="cur"><span class="lfi">&#127468;&#127463;</span> EN</button>
+    <button onclick="pickL('ru')" id="lo-ru"><span class="lfi">&#127479;&#127482;</span> RU</button>
+    <button onclick="pickL('es')" id="lo-es"><span class="lfi">&#127466;&#127480;</span> ES</button>
+    <button onclick="pickL('zh')" id="lo-zh"><span class="lfi">&#127464;&#127475;</span> ZH</button>
+    <button onclick="pickL('fr')" id="lo-fr"><span class="lfi">&#127467;&#127479;</span> FR</button>
+  </div>
 </div>
 
 <div class="pg">
   <section class="hero">
-    <div class="hl" id="tl">CubeWorld &middot; Digital Land Protocol</div>
-    <h1 id="th">Your Digital Universe</h1>
-    <p class="hs" id="ts1">No email. No phone. No IP.</p>
-    <p class="hs" id="ts2">Only a key &mdash; that is you.</p>
-    <p class="htag" id="ttag">Every cube is land. Yours.</p>
+    <div class="hl" id="el-lbl">CubeWorld &middot; Digital Land Protocol</div>
+    <h1 id="el-h1">Your Digital Universe</h1>
+    <p class="hs" id="el-s1">No email. No phone. No IP.</p>
+    <p class="hs" id="el-s2">Only a key &mdash; that is you.</p>
+    <p class="htag" id="el-tag">Every cube is land. Yours.</p>
     <div class="atr">
       <button class="abt" id="abtn" onclick="togL()">
-        <span>&#128272;</span><span id="tab">Key Authorization</span><span class="ar">&#8250;</span>
+        <span>&#128272;</span><span id="el-ab">Key Authorization</span><span class="ar">&#8250;</span>
       </button>
     </div>
     <div class="lsl" id="lsl">
       <div class="si">
-        <div class="slbl" id="tsl">Enter your CUBE key</div>
+        <div class="slbl" id="el-sl">Enter your CUBE key</div>
         <div class="krow">
           <input class="ki" id="ki" placeholder="CUBE-XXXX-XXXX-XXXX" maxlength="19"
             oninput="fmtK(this)" onkeydown="if(event.key==='Enter')doL()" autocomplete="off" spellcheck="false">
-          <button class="be" id="bel" onclick="doL()"><span id="teb">Enter &#8594;</span></button>
+          <button class="be" id="bel" onclick="doL()"><span id="el-eb">Enter &#8594;</span></button>
         </div>
         <div class="sst" id="lst"></div>
       </div>
@@ -135,25 +150,25 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSyst
 
   <div class="kc">
     <div class="card" onclick="openM('free')">
-      <span class="ci">&#128505;</span>
+      <span class="ci">&#128273;</span>
       <div class="cb fb">Free Key</div>
-      <h3 id="tft">Basic Access</h3>
-      <p id="tfd">Chats &middot; Feed &middot; Public cubes &middot; 3 groups</p>
-      <div class="cta" id="tfc">Get key &#8594;</div>
+      <h3 id="el-ft">Basic Access</h3>
+      <p id="el-fd">Chats &middot; Feed &middot; Public cubes &middot; 3 groups</p>
+      <div class="cta" id="el-fc">Get key &#8594;</div>
     </div>
     <div class="card pr" onclick="openM('premium')">
       <span class="ci">&#128142;</span>
       <div class="cb pb">Premium Key</div>
-      <h3 id="tpt">Full Access</h3>
-      <p id="tpd">E2E encryption &middot; Unlimited &middot; Signals &middot; Files &middot; Video</p>
-      <div class="cta" id="tpc">Get key &#8594;</div>
+      <h3 id="el-pt">Full Access</h3>
+      <p id="el-pd">E2E encryption &middot; Unlimited &middot; Signals &middot; Files &middot; Video</p>
+      <div class="cta" id="el-pc">Get key &#8594;</div>
     </div>
   </div>
 
   <div class="stats">
-    <div><div class="sv" id="sc">8</div><div class="slab" id="tsc">active cubes</div></div>
-    <div><div class="sv" id="so">0</div><div class="slab" id="tso">online</div></div>
-    <div><div class="sv" id="sm">0</div><div class="slab" id="tsm">messages/day</div></div>
+    <div><div class="sv" id="sc">8</div><div class="slab" id="el-sc">active cubes</div></div>
+    <div><div class="sv" id="so">0</div><div class="slab" id="el-so">online</div></div>
+    <div><div class="sv" id="sm">0</div><div class="slab" id="el-sm">messages/day</div></div>
   </div>
 </div>
 
@@ -167,11 +182,11 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSyst
     <div class="rv" id="rv">
       <div class="rl">Your CUBE key</div>
       <div class="rk" id="rk">CUBE-XXXX-XXXX-XXXX</div>
-      <div class="rw" id="trw">&#9888;&#65039; Key is shown only once. Save it right now.</div>
+      <div class="rw" id="el-rw">Key shown only once. Save it now.</div>
       <div class="ra">
-        <button class="btn bsm" id="tcp" onclick="cpK()">&#128203; Copy</button>
-        <button class="btn bsm" id="tdl" onclick="dlK()">&#128190; Download</button>
-        <button class="btn bgo" id="tgo" onclick="goW()">Enter &#8594;</button>
+        <button class="btn bsm" id="el-cp" onclick="cpK()">&#128203; Copy</button>
+        <button class="btn bsm" id="el-dl" onclick="dlK()">&#128190; Download</button>
+        <button class="btn bgo" id="el-go" onclick="goW()">Enter &#8594;</button>
       </div>
     </div>
     <button class="btn" id="mgen" onclick="genK()">&#10024; Generate key</button>
@@ -179,135 +194,118 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSyst
 </div>
 
 <script>
-var API='https://cubeworld-backend.onrender.com';
-(function(){
-  var cvs=document.getElementById('cv'),ctx=cvs.getContext('2d');
-  var W,H,cx,cy,sz,ang=0;
-  function rsz(){W=cvs.width=window.innerWidth;H=cvs.height=window.innerHeight;cx=W/2;cy=H*0.44;sz=Math.min(W,H)*0.27;}
-  rsz();window.addEventListener('resize',rsz);
+var API = 'https://cubeworld-backend.onrender.com';
+
+/* Rotating cube */
+(function() {
+  var c = document.getElementById('cv'), x = c.getContext('2d');
+  var W, H, cx, cy, sz, a = 0;
+  function rs() { W = c.width = innerWidth; H = c.height = innerHeight; cx = W/2; cy = H*0.44; sz = Math.min(W,H)*0.27; }
+  rs(); addEventListener('resize', rs);
   var V=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
   var E=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
-  function ry(v,a){return[v[0]*Math.cos(a)+v[2]*Math.sin(a),v[1],-v[0]*Math.sin(a)+v[2]*Math.cos(a)];}
-  function rx(v,a){return[v[0],v[1]*Math.cos(a)-v[2]*Math.sin(a),v[1]*Math.sin(a)+v[2]*Math.cos(a)];}
-  function draw(){
-    ctx.clearRect(0,0,W,H);ang+=0.003;
-    var proj=V.map(function(v){var r=ry(v,ang);r=rx(r,ang*0.4);var fov=4,z=fov/(fov+r[2]*0.4);return[cx+r[0]*sz*z,cy+r[1]*sz*z];});
-    ctx.strokeStyle='rgba(124,106,255,0.15)';ctx.lineWidth=1;
-    E.forEach(function(e){ctx.beginPath();ctx.moveTo(proj[e[0]][0],proj[e[0]][1]);ctx.lineTo(proj[e[1]][0],proj[e[1]][1]);ctx.stroke();});
-    proj.forEach(function(p){ctx.beginPath();ctx.arc(p[0],p[1],2.5,0,Math.PI*2);ctx.fillStyle='rgba(124,106,255,0.35)';ctx.fill();});
+  function ry(v,t){return[v[0]*Math.cos(t)+v[2]*Math.sin(t),v[1],-v[0]*Math.sin(t)+v[2]*Math.cos(t)];}
+  function rx(v,t){return[v[0],v[1]*Math.cos(t)-v[2]*Math.sin(t),v[1]*Math.sin(t)+v[2]*Math.cos(t)];}
+  (function draw(){
+    x.clearRect(0,0,W,H); a+=0.003;
+    var p=V.map(function(v){var r=rx(ry(v,a),a*0.4);var z=4/(4+r[2]*0.4);return[cx+r[0]*sz*z,cy+r[1]*sz*z];});
+    x.strokeStyle='rgba(124,106,255,0.16)'; x.lineWidth=1;
+    E.forEach(function(e){x.beginPath();x.moveTo(p[e[0]][0],p[e[0]][1]);x.lineTo(p[e[1]][0],p[e[1]][1]);x.stroke();});
+    p.forEach(function(v){x.beginPath();x.arc(v[0],v[1],2.5,0,6.28);x.fillStyle='rgba(124,106,255,0.36)';x.fill();});
     requestAnimationFrame(draw);
-  }
-  draw();
+  })();
 })();
-var T={
-  en:{lbl:'CubeWorld · Digital Land Protocol',h1:'Your Digital Universe',s1:'No email. No phone. No IP.',s2:'Only a key — that is you.',tag:'Every cube is land. Yours.',ab:'Key Authorization',sl:'Enter your CUBE key',eb:'Enter →',ft:'Basic Access',fd:'Chats · Feed · Public cubes · 3 groups',fc:'Get key →',pt:'Full Access',pd:'E2E encryption · Unlimited · Signals · Files · Video',pc:'Get key →',sc:'active cubes',so:'online',sm:'messages/day',gd:'Chats, feed and public cubes. Key created instantly.',gp:'E2E encryption, unlimited, signals, files and video.',rw:'⚠️ Key is shown only once. Save it right now.',cp:'📋 Copy',dl:'💾 Download',go:'Enter →'},
-  ru:{lbl:'CubeWorld · Digital Land Protocol',h1:'Your Digital Universe',s1:'Никакой почты. Никакого телефона. Никакого IP.',s2:'Только ключ — он и есть ты.',tag:'Каждый куб — это земля. Твоя.',ab:'Авторизация по ключу',sl:'Введи свой CUBE-ключ',eb:'Войти →',ft:'Базовый доступ',fd:'Чаты · Лента · Публичные кубы · 3 группы',fc:'Получить ключ →',pt:'Полный доступ',pd:'E2E шифрование · Безлимит · Сигналы · Файлы · Видео',pc:'Получить ключ →',sc:'активных кубов',so:'онлайн',sm:'сообщений/день',gd:'Чаты, лента и публичные кубы. Ключ создаётся мгновенно.',gp:'E2E шифрование, безлимит, сигналы, файлы и видео.',rw:'⚠️ Ключ показывается только один раз. Сохрани его прямо сейчас.',cp:'📋 Копировать',dl:'💾 Скачать',go:'Войти →'},
-  es:{lbl:'CubeWorld · Protocolo Tierra Digital',h1:'Tu Universo Digital',s1:'Sin email. Sin teléfono. Sin IP.',s2:'Solo una clave — esa eres tú.',tag:'Cada cubo es tierra. La tuya.',ab:'Autorización por clave',sl:'Introduce tu clave CUBE',eb:'Entrar →',ft:'Acceso Básico',fd:'Chats · Feed · Cubos públicos · 3 grupos',fc:'Obtener clave →',pt:'Acceso Completo',pd:'Cifrado E2E · Ilimitado · Señales · Archivos · Video',pc:'Obtener clave →',sc:'cubos activos',so:'en línea',sm:'mensajes/día',gd:'Chats, feed y cubos públicos. Clave creada al instante.',gp:'Cifrado E2E, ilimitado, señales de trading.',rw:'⚠️ La clave se muestra solo una vez. Guárdala ahora.',cp:'📋 Copiar',dl:'💾 Descargar',go:'Entrar →'},
-  zh:{lbl:'CubeWorld · 数字土地协议',h1:'你的数字宇宙',s1:'无邮筱。无手机。无IP。',s2:'只有密鑰 — 那就是你。',tag:'每个方块都是土地。属于你的。',ab:'密鑰授权',sl:'输入你的CUBE密鑰',eb:'进入 →',ft:'基础访问',fd:'聊天 · 动态 · 公开方块 · 3个群组',fc:'获取密鑰 →',pt:'完整访问',pd:'E2E加密 · 无限制 · 信号 · 文件 · 视频',pc:'获取密鑰 →',sc:'活跃方块',so:'在线',sm:'消息/天',gd:'聊天、动态和公开方块。密鑰即时创建。',gp:'E2E加密，无限制，交易信号。',rw:'⚠️ 密鑰只显示一次。请立即保存。',cp:'📋 复制',dl:'💾 下载',go:'进入 →'},
-  fr:{lbl:'CubeWorld · Protocole Terre Numérique',h1:'Votre Univers Numérique',s1:"Pas d'email. Pas de téléphone. Pas d'IP.",s2:"Seulement une clé — c'est vous.",tag:'Chaque cube est une terre. La vôtre.',ab:'Autorisation par clé',sl:'Entrez votre clé CUBE',eb:'Entrer →',ft:'Accès Basique',fd:'Chats · Fil · Cubes publics · 3 groupes',fc:'Obtenir la clé →',pt:'Accès Complet',pd:'Chiffrement E2E · Illimité · Signaux · Fichiers · Vidéo',pc:'Obtenir la clé →',sc:'cubes actifs',so:'en ligne',sm:'messages/jour',gd:'Chats, fil et cubes publics. Clé créée instantanément.',gp:"Chiffrement E2E, illimité, signaux de trading.",rw:"La clé n'est affichée qu'une seule fois. Sauvegardez-la.",cp:'📋 Copier',dl:'💾 Télécharger',go:'Entrer →'}
+
+/* Translations */
+var LANGS={
+  en:{lbl:'CubeWorld · Digital Land Protocol',h1:'Your Digital Universe',s1:'No email. No phone. No IP.',s2:'Only a key — that is you.',tag:'Every cube is land. Yours.',ab:'Key Authorization',sl:'Enter your CUBE key',eb:'Enter →',ft:'Basic Access',fd:'Chats · Feed · Public cubes · 3 groups',fc:'Get key →',pt:'Full Access',pd:'E2E encryption · Unlimited · Signals · Files · Video',pc:'Get key →',sc:'active cubes',so:'online',sm:'messages/day',gd:'Chats, feed and public cubes. Key created instantly.',gp:'E2E encryption, unlimited, signals, files and video.',rw:'Key shown only once. Save it now.',cp:'Copy',dl:'Download',go:'Enter →'},
+  ru:{lbl:'CubeWorld · Digital Land Protocol',h1:'Your Digital Universe',s1:'Никакой почты. Никакого телефона. Никакого IP.',s2:'Только ключ — он и есть ты.',tag:'Каждый куб — это земля. Твоя.',ab:'Авторизация по ключу',sl:'Введи свой CUBE-ключ',eb:'Войти →',ft:'Базовый доступ',fd:'Чаты · Лента · Публичные кубы · 3 группы',fc:'Получить ключ →',pt:'Полный доступ',pd:'E2E шифрование · Безлимит · Сигналы · Файлы · Видео',pc:'Получить ключ →',sc:'активных кубов',so:'онлайн',sm:'сообщений/день',gd:'Чаты, лента и публичные кубы. Ключ создаётся мгновенно.',gp:'E2E шифрование, безлимит, сигналы, файлы и видео.',rw:'Ключ показывается один раз. Сохрани прямо сейчас.',cp:'Копировать',dl:'Скачать',go:'Войти →'},
+  es:{lbl:'CubeWorld · Protocolo Tierra Digital',h1:'Tu Universo Digital',s1:'Sin email. Sin teléfono. Sin IP.',s2:'Solo una clave — esa eres tú.',tag:'Cada cubo es tierra. La tuya.',ab:'Autorización por clave',sl:'Introduce tu clave CUBE',eb:'Entrar →',ft:'Acceso Básico',fd:'Chats · Feed · Cubos públicos · 3 grupos',fc:'Obtener clave →',pt:'Acceso Completo',pd:'Cifrado E2E · Ilimitado · Señales · Archivos · Video',pc:'Obtener clave →',sc:'cubos activos',so:'en línea',sm:'mensajes/día',gd:'Chats, feed y cubos públicos. Clave al instante.',gp:'Cifrado E2E, ilimitado, señales de trading.',rw:'La clave se muestra solo una vez. Guárdala.',cp:'Copiar',dl:'Descargar',go:'Entrar →'},
+  zh:{lbl:'CubeWorld · 数字土地协议',h1:'你的数字宇宙',s1:'无邮箱。无手机。无IP。',s2:'只有密钥 — 那就是你。',tag:'每个方块都是土地。属于你的。',ab:'密钥授权',sl:'输入你的CUBE密钥',eb:'进入 →',ft:'基础访问',fd:'聊天 · 动态 · 公开方块 · 3个群组',fc:'获取密钥 →',pt:'完整访问',pd:'E2E加密 · 无限制 · 信号 · 文件 · 视频',pc:'获取密钥 →',sc:'活跃方块',so:'在线',sm:'消息/天',gd:'聊天、动态和公开方块。密钥即时创建。',gp:'E2E加密，无限制，交易信号。',rw:'密钥只显示一次。请立即保存。',cp:'复制',dl:'下载',go:'进入 →'},
+  fr:{lbl:'CubeWorld · Protocole Terre Numérique',h1:'Votre Univers Numérique',s1:"Pas d'email. Pas de téléphone. Pas d'IP.",s2:"Seulement une clé — c'est vous.",tag:'Chaque cube est une terre. La vôtre.',ab:'Autorisation par clé',sl:'Entrez votre clé CUBE',eb:'Entrer →',ft:'Accès Basique',fd:'Chats · Fil · Cubes publics · 3 groupes',fc:'Obtenir la clé →',pt:'Accès Complet',pd:'Chiffrement E2E · Illimité · Signaux · Fichiers · Vidéo',pc:'Obtenir la clé →',sc:'cubes actifs',so:'en ligne',sm:'messages/jour',gd:'Chats, fil et cubes publics. Clé créée instantanément.',gp:'Chiffrement E2E, illimité, signaux de trading.',rw:"La clé n'est affichée qu'une seule fois. Sauvegardez-la.",cp:'Copier',dl:'Télécharger',go:'Entrer →'}
 };
+var FLAGS={en:'&#127468;&#127463;',ru:'&#127479;&#127482;',es:'&#127466;&#127480;',zh:'&#127464;&#127475;',fr:'&#127467;&#127479;'};
+var CODES={en:'EN',ru:'RU',es:'ES',zh:'ZH',fr:'FR'};
 var lang='en',tier='free',gKey=null,sData=null;
+
+var ELIDS=['el-lbl','el-h1','el-s1','el-s2','el-tag','el-ab','el-sl','el-eb','el-ft','el-fd','el-fc','el-pt','el-pd','el-pc','el-sc','el-so','el-sm','el-rw','el-cp','el-dl','el-go'];
+var TKEYS=['lbl','h1','s1','s2','tag','ab','sl','eb','ft','fd','fc','pt','pd','pc','sc','so','sm','rw','cp','dl','go'];
 function setLang(l){
   lang=l;
-  var keys=['en','ru','es','zh','fr'];
-  document.querySelectorAll('.lb').forEach(function(b,i){b.classList.toggle('on',keys[i]===l);});
-  var t=T[l];
-  var ids=['tl','th','ts1','ts2','ttag','tab','tsl','teb','tft','tfd','tfc','tpt','tpd','tpc','tsc','tso','tsm','trw','tcp','tdl','tgo'];
-  var vals=[t.lbl,t.h1,t.s1,t.s2,t.tag,t.ab,t.sl,t.eb,t.ft,t.fd,t.fc,t.pt,t.pd,t.pc,t.sc,t.so,t.sm,t.rw,t.cp,t.dl,t.go];
-  ids.forEach(function(id,i){var el=document.getElementById(id);if(el)el.textContent=vals[i];});
+  var t=LANGS[l]; if(!t)return;
+  for(var i=0;i<ELIDS.length;i++){var el=document.getElementById(ELIDS[i]);if(el)el.textContent=t[TKEYS[i]];}
   localStorage.setItem('cw_lang',l);
 }
+
+/* Dropdown */
+var ddOpen=false;
+function togDD(e){e&&e.stopPropagation();ddOpen=!ddOpen;document.getElementById('ldd').classList.toggle('open',ddOpen);}
+function pickL(l){
+  document.getElementById('lflag').innerHTML=FLAGS[l];
+  document.getElementById('lcode').textContent=CODES[l];
+  ddOpen=false;document.getElementById('ldd').classList.remove('open');
+  ['en','ru','es','zh','fr'].forEach(function(k){document.getElementById('lo-'+k).classList.toggle('cur',k===l);});
+  setLang(l);
+}
+document.addEventListener('click',function(e){if(!document.getElementById('ldd').contains(e.target)){ddOpen=false;document.getElementById('ldd').classList.remove('open');}});
+
+/* Login */
 var lop=false;
-function togL(){
-  lop=!lop;
-  var s=document.getElementById('lsl'),b=document.getElementById('abtn');
-  b.classList.toggle('op',lop);
-  if(lop){s.classList.add('op');setTimeout(function(){document.getElementById('ki').focus();},350);var sv=localStorage.getItem('cw_key');if(sv)document.getElementById('ki').value=sv;}
-  else s.classList.remove('op');
-}
-function fmtK(el){
-  var v=el.value.replace(/[^A-Z0-9]/gi,'').toUpperCase();
-  var p=[v.slice(0,4),v.slice(4,8),v.slice(8,12),v.slice(12,16)].filter(Boolean);
-  el.value='CUBE-'+p.join('-');
-  if(el.value.length<5)el.value='CUBE-';
-}
+function togL(){lop=!lop;var s=document.getElementById('lsl'),b=document.getElementById('abtn');b.classList.toggle('op',lop);if(lop){s.classList.add('op');setTimeout(function(){document.getElementById('ki').focus();},350);var sv=localStorage.getItem('cw_key');if(sv)document.getElementById('ki').value=sv;}else s.classList.remove('op');}
+function fmtK(el){var v=el.value.replace(/[^A-Z0-9]/gi,'').toUpperCase();var p=[v.slice(0,4),v.slice(4,8),v.slice(8,12),v.slice(12,16)].filter(Boolean);el.value='CUBE-'+p.join('-');if(el.value.length<5)el.value='CUBE-';}
 async function doL(){
   var key=document.getElementById('ki').value.trim().toUpperCase();
   var btn=document.getElementById('bel'),st=document.getElementById('lst');
   if(key.length<19){st.className='sst er';st.textContent='❌ CUBE-XXXX-XXXX-XXXX';return;}
-  btn.disabled=true;btn.innerHTML='<span class="sp"></span>';
-  st.className='sst ld';st.textContent='…';
+  btn.disabled=true;btn.innerHTML='<span class="sp"></span>';st.className='sst ld';st.textContent='…';
   try{
     var r=await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:key})});
-    var d=await r.json();
-    if(!r.ok)throw new Error(d.detail||'Key not found');
+    var d=await r.json();if(!r.ok)throw new Error(d.detail||'Key not found');
     localStorage.setItem('cw_key',key);localStorage.setItem('cw_access_token',d.access_token);
     localStorage.setItem('cw_refresh_token',d.refresh_token);localStorage.setItem('cw_key_type',d.key_type);
-    st.className='sst ok';st.textContent='✅ '+(d.key_type==='premium'?'💎 Premium':'🗝️ Free')+' · '+d.cube_balance+' CUBE';
+    st.className='sst ok';st.textContent='✅ '+(d.key_type==='premium'?'💎 Premium':'🔑 Free')+' · '+d.cube_balance+' CUBE';
     setTimeout(function(){location.href='world.html';},700);
-  }catch(e){
-    st.className='sst er';st.textContent='❌ '+e.message;
-    btn.innerHTML='<span id="teb">'+T[lang].eb+'</span>';btn.disabled=false;
-  }
+  }catch(e){st.className='sst er';st.textContent='❌ '+e.message;btn.innerHTML='<span id="el-eb">'+LANGS[lang].eb+'</span>';btn.disabled=false;}
 }
+
+/* Modal */
 function openM(t){
   tier=t;gKey=null;sData=null;
-  var rv=document.getElementById('rv'),st=document.getElementById('mst'),bn=document.getElementById('mgen'),mb=document.getElementById('mb'),tl=T[lang];
+  var rv=document.getElementById('rv'),st=document.getElementById('mst'),bn=document.getElementById('mgen'),mb=document.getElementById('mb'),tl=LANGS[lang];
   rv.className='rv'+(t==='premium'?' pr':'');st.className='mst';st.textContent='';
-  if(t==='premium'){
-    document.getElementById('mbg').style.color='var(--pm)';document.getElementById('mbg').textContent='💎 PREMIUM KEY';
-    document.getElementById('mttl').textContent=tl.pt;document.getElementById('mds').textContent=tl.gp;
-    bn.className='btn bpm';bn.textContent='💎 '+tl.pc;mb.style.borderColor='rgba(122,212,255,.28)';
-  }else{
-    document.getElementById('mbg').style.color='var(--gd)';document.getElementById('mbg').textContent='🗝️ FREE KEY';
-    document.getElementById('mttl').textContent=tl.ft;document.getElementById('mds').textContent=tl.gd;
-    bn.className='btn bpr';bn.textContent='✨ '+tl.fc;mb.style.borderColor='var(--br)';
-  }
+  if(t==='premium'){document.getElementById('mbg').style.color='var(--pm)';document.getElementById('mbg').textContent='💎 PREMIUM KEY';document.getElementById('mttl').textContent=tl.pt;document.getElementById('mds').textContent=tl.gp;bn.className='btn bpm';bn.textContent='💎 '+tl.pc;mb.style.borderColor='rgba(122,212,255,.28)';}
+  else{document.getElementById('mbg').style.color='var(--gd)';document.getElementById('mbg').textContent='🔑 FREE KEY';document.getElementById('mttl').textContent=tl.ft;document.getElementById('mds').textContent=tl.gd;bn.className='btn bpr';bn.textContent='✨ '+tl.fc;mb.style.borderColor='var(--br)';}
   document.getElementById('mo').classList.add('op');document.body.style.overflow='hidden';
 }
 function cM(){document.getElementById('mo').classList.remove('op');document.body.style.overflow='';}
 function cOut(e){if(e.target===document.getElementById('mo'))cM();}
 async function genK(){
-  var bn=document.getElementById('mgen'),st=document.getElementById('mst'),rv=document.getElementById('rv'),tl=T[lang];
+  var bn=document.getElementById('mgen'),st=document.getElementById('mst'),rv=document.getElementById('rv'),tl=LANGS[lang];
   bn.disabled=true;bn.innerHTML='<span class="sp"></span>';st.className='mst ld';st.textContent='…';
   try{
-    var r=await fetch(API+'/auth/generate',{method:'POST'});var d=await r.json();
-    if(!r.ok)throw new Error(d.detail||'Server error');
+    var r=await fetch(API+'/auth/generate',{method:'POST'});var d=await r.json();if(!r.ok)throw new Error(d.detail||'Server error');
     gKey=d.key;sData=d;document.getElementById('rk').textContent=d.key;rv.classList.add('vis');st.className='mst';
-    localStorage.setItem('cw_key',d.key);localStorage.setItem('cw_access_token',d.access_token);
-    localStorage.setItem('cw_refresh_token',d.refresh_token);localStorage.setItem('cw_key_type',d.key_type);
+    localStorage.setItem('cw_key',d.key);localStorage.setItem('cw_access_token',d.access_token);localStorage.setItem('cw_refresh_token',d.refresh_token);localStorage.setItem('cw_key_type',d.key_type);
     bn.textContent='🔄 Regenerate';bn.disabled=false;
-  }catch(e){
-    st.className='mst er';st.textContent='❌ '+e.message;
-    bn.textContent=tier==='premium'?('💎 '+tl.pc):('✨ '+tl.fc);bn.disabled=false;
-  }
+  }catch(e){st.className='mst er';st.textContent='❌ '+e.message;bn.textContent=tier==='premium'?('💎 '+tl.pc):('✨ '+tl.fc);bn.disabled=false;}
 }
 function cpK(){if(!gKey)return;navigator.clipboard.writeText(gKey).then(function(){showT('Copied ✓');});}
-function dlK(){
-  if(!gKey)return;
-  var c='CubeWorld CUBE Key
+function dlK(){if(!gKey)return;var c='CubeWorld CUBE Key
 ==================
 
 '+gKey+'
 
-'+new Date().toLocaleString();
-  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:'text/plain'}));a.download='cube-key.txt';a.click();
-}
+'+new Date().toLocaleString();var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:'text/plain'}));a.download='cube-key.txt';a.click();}
 function goW(){if(sData)location.href='world.html';}
 function showT(m){var t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.remove();},300);},2000);}
-async function loadStats(){
-  try{
-    var r=await fetch(API+'/stats');var d=await r.json();
-    var fmt=function(n){return n>=1000?(n/1000).toFixed(1)+'K':String(n);};
-    if(d.online_users!==undefined)document.getElementById('so').textContent=fmt(d.online_users);
-  }catch(e){}
-}
-async function chkSess(){
-  var t=localStorage.getItem('cw_access_token');if(!t)return;
-  try{var r=await fetch(API+'/me',{headers:{Authorization:'Bearer '+t}});if(r.ok)location.href='world.html';}catch(e){}
-}
+
+/* Stats */
+async function loadStats(){try{var r=await fetch(API+'/stats');var d=await r.json();var f=function(n){return n>=1000?(n/1000).toFixed(1)+'K':String(n);};if(d.online_users!==undefined)document.getElementById('so').textContent=f(d.online_users);}catch(e){}}
+async function chkSess(){var t=localStorage.getItem('cw_access_token');if(!t)return;try{var r=await fetch(API+'/me',{headers:{Authorization:'Bearer '+t}});if(r.ok)location.href='world.html';}catch(e){}}
+
+/* Init */
 var sl=localStorage.getItem('cw_lang')||'en';
-if(sl!=='en')setLang(sl);
+if(sl!=='en')pickL(sl);
 chkSess();loadStats();setInterval(loadStats,30000);
 </script>
 </body>
