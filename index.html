@@ -5,239 +5,223 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CubeWorld · Digital Land Protocol</title>
 <style>
-  :root {
-    --bg: #080c18;
-    --surface: rgba(255,255,255,0.04);
-    --border: rgba(255,255,255,0.08);
-    --accent: #7c6aff;
-    --gold: #f5c842;
-    --premium: #7ad4ff;
-    --text: #e8e8f0;
-    --muted: rgba(232,232,240,0.45);
-    --success: #4af0a0;
-    --radius: 16px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; min-height: 100vh; }
-  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0;
-    background: radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.6) 0%, transparent 100%),
-      radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,.4) 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 50% 60%, rgba(255,255,255,.5) 0%, transparent 100%),
-      radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,.3) 0%, transparent 100%),
-      radial-gradient(1px 1px at 90% 70%, rgba(255,255,255,.4) 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 75% 45%, rgba(255,255,255,.4) 0%, transparent 100%); }
-  .page { position: relative; z-index: 1; }
-  .hero { text-align: center; padding: 72px 24px 48px; max-width: 700px; margin: 0 auto; }
-  .hero-label { font-size: 11px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 32px; }
-  .hero h1 { font-size: clamp(48px, 8vw, 88px); font-weight: 800; line-height: 1.05; color: #d8d0ff; margin-bottom: 32px; }
-  .hero-sub { color: var(--muted); font-size: 16px; line-height: 1.7; margin-bottom: 8px; }
-  .key-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 700px; margin: 48px auto 0; padding: 0 24px; }
-  @media(max-width:520px){ .key-cards { grid-template-columns: 1fr; } }
-  .key-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; text-align: left; transition: border-color .2s; }
-  .key-card.premium { border-color: rgba(122,212,255,.2); }
-  .key-card:hover { border-color: rgba(255,255,255,.15); }
-  .key-card-icon { font-size: 32px; margin-bottom: 16px; display: block; }
-  .key-card-badge { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
-  .free-badge { color: var(--gold); }
-  .premium-badge { color: var(--premium); }
-  .key-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
-  .key-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
-  .stats { display: flex; justify-content: center; gap: 48px; margin: 64px auto; padding: 0 24px; max-width: 600px; }
-  .stat-val { font-size: 32px; font-weight: 800; color: var(--text); letter-spacing: -1px; }
-  .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
-  #auth-section { max-width: 480px; margin: 0 auto 80px; padding: 0 24px; }
-  .auth-tabs { display: flex; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
-  .auth-tab { flex: 1; padding: 14px; background: none; border: none; color: var(--muted); font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s; }
-  .auth-tab.active { background: var(--accent); color: #fff; }
-  .auth-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; }
-  .auth-panel h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-  .auth-panel p { font-size: 14px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
-  .key-display { display: none; background: rgba(124,106,255,.12); border: 1px solid rgba(124,106,255,.3); border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center; }
-  .key-display.visible { display: block; }
-  .key-display-label { font-size: 11px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
-  .key-value { font-size: 22px; font-weight: 800; font-family: 'Courier New', monospace; color: #fff; letter-spacing: 2px; margin-bottom: 16px; word-break: break-all; }
-  .key-warning { font-size: 12px; color: var(--gold); background: rgba(245,200,66,.08); border: 1px solid rgba(245,200,66,.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; line-height: 1.5; }
-  .key-actions { display: flex; gap: 10px; }
-  .input-group { margin-bottom: 20px; }
-  .input-group label { display: block; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
-  .input-group input { width: 100%; background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; color: var(--text); font-size: 16px; font-family: 'Courier New', monospace; letter-spacing: 1px; outline: none; transition: border-color .2s; text-transform: uppercase; }
-  .input-group input:focus { border-color: var(--accent); }
-  .input-group input::placeholder { color: var(--muted); text-transform: none; font-size: 14px; }
-  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 24px; border-radius: 10px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .2s; }
-  .btn-primary { background: var(--accent); color: #fff; width: 100%; }
-  .btn-primary:hover { background: #6a58f0; transform: translateY(-1px); }
-  .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-  .btn-ghost { background: rgba(255,255,255,.06); color: var(--text); flex: 1; font-size: 13px; padding: 11px; }
-  .btn-ghost:hover { background: rgba(255,255,255,.1); }
-  .btn-success { background: var(--success); color: #0a1a14; flex: 1; font-size: 13px; padding: 11px; }
-  .status-msg { display: none; padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-bottom: 16px; line-height: 1.5; }
-  .status-msg.error { display: block; background: rgba(255,77,109,.1); border: 1px solid rgba(255,77,109,.3); color: #ff8fa3; }
-  .status-msg.success { display: block; background: rgba(74,240,160,.1); border: 1px solid rgba(74,240,160,.3); color: var(--success); }
-  .status-msg.loading { display: block; background: rgba(124,106,255,.1); border: 1px solid rgba(124,106,255,.2); color: var(--accent); }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.2); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
-  .saved-key-hint { display: none; background: rgba(74,240,160,.06); border: 1px solid rgba(74,240,160,.2); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; font-size: 13px; color: var(--success); }
-  .saved-key-hint.visible { display: flex; align-items: center; gap: 12px; }
-  .saved-key-hint .key-short { font-family: monospace; font-weight: 700; }
+:root{--bg:#080c18;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#7c6aff;--gold:#f5c842;--premium:#7ad4ff;--text:#e8e8f0;--muted:rgba(232,232,240,0.45);--success:#4af0a0;--radius:16px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+/* Stars */
+.star-field{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.star{position:absolute;background:#fff;border-radius:50%;}
+@keyframes twinkle{0%,100%{opacity:.1;transform:scale(1);}50%{opacity:.9;transform:scale(1.4);}}
+@keyframes twinkle2{0%,100%{opacity:.05;transform:scale(1);}60%{opacity:.7;transform:scale(1.2);}}
+/* Ambient */
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;
+background:radial-gradient(ellipse 70% 55% at 25% 15%,rgba(124,106,255,.13) 0%,transparent 60%),
+radial-gradient(ellipse 50% 40% at 80% 85%,rgba(122,212,255,.09) 0%,transparent 60%);}
+@keyframes ambientPulse{0%,100%{opacity:.7;}50%{opacity:1;}}
+.ambient{animation:ambientPulse 10s ease-in-out infinite;}
+/* Page */
+.page{position:relative;z-index:1;}
+/* Hero */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+.hero{text-align:center;padding:88px 24px 48px;max-width:700px;margin:0 auto;}
+.hero-label{font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:32px;animation:fadeUp .6s ease both;}
+.hero h1{font-size:clamp(48px,8vw,88px);font-weight:800;line-height:1.05;
+background:linear-gradient(135deg,#d8d0ff 0%,#a89cff 45%,#7ad4ff 100%);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+margin-bottom:32px;animation:fadeUp .6s .1s ease both;}
+.hero-sub{color:var(--muted);font-size:16px;line-height:1.7;animation:fadeUp .6s .2s ease both;}
+.hero-tagline{color:rgba(232,232,240,.72);font-size:15px;margin-top:10px;animation:fadeUp .6s .3s ease both;}
+/* Auth trigger */
+.auth-trigger{margin-top:32px;animation:fadeUp .6s .4s ease both;}
+.auth-trigger-btn{background:rgba(124,106,255,.12);border:1px solid rgba(124,106,255,.25);color:var(--text);
+font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:10px;
+padding:12px 22px;border-radius:100px;transition:all .25s;}
+.auth-trigger-btn:hover{background:rgba(124,106,255,.22);border-color:rgba(124,106,255,.45);transform:translateY(-1px);}
+.auth-trigger-btn .arrow{transition:transform .3s;font-style:normal;font-size:16px;}
+.auth-trigger-btn.open .arrow{transform:rotate(90deg);}
+/* Slide panel */
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px);max-height:0;}to{opacity:1;transform:translateY(0);max-height:220px;}}
+.login-slide{max-width:440px;margin:14px auto 0;overflow:hidden;display:none;}
+.login-slide.open{display:block;animation:slideDown .35s cubic-bezier(.16,1,.3,1) both;}
+.login-slide-inner{background:rgba(255,255,255,.04);border:1px solid rgba(124,106,255,.2);
+border-radius:var(--radius);padding:22px;backdrop-filter:blur(12px);}
+.slide-label{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.key-row{display:flex;gap:10px;}
+.key-row input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:10px;
+padding:13px 16px;color:var(--text);font-size:15px;font-family:'Courier New',monospace;letter-spacing:1px;
+outline:none;transition:border-color .2s;text-transform:uppercase;}
+.key-row input:focus{border-color:var(--accent);background:rgba(124,106,255,.08);}
+.key-row input::placeholder{color:var(--muted);text-transform:none;font-family:inherit;font-size:14px;letter-spacing:0;}
+.btn-enter{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px 20px;
+font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.btn-enter:hover{background:#6a58f0;}
+.btn-enter:disabled{opacity:.5;cursor:not-allowed;}
+.slide-status{margin-top:10px;font-size:13px;padding:10px 14px;border-radius:8px;display:none;}
+.slide-status.err{display:block;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);color:#ff8fa3;}
+.slide-status.ok{display:block;background:rgba(74,240,160,.1);border:1px solid rgba(74,240,160,.3);color:var(--success);}
+.slide-status.load{display:block;background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.2);color:var(--accent);}
+/* Key cards */
+.key-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:700px;margin:56px auto 0;padding:0 24px;animation:fadeUp .6s .5s ease both;}
+@media(max-width:520px){.key-cards{grid-template-columns:1fr;}}
+.key-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+padding:32px 28px;text-align:left;cursor:pointer;position:relative;overflow:hidden;
+transition:border-color .25s,transform .25s,box-shadow .25s;}
+.key-card::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;
+background:radial-gradient(ellipse at 50% 0%,rgba(124,106,255,.13) 0%,transparent 70%);}
+.key-card.premium::after{background:radial-gradient(ellipse at 50% 0%,rgba(122,212,255,.11) 0%,transparent 70%);}
+.key-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4);}
+.key-card:hover::after{opacity:1;}
+.key-card:hover{border-color:rgba(255,255,255,.18);}
+.key-card.premium{border-color:rgba(122,212,255,.2);}
+.key-card.premium:hover{border-color:rgba(122,212,255,.45);}
+.key-card-icon{font-size:32px;margin-bottom:18px;display:block;}
+.badge{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.free-badge{color:var(--gold);}
+.premium-badge{color:var(--premium);}
+.key-card h3{font-size:20px;font-weight:700;margin-bottom:10px;}
+.key-card p{font-size:14px;color:var(--muted);line-height:1.6;}
+.card-cta{margin-top:20px;font-size:13px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:6px;}
+.key-card.premium .card-cta{color:var(--premium);}
+/* Stats */
+.stats{display:flex;justify-content:center;gap:48px;margin:64px auto 80px;padding:0 24px;max-width:600px;animation:fadeUp .6s .6s ease both;}
+.stat-val{font-size:32px;font-weight:800;color:var(--text);letter-spacing:-1px;}
+.stat-label{font-size:13px;color:var(--muted);margin-top:4px;}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(8,12,24,.88);backdrop-filter:blur(10px);
+z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;
+opacity:0;pointer-events:none;transition:opacity .3s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+@keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(12px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-box{background:#0d1225;border:1px solid var(--border);border-radius:22px;padding:40px;
+max-width:440px;width:100%;position:relative;animation:modalIn .4s cubic-bezier(.16,1,.3,1) both;}
+.modal-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.06);border:none;
+border-radius:8px;color:var(--muted);cursor:pointer;padding:8px 11px;font-size:18px;line-height:1;transition:all .2s;}
+.modal-close:hover{background:rgba(255,255,255,.12);color:var(--text);}
+.modal-badge{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+.modal-box h2{font-size:24px;font-weight:800;margin-bottom:8px;}
+.modal-desc{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:24px;}
+.modal-status{padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:18px;display:none;line-height:1.5;}
+.modal-status.load{display:block;background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.2);color:var(--accent);}
+.modal-status.err{display:block;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);color:#ff8fa3;}
+.key-reveal{display:none;background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.25);
+border-radius:14px;padding:24px;text-align:center;margin-bottom:20px;}
+.key-reveal.vis{display:block;}
+.key-reveal.prem{background:rgba(122,212,255,.08);border-color:rgba(122,212,255,.25);}
+.kr-label{font-size:11px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:14px;}
+.key-reveal.prem .kr-label{color:var(--premium);}
+.kr-value{font-size:20px;font-weight:800;font-family:'Courier New',monospace;color:#fff;letter-spacing:3px;margin-bottom:14px;}
+.kr-warn{font-size:12px;color:var(--gold);background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.2);
+border-radius:8px;padding:10px 14px;margin-bottom:18px;line-height:1.5;}
+.kr-acts{display:flex;gap:8px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;
+border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-primary{background:var(--accent);color:#fff;width:100%;}
+.btn-primary:hover{background:#6a58f0;transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-prem{background:rgba(122,212,255,.12);color:var(--premium);border:1px solid rgba(122,212,255,.28);width:100%;}
+.btn-prem:hover{background:rgba(122,212,255,.22);transform:translateY(-1px);}
+.btn-prem:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-sm{background:rgba(255,255,255,.07);color:var(--text);flex:1;font-size:13px;padding:11px;}
+.btn-sm:hover{background:rgba(255,255,255,.12);}
+.btn-go{background:var(--success);color:#0a1a14;flex:1;font-size:13px;padding:11px;font-weight:700;}
+.btn-go:hover{background:#3de090;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:rgba(124,106,255,.92);
+color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;transition:opacity .3s;}
 </style>
 </head>
 <body>
-<div class="stars"></div>
+<div class="ambient"></div>
+<div class="star-field" id="sf"></div>
 <div class="page">
   <section class="hero">
     <div class="hero-label">CubeWorld · Digital Land Protocol</div>
     <h1>Your Digital Universe</h1>
     <p class="hero-sub">Никакой почты. Никакого телефона. Никакого IP.</p>
     <p class="hero-sub">Только ключ — он и есть ты.</p>
-    <p class="hero-sub" style="margin-top:8px">Временные зашифрованные пространства в трёхмерном мире.<br>Каждый куб — это земля. Твоя.</p>
+    <p class="hero-tagline">Каждый куб — это земля. Твоя.</p>
+    <div class="auth-trigger">
+      <button class="auth-trigger-btn" id="auth-btn" onclick="toggleLogin()">
+        <span>🔐</span><span>Авторизация по ключу</span><span class="arrow">›</span>
+      </button>
+    </div>
+    <div class="login-slide" id="login-slide">
+      <div class="login-slide-inner">
+        <div class="slide-label">Введи свой CUBE-ключ</div>
+        <div class="key-row">
+          <input type="text" id="key-input" placeholder="CUBE-XXXX-XXXX-XXXX" maxlength="19"
+            oninput="fmtKey(this)" onkeydown="if(event.key==='Enter')doLogin()" autocomplete="off" spellcheck="false">
+          <button class="btn-enter" id="btn-login" onclick="doLogin()">Войти →</button>
+        </div>
+        <div class="slide-status" id="login-status"></div>
+      </div>
+    </div>
   </section>
   <div class="key-cards">
-    <div class="key-card">
+    <div class="key-card" onclick="openModal('free')">
       <span class="key-card-icon">🗝️</span>
-      <div class="key-card-badge free-badge">Free Key</div>
+      <div class="badge free-badge">Free Key</div>
       <h3>Базовый доступ</h3>
       <p>Чаты · Лента · Публичные кубы · 3 группы</p>
+      <div class="card-cta"><span>Получить ключ</span><span>→</span></div>
     </div>
-    <div class="key-card premium">
+    <div class="key-card premium" onclick="openModal('premium')">
       <span class="key-card-icon">💎</span>
-      <div class="key-card-badge premium-badge">Premium Key</div>
+      <div class="badge premium-badge">Premium Key</div>
       <h3>Полный доступ</h3>
       <p>E2E шифрование · Безлимит · Сигналы · Файлы · Видео</p>
+      <div class="card-cta"><span>Получить ключ</span><span>→</span></div>
     </div>
   </div>
   <div class="stats">
-    <div><div class="stat-val" id="stat-cubes">—</div><div class="stat-label">активных кубов</div></div>
-    <div><div class="stat-val" id="stat-online">—</div><div class="stat-label">онлайн</div></div>
+    <div><div class="stat-val" id="sc">—</div><div class="stat-label">активных кубов</div></div>
+    <div><div class="stat-val" id="so">—</div><div class="stat-label">онлайн</div></div>
     <div><div class="stat-val">2.4M</div><div class="stat-label">сообщений/день</div></div>
   </div>
-  <section id="auth-section">
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchTab('create')">Создать ключ</button>
-      <button class="auth-tab" onclick="switchTab('login')">Войти по ключу</button>
-    </div>
-    <div class="auth-panel" id="tab-create">
-      <h2>Создать аккаунт</h2>
-      <p>Мы сгенерируем уникальный CUBE-ключ. Это твой единственный способ войти — сохрани его в надёжном месте.</p>
-      <div class="status-msg" id="create-status"></div>
-      <div class="key-display" id="key-display-box">
-        <div class="key-display-label">Твой CUBE-ключ</div>
-        <div class="key-value" id="key-display-value">CUBE-XXXX-XXXX-XXXX</div>
-        <div class="key-warning">⚠️ Ключ показывается только один раз. Скопируй или скачай его сейчас.</div>
-        <div class="key-actions">
-          <button class="btn btn-ghost" onclick="copyKey()">📋 Копировать</button>
-          <button class="btn btn-ghost" onclick="downloadKey()">💾 Скачать</button>
-          <button class="btn btn-success" onclick="enterWorld()">Войти →</button>
-        </div>
+</div>
+<!-- Modal -->
+<div class="modal-overlay" id="mo" onclick="closeOut(event)">
+  <div class="modal-box" id="mb">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-badge" id="m-badge"></div>
+    <h2 id="m-title"></h2>
+    <p class="modal-desc" id="m-desc"></p>
+    <div class="modal-status" id="m-status"></div>
+    <div class="key-reveal" id="m-reveal">
+      <div class="kr-label">Твой CUBE-ключ</div>
+      <div class="kr-value" id="m-key">CUBE-XXXX-XXXX-XXXX</div>
+      <div class="kr-warn">⚠️ Ключ показывается только один раз. Сохрани его прямо сейчас.</div>
+      <div class="kr-acts">
+        <button class="btn btn-sm" onclick="cpKey()">📋 Копировать</button>
+        <button class="btn btn-sm" onclick="dlKey()">💾 Скачать</button>
+        <button class="btn btn-go" onclick="goWorld()">Войти →</button>
       </div>
-      <button class="btn btn-primary" id="btn-generate" onclick="generateKey()">✨ Сгенерировать ключ</button>
     </div>
-    <div class="auth-panel" id="tab-login" style="display:none">
-      <h2>Войти по ключу</h2>
-      <p>Введи свой CUBE-ключ, чтобы вернуться в свой аккаунт.</p>
-      <div class="saved-key-hint" id="saved-key-hint">
-        <span>🗝️</span>
-        <div>Найден сохранённый ключ: <span class="key-short" id="saved-key-short"></span><br><small style="color:var(--muted)">Войти автоматически?</small></div>
-        <button class="btn btn-ghost" style="flex:0;padding:8px 14px;font-size:12px" onclick="autoLogin()">Войти</button>
-      </div>
-      <div class="status-msg" id="login-status"></div>
-      <div class="input-group">
-        <label>CUBE-ключ</label>
-        <input type="text" id="key-input" placeholder="CUBE-XXXX-XXXX-XXXX" maxlength="19" oninput="formatKeyInput(this)" onkeydown="if(event.key==='Enter')loginKey()">
-      </div>
-      <button class="btn btn-primary" id="btn-login" onclick="loginKey()">Войти →</button>
-    </div>
-  </section>
+    <button class="btn" id="m-gen" onclick="genKey()"></button>
+  </div>
 </div>
 <script>
-const API = 'https://cubeworld-backend.onrender.com';
-function switchTab(tab) {
-  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(i===0)===(tab==='create')));
-  document.getElementById('tab-create').style.display = tab==='create'?'block':'none';
-  document.getElementById('tab-login').style.display  = tab==='login'?'block':'none';
-  if(tab==='login') checkSavedKey();
-}
-function formatKeyInput(el) {
-  let v = el.value.replace(/[^A-Z0-9]/gi,'').toUpperCase();
-  const p=[v.slice(0,4)];
-  if(v.length>4)p.push(v.slice(4,8));
-  if(v.length>8)p.push(v.slice(8,12));
-  if(v.length>12)p.push(v.slice(12,16));
-  el.value='CUBE-'+p.filter(Boolean).join('-');
-  if(el.value.length<5)el.value='CUBE-';
-}
-let generatedKey=null,sessionData=null;
-async function generateKey() {
-  const btn=document.getElementById('btn-generate'),status=document.getElementById('create-status'),box=document.getElementById('key-display-box');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Генерируем…';
-  status.className='status-msg loading';status.textContent='Создаём аккаунт…';box.classList.remove('visible');
-  try {
-    const res=await fetch(API+'/auth/generate',{method:'POST'});
-    const data=await res.json();
-    if(!res.ok)throw new Error(data.detail||'Ошибка');
-    generatedKey=data.key;sessionData=data;
-    document.getElementById('key-display-value').textContent=data.key;
-    box.classList.add('visible');
-    status.className='status-msg success';status.textContent='✅ Аккаунт создан! Начислено '+data.cube_balance+' CUBE.';
-    btn.innerHTML='🔄 Создать новый ключ';btn.disabled=false;
-    localStorage.setItem('cw_key',data.key);
-    localStorage.setItem('cw_access_token',data.access_token);
-    localStorage.setItem('cw_refresh_token',data.refresh_token);
-    localStorage.setItem('cw_key_type',data.key_type);
-  } catch(e) {
-    status.className='status-msg error';status.textContent='❌ '+e.message;
-    btn.innerHTML='✨ Сгенерировать ключ';btn.disabled=false;
-  }
-}
-function copyKey(){if(!generatedKey)return;navigator.clipboard.writeText(generatedKey).then(()=>showToast('Ключ скопирован!'));}
-function downloadKey(){
-  if(!generatedKey)return;
-  const content='CubeWorld — Твой CUBE-ключ
-========================
-
-'+generatedKey+'
-
-ВАЖНО: единственный способ войти в аккаунт.
-Ната создания: '+new Date().toLocaleString('ru');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'}));a.download='cube-key.txt';a.click();
-}
-function enterWorld(){if(sessionData)window.location.href='world.html';}
-async function loginKey(){
-  const key=document.getElementById('key-input').value.trim().toUpperCase();
-  const btn=document.getElementById('btn-login'),status=document.getElementById('login-status');
-  if(key.length<14){status.className='status-msg error';status.textContent='❌ Введи полный ключ CUBE-XXXX-XXXX-XXXX';return;}
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Проверяем…';
-  status.className='status-msg loading';status.textContent='Проверяем ключ…';
-  try {
-    const res=await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});
-    const data=await res.json();
-    if(!res.ok)throw new Error(data.detail||'Ключ не найден');
-    localStorage.setItem('cw_key',key);localStorage.setItem('cw_access_token',data.access_token);
-    localStorage.setItem('cw_refresh_token',data.refresh_token);localStorage.setItem('cw_key_type',data.key_type);
-    status.className='status-msg success';status.textContent='✅ Добро пожаловать! Баланс: '+data.cube_balance+' CUBE';
-    setTimeout(()=>window.location.href='world.html',800);
-  } catch(e){status.className='status-msg error';status.textContent='❌ '+e.message;btn.innerHTML='Войти →';btn.disabled=false;}
-}
-function checkSavedKey(){
-  const saved=localStorage.getItem('cw_key');if(!saved)return;
-  const hint=document.getElementById('saved-key-hint');
-  document.getElementById('saved-key-short').textContent=saved.slice(0,9)+'-****';
-  hint.classList.add('visible');
-}
-async function autoLogin(){const key=localStorage.getItem('cw_key');if(!key)return;document.getElementById('key-input').value=key;await loginKey();}
-function showToast(msg){
-  const t=document.createElement('div');t.textContent=msg;
-  Object.assign(t.style,{position:'fixed',bottom:'32px',left:'50%',transform:'translateX(-50%)',background:'rgba(124,106,255,.9)',color:'#fff',padding:'12px 24px',borderRadius:'12px',fontSize:'14px',fontWeight:'600',zIndex:'9999',transition:'opacity .3s'});
-  document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},2000);
-}
-async function loadStats(){
-  try{const res=await fetch(API+'/stats');const data=await res.json();const fmt=n=>n>=1000?(n/1000).toFixed(1)+'K':n;
-  document.getElementById('stat-cubes').textContent=fmt(data.total_users||0);
-  document.getElementById('stat-online').textContent=fmt(data.online_users||0);}catch{}
-}
-async function checkSession(){
-  const token=localStorage.getItem('cw_access_token');if(!token)return;
-  try{const res=await fetch(API+'/me',{headers:{Authorization:'Bearer '+token}});if(res.ok)window.location.href='world.html';}catch{}
-}
+const API='https://cubeworld-backend.onrender.com';
+// Stars
+(()=>{const f=document.getElementById('sf');for(let i=0;i<90;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2+.5,x=Math.random()*100,y=Math.random()*100,dl=Math.random()*7,dr=3+Math.random()*5,an=i%3===0?'twinkle2':'twinkle';s.style.cssText=`width:${sz}px;height:${sz}px;left:${x}%;top:${y}%;opacity:${.05+Math.random()*.3};animation:${an} ${dr}s ${dl}s ease-in-out infinite;`;f.appendChild(s);}})();
+// Login slide
+let lOpen=false;
+function toggleLogin(){lOpen=!lOpen;const s=document.getElementById('login-slide'),b=document.getElementById('auth-btn');b.classList.toggle('open',lOpen);if(lOpen){s.classList.add('open');setTimeout(()=>document.getElementById('key-input').focus(),350);const sv=localStorage.getItem('cw_key');if(sv)document.getElementById('key-input').value=sv;}else{s.classList.remove('open');}}
+function fmtKey(el){let v=el.value.replace(/[^A-Z0-9]/gi,'').toUpperCase();const p=[v.slice(0,4),v.slice(4,8),v.slice(8,12),v.slice(12,16)].filter(Boolean);el.value='CUBE-'+p.join('-');if(el.value.length<5)el.value='CUBE-';}
+async function doLogin(){const key=document.getElementById('key-input').value.trim().toUpperCase();const btn=document.getElementById('btn-login'),st=document.getElementById('login-status');if(key.length<19){st.className='slide-status err';st.textContent='❌ Введи полный ключ CUBE-XXXX-XXXX-XXXX';return;}btn.disabled=true;btn.innerHTML='<span class="spin"></span>';st.className='slide-status load';st.textContent='Проверяем ключ…';try{const r=await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Ключ не найден');localStorage.setItem('cw_key',key);localStorage.setItem('cw_access_token',d.access_token);localStorage.setItem('cw_refresh_token',d.refresh_token);localStorage.setItem('cw_key_type',d.key_type);st.className='slide-status ok';st.textContent='✅ '+(d.key_type==='premium'?'💎 Premium':'🗝️ Free')+' · '+d.cube_balance+' CUBE';setTimeout(()=>location.href='world.html',700);}catch(e){st.className='slide-status err';st.textContent='❌ '+e.message;btn.innerHTML='Войти →';btn.disabled=false;}}
+// Modal
+let tier='free',gKey=null,sData=null;
+function openModal(t){tier=t;gKey=null;sData=null;const rv=document.getElementById('m-reveal'),st=document.getElementById('m-status'),bn=document.getElementById('m-gen'),mb=document.getElementById('mb');rv.className='key-reveal'+(t==='premium'?' prem':'');st.className='modal-status';st.textContent='';if(t==='premium'){document.getElementById('m-badge').style.color='var(--premium)';document.getElementById('m-badge').textContent='💎 PREMIUM KEY';document.getElementById('m-title').textContent='Полный доступ';document.getElementById('m-desc').textContent='E2E шифрование, безлимит, торговые сигналы, файлы и видео. Ключ создаётся мгновенно.';bn.className='btn btn-prem';bn.textContent='💎 Получить Premium-ключ';mb.style.borderColor='rgba(122,212,255,.28)';}else{document.getElementById('m-badge').style.color='var(--gold)';document.getElementById('m-badge').textContent='🗝️ FREE KEY';document.getElementById('m-title').textContent='Базовый доступ';document.getElementById('m-desc').textContent='Чаты, лента и публичные кубы. Ключ создаётся мгновенно — сохрани его в надёжном месте.';bn.className='btn btn-primary';bn.textContent='✨ Сгенерировать ключ';mb.style.borderColor='var(--border)';}document.getElementById('mo').classList.add('open');document.body.style.overflow='hidden';}
+function closeModal(){document.getElementById('mo').classList.remove('open');document.body.style.overflow='';}
+function closeOut(e){if(e.target===document.getElementById('mo'))closeModal();}
+async function genKey(){const bn=document.getElementById('m-gen'),st=document.getElementById('m-status'),rv=document.getElementById('m-reveal');bn.disabled=true;bn.innerHTML='<span class="spin"></span> Генерируем…';st.className='modal-status load';st.textContent='Создаём аккаунт…';rv.className='key-reveal'+(tier==='premium'?' prem':'');try{const r=await fetch(API+'/auth/generate',{method:'POST'});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Ошибка сервера');gKey=d.key;sData=d;document.getElementById('m-key').textContent=d.key;rv.classList.add('vis');st.className='modal-status';localStorage.setItem('cw_key',d.key);localStorage.setItem('cw_access_token',d.access_token);localStorage.setItem('cw_refresh_token',d.refresh_token);localStorage.setItem('cw_key_type',d.key_type);bn.innerHTML=tier==='premium'?'💎 Новый ключ':'🔄 Новый ключ';bn.disabled=false;}catch(e){st.className='modal-status err';st.textContent='❌ '+e.message;bn.innerHTML=tier==='premium'?'💎 Получить Premium-ключ':'✨ Сгенерировать ключ';bn.disabled=false;}}
+function cpKey(){if(!gKey)return;navigator.clipboard.writeText(gKey).then(()=>toast('Ключ скопирован!'));}
+function dlKey(){if(!gKey)return;const t=tier==='premium'?'PREMIUM KEY':'FREE KEY';const c='CubeWorld — Твой CUBE-ключ\n'+'='.repeat(30)+'\n\n'+gKey+'\n\nТип: '+t+'\nСоздан: '+new Date().toLocaleString('ru')+'\n\nВАЖНО: единственный способ войти в аккаунт.';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:'text/plain'}));a.download='cube-key.txt';a.click();}
+function goWorld(){if(sData)location.href='world.html';}
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},2000);}
+async function loadStats(){try{const r=await fetch(API+'/stats');const d=await r.json();const f=n=>n>=1000?(n/1000).toFixed(1)+'K':n;document.getElementById('sc').textContent=f(d.total_users||0);document.getElementById('so').textContent=f(d.online_users||0);}catch{}}
+async function checkSession(){const t=localStorage.getItem('cw_access_token');if(!t)return;try{const r=await fetch(API+'/me',{headers:{Authorization:'Bearer '+t}});if(r.ok)location.href='world.html';}catch{}}
 checkSession();loadStats();setInterval(loadStats,30000);
 </script>
 </body>
