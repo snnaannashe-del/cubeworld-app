@@ -32,8 +32,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .btn-cta{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:16px 36px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
 .btn-cta:hover{background:#6a58f0;transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,106,255,.4);}
 /* Key cards */
-.kc{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:700px;margin:31px auto 0;padding:0 24px;}
-@media(max-width:520px){.kc{grid-template-columns:1fr;}}
+.kc{display:flex;flex-direction:column;gap:16px;max-width:520px;margin:40px auto 0;padding:0 24px;}
+
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;text-align:left;cursor:pointer;transition:border-color .2s,transform .2s;}
 .card.pr{border-color:rgba(122,212,255,.2);}
 .card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-2px);}
@@ -42,7 +42,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .cbadge.f{color:var(--gold);}
 .cbadge.p{color:var(--premium);}
 .card h3{font-size:20px;font-weight:700;margin-bottom:10px;}
-.card p{font-size:14px;color:var(--muted);line-height:1.6;}
+.card p{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px;}
+.card-link{font-size:14px;font-weight:600;color:var(--accent);text-decoration:none;cursor:pointer;}
+.card-link:hover{color:#a090ff;}
 /* Stats */
 .stats{display:flex;justify-content:center;gap:48px;margin:64px auto;padding:0 24px;max-width:600px;}
 .sv{font-size:32px;font-weight:800;color:var(--text);letter-spacing:-1px;}
@@ -117,21 +119,23 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <p class="hero-sub" id="el-s1">No email. No phone. No IP.</p>
     <p class="hero-sub" id="el-s2">Only a key &mdash; that is you.</p>
     <p class="hero-tag" id="el-tag">Every cube is land. Yours.</p>
-    <button class="btn-cta" id="el-ab" onclick="document.getElementById('auth').scrollIntoView({behavior:'smooth'})">Key Authorization</button>
+    <button class="btn-cta" id="el-ab" onclick="document.getElementById('auth').scrollIntoView({behavior:'smooth'})">&#128274; Key Authorization &#8250;</button>
   </section>
 
   <div class="kc">
     <div class="card" onclick="switchTab('create');document.getElementById('auth').scrollIntoView({behavior:'smooth'})">
       <span class="ci">&#128273;</span>
       <div class="cbadge f">FREE KEY</div>
-      <h3 id="el-ft">Free Key</h3>
-      <p id="el-fd">No registration. No email. Just a key.</p>
+      <h3 id="el-ft">Basic Access</h3>
+      <p id="el-fd">Chats &middot; Feed &middot; Public cubes &middot; 3 groups</p>
+      <span class="card-link" onclick="event.stopPropagation();switchTab('create');document.getElementById('auth').scrollIntoView({behavior:'smooth'})">Get key &#8594;</span>
     </div>
     <div class="card pr" onclick="switchTab('create');document.getElementById('auth').scrollIntoView({behavior:'smooth'})">
       <span class="ci">&#128142;</span>
       <div class="cbadge p">PREMIUM KEY</div>
-      <h3 id="el-pt">Premium Key</h3>
-      <p id="el-pd">Extended space. Priority. More cubes.</p>
+      <h3 id="el-pt">Full Access</h3>
+      <p id="el-pd">E2E encryption &middot; Unlimited &middot; Signals &middot; Files &middot; Video</p>
+      <span class="card-link" onclick="event.stopPropagation();switchTab('create');document.getElementById('auth').scrollIntoView({behavior:'smooth'})">Get key &#8594;</span>
     </div>
   </div>
 
@@ -252,7 +256,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     "sl":"Clave CUBE","eb":"Entrar",
     "sf":"Clave guardada:","sa":"u¿Iniciar sesión automáticamente?","al":"Entrar"
   },
-  "zh"z:{
+  "zh":{
     "lbl":"CubeWorld · 数字土圳协议","h1":"您的数字殇宙",
     "s1":"无邀窰。无电话。无IP。","s2":"只有密鑰 —!那山是你。",
     "tag":"每个��杗块都是地块。属与你的。","ab":"密鑰授靃",
