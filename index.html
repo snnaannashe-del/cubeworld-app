@@ -57,14 +57,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .land-title{font-size:clamp(44px,7vw,82px);font-weight:900;line-height:1.0;margin-bottom:14px;background:linear-gradient(135deg,#fff 0%,#c4c4e4 45%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .land-sub{font-size:15px;color:var(--text2);line-height:1.75;margin-bottom:16px;max-width:500px;margin-left:auto;margin-right:auto}
 .land-anon{display:inline-flex;align-items:center;gap:7px;font-size:12px;padding:6px 14px;border-radius:20px;border:1px solid rgba(74,222,128,.25);color:var(--green);background:rgba(74,222,128,.06);margin-bottom:36px}
-.land-manifesto{max-width:780px;margin:0 auto 48px;text-align:center}
-.lm-line{margin:0 0 4px;opacity:0;animation:lm-fade 1s forwards;font-size:clamp(32px,5.5vw,68px);font-weight:900;line-height:1.12;letter-spacing:-.01em}
-.lm-line1{background:linear-gradient(135deg,#fff 30%,rgba(196,196,228,.7) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation-delay:.15s}
-.lm-line2{background:linear-gradient(135deg,#fff 20%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation-delay:.55s}
-.lm-line3{font-size:clamp(22px,3.5vw,44px);font-weight:700;color:rgba(196,196,228,.55);line-height:1.25;animation-delay:.95s}
-.lm-line4{background:linear-gradient(135deg,var(--accent) 0%,#a78bfa 60%,#fff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:8px;animation-delay:1.45s}
-.lm-line4 em{font-style:italic}
-@keyframes lm-fade{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.land-manifesto{max-width:580px;margin:0 auto 44px;text-align:center}
+.lm-line{display:block;opacity:0;animation:lm-fade .8s forwards;font-size:clamp(14px,1.6vw,18px);color:rgba(196,196,228,.5);line-height:1.75;font-weight:400;letter-spacing:.01em}
+.lm-line1{margin-bottom:8px;animation-delay:.1s}
+.lm-line2{animation-delay:.5s}
+@keyframes lm-fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 .key-cards{display:flex;gap:16px;justify-content:center;margin-bottom:44px;flex-wrap:wrap}
 .key-card{flex:1;min-width:200px;max-width:250px;padding:22px 18px;border-radius:14px;cursor:pointer;transition:all .2s;text-align:left;border:1px solid}
 .key-card:hover{transform:translateY(-4px)}
@@ -982,13 +979,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 <section class="view active" id="v-land">
   <canvas id="land-canvas"></canvas>
   <div class="land-content">
-    <div class="land-logo">CubeWorld · v2.0 · Digital Land Protocol</div>
+    <div class="land-logo">CubeWorld · Digital Land Protocol</div>
+    <h1 class="land-title">Your Digital<br>Universe</h1>
 
     <div class="land-manifesto">
-      <p class="lm-line lm-line1">Никакой почты. Никакого телефона. Никакого IP.</p>
-      <p class="lm-line lm-line2">Только ключ — он и есть ты.</p>
-      <p class="lm-line lm-line3">Временные зашифрованные пространства<br>в трёхмерном мире.</p>
-      <p class="lm-line lm-line4">Каждый куб — это земля. <em>Твоя.</em></p>
+      <p class="lm-line lm-line1">Никакой почты. Никакого телефона. Никакого IP.<br>Только ключ — он и есть ты.</p>
+      <p class="lm-line lm-line2">Временные зашифрованные пространства в трёхмерном мире.<br>Каждый куб — это земля. Твоя.</p>
     </div>
 
     <div class="key-cards">
