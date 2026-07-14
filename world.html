@@ -1005,8 +1005,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <h1 class="land-title">Your Digital<br>Universe</h1>
 
     <div class="land-manifesto">
-      <p class="lm-line lm-line1">Никакой почты. Никакого телефона. Никакого IP.<br>Только ключ — он и есть ты.</p>
-      <p class="lm-line lm-line2">Временные зашифрованные пространства в трёхмерном мире.<br>Каждый куб — это земля. Твоя.</p>
+      <p class="lm-line lm-line1">Временные зашифрованные пространства в трёхмерном мире.<br>Каждый куб — это земля. Твоя.</p>
+      <p class="lm-line lm-line2">Никакой почты. Никакого телефона. Никакого IP.<br>Только ключ — он и есть ты.</p>
     </div>
 
     <div class="key-cards">
@@ -1024,9 +1024,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       </div>
     </div>
     <div class="land-stats">
-      <div><span id="stat-cubes">1,247</span>активных кубов</div>
-      <div><span id="stat-users">8,391</span>онлайн</div>
-      <div><span id="stat-msgs">2.4M</span>сообщений/день</div>
+      <div><span id="stat-cubes">–</span>активных кубов</div>
+      <div><span id="stat-users">–</span>онлайн</div>
+      <div><span id="stat-msgs">–</span>сообщений/день</div>
     </div>
   </div>
 </section>
@@ -2019,35 +2019,43 @@ document.querySelectorAll('.modal-backdrop').forEach(b=>b.addEventListener('clic
 // ════════════════════════════════════════════════
 //  KEY GENERATION
 // ════════════════════════════════════════════════
-function startKeygen(type){
-  app.keyType=type;
-  const arr=new Uint8Array(type==='free'?12:24);
-  crypto.getRandomValues(arr);
-  const hex=Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase();
-  app.userKey=type==='free'
-    ?`CW-FREE-${hex.slice(0,4)}-${hex.slice(4,8)}-${hex.slice(8,12)}`
-    :`CW-PREM-${hex.slice(0,4)}-${hex.slice(4,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20,24)}`;
-  const p=type==='premium';
-  document.getElementById('kg-type-label').textContent=p?'PREMIUM KEY':'FREE KEY';
-  document.getElementById('kg-type-label').className='kg-type '+(p?'premium':'free');
-  document.getElementById('kg-title').textContent=p?'Твой PREMIUM-ключ готов':'Ключ сгенерирован';
-  document.getElementById('kg-display').className='key-display '+(p?'premium':'free');
-  const kv=document.getElementById('kg-key-value');
-  kv.className='key-value mono '+(p?'premium':'free');kv.textContent=app.userKey;
-  document.getElementById('kg-copy').className='key-copy';
-  const feats=p?[
-    {ok:1,t:'<b>Безлимит</b> кубов и групп'},{ok:1,t:'<b>E2E шифрование</b> всего'},
-    {ok:1,t:'Файлы до <b>2 GB</b>'},{ok:1,t:'Видео и стриминг'},
-    {ok:1,t:'<b>Сигналы</b> и трейдинг'},{ok:1,t:'Таймер до <b>7 дней</b>'},
-  ]:[
-    {ok:1,t:'До <b>3 кубов</b>'},{ok:1,t:'Текстовые чаты'},
-    {ok:0,t:'E2E — только <b>Premium</b>'},{ok:0,t:'Файлы — только <b>Premium</b>'},
-    {ok:0,t:'Сигналы — только <b>Premium</b>'},{ok:0,t:'Таймер >24ч — <b>Premium</b>'},
-  ];
-  document.getElementById('kg-features').innerHTML=feats.map(f=>`<div class="kf-item"><div class="kf-check">${f.ok?'✓':'✗'}</div><div class="kf-text" style="opacity:${f.ok?1:.45}">${f.t}</div></div>`).join('');
+async function startKeygen(type){
+  if(type==='premium'){
+    alert('Premium ключи скоро. Следи за обновлениями.'); return;
+  }
+  // Show keygen screen with loading state
+  document.getElementById('kg-type-label').textContent='FREE KEY';
+  document.getElementById('kg-type-label').className='kg-type free';
+  document.getElementById('kg-title').textContent='Генерируем ключ...';
+  document.getElementById('kg-key-value').textContent='...';
+  document.getElementById('kg-display').className='key-display free';
   showView('v-keygen');
-  // Register key with real server (fire-and-forget)
-  apiFetch('/api/key/generate', {method:'POST', body:JSON.stringify({tier:type})});
+  try{
+    var ctrl=new AbortController();
+    var tid=setTimeout(()=>{document.getElementById('kg-title').textContent='Бэкенд запускается (~30с)...';},5000);
+    const res=await fetch('https://cubeworld-backend.onrender.com/auth/generate',{method:'POST',signal:ctrl.signal});
+    clearTimeout(tid);
+    const data=await res.json();
+    if(!res.ok) throw new Error(data.detail||'Ошибка генерации');
+    // Store auth
+    localStorage.setItem('cw_key',data.key);
+    localStorage.setItem('cw_access_token',data.access_token);
+    localStorage.setItem('cw_refresh_token',data.refresh_token);
+    localStorage.setItem('cw_key_type',data.key_type);
+    app.userKey=data.key; app.keyType=data.key_type||'free';
+    // Show key
+    document.getElementById('kg-title').textContent='Ключ сгенерирован';
+    const kv=document.getElementById('kg-key-value');
+    kv.textContent=data.key; kv.className='key-value mono free';
+    const feats=[
+      {ok:1,t:'До <b>3 кубов</b>'},{ok:1,t:'Текстовые чаты'},
+      {ok:0,t:'E2E — только <b>Premium</b>'},{ok:0,t:'Файлы — только <b>Premium</b>'},
+      {ok:0,t:'Сигналы — только <b>Premium</b>'},{ok:0,t:'Таймер >24ч — <b>Premium</b>'},
+    ];
+    document.getElementById('kg-features').innerHTML=feats.map(f=>`<div class="kf-item"><div class="kf-check">${f.ok?'✓':'✗'}</div><div class="kf-text" style="opacity:${f.ok?1:.45}">${f.t}</div></div>`).join('');
+  }catch(e){
+    document.getElementById('kg-title').textContent='Ошибка: '+e.message;
+  }
 }
 function copyKey(){
   navigator.clipboard.writeText(app.userKey).then(()=>{
@@ -5099,6 +5107,19 @@ function saveUniverse(){
 // ════════════════════════════════════════════════
 //  AUTO-LOGIN: если пришли с index.html (уже есть токен)
 // ════════════════════════════════════════════════
+// ── Fetch real stats for landing ──
+(async function loadLandStats(){
+  try{
+    const r=await fetch('https://cubeworld-backend.onrender.com/stats');
+    const d=await r.json();
+    const fmt=n=>n>=1000?(n/1000).toFixed(1)+'K':String(n);
+    const sc=document.getElementById('stat-cubes');
+    const su=document.getElementById('stat-users');
+    if(sc) sc.textContent=fmt(d.total_cubes||0);
+    if(su) su.textContent=fmt(d.online_users||0);
+  }catch(e){}
+})();
+
 (function autoLogin(){
   const key = localStorage.getItem('cw_key');
   const token = localStorage.getItem('cw_access_token');
@@ -5114,6 +5135,9 @@ function saveUniverse(){
       if(me && me.id) localStorage.setItem('cw_user_id', me.id);
     }).catch(()=>{});
     setTimeout(function(){ enterWorld(); }, 0);
+  } else {
+    // No auth — redirect to landing page
+    window.location.replace('index.html');
   }
 })();
 </script>
