@@ -113,7 +113,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #world-overlay{position:absolute;inset:0;pointer-events:none}
 .world-label{position:absolute;transform:translate(-50%,-100%);pointer-events:none;text-align:center}
 .wl-inner{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:5px 9px;background:rgba(5,5,26,.85);border:1px solid var(--col,rgba(255,255,255,.08));border-radius:8px;backdrop-filter:blur(4px)}
-.wl-icon{font-size:15px;line-height:1}.wl-name{font-size:10px;font-weight:700;color:#e0e0f8;white-space:nowrap}
+.wl-icon{font-size:15px;line-height:1;user-select:none}.wl-name{font-size:10px;font-weight:700;color:#e0e0f8;white-space:nowrap;user-select:none}
 .wl-timer{font-size:9px;color:var(--col,var(--text2));font-family:'Courier New',monospace;font-weight:600}
 #world-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text3);pointer-events:none;white-space:nowrap}
 #world-fab{position:absolute;bottom:20px;right:20px;z-index:10}
@@ -1817,8 +1817,8 @@ async function syncFromBackend(){
       .map(c=>({
         id:'bc'+c.id, backendId:c.id,
         name:c.name, desc:c.description||'',
-        icon:c.icon||'📦', col:c.color||'#7c6fcd',
-        type:c.type||'public',
+        icon:c.icon||'📦', col:c.color||'#7c6fcd', colorCss:c.color||'#7c6fcd',
+        type:c.type||'public', isOwn:true,
         life:c.life_left_seconds||3600,
         x:Math.random()*80+10, y:Math.random()*70+15,
         rotX:Math.random()*360, rotY:Math.random()*360,
@@ -2096,7 +2096,7 @@ function wHex(hex){
 
 // Draw one cube object onto wCtx
 function wDrawCube(obj){
-  const c=obj.cube,{r,g,b}=wHex(c.colorCss);
+  const c=obj.cube,{r,g,b}=wHex(c.colorCss||c.col||'#7c6fcd');
   const s=obj.size/2,t=performance.now()/1000;
   const fy=Math.sin(t*obj.floatSpd+obj.floatOff)*18;
   const ry=obj.rotY,cosR=Math.cos(ry),sinR=Math.sin(ry);
@@ -2108,11 +2108,11 @@ function wDrawCube(obj){
   });
   // Update screen-space center & radius for hover detection
   const valid=proj.filter(Boolean);
-  if(valid.length){
-    obj.csx=valid.reduce((s,p)=>s+p.sx,0)/valid.length;
-    obj.csy=valid.reduce((s,p)=>s+p.sy,0)/valid.length;
-    obj.csr=valid.reduce((mx,p)=>Math.max(mx,Math.abs(p.sx-obj.csx),Math.abs(p.sy-obj.csy)),20);
-  }
+  if(valid.length===0){obj.hidden=true;return;}
+  obj.hidden=false;
+  obj.csx=valid.reduce((s,p)=>s+p.sx,0)/valid.length;
+  obj.csy=valid.reduce((s,p)=>s+p.sy,0)/valid.length;
+  obj.csr=valid.reduce((mx,p)=>Math.max(mx,Math.abs(p.sx-obj.csx),Math.abs(p.sy-obj.csy)),20);
   const hov=(wHovId===c.id);
   // Faces: vertex indices + brightness factor (top/right/front face lighter)
   const faces=[
@@ -2181,13 +2181,13 @@ function wRenderLoop(){
     const hobj=wObjects.find(o=>o.cube.id===wHovId);
     if(hobj){
       const c=hobj.cube;
-      document.getElementById('ct-inner').innerHTML=`<div class="ct-name" style="color:${c.colorCss}">${c.icon} ${c.name}</div><div class="ct-desc">${c.desc}</div><div class="ct-row"><span class="ct-timer">${fmtTime(c.life)}</span><span class="ct-type ${c.type}">${c.type==='public'?'PUBLIC':'PRIVATE'}</span></div>`;
+      document.getElementById('ct-inner').innerHTML=`<div class="ct-name" style="color:${c.colorCss||c.col||'#7c6fcd'}">${c.icon} ${c.name}</div><div class="ct-desc">${c.desc}</div><div class="ct-row"><span class="ct-timer">${fmtTime(c.life)}</span><span class="ct-type ${c.type}">${c.type==='public'?'PUBLIC':'PRIVATE'}</span></div>`;
       tt.style.display='block';
     }
   }else{tt.style.display='none';}
   // Label overlays
   wObjects.forEach(o=>{
-    if(o.cube.life<=0){if(o.el)o.el.style.display='none';return;}
+    if(o.cube.life<=0||o.hidden){if(o.el)o.el.style.display='none';return;}
     if(o.el){
       o.el.style.display='block';
       o.el.style.left=o.csx+'px';
@@ -2292,7 +2292,7 @@ async function submitCreateCube(){
   const cube={
     id:localId, backendId:null,
     name, type, life:life_hours*3600,
-    col:color, icon, desc:'Создано тобой'
+    col:color, colorCss:color, icon, desc:'Создано тобой', isOwn:true
   };
   app.cubes.push(cube);
   closeModal('modal-create-cube');
