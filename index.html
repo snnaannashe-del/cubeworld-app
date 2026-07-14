@@ -3020,20 +3020,80 @@ function renderWalletConnectors(){
     </div>`).join('');
 }
 function connectWallet(id){
-  const w=WALLET_CONNECTORS.find(x=>x.id===id); if(!w) return;
-  if(w.status==='connected'){ w.status='disconnected'; renderWalletConnectors(); showToast('🔌 '+w.name+' отключён'); return; }
-  // Simulate connection
+  const w=WALLET_CONNECTORS.find(c=>c.id===id);
+  if(!w) return;
+  if(w.status==='connected'){
+    w.status='disconnected';
+    if(app.connectedWalletId===id){
+      app.ethAddress=null; app.connectedWalletId=null;
+      localStorage.removeItem('cw_eth_address');
+      localStorage.removeItem('cw_wallet_id');
+      apiFetch('/api/wallet/link/'+app.userKey,{method:'DELETE'}).catch(()=>{});
+    }
+    renderWalletConnectors(); syncWalletUI();
+    showToast('🔌 '+w.name+' отключён'); return;
+  }
   showToast('🔗 Подключение к '+w.name+'…');
-  setTimeout(()=>{
-    w.status='connected';
-    renderWalletConnectors();
-    // Simulate receiving some balance
-    const bonus = {metamask:0.002, coinbase:0.001, binance:0.05, bybit:10, trust:0.001, phantom:0.003}[id]||0;
-    if(id==='binance'||id==='bybit'){ app.cryptoBalances.usdt+=bonus; }
-    else { app.cryptoBalances.eth+=bonus; }
-    showToast('✅ '+w.name+' подключён!');
-    renderCryptoBalances();
-  }, 1400);
+  // MetaMask / injected wallet
+  if((id==='metamask'||id==='trust'||id==='coinbase')&&window.ethereum){
+    window.ethereum.request({method:'eth_requestAccounts'}).then(accounts=>{
+      if(accounts&&accounts[0]) onWalletConnected(accounts[0],id,w.name);
+    }).catch(e=>showToast('❌ '+e.message));
+    return;
+  }
+  // WalletConnect v2 — open pairing URL (requires WALLETCONNECT_PROJECT_ID)
+  if(window.WC_PROVIDER){
+    window.WC_PROVIDER.connect({chains:[137]}).then(()=>{
+      const accs=window.WC_PROVIDER.accounts;
+      if(accs&&accs[0]) onWalletConnected(accs[0],id,w.name);
+    }).catch(e=>showToast('❌ WalletConnect: '+e.message));
+    return;
+  }
+  // Fallback: prompt user to install wallet
+  showToast('📲 Установи '+w.name+' или открой в мобильном браузере');
+}
+
+async function onWalletConnected(ethAddress,walletId,walletName){
+  // Update connector state
+  WALLET_CONNECTORS.forEach(c=>{ if(c.id===walletId) c.status='connected'; else c.status='disconnected'; });
+  app.ethAddress=ethAddress;
+  app.connectedWalletId=walletId;
+  localStorage.setItem('cw_eth_address',ethAddress);
+  localStorage.setItem('cw_wallet_id',walletId);
+  showToast('✅ '+walletName+' подключён: '+ethAddress.slice(0,6)+'…'+ethAddress.slice(-4));
+  renderWalletConnectors();
+  // Link to backend
+  apiFetch('/api/wallet/link',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({user_key:app.userKey,eth_address:ethAddress})
+  }).then(r=>{ if(r) console.log('[Wallet] Linked to backend'); }).catch(()=>{});
+  // Fetch CUBE + ETH balances
+  await fetchCubeBalance(ethAddress);
+  await fetchEthBalance(ethAddress);
+  syncWalletUI();
+}
+
+async function fetchCubeBalance(ethAddress){
+  try{
+    const r=await apiFetch('/api/cube/balance/'+ethAddress);
+    if(r&&r.cube_balance!==undefined){
+      app.cubeBalance=parseFloat(r.cube_balance)||0;
+      app.balance=Math.round(app.cubeBalance)||app.balance;
+    }
+  }catch(e){}
+}
+
+async function fetchEthBalance(ethAddress){
+  try{
+    if(window.ethereum){
+      const bal=await window.ethereum.request({method:'eth_getBalance',params:[ethAddress,'latest']});
+      const ethBal=(parseInt(bal,16)/1e18).toFixed(4);
+      app.cryptoBalances=app.cryptoBalances||{};
+      app.cryptoBalances.ETH=ethBal;
+      renderCryptoBalances();
+    }
+  }catch(e){}
 }
 function renderCryptoTabs(){
   const tabsEl=document.getElementById('crypto-tabs');
@@ -4738,6 +4798,46 @@ window.onEnterInterior=function(){
     }
   },80);
 };
+
+
+// ════════════════════════════════════════════════
+//  WALLET RESTORE — reconnect on page load
+// ════════════════════════════════════════════════
+function restoreWalletSession(){
+  const savedAddr = localStorage.getItem('cw_eth_address');
+  const savedId = localStorage.getItem('cw_wallet_id');
+  if(savedAddr && savedId){
+    const w = WALLET_CONNECTORS.find(c=>c.id===savedId);
+    if(w){
+      w.status = 'connected';
+      app.ethAddress = savedAddr;
+      app.connectedWalletId = savedId;
+      fetchCubeBalance(savedAddr);
+      fetchEthBalance(savedAddr);
+      if(typeof syncWalletUI==='function') syncWalletUI();
+      console.log('[Wallet] Restored session:', savedAddr.slice(0,8)+'...');
+    }
+  }
+  // Listen for MetaMask account changes
+  if(window.ethereum){
+    window.ethereum.on('accountsChanged', accounts=>{
+      if(accounts.length===0){
+        app.ethAddress=null; app.connectedWalletId=null;
+        WALLET_CONNECTORS.forEach(c=>c.status='disconnected');
+        localStorage.removeItem('cw_eth_address');
+        localStorage.removeItem('cw_wallet_id');
+        syncWalletUI(); renderWalletConnectors();
+        showToast('🔌 Кошелёк отключён');
+      } else {
+        onWalletConnected(accounts[0], app.connectedWalletId||'metamask', 'MetaMask');
+      }
+    });
+    window.ethereum.on('chainChanged', ()=>window.location.reload());
+  }
+}
+
+// Auto-restore on load
+document.addEventListener('DOMContentLoaded', ()=>{ setTimeout(restoreWalletSession, 500); });
 </script>
 
 <!-- ══ NEW MODALS ══════════════════════════════ -->
