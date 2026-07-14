@@ -126,12 +126,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   </section>
 
   <div class="kc">
-    <div class="card" onclick="openAuth()">
+    <div class="card" onclick="openAuth('free')">
       <span class="ci">&#128273;</span>
       <div class="cbadge f">FREE KEY</div>
       <h3 id="el-ft">Free Key</h3>
       <p id="el-fd">No registration. No email. Just a key.</p>
-      <span class="card-link" onclick="event.stopPropagation();openAuth()">Get key &#8594;</span>
+      <span class="card-link" onclick="event.stopPropagation();openAuth('free')">Get key &#8594;</span>
     </div>
     <div class="card pr" onclick="openAuth()">
       <span class="ci">&#128142;</span>
@@ -160,28 +160,24 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   <section id="auth">
     <div class="apanel">
       <div class="smsg" id="auth-status"></div>
-      <div class="ig">
-        <label id="el-sl">CUBE Key</label>
-        <input type="text" id="key-input" placeholder="CUBE-XXXX-XXXX-XXXX"
-               maxlength="19" oninput="fmtKey(this)" onkeydown="if(event.key==='Enter')loginKey()">
-      </div>
-      <button class="btn btn-p" id="btn-login" onclick="loginKey()">
-        <span id="el-eb">Enter</span> &#8250;
-      </button>
-      <div class="auth-hint">
-        <span id="el-nk">No key?</span>
-        <span class="card-link" onclick="showGenerate()" id="btn-gen-lnk">Generate free &#8594;</span>
-      </div>
       <div class="kdbox" id="kdbox">
-        <div class="kdlbl" id="el-kl">Your CUBE Key</div>
+        <div class="kdlbl" id="el-kl">YOUR CUBE KEY</div>
         <div class="kdval" id="kdval">CUBE-XXXX-XXXX-XXXX</div>
-        <div class="kdwarn" id="el-rw">&#9888;&#65039; The key is shown only once. Copy or download it now.</div>
+        <div class="kdwarn" id="el-rw">&#9888; The key is shown only once. Save it now.</div>
         <div class="kdact">
           <button class="btn btn-g" onclick="copyKey()" id="el-cp">&#128203; Copy</button>
           <button class="btn btn-g" onclick="downloadKey()" id="el-dl">&#128190; Download</button>
           <button class="btn btn-s" onclick="enterWorld()" id="el-go">Enter &#8250;</button>
         </div>
       </div>
+      <div class="ig">
+        <label id="el-sl">CUBE Key</label>
+        <input type="text" id="key-input" placeholder="CUBE-XXXX-XXXX-XXXX"
+               maxlength="19" oninput="fmtKey(this)" onkeydown="if(event.key==='Enter')loginKey()">
+      </div>
+      <button class="btn btn-p" id="btn-login" onclick="loginKey()" id="el-eb-btn">
+        <span id="el-eb">Enter</span> &#8250;
+      </button>
     </div>
   </section>
 
@@ -388,19 +384,18 @@ document.addEventListener('click', function() {
 })();
 
 /* ── Auth reveal ── */
-function openAuth() {
+function openAuth(mode) {
   var auth = document.getElementById('auth');
   auth.classList.add('open');
   setTimeout(function(){ auth.scrollIntoView({behavior:'smooth', block:'start'}); }, 50);
-}
-
-function showGenerate() {
-  var btn = document.getElementById('btn-login');
-  var st = document.getElementById('auth-status');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="sp"></span>';
-  st.className = 'smsg ld'; st.textContent = '...';
-  generateKeyInline();
+  if (mode === 'free') {
+    // Auto-generate a free key
+    var st = document.getElementById('auth-status');
+    var box = document.getElementById('kdbox');
+    st.className = 'smsg ld'; st.textContent = '...';
+    box.classList.remove('show');
+    generateKeyInline();
+  }
 }
 
 /* ── Tabs ── */
