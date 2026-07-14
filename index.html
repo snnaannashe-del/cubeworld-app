@@ -50,7 +50,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .sv{font-size:32px;font-weight:800;color:var(--text);letter-spacing:-1px;}
 .slab{font-size:13px;color:var(--muted);margin-top:4px;}
 /* Auth */
-#auth{max-width:480px;margin:0 auto 80px;padding:0 24px;}
+#auth{max-width:480px;margin:0 auto 80px;padding:0 24px;display:none;}
+#auth.open{display:block;animation:fadeIn .35s ease;}
 .atabs{display:flex;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px;}
 .atab{flex:1;padding:14px;background:none;border:none;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;}
 .atab.active{background:var(--accent);color:#fff;}
@@ -84,6 +85,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .smsg.ok{display:block;background:rgba(74,240,160,.1);border:1px solid rgba(74,240,160,.3);color:#4af0a0;}
 .smsg.ld{display:block;background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.2);color:var(--accent);}
 @keyframes spin{to{transform:rotate(360deg);}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .sp{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
 /* Saved hint */
 .skhint{display:none;background:rgba(74,240,160,.06);border:1px solid rgba(74,240,160,.2);border-radius:12px;padding:16px 20px;margin-bottom:20px;font-size:13px;color:#4af0a0;}
@@ -119,23 +121,23 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <p class="hero-sub" id="el-s1">No email. No phone. No IP.</p>
     <p class="hero-sub" id="el-s2">Only a key &mdash; that is you.</p>
     <p class="hero-tag" id="el-tag">Every cube is land. Yours.</p>
-    <button class="btn-cta" id="el-ab" onclick="document.getElementById('auth').scrollIntoView({behavior:'smooth'})">&#128274; Key Authorization &#8250;</button>
+    <button class="btn-cta" id="el-ab" onclick="openAuth()">&#128274; Key Authorization &#8250;</button>
   </section>
 
   <div class="kc">
-    <div class="card" onclick="switchTab('create');document.getElementById('auth').scrollIntoView({behavior:'smooth'})">
+    <div class="card" onclick="openAuth()">
       <span class="ci">&#128273;</span>
       <div class="cbadge f">FREE KEY</div>
-      <h3 id="el-ft">Basic Access</h3>
-      <p id="el-fd">Chats &middot; Feed &middot; Public cubes &middot; 3 groups</p>
-      <span class="card-link" onclick="event.stopPropagation();switchTab('create');document.getElementById('auth').scrollIntoView({behavior:'smooth'})">Get key &#8594;</span>
+      <h3 id="el-ft">Free Key</h3>
+      <p id="el-fd">No registration. No email. Just a key.</p>
+      <span class="card-link" onclick="event.stopPropagation();openAuth()">Get key &#8594;</span>
     </div>
-    <div class="card pr" onclick="switchTab('create');document.getElementById('auth').scrollIntoView({behavior:'smooth'})">
+    <div class="card pr" onclick="openAuth()">
       <span class="ci">&#128142;</span>
       <div class="cbadge p">PREMIUM KEY</div>
-      <h3 id="el-pt">Full Access</h3>
-      <p id="el-pd">E2E encryption &middot; Unlimited &middot; Signals &middot; Files &middot; Video</p>
-      <span class="card-link" onclick="event.stopPropagation();switchTab('create');document.getElementById('auth').scrollIntoView({behavior:'smooth'})">Get key &#8594;</span>
+      <h3 id="el-pt">Premium Key</h3>
+      <p id="el-pd">Extended space. Priority. More cubes.</p>
+      <span class="card-link" onclick="event.stopPropagation();openAuth()">Get key &#8594;</span>
     </div>
   </div>
 
@@ -401,6 +403,14 @@ document.addEventListener('click', function() {
     requestAnimationFrame(draw);
   })();
 })();
+
+/* ── Auth reveal ── */
+function openAuth() {
+  var auth = document.getElementById('auth');
+  auth.classList.add('open');
+  switchTab('create');
+  setTimeout(function(){ auth.scrollIntoView({behavior:'smooth', block:'start'}); }, 50);
+}
 
 /* ── Tabs ── */
 function switchTab(tab) {
