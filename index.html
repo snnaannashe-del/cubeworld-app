@@ -26,13 +26,13 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 /* Hero */
 .hero{text-align:center;padding:72px 24px 48px;max-width:700px;margin:0 auto;}
 .hero-label{font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:32px;}
-.hero h1{font-size:clamp(48px,8vw,88px);font-weight:800;line-height:1.05;color:#d8d0ff;margin-bottom:32px;}
-.hero-sub{color:var(--muted);font-size:16px;line-height:1.7;margin-bottom:8px;}
-.hero-tag{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:40px;}
+.hero h1{font-size:clamp(48px,8vw,88px);font-weight:800;line-height:1.05;background:linear-gradient(135deg,#fff 0%,#d8d0ff 45%,#7c6aff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px;}
+.hero-sub{color:rgba(232,232,240,0.7);font-size:17px;line-height:1.8;margin-bottom:4px;letter-spacing:.2px;}
+.hero-tag{color:rgba(232,232,240,0.45);font-size:13px;line-height:1.8;margin-bottom:40px;max-width:480px;margin-left:auto;margin-right:auto;font-style:italic;}
 .btn-cta{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:16px 36px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
 .btn-cta:hover{background:#6a58f0;transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,106,255,.4);}
 /* Key cards */
-.kc{display:flex;flex-direction:column;gap:16px;max-width:520px;margin:40px auto 0;padding:0 24px;}
+.kc{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:560px;margin:32px auto 0;padding:0 24px;}
 
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;text-align:left;cursor:pointer;transition:border-color .2s,transform .2s;}
 .card.pr{border-color:rgba(122,212,255,.2);}
@@ -42,7 +42,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .cbadge.f{color:var(--gold);}
 .cbadge.p{color:var(--premium);}
 .card h3{font-size:20px;font-weight:700;margin-bottom:10px;}
-.card p{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px;}
+.card p{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
 .card-link{font-size:14px;font-weight:600;color:var(--accent);text-decoration:none;cursor:pointer;}
 .card-link:hover{color:#a090ff;}
 /* Stats */
@@ -87,6 +87,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 @keyframes spin{to{transform:rotate(360deg);}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .sp{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+.auth-hint{text-align:center;margin-top:16px;font-size:13px;color:var(--muted);}
 /* Saved hint */
 .skhint{display:none;background:rgba(74,240,160,.06);border:1px solid rgba(74,240,160,.2);border-radius:12px;padding:16px 20px;margin-bottom:20px;font-size:13px;color:#4af0a0;}
 .skhint.show{display:flex;align-items:center;gap:12px;}
@@ -157,48 +158,30 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   </div>
 
   <section id="auth">
-    <div class="atabs">
-      <button class="atab active" onclick="switchTab('create')" id="el-tc">Create Key</button>
-      <button class="atab" onclick="switchTab('login')" id="el-tl">Login with Key</button>
-    </div>
-
-    <!-- Create -->
-    <div class="apanel" id="tab-create">
-      <h2 id="el-ch">Create Account</h2>
-      <p class="pdesc" id="el-cd">We will generate a unique CUBE key. This is your only way to log in &mdash; save it in a safe place.</p>
-      <div class="smsg" id="create-status"></div>
+    <div class="apanel">
+      <div class="smsg" id="auth-status"></div>
+      <div class="ig">
+        <label id="el-sl">CUBE Key</label>
+        <input type="text" id="key-input" placeholder="CUBE-XXXX-XXXX-XXXX"
+               maxlength="19" oninput="fmtKey(this)" onkeydown="if(event.key==='Enter')loginKey()">
+      </div>
+      <button class="btn btn-p" id="btn-login" onclick="loginKey()">
+        <span id="el-eb">Enter</span> &#8250;
+      </button>
+      <div class="auth-hint">
+        <span id="el-nk">No key?</span>
+        <span class="card-link" onclick="showGenerate()" id="btn-gen-lnk">Generate free &#8594;</span>
+      </div>
       <div class="kdbox" id="kdbox">
         <div class="kdlbl" id="el-kl">Your CUBE Key</div>
         <div class="kdval" id="kdval">CUBE-XXXX-XXXX-XXXX</div>
-        <div class="kdwarn" id="el-rw">&#9888;&#65039; The key is shown only once. Copy or download it now &mdash; we cannot recover a lost key.</div>
+        <div class="kdwarn" id="el-rw">&#9888;&#65039; The key is shown only once. Copy or download it now.</div>
         <div class="kdact">
           <button class="btn btn-g" onclick="copyKey()" id="el-cp">&#128203; Copy</button>
           <button class="btn btn-g" onclick="downloadKey()" id="el-dl">&#128190; Download</button>
           <button class="btn btn-s" onclick="enterWorld()" id="el-go">Enter &#8250;</button>
         </div>
       </div>
-      <button class="btn btn-p" id="btn-gen" onclick="generateKey()">&#10024; Generate Key</button>
-    </div>
-
-    <!-- Login -->
-    <div class="apanel" id="tab-login" style="display:none">
-      <h2 id="el-lh">Login by Key</h2>
-      <p class="pdesc" id="el-ld">Enter your CUBE key to return to your account.</p>
-      <div class="skhint" id="skhint">
-        <span>&#128273;</span>
-        <div>
-          <span id="el-sf">Saved key:</span> <span id="saved-short" style="font-family:monospace;font-weight:700"></span>
-          <br><small style="color:var(--muted)" id="el-sa">Login automatically?</small>
-        </div>
-        <button class="btn btn-g" style="flex:0;padding:8px 14px;font-size:12px" onclick="autoLogin()" id="el-al">Login</button>
-      </div>
-      <div class="smsg" id="login-status"></div>
-      <div class="ig">
-        <label id="el-sl">CUBE Key</label>
-        <input type="text" id="key-input" placeholder="CUBE-XXXX-XXXX-XXXX"
-               maxlength="19" oninput="fmtKey(this)" onkeydown="if(event.key==='Enter')loginKey()">
-      </div>
-      <button class="btn btn-p" id="btn-login" onclick="loginKey()"><span id="el-eb">Login</span> &#8250;</button>
     </div>
   </section>
 
@@ -408,8 +391,16 @@ document.addEventListener('click', function() {
 function openAuth() {
   var auth = document.getElementById('auth');
   auth.classList.add('open');
-  switchTab('create');
   setTimeout(function(){ auth.scrollIntoView({behavior:'smooth', block:'start'}); }, 50);
+}
+
+function showGenerate() {
+  var btn = document.getElementById('btn-login');
+  var st = document.getElementById('auth-status');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="sp"></span>';
+  st.className = 'smsg ld'; st.textContent = '...';
+  generateKeyInline();
 }
 
 /* ── Tabs ── */
@@ -466,6 +457,28 @@ async function generateKey() {
   }
 }
 
+async function generateKeyInline() {
+  var st  = document.getElementById('auth-status');
+  var btn = document.getElementById('btn-login');
+  try {
+    var res  = await fetch(API + '/auth/generate', {method:'POST'});
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error');
+    gKey = data.key; gData = data;
+    document.getElementById('kdval').textContent = data.key;
+    document.getElementById('kdbox').classList.add('show');
+    st.className = 'smsg ok'; st.textContent = 'OK +' + (data.cube_balance||0) + ' CUBE';
+    localStorage.setItem('cw_key', data.key);
+    localStorage.setItem('cw_access_token', data.access_token);
+    localStorage.setItem('cw_refresh_token', data.refresh_token);
+    localStorage.setItem('cw_key_type', data.key_type);
+    btn.innerHTML = (LANGS[lang].eb||'Enter') + ' &#8250;'; btn.disabled = false;
+  } catch(e) {
+    st.className = 'smsg err'; st.textContent = e.message;
+    btn.innerHTML = (LANGS[lang].eb||'Enter') + ' &#8250;'; btn.disabled = false;
+  }
+}
+
 function copyKey() {
   if (!gKey) return;
   navigator.clipboard.writeText(gKey).then(function() { showToast('Copied!'); });
@@ -493,7 +506,7 @@ function enterWorld() { window.location.href = 'world.html'; }
 async function loginKey() {
   var key = document.getElementById('key-input').value.trim().toUpperCase();
   var btn = document.getElementById('btn-login');
-  var st  = document.getElementById('login-status');
+  var st  = document.getElementById('auth-status');
   if (key.length < 14) {
     st.className = 'smsg err'; st.textContent = 'Enter full key: CUBE-XXXX-XXXX-XXXX'; return;
   }
@@ -572,6 +585,9 @@ async function checkSession() {
   checkSession();
   loadStats();
   setInterval(loadStats, 30000);
+  // Pre-fill saved key in input if exists
+  var sk = localStorage.getItem('cw_key');
+  if (sk) { var ki = document.getElementById('key-input'); if(ki) ki.value = sk; }
 })();
 </script>
 </body>
