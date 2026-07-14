@@ -31,8 +31,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .hero{text-align:center;padding:72px 24px 48px;max-width:700px;margin:0 auto;}
 .hero-label{font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:32px;}
 .hero h1{font-size:clamp(48px,8vw,88px);font-weight:800;line-height:1.05;background:linear-gradient(135deg,#fff 0%,#d8d0ff 45%,#7c6aff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px;}
-.hero-sub{color:var(--muted);font-size:16px;line-height:1.7;margin-bottom:8px;}
-.hero-tag{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:40px;}
+.hero-sub{color:var(--muted);font-size:15px;line-height:1.7;margin-bottom:16px;}
+.hero-mini{color:var(--muted);font-size:12px;font-weight:300;line-height:1.7;margin-bottom:4px;opacity:.7;}
+.hero-mini:last-of-type{margin-bottom:36px;}
 
 .btn-cta{background:rgba(124,106,255,0.15);color:#c8c0ff;border:1px solid rgba(124,106,255,0.35);border-radius:24px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;display:inline-flex;align-items:center;gap:8px;}
 .btn-cta:hover{background:rgba(124,106,255,0.25);border-color:rgba(124,106,255,0.6);}
@@ -57,19 +58,20 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .smsg.ld{display:block;background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.2);color:var(--accent);}
 
 /* Cards */
-.kc{max-width:520px;margin:40px auto 0;padding:0 24px;display:flex;flex-direction:column;gap:16px;}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;text-align:left;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s;}
+.kc{max-width:640px;margin:32px auto 0;padding:0 20px;display:flex;flex-direction:row;gap:12px;}
+.card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:left;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s;}
 .card.pr{border-color:rgba(122,212,255,.15);}
 .card:hover{border-color:rgba(255,255,255,.18);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3);}
 .card.pr:hover{border-color:rgba(122,212,255,.4);}
-.ci{font-size:32px;margin-bottom:16px;display:block;}
-.cbadge{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.ci{font-size:26px;margin-bottom:10px;display:block;}
+.cbadge{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
 .cbadge.f{color:var(--gold);}
 .cbadge.p{color:var(--premium);}
-.card h3{font-size:22px;font-weight:700;margin-bottom:10px;}
-.card p{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px;}
-.card-link{display:inline-block;color:#4af0a0;font-size:14px;font-weight:700;text-decoration:none;transition:opacity .2s;}
+.card h3{font-size:17px;font-weight:700;margin-bottom:6px;}
+.card p{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:14px;}
+.card-link{display:inline-block;color:#4af0a0;font-size:13px;font-weight:700;text-decoration:none;transition:opacity .2s;}
 .card-link:hover{opacity:.75;}
+@media(max-width:400px){.kc{gap:8px;padding:0 12px;}.card{padding:14px;}}
 
 /* Stats */
 .stats{display:flex;justify-content:center;gap:48px;margin:56px auto 72px;padding:0 24px;max-width:600px;}
@@ -145,9 +147,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   <section class="hero">
     <div class="hero-label" id="el-lbl">CubeWorld &middot; Digital Land Protocol</div>
     <h1 id="el-h1">Your Digital Universe</h1>
-    <p class="hero-sub" id="el-s1">No email. No phone. No IP.</p>
-    <p class="hero-sub" id="el-s2">Only a key &mdash; that is you.</p>
-    <p class="hero-tag" id="el-tag">Every cube is land. Yours.</p>
+    <p class="hero-sub" id="el-tag">Every cube is land. Yours.</p>
+    <p class="hero-mini" id="el-s1">No email. No phone. No IP.</p>
+    <p class="hero-mini" id="el-s2">Only a key &mdash; that is you.</p>
     <button class="btn-cta" id="el-ab" onclick="openAuth()">&#128274; Key Authorization &rsaquo;</button>
   </section>
 
@@ -241,8 +243,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 {
   "en":{
     "lbl":"CubeWorld · Digital Land Protocol","h1":"Your Digital Universe",
+    "tag":"Temporary encrypted spaces in a 3D world. Every cube is land. Use it wisely.",
     "s1":"No email. No phone. No IP.","s2":"Only a key — that is you.",
-    "tag":"Every cube is land. Yours.","ab":"Key Authorization",
+    "ab":"Key Authorization",
     "ft":"Basic Access","fd":"Chats · Feed · Public cubes · 3 groups",
     "pt":"Full Access","pd":"E2E encryption · Unlimited · Signals · Files · Video",
     "gk":"Get key →","pk":"Get key →",
@@ -258,9 +261,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   },
   "ru":{
     "lbl":"CubeWorld · Digital Land Protocol","h1":"Your Digital Universe",
+    "tag":"Временные зашифрованные пространства в трёхмерном мире. Каждый куб — это земля. Используй её с умом.",
     "s1":"Никакой почты. Никакого телефона. Никакого IP.",
     "s2":"Только ключ — он и есть ты.",
-    "tag":"Временные зашифрованные пространства в трёхмерном мире. Каждый куб — это земля. Используй её с умом.",
     "ab":"Авторизация по ключу",
     "ft":"Базовый доступ","fd":"Чаты · Лента · Публичные кубы · 3 группы",
     "pt":"Полный доступ","pd":"E2E шифрование · Без лимитов · Сигналы · Файлы · Видео",
@@ -277,8 +280,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   },
   "es":{
     "lbl":"CubeWorld · Protocolo Tierra Digital","h1":"Tu Universo Digital",
+    "tag":"Espacios cifrados temporales en un mundo 3D. Cada cubo es tierra. Úsala con sabiduría.",
     "s1":"Sin email. Sin teléfono. Sin IP.","s2":"Solo una clave — esa eres tú.",
-    "tag":"Cada cubo es tierra. La tuya.",
     "ab":"Autorización por clave",
     "ft":"Acceso Básico","fd":"Chats · Feed · Cubos públicos · 3 grupos",
     "pt":"Acceso Completo","pd":"E2E · Ilimitado · Señales · Archivos · Video",
@@ -295,8 +298,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   },
   "zh":{
     "lbl":"CubeWorld · 数字土地协议","h1":"您的数字宇宙",
+    "tag":"三维世界中的临时加密空间。每个方块都是地块。善用它。",
     "s1":"无邮箱。无电话。无IP。","s2":"只有密钥 — 那就是你。",
-    "tag":"每个方块都是地块。属于你的。",
     "ab":"密钥授权",
     "ft":"基础访问","fd":"聊天 · 动态 · 公共方块 · 3个群组",
     "pt":"完整访问","pd":"E2E加密 · 无限制 · 信号 · 文件 · 视频",
@@ -313,8 +316,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   },
   "fr":{
     "lbl":"CubeWorld · Protocole Terre Numérique","h1":"Votre Univers Numérique",
+    "tag":"Espaces chiffrés temporaires dans un monde 3D. Chaque cube est une terre. Utilisez-la avec sagesse.",
     "s1":"Pas d'email. Pas de téléphone. Pas d'IP.","s2":"Une clé seulement — c'est vous.",
-    "tag":"Chaque cube est une terre. La vôtre.",
     "ab":"Autorisation par clé",
     "ft":"Accès Basique","fd":"Chats · Fil · Cubes publics · 3 groupes",
     "pt":"Accès Complet","pd":"E2E · Illimité · Signaux · Fichiers · Vidéo",
