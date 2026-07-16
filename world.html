@@ -606,6 +606,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .swap-box label{font-size:10px;color:var(--text3);letter-spacing:.06em;margin-bottom:6px;display:block;text-transform:uppercase}
 .swap-row{display:flex;align-items:center;gap:10px}
 .swap-crypto-sel{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:7px;color:#e0e0f8;padding:7px 10px;font-size:13px;font-weight:700;cursor:pointer;outline:none;flex-shrink:0}
+/* Custom token selector */
+.token-sel-wrap{position:relative;flex-shrink:0}
+.token-sel-btn{display:flex;align-items:center;gap:7px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:7px;color:#e0e0f8;padding:6px 10px;font-size:13px;font-weight:700;cursor:pointer;min-width:110px;user-select:none}
+.token-sel-btn svg{flex-shrink:0}
+.token-sel-arrow{margin-left:auto;font-size:10px;color:var(--text3);transition:transform .15s}
+.token-sel-btn.open .token-sel-arrow{transform:rotate(180deg)}
+.token-sel-drop{position:absolute;top:calc(100% + 4px);left:0;z-index:200;background:#1a1b2e;border:1px solid var(--border);border-radius:10px;padding:4px;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,.5);display:none}
+.token-sel-drop.open{display:block}
+.token-sel-opt{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600;color:#e0e0f8;transition:background .12s}
+.token-sel-opt:hover{background:rgba(255,255,255,.07)}
+.token-sel-opt.selected{background:rgba(124,111,205,.2);color:#c4b5fd}
+.token-sym{font-size:11px;color:var(--text3);margin-left:2px}
+/* Crypto SVG icon helpers */
+.tk-icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;flex-shrink:0}
+.tk-icon-sm{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;flex-shrink:0}
+/* CUBE coin in topbars */
+.cube-coin-svg{display:inline-flex;align-items:center;vertical-align:middle;margin-right:3px}
 .swap-amount-inp{flex:1;background:transparent;border:none;color:#e0e0f8;font-size:18px;font-weight:800;font-family:'Courier New',monospace;outline:none;min-width:0}
 .swap-amount-inp::placeholder{color:var(--text3)}
 .swap-arrow{text-align:center;font-size:20px;color:var(--text2);margin:0;line-height:1;cursor:pointer;transition:transform .2s}
@@ -1138,7 +1155,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div class="wb-games" onclick="openGamesHub()">🎮 Игры</div>
     <div class="wb-ghost" id="wb-ghost-btn" onclick="openGhostMode()">👻 Ghost Mode</div>
     <div class="wb-wallet" id="wb-wallet-btn" onclick="openWalletModal()">
-      <span class="ww-coin">💰</span>
+      <span class="ww-coin cube-coin-svg"><svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#fbbf24"/><path d="M8 3.5L12 6v4L8 12.5 4 10V6L8 3.5z" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="1" stroke-linejoin="round"/><path d="M4 6l4 2.5L12 6" stroke="rgba(0,0,0,0.3)" stroke-width=".8" fill="none"/><path d="M8 8.5v4" stroke="rgba(0,0,0,0.3)" stroke-width=".8"/></svg></span>
       <span id="wb-cube-balance">250</span> CUBE
     </div>
   </div>
@@ -1168,7 +1185,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div class="search-results" id="search-results"></div>
     </div>
     <div style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:3px 10px;background:rgba(251,191,36,.09);border:1px solid rgba(251,191,36,.28);border-radius:20px" onclick="switchSection('wallet',null)" id="itb-wallet">
-      <span style="font-size:12px">💰</span>
+      <span class="cube-coin-svg"><svg width="14" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#fbbf24"/><path d="M8 3.5L12 6v4L8 12.5 4 10V6L8 3.5z" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="1" stroke-linejoin="round"/><path d="M4 6l4 2.5L12 6" stroke="rgba(0,0,0,0.3)" stroke-width=".8" fill="none"/><path d="M8 8.5v4" stroke="rgba(0,0,0,0.3)" stroke-width=".8"/></svg></span>
       <span style="font-size:12px;font-weight:800;color:var(--gold);font-family:'Courier New',monospace" id="itb-cube-bal">250</span>
       <span style="font-size:10px;color:var(--text3)">CUBE</span>
     </div>
@@ -1198,7 +1215,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div class="sn-item" onclick="switchSection('market',this);renderMarket()"><span class="sn-icon">🛒</span>Маркетплейс</div>
       <div class="sn-divider"></div>
       <div class="sn-section">Монетизация</div>
-      <div class="sn-item" onclick="switchSection('earn',this)"><span class="sn-icon">💰</span>Заработать</div>
+      <div class="sn-item" onclick="switchSection('earn',this)"><span class="sn-icon"><svg width="14" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle"><circle cx="8" cy="8" r="8" fill="#fbbf24"/><path d="M8 3.5L12 6v4L8 12.5 4 10V6L8 3.5z" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="1" stroke-linejoin="round"/><path d="M4 6l4 2.5L12 6" stroke="rgba(0,0,0,0.3)" stroke-width=".8" fill="none"/><path d="M8 8.5v4" stroke="rgba(0,0,0,0.3)" stroke-width=".8"/></svg></span>Заработать</div>
       <div class="sn-item" onclick="switchSection('wallet',this)"><span class="sn-icon">🏦</span>Кошелёк</div>
       <div class="sn-divider"></div>
       <div class="sn-section">Инструменты</div>
@@ -1394,7 +1411,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
               <div style="font-size:11px;color:var(--text2)">🔥 <span id="earn-reacts">0</span> реакций</div>
               <div style="font-size:11px;color:var(--text2)">🔗 <span id="earn-invites">0</span> приглаш.</div>
             </div>
-            <button onclick="openRewardClaimModal()" style="margin-top:12px;width:100%;padding:10px;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);border-radius:10px;color:var(--gold);font-weight:700;font-size:13px;cursor:pointer">💰 Запросить выплату</button>
+            <button onclick="openRewardClaimModal()" style="margin-top:12px;width:100%;padding:10px;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);border-radius:10px;color:var(--gold);font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px"><svg width="15" height="15" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#fbbf24"/><path d="M8 3.5L12 6v4L8 12.5 4 10V6L8 3.5z" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="1" stroke-linejoin="round"/><path d="M4 6l4 2.5L12 6" stroke="rgba(0,0,0,0.3)" stroke-width=".8" fill="none"/><path d="M8 8.5v4" stroke="rgba(0,0,0,0.3)" stroke-width=".8"/></svg> Запросить выплату</button>
           </div>
         </div>
 
@@ -1548,13 +1565,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div class="swap-box">
       <label>Отдаю</label>
       <div class="swap-row">
-        <select class="swap-crypto-sel" id="swap-from" onchange="calcSwap()">
-          <option value="btc">₿ BTC</option>
-          <option value="eth">⟠ ETH</option>
-          <option value="usdt" selected>₮ USDT</option>
-          <option value="bnb">🔶 BNB</option>
-          <option value="trx">🔴 TRON</option>
-        </select>
+        <div class="token-sel-wrap" id="token-sel-wrap">
+          <div class="token-sel-btn" id="token-sel-btn" onclick="toggleTokenDrop()">
+            <span class="tk-icon" id="token-sel-icon"></span>
+            <span id="token-sel-name">USDT</span>
+            <span class="token-sel-arrow">▾</span>
+          </div>
+          <div class="token-sel-drop" id="token-sel-drop"></div>
+        </div>
+        <input type="hidden" id="swap-from" value="usdt">
         <input class="swap-amount-inp" id="swap-amount" type="number" placeholder="0.00" min="0" oninput="calcSwap()">
       </div>
       <div class="crypto-balance" id="swap-avail">Доступно: <span>0.00</span></div>
@@ -2176,7 +2195,10 @@ app.cubes = SEED_CUBES.map(c=>({...c}));
 //  NAVIGATION
 // ════════════════════════════════════════════════
 function showView(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-function openModal(id){ document.getElementById(id).classList.add('open'); }
+function openModal(id){
+  document.getElementById(id).classList.add('open');
+  if(id==='modal-swap') initTokenSelector();
+}
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-backdrop').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)b.classList.remove('open');}));
 
@@ -4120,12 +4142,17 @@ function searchSelect(i){
 //  CRYPTO WALLET STATE
 // ════════════════════════════════════════════════
 app.cryptoBalances = { btc:0.00012, eth:0.042, usdt:18.50, bnb:0.15, trx:240 };
+const _SVG_BTC  = `<svg width="22" height="22" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="11" fill="#F7931A"/><text x="11" y="15.5" font-size="13" font-weight="900" fill="white" text-anchor="middle" font-family="Arial,sans-serif">₿</text></svg>`;
+const _SVG_ETH  = `<svg width="22" height="22" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="11" fill="#627EEA"/><path d="M11 4.5L6 11.3l5 3 5-3L11 4.5z" fill="white" opacity=".6"/><path d="M6 11.3L11 4.5v6.8L6 11.3z" fill="white"/><path d="M11 11.3l5 0-5-6.8v6.8z" fill="white" opacity=".8"/><path d="M6 12.3L11 17.8v-3.5L6 12.3z" fill="white" opacity=".6"/><path d="M11 14.3v3.5l5-5.5-5 2z" fill="white" opacity=".4"/></svg>`;
+const _SVG_USDT = `<svg width="22" height="22" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="11" fill="#26A17B"/><text x="11" y="15.5" font-size="12" font-weight="900" fill="white" text-anchor="middle" font-family="Arial,sans-serif">₮</text></svg>`;
+const _SVG_BNB  = `<svg width="22" height="22" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="11" fill="#F3BA2F"/><path d="M11 5.5l2 2-2 2-2-2 2-2zm-4 4l1.5 1.5L7 12.5 5.5 11 7 9.5zm8 0L16.5 11 15 12.5 13.5 11 15 9.5zm-4 .3L13 12l-2 2-2-2 2-1.8zm-2 4.2L11 16l2-2-2-2-2 2 1.5 1.5z" fill="rgba(0,0,0,0.55)"/></svg>`;
+const _SVG_TRX  = `<svg width="22" height="22" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="11" fill="#EF0027"/><text x="11" y="14.5" font-size="7" font-weight="900" fill="white" text-anchor="middle" font-family="Arial,sans-serif">TRX</text></svg>`;
 const CRYPTO_INFO = {
-  btc:  {sym:'BTC',  icon:'₿',  emoji:'🟠', name:'Bitcoin',  rate:1050000, addr:'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh'},
-  eth:  {sym:'ETH',  icon:'⟠',  emoji:'🔷', name:'Ethereum', rate:32000,   addr:'0x71C7656EC7ab88b098defB751B7401B5f6d8976F'},
-  usdt: {sym:'USDT', icon:'₮',  emoji:'💚', name:'Tether',   rate:10,      addr:'TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE'},
-  bnb:  {sym:'BNB',  icon:'🔶', emoji:'🔶', name:'BNB',      rate:3800,    addr:'bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2'},
-  trx:  {sym:'TRX',  icon:'🔴', emoji:'🔴', name:'TRON',     rate:1.5,     addr:'TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE'},
+  btc:  {sym:'BTC',  icon:'₿',  emoji:'🟠', name:'Bitcoin',  rate:1050000, addr:'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh', svg:_SVG_BTC},
+  eth:  {sym:'ETH',  icon:'⟠',  emoji:'🔷', name:'Ethereum', rate:32000,   addr:'0x71C7656EC7ab88b098defB751B7401B5f6d8976F', svg:_SVG_ETH},
+  usdt: {sym:'USDT', icon:'₮',  emoji:'💚', name:'Tether',   rate:10,      addr:'TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE',        svg:_SVG_USDT},
+  bnb:  {sym:'BNB',  icon:'🔶', emoji:'🔶', name:'BNB',      rate:3800,    addr:'bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2', svg:_SVG_BNB},
+  trx:  {sym:'TRX',  icon:'🔴', emoji:'🔴', name:'TRON',     rate:1.5,     addr:'TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE',        svg:_SVG_TRX},
 };
 // brand: bg color, text color, SVG logo path or letter
 const WALLET_CONNECTORS = [
@@ -4438,7 +4465,7 @@ function renderCryptoTabs(){
   const tokens=Object.keys(CRYPTO_INFO);
   tabsEl.innerHTML=tokens.map((k,i)=>`
     <div class="crypto-tab ${i===0?'active':''}" onclick="switchDepositTab('${k}',this)">
-      <span class="ct-symbol">${CRYPTO_INFO[k].emoji}</span>
+      <span class="ct-symbol tk-icon-sm">${CRYPTO_INFO[k].svg}</span>
       <span>${CRYPTO_INFO[k].sym}</span>
       <span class="ct-name">${CRYPTO_INFO[k].name}</span>
     </div>`).join('');
@@ -4447,7 +4474,7 @@ function renderCryptoTabs(){
     const rate=(info.rate/10).toFixed(info.rate>1000?0:2);
     return `<div class="deposit-panel ${i===0?'active':''}" id="dp-${k}">
       <div class="deposit-addr-box">
-        <div class="qr-placeholder">${info.emoji}</div>
+        <div class="qr-placeholder" style="font-size:0">${info.svg.replace('width="22" height="22"','width="56" height="56"')}</div>
         <div class="dab-label">Адрес ${info.sym} для пополнения</div>
         <div class="dab-addr">${info.addr}</div>
         <button class="dab-copy" onclick="copyDepositAddr('${info.addr}','${info.sym}')">📋 Копировать адрес</button>
@@ -4487,7 +4514,7 @@ function renderCryptoBalances(){
     const bal=app.cryptoBalances[k]||0;
     const cubeVal=Math.floor(bal*info.rate);
     return `<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border2)">
-      <span style="font-size:20px;width:28px;text-align:center">${info.emoji}</span>
+      <span class="tk-icon">${info.svg}</span>
       <div style="flex:1">
         <div style="font-size:12.5px;font-weight:600;color:#e0e0f8">${info.name}</div>
         <div style="font-size:10px;color:var(--text3)">≈ ${cubeVal.toLocaleString('ru')} CUBE</div>
@@ -4498,6 +4525,39 @@ function renderCryptoBalances(){
       </div>
     </div>`;
   }).join('');
+}
+
+// ════════════════════════════════════════════════
+//  TOKEN SELECTOR (custom dropdown for swap)
+// ════════════════════════════════════════════════
+function initTokenSelector(){
+  const drop=document.getElementById('token-sel-drop'); if(!drop) return;
+  drop.innerHTML=Object.entries(CRYPTO_INFO).map(([k,info])=>`
+    <div class="token-sel-opt${k==='usdt'?' selected':''}" onclick="selectToken('${k}',this)">
+      <span class="tk-icon">${info.svg}</span>
+      <span style="font-weight:700">${info.sym}</span>
+      <span class="token-sym">${info.name}</span>
+    </div>`).join('');
+  selectToken('usdt', drop.querySelector('.selected'), true);
+}
+function toggleTokenDrop(){
+  const btn=document.getElementById('token-sel-btn');
+  const drop=document.getElementById('token-sel-drop');
+  const open=drop.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  if(open) setTimeout(()=>document.addEventListener('click',closeTokenDrop,{once:true}),0);
+}
+function closeTokenDrop(){
+  document.getElementById('token-sel-drop')?.classList.remove('open');
+  document.getElementById('token-sel-btn')?.classList.remove('open');
+}
+function selectToken(key, el, silent){
+  const info=CRYPTO_INFO[key];
+  document.getElementById('swap-from').value=key;
+  document.getElementById('token-sel-icon').innerHTML=info.svg;
+  document.getElementById('token-sel-name').textContent=info.sym;
+  document.querySelectorAll('.token-sel-opt').forEach(o=>o.classList.toggle('selected', o===el));
+  if(!silent){ closeTokenDrop(); calcSwap(); }
 }
 
 // ════════════════════════════════════════════════
