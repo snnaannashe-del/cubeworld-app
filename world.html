@@ -3134,6 +3134,10 @@ function switchSection(name,el){
   if(name==='chat'){
     const el2=document.getElementById('sn-badge-chat');
     if(el2) el2.style.display='none';
+    // Restore last DM if it was active (user came back from another cube)
+    if(!_chatActiveDm && app._lastDm) {
+      setTimeout(()=>openDmWith(app._lastDm.user_id, app._lastDm.display_name), 50);
+    }
   }
   // Load real earn stats when opening earn section
   if(name==='earn'){ loadEarnStats(); renderEarnWallets(); }
@@ -3348,6 +3352,7 @@ function updateOnlineUsersList(users) {
 // ── Open DM with user ──
 function openDmWith(userId, displayName) {
   _chatActiveDm = {user_id: String(userId), display_name: displayName};
+  app._lastDm = {user_id: String(userId), display_name: displayName}; // persist across cube switches
   _chatReplyTo = null;
   cancelReply();
   // Register in dmConversations so it shows in sidebar
@@ -3415,16 +3420,27 @@ function handleIncomingDm(msg, myUserId) {
   const time   = msg.created_at
     ? new Date(msg.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}) : '';
 
-  _dmStore(dmKey).push({
-    id: msg.id,
-    sender: isMe ? 'me' : 'them',
-    author: msg.display_name || 'Аноним',
-    text: msg.content, time,
-    type: msg.msg_type||'text',
-    fileName: msg.file_name, fileSize: msg.file_size,
-    fileData: msg.file_data, duration: msg.duration,
-    reactions: {}
-  });
+  if(isMe) {
+    // Echo from server — just patch ID onto the locally-added optimistic copy, don't duplicate
+    const store = _dmStore(dmKey);
+    const pending = store.slice().reverse().find(m => m.sender==='me' && m.text===msg.content && !m.id);
+    if(pending){ pending.id = msg.id; }
+    else {
+      // No pending match (e.g. reconnected) — add it
+      store.push({id:msg.id, sender:'me', author:'Я', text:msg.content, time,
+        type:msg.msg_type||'text', fileName:msg.file_name, fileSize:msg.file_size, duration:msg.duration, reactions:{}});
+    }
+  } else {
+    _dmStore(dmKey).push({
+      id: msg.id, sender: 'them',
+      author: msg.display_name || 'Аноним',
+      text: msg.content, time,
+      type: msg.msg_type||'text',
+      fileName: msg.file_name, fileSize: msg.file_size,
+      fileData: msg.file_data, duration: msg.duration,
+      reactions: {}
+    });
+  }
 
   // Update sidebar conversation entry
   if(!app.dmConversations) app.dmConversations={};
@@ -3447,6 +3463,7 @@ function handleIncomingDm(msg, myUserId) {
 // ── Open room ──
 function openRoom(roomId){
   _chatActiveDm = null;
+  app._lastDm = null; // user explicitly opened a cube room, clear DM memory
   _chatReplyTo = null;
   cancelReply();
   app.currentRoomId = roomId;
