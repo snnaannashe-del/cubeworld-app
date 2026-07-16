@@ -1984,6 +1984,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div class="mpe-status-row" id="mpe-status-row"></div>
     <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:10px">Имя / Ник</label>
     <input id="mpe-display-name" type="text" maxlength="40" placeholder="Как тебя называть в чате?" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;color:#e0e0f8;padding:8px 12px;font-size:12.5px;font-family:inherit;outline:none;box-sizing:border-box">
+    <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:10px">@username <span style="color:var(--text3);font-weight:400">(для поиска, как в Telegram)</span></label>
+    <div style="position:relative">
+      <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:14px;font-weight:700">@</span>
+      <input id="mpe-username" type="text" maxlength="24" placeholder="твой_ник" autocomplete="off"
+        style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;color:#e0e0f8;padding:8px 12px 8px 26px;font-size:12.5px;font-family:'Courier New',monospace;outline:none;box-sizing:border-box"
+        oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9_]/g,'')">
+    </div>
+    <div id="mpe-uid-label" style="font-size:10px;color:var(--text3);margin-top:5px"></div>
     <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:10px">Bio / Описание</label>
     <textarea id="mpe-bio" rows="2" maxlength="120" placeholder="Пару слов о себе..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;color:#e0e0f8;padding:8px 12px;font-size:12.5px;font-family:inherit;resize:none;outline:none"></textarea>
     <div style="font-size:10px;color:var(--text3);margin-top:4px;text-align:right"><span id="mpe-bio-count">0</span>/120</div>
@@ -4464,11 +4472,9 @@ function onSrchInput(q){
 }
 function renderSrchBody(){
   const body=document.getElementById('srch-body'); if(!body) return;
-  if(_srchTab==='ai')     { body.innerHTML=buildAiTab(); attachAiEvents(); return; }
-  if(_srchTab==='cubes')  { body.innerHTML=buildEntityTab('cubes');  return; }
-  if(_srchTab==='users')  { body.innerHTML=buildEntityTab('users');  return; }
-  if(_srchTab==='groups') { body.innerHTML=buildEntityTab('groups'); return; }
-  if(_srchTab==='api')    { body.innerHTML=buildEntityTab('api');    return; }
+  if(_srchTab==='ai'){ body.innerHTML=buildAiTab(); attachAiEvents(); return; }
+  // Entity tabs are async
+  buildEntityTab(_srchTab);
 }
 
 // ── AI TAB ─────────────────────────────────────
@@ -4543,44 +4549,108 @@ function cubeAIAnswer(q){
 }
 
 // ── ENTITY TABS ─────────────────────────────────
-function buildEntityTab(type){
-  const q=(_srchQ||'').toLowerCase().trim();
-  let items=[];
-  if(type==='cubes'){
-    items=(app.cubes||[]).filter(c=>!q||c.name.toLowerCase().includes(q)||(c.desc||'').toLowerCase().includes(q)).map(c=>({
-      icon:c.icon||'🧊', name:c.name, sub:(c.members||0)+' участников · '+fmtTime(c.life||0),
-      badge:c.type==='public'?{cls:'pub',txt:'PUBLIC'}:{cls:'priv',txt:'PRIVATE'},
-      action:()=>{ closeSrchModal(); enterInterior(c.id); }
-    }));
-    if(!items.length&&!q) items=(app.cubes||[]).slice(0,12).map(c=>({icon:c.icon||'🧊',name:c.name,sub:(c.members||0)+' участников',badge:{cls:'pub',txt:'PUBLIC'},action:()=>{ closeSrchModal(); enterInterior(c.id); }}));
-  } else if(type==='users'){
-    const users=(app.feedPosts||[]).map(p=>p.author).filter((v,i,a)=>a.indexOf(v)===i).map((name,i)=>({
-      icon:(app.feedPosts.find(p=>p.author===name)||{}).avatar||'👤', name,
-      sub:'Юзер CubeWorld', badge:{cls:'on',txt:'онлайн'},
-      action:()=>{ closeSrchModal(); showToast('👤 Профиль: '+name); }
-    }));
-    items=q?users.filter(u=>u.name.toLowerCase().includes(q)):users.slice(0,15);
-  } else if(type==='groups'){
-    items=(app.groups||[]).filter(g=>!q||g.name.toLowerCase().includes(q)||(g.desc||'').toLowerCase().includes(q)).map(g=>({
-      icon:g.icon||'🗂', name:g.name, sub:g.desc||'Группа',
-      badge:{cls:'pub',txt:(g.members||0)+' чел.'},
-      action:()=>{ closeSrchModal(); switchSection('groups',null); }
-    }));
-  } else if(type==='api'){
-    items=(API_PLATFORMS||[]).filter(p=>!q||p.name.toLowerCase().includes(q)).map(p=>({
-      icon:p.emoji||'🔌', name:p.name,
-      sub:p.connected?'Подключён':'Не подключён',
-      badge:p.connected?{cls:'on',txt:'✓ ON'}:{cls:'off',txt:'OFF'},
-      action:()=>{ closeSrchModal(); switchSection('channels',null); }
-    }));
+// ── Entity tab rendering (async for users/cubes — calls real API) ──────────
+async function buildEntityTab(type){
+  const body=document.getElementById('srch-body'); if(!body) return;
+  const q=(_srchQ||'').trim();
+
+  if(type==='users'){
+    // Show hint when no query
+    if(!q){
+      body.innerHTML=`<div class="srch-empty">
+        <span class="srch-empty-icon">👥</span>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Найди по нику или UID</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.8">
+          <b style="color:var(--accent)">@anna</b> — поиск по юзернейму<br>
+          <b style="color:var(--accent)">#42</b> — прямой UID<br>
+          <b style="color:var(--accent)">Анна</b> — поиск по имени
+        </div>
+      </div>`; return;
+    }
+    body.innerHTML=`<div class="srch-empty" style="padding:20px"><span class="srch-ai-typing"><span></span><span></span><span></span></span></div>`;
+    const res=await apiCall('/users/search?q='+encodeURIComponent(q)+'&limit=20');
+    if(!res||!res.length){
+      body.innerHTML=`<div class="srch-empty"><span class="srch-empty-icon">👤</span>Пользователь не найден</div>`; return;
+    }
+    body.innerHTML=`<div class="srch-entity-list">${res.map(u=>`
+      <div class="srch-entity-item" onclick="closeSrchModal();showToast('👤 '+${JSON.stringify(u.display_name||u.handle)})">
+        <div class="sei-icon" style="font-size:22px">${u.avatar_url||'👤'}</div>
+        <div class="sei-info">
+          <div class="sei-name">${escHtml(u.display_name||u.handle)}</div>
+          <div class="sei-sub">${u.username?'@'+escHtml(u.username)+' · ':''}<span style="color:var(--text3)">${escHtml(u.uid)}</span></div>
+        </div>
+        <span class="sei-badge ${u.key_type==='free'?'priv':'pub'}">${u.key_type.toUpperCase()}</span>
+      </div>`).join('')}</div>`; return;
   }
-  if(!items.length) return `<div class="srch-empty"><span class="srch-empty-icon">🔍</span>${q?'Ничего не найдено по «'+escHtml(q)+'»':'Нет данных'}</div>`;
-  return `<div class="srch-entity-list">${items.map(it=>`
-    <div class="srch-entity-item" onclick="(${it.action.toString()})()">
-      <div class="sei-icon">${it.icon}</div>
-      <div class="sei-info"><div class="sei-name">${escHtml(it.name)}</div><div class="sei-sub">${escHtml(it.sub)}</div></div>
-      ${it.badge?`<span class="sei-badge ${it.badge.cls}">${escHtml(it.badge.txt)}</span>`:''}
-    </div>`).join('')}</div>`;
+
+  if(type==='cubes'){
+    if(!q){
+      // Show local cubes first
+      const local=(app.cubes||[]).slice(0,15);
+      if(!local.length){ body.innerHTML=`<div class="srch-empty"><span class="srch-empty-icon">🧊</span>Нет кубов</div>`; return; }
+      body.innerHTML=`<div class="srch-entity-list">${local.map(c=>`
+        <div class="srch-entity-item" onclick="closeSrchModal();enterInterior('${c.id}')">
+          <div class="sei-icon">${c.icon||'🧊'}</div>
+          <div class="sei-info">
+            <div class="sei-name">${escHtml(c.name)}</div>
+            <div class="sei-sub">${c.handle?'@'+escHtml(c.handle)+' · ':''}<span style="color:var(--text3)">#G${c.backendId||''}</span></div>
+          </div>
+          <span class="sei-badge ${c.type==='public'?'pub':'priv'}">${c.type==='public'?'PUBLIC':'PRIVATE'}</span>
+        </div>`).join('')}</div>`; return;
+    }
+    body.innerHTML=`<div class="srch-empty" style="padding:20px"><span class="srch-ai-typing"><span></span><span></span><span></span></span></div>`;
+    const res=await apiCall('/cubes/search?q='+encodeURIComponent(q));
+    if(!res||!res.length){
+      body.innerHTML=`<div class="srch-empty"><span class="srch-empty-icon">🧊</span>Кубы не найдены</div>`; return;
+    }
+    body.innerHTML=`<div class="srch-entity-list">${res.map(c=>`
+      <div class="srch-entity-item" onclick="closeSrchModal();joinOrEnterCube(${c.id},'${escHtml(c.name)}','${c.cube_key||''}')">
+        <div class="sei-icon">${c.icon||'🧊'}</div>
+        <div class="sei-info">
+          <div class="sei-name">${escHtml(c.name)}</div>
+          <div class="sei-sub">${escHtml(c.handle)} · ${fmtTime(c.life_left||0)}</div>
+        </div>
+        <span class="sei-badge ${c.type==='public'?'pub':'priv'}">${c.type==='public'?'PUBLIC':'PRIVATE'}</span>
+      </div>`).join('')}</div>`; return;
+  }
+
+  if(type==='groups'){
+    const items=(app.groups||[]).filter(g=>!q||g.name.toLowerCase().includes(q.toLowerCase())||(g.desc||'').toLowerCase().includes(q.toLowerCase())).map(g=>({
+      icon:g.icon||'🗂', name:g.name, sub:g.desc||'Группа',
+      badge:{cls:'pub',txt:(g.members||0)+' чел.'}, action:()=>{ closeSrchModal(); switchSection('groups',null); }
+    }));
+    body.innerHTML=items.length
+      ? `<div class="srch-entity-list">${items.map(it=>`
+          <div class="srch-entity-item" onclick="(${it.action.toString()})()">
+            <div class="sei-icon">${it.icon}</div>
+            <div class="sei-info"><div class="sei-name">${escHtml(it.name)}</div><div class="sei-sub">${escHtml(it.sub)}</div></div>
+            <span class="sei-badge ${it.badge.cls}">${escHtml(it.badge.txt)}</span>
+          </div>`).join('')}</div>`
+      : `<div class="srch-empty"><span class="srch-empty-icon">🗂</span>Групп не найдено</div>`;
+    return;
+  }
+
+  if(type==='api'){
+    const items=(API_PLATFORMS||[]).filter(p=>!q||p.name.toLowerCase().includes(q.toLowerCase())).map(p=>({
+      icon:p.emoji||'🔌', name:p.name, sub:p.connected?'Подключён':'Не подключён',
+      badge:p.connected?{cls:'on',txt:'✓ ON'}:{cls:'off',txt:'OFF'}, action:()=>{ closeSrchModal(); switchSection('channels',null); }
+    }));
+    body.innerHTML=`<div class="srch-entity-list">${items.map(it=>`
+      <div class="srch-entity-item" onclick="(${it.action.toString()})()">
+        <div class="sei-icon">${it.icon}</div>
+        <div class="sei-info"><div class="sei-name">${escHtml(it.name)}</div><div class="sei-sub">${escHtml(it.sub)}</div></div>
+        <span class="sei-badge ${it.badge.cls}">${escHtml(it.badge.txt)}</span>
+      </div>`).join('')}</div>`;
+    return;
+  }
+}
+
+function joinOrEnterCube(backendId, name, cubeKey){
+  const cubeId='bc'+backendId;
+  if(app.cubes.find(c=>c.id===cubeId)){ enterInterior(cubeId); return; }
+  // Need to join first — open join key modal if private
+  if(cubeKey){ document.getElementById('jk-input').value=cubeKey; submitJoinKey(); }
+  else { openModal('modal-join-key'); }
 }
 
 // Legacy stubs (not used anymore but prevent errors if called from stale handlers)
@@ -5915,6 +5985,13 @@ async function openMyProfile(){
   // Bio
   const bioEl=document.getElementById('mpe-bio');
   if(bioEl){ bioEl.value=p.bio||''; bioEl.oninput=()=>{ const c=document.getElementById('mpe-bio-count'); if(c) c.textContent=bioEl.value.length; }; document.getElementById('mpe-bio-count').textContent=(p.bio||'').length; }
+  // Username
+  const unEl=document.getElementById('mpe-username');
+  const uidLbl=document.getElementById('mpe-uid-label');
+  if(unEl) unEl.value=app._myUsername||'';
+  if(uidLbl) uidLbl.textContent=app._myUID?'Твой UID: '+app._myUID:'Загружается…';
+  // Load from /me
+  apiCall('/me').then(me=>{ if(!me) return; app._myUID='#'+me.id; app._myUsername=me.username||''; if(unEl) unEl.value=me.username||''; if(uidLbl) uidLbl.textContent='Твой UID: #'+me.id+(me.username?' · @'+me.username:''); });
   // Account type toggle
   syncAccTypeUI(p.privacy||'public');
   openModal('modal-my-profile');
@@ -5939,6 +6016,14 @@ async function saveMyProfile(){
   const dnEl=document.getElementById('mpe-display-name');
   const newName=(dnEl?dnEl.value.trim():'')||app.displayName||'';
   if(newName) { app.displayName=newName; app.myProfile.displayName=newName; }
+  // Save @username if changed
+  const unEl=document.getElementById('mpe-username');
+  const newUsername=(unEl?unEl.value.trim():'');
+  if(newUsername && newUsername !== (app._myUsername||'')){
+    const uRes=await apiCall('/me/username',{method:'POST',body:JSON.stringify({username:newUsername})});
+    if(uRes?.ok){ app._myUsername=newUsername; }
+    else { showToast('❌ @'+newUsername+' уже занят или недопустим'); }
+  }
   // Patch backend
   const res=await apiCall('/me',{method:'PATCH',body:JSON.stringify({
     display_name: newName||undefined,
