@@ -3365,49 +3365,57 @@ function openDmWith(userId, displayName) {
   document.getElementById('ca-name').innerHTML = escHtml(displayName) + '<span class="dm-badge">DM</span>';
   document.getElementById('ca-members').textContent = '🔐 личная переписка · E2E зашифровано';
   document.getElementById('ca-input-panel').style.display='block';
-  // Load DM history
-  const cid = app.currentCubeId;
+  // Load DM history — always use __dm__ namespace (cube-independent)
   const dmKey = 'dm:' + userId;
-  if(!app.chatMessages[cid]) app.chatMessages[cid]={};
-  if(!app.chatMessages[cid][dmKey]) app.chatMessages[cid][dmKey]=[];
+  _dmStore(dmKey); // ensure array exists
   app.currentRoomId = dmKey;
   renderChatMsgs(dmKey);
-  // Fetch history from server
+  // Fetch history from server (always reload to get fresh messages)
   const myId = localStorage.getItem('cw_user_id');
   const token = localStorage.getItem('cw_access_token');
   if(token && myId) {
     fetch(CUBE_API+'/dm/'+userId, {headers:{Authorization:'Bearer '+token}})
-      .then(r=>r.json()).then(msgs=>{
+      .then(r=>r.ok?r.json():null).then(msgs=>{
         if(!msgs||!msgs.length) return;
-        const existing = app.chatMessages[cid][dmKey]||[];
-        if(existing.length) return;
-        app.chatMessages[cid][dmKey] = msgs.map(m=>({
-          id: m.id,
-          sender: String(m.from_user_id)===String(myId) ? 'me' : 'them',
-          author: displayName,
-          text: m.content,
-          time: new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
-          type: m.msg_type||'text',
-          fileName: m.file_name, fileSize: m.file_size, duration: m.duration,
-          reactions: {}
-        }));
+        // Merge server messages with any locally-added ones
+        const local = _dmStore(dmKey).filter(m=>!m.id); // unsent/local-only
+        app.chatMessages[_DM_NAMESPACE][dmKey] = [
+          ...msgs.map(m=>({
+            id: m.id,
+            sender: String(m.from_user_id)===String(myId) ? 'me' : 'them',
+            author: String(m.from_user_id)===String(myId) ? 'Я' : displayName,
+            text: m.content,
+            time: new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+            type: m.msg_type||'text',
+            fileName: m.file_name, fileSize: m.file_size, duration: m.duration,
+            reactions: {}
+          })),
+          ...local
+        ];
         if(app.currentRoomId===dmKey) renderChatMsgs(dmKey);
       }).catch(()=>{});
   }
 }
 
 // ── Handle incoming DM ──
+// DMs are stored under the fixed key '__dm__' so they're consistent
+// regardless of which cube either user is currently in.
+const _DM_NAMESPACE = '__dm__';
+function _dmStore(key) {
+  if(!app.chatMessages[_DM_NAMESPACE]) app.chatMessages[_DM_NAMESPACE]={};
+  if(!app.chatMessages[_DM_NAMESPACE][key]) app.chatMessages[_DM_NAMESPACE][key]=[];
+  return app.chatMessages[_DM_NAMESPACE][key];
+}
 function handleIncomingDm(msg, myUserId) {
   const fromId = String(msg.from_user_id);
-  const toId = String(msg.to_user_id);
-  const isMe = String(msg.from_user_id) === String(myUserId);
-  const dmKey = 'dm:' + (isMe ? toId : fromId);
-  const cid = app.currentCubeId;
-  if(!app.chatMessages[cid]) app.chatMessages[cid]={};
-  if(!app.chatMessages[cid][dmKey]) app.chatMessages[cid][dmKey]=[];
-  const time = msg.created_at
+  const toId   = String(msg.to_user_id);
+  const isMe   = fromId === String(myUserId);
+  const dmPeer = isMe ? toId : fromId;
+  const dmKey  = 'dm:' + dmPeer;
+  const time   = msg.created_at
     ? new Date(msg.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}) : '';
-  app.chatMessages[cid][dmKey].push({
+
+  _dmStore(dmKey).push({
     id: msg.id,
     sender: isMe ? 'me' : 'them',
     author: msg.display_name || 'Аноним',
@@ -3417,18 +3425,23 @@ function handleIncomingDm(msg, myUserId) {
     fileData: msg.file_data, duration: msg.duration,
     reactions: {}
   });
+
   // Update sidebar conversation entry
   if(!app.dmConversations) app.dmConversations={};
-  const dmPeer=isMe ? toId : fromId;
-  const dmPeerName=isMe ? (_chatActiveDm?.display_name||toId) : (msg.display_name||'Аноним');
-  const time2=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  const dmPeerName = isMe ? (_chatActiveDm?.display_name||dmPeer) : (msg.display_name||'Аноним');
+  const time2 = new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
   if(!app.dmConversations[dmPeer]) app.dmConversations[dmPeer]={display_name:dmPeerName,lastMsg:'',time:'',unread:0};
-  app.dmConversations[dmPeer].lastMsg=(msg.content||'').slice(0,30);
-  app.dmConversations[dmPeer].time=time2;
-  if(!isMe && app.currentRoomId!==dmKey) app.dmConversations[dmPeer].unread=(app.dmConversations[dmPeer].unread||0)+1;
+  app.dmConversations[dmPeer].lastMsg = (msg.content||'').slice(0,30);
+  app.dmConversations[dmPeer].time    = time2;
+  if(!isMe && app.currentRoomId!==dmKey)
+    app.dmConversations[dmPeer].unread = (app.dmConversations[dmPeer].unread||0)+1;
+
   renderChatRooms(); updateChatBadge();
   if(app.currentRoomId===dmKey) renderChatMsgs(dmKey);
-  else if(!isMe) showToast('💬 DM от '+escHtml(msg.display_name||'кого-то'));
+  else if(!isMe){
+    showToast('💬 DM от '+escHtml(msg.display_name||'кого-то'));
+    pushNotification('💬','Новое сообщение от '+(msg.display_name||'пользователя'));
+  }
 }
 
 // ── Open room ──
@@ -3465,7 +3478,8 @@ function openRoom(roomId){
 function renderChatMsgs(roomId) {
   const el = document.getElementById('ca-msgs'); if(!el) return;
   el.innerHTML='';
-  const msgs = (app.chatMessages[app.currentCubeId]||{})[roomId] || [];
+  const ns = roomId && roomId.startsWith('dm:') ? _DM_NAMESPACE : app.currentCubeId;
+  const msgs = (app.chatMessages[ns]||{})[roomId] || [];
   if(!msgs.length) {
     el.innerHTML='<div class="ca-empty">Нет сообщений. Напиши первым! 👋</div>'; return;
   }
@@ -3695,9 +3709,11 @@ function sendChatMsg() {
 }
 
 function addCubeRoomMsg(msg, overrideRid) {
-  const cid=app.currentCubeId, rid=overrideRid||app.currentRoomId;
-  if(!app.chatMessages[cid])app.chatMessages[cid]={};
-  if(!app.chatMessages[cid][rid])app.chatMessages[cid][rid]=[];
+  const rid = overrideRid || app.currentRoomId;
+  // DMs always go into the __dm__ namespace (cube-independent)
+  const cid = rid && rid.startsWith('dm:') ? _DM_NAMESPACE : app.currentCubeId;
+  if(!app.chatMessages[cid]) app.chatMessages[cid]={};
+  if(!app.chatMessages[cid][rid]) app.chatMessages[cid][rid]=[];
   app.chatMessages[cid][rid].push(msg);
 }
 
