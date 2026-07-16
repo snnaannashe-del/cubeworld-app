@@ -2859,9 +2859,19 @@ async function submitJoinKey(){
   if(!key || key.length < 14){ errEl.textContent='Введи полный ключ (CK-XXXX-XXXX-XXXX)'; errEl.style.display='block'; return; }
   errEl.style.display='none';
   btn.textContent='Проверяю…'; btn.disabled=true;
-  const res = await apiCall('/cubes/join',{method:'POST',body:JSON.stringify({cube_key:key})});
+  // Use raw fetch to get error details from server
+  let res=null, errMsg='Ключ не найден или куб истёк';
+  try{
+    const token=localStorage.getItem('cw_access_token');
+    const headers={'Content-Type':'application/json'};
+    if(token) headers['Authorization']='Bearer '+token;
+    const r=await fetch(API_BASE+'/cubes/join',{method:'POST',headers,body:JSON.stringify({cube_key:key})});
+    const data=await r.json();
+    if(r.ok){ res=data; }
+    else { errMsg=data?.detail||'Ошибка сервера '+r.status; }
+  }catch(e){ errMsg='Нет соединения с сервером'; }
   btn.textContent='Войти →'; btn.disabled=false;
-  if(!res||res.detail){ errEl.textContent=res?.detail||'Ключ не найден или куб истёк'; errEl.style.display='block'; return; }
+  if(!res){ errEl.textContent=errMsg; errEl.style.display='block'; return; }
   // Cube found — add to world and enter
   const cubeId = 'bc'+res.id;
   if(!app.cubes.find(c=>c.id===cubeId)){
