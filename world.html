@@ -116,8 +116,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .wl-icon{font-size:15px;line-height:1;user-select:none}.wl-name{font-size:10px;font-weight:700;color:#e0e0f8;white-space:nowrap;user-select:none}.wl-timer{user-select:none}.wl-own{font-size:8px;font-weight:800;color:#fff;background:var(--col,#0095F6);border-radius:4px;padding:1px 5px;letter-spacing:.5px}
 .wl-timer{font-size:9px;color:var(--col,var(--text2));font-family:'Courier New',monospace;font-weight:600}
 #world-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text3);pointer-events:none;white-space:nowrap}
-#world-fab{position:absolute;bottom:20px;right:20px;z-index:10}
-#world-fab button{width:46px;height:46px;border-radius:50%;background:rgba(0,149,246,.65);border:1px solid rgba(0,149,246,.85);color:#fff;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 4px 24px rgba(0,149,246,.35)}
+#world-fab{position:absolute;bottom:20px;right:20px;z-index:10;display:flex;flex-direction:column;gap:8px;align-items:center}
+#world-fab button{width:46px;height:46px;border-radius:50%;background:rgba(0,149,246,.65);border:1px solid rgba(0,149,246,.85);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 4px 24px rgba(0,149,246,.25)}
 #world-fab button:hover{transform:scale(1.08);background:rgba(0,149,246,.85)}
 
 /* ── UNIVERSE MANAGER ── */
@@ -1239,6 +1239,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div id="cube-tooltip"><div class="ct-inner" id="ct-inner"></div></div>
     <div id="world-fab">
       <button onclick="openUniverseManager()" title="Моя вселенная / Создать куб" style="font-size:20px">⬡</button>
+      <button onclick="openModal('modal-join-key')" title="Войти по ключу куба" style="font-size:16px;background:rgba(0,149,246,.18);border-color:rgba(0,149,246,.4)">🔑</button>
     </div>
   </div>
 </section>
@@ -1263,6 +1264,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <span style="font-size:10px;color:var(--text3)">CUBE</span>
     </div>
     <button id="members-toggle-btn" onclick="toggleMembersPanel()">👥</button>
+    <button id="itb-cube-key-btn" onclick="showCubeKeyPanel()" title="Ключ куба (Key 2)" style="display:none;font-size:14px;padding:4px 10px;border-radius:14px;background:rgba(0,149,246,.15);border:1px solid rgba(0,149,246,.35);color:var(--accent);cursor:pointer">🔑 Key 2</button>
     <div id="notif-bell" onclick="toggleNotifications()">🔔<div class="notif-badge" id="notif-count" style="display:none">0</div>
       <div class="notif-dropdown" id="notif-dropdown"></div>
     </div>
@@ -1591,15 +1593,80 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 <div class="modal-backdrop" id="modal-create-cube">
   <div class="modal">
     <h3>✦ Создать куб</h3>
-    <label>Название</label><input type="text" id="cc-name" placeholder="Мой куб" maxlength="32">
-    <label>Тип</label>
-    <select id="cc-type"><option value="public">Публичный</option><option value="private">Приватный (по ключу)</option></select>
-    <label>Ключ входа</label><input type="text" id="cc-key" placeholder="CUBE-XXXX" class="mono">
-    <label>Время жизни</label>
-    <select id="cc-life"><option value="1800">30 минут</option><option value="3600">1 час</option><option value="86400" selected>24 часа</option><option value="604800">7 дней</option></select>
+    <label>Название</label>
+    <input type="text" id="cc-name" placeholder="Мой куб" maxlength="32">
+    <label>Тип куба</label>
+    <select id="cc-type">
+      <option value="public">🌐 Публичный — виден всем в мире</option>
+      <option value="private">🔒 Приватный — только по ключу</option>
+    </select>
+    <label>Время жизни куба</label>
+    <select id="cc-life">
+      <option value="1">1 час</option>
+      <option value="6">6 часов</option>
+      <option value="24" selected>24 часа</option>
+      <option value="72">3 дня</option>
+      <option value="168">7 дней</option>
+      <option value="720">30 дней</option>
+    </select>
+    <div style="margin-top:10px;padding:10px 12px;background:rgba(0,149,246,.08);border:1px solid rgba(0,149,246,.2);border-radius:9px;font-size:11.5px;color:var(--text2)">
+      🔑 После создания ты получишь <strong style="color:var(--accent)">Key 2</strong> — временный ключ куба.<br>
+      Он действует всё время жизни куба. Поделись им с теми, кого хочешь пустить внутрь.
+    </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('modal-create-cube')">Отмена</button>
-      <button class="btn btn-accent" onclick="submitCreateCube()">Создать</button>
+      <button class="btn btn-accent" onclick="submitCreateCube()">Создать куб →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cube Key Modal (shown after creation) -->
+<div class="modal-backdrop" id="modal-cube-key">
+  <div class="modal" style="max-width:400px">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:40px;margin-bottom:8px" id="ck-icon">🧊</div>
+      <h3 style="margin:0" id="ck-name">Куб создан!</h3>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px" id="ck-life-label">Действует 24 часа</div>
+    </div>
+    <!-- Key display -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">🔑 Key 2 — ключ куба</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div id="ck-key-display" style="flex:1;font-family:'Courier New',monospace;font-size:17px;font-weight:900;color:var(--accent);letter-spacing:.12em;background:rgba(0,149,246,.08);border:1.5px solid rgba(0,149,246,.3);border-radius:9px;padding:12px 14px;word-break:break-all">CK-????-????-????</div>
+        <button onclick="copyCubeKey()" style="padding:12px;border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.05);color:var(--text2);cursor:pointer;font-size:18px;transition:all .15s" title="Копировать">📋</button>
+      </div>
+    </div>
+    <!-- Invite link -->
+    <div style="margin-bottom:16px">
+      <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">🔗 Ссылка-инвайт</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div id="ck-invite-url" style="flex:1;font-size:11px;color:var(--text2);background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:8px 10px;word-break:break-all;font-family:'Courier New',monospace"></div>
+        <button onclick="copyInviteUrl()" style="padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:rgba(255,255,255,.05);color:var(--text2);cursor:pointer;font-size:14px">🔗</button>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;margin-bottom:14px">
+      ⚠️ Сохрани ключ — он не восстанавливается, но всегда виден в настройках куба.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-cube-key')">Закрыть</button>
+      <button class="btn btn-accent" onclick="closeModal('modal-cube-key');enterInterior(window._newCubeId)">Войти в куб →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Join by Key Modal -->
+<div class="modal-backdrop" id="modal-join-key">
+  <div class="modal" style="max-width:380px">
+    <h3>🔑 Войти по ключу куба</h3>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px">Введи Key 2, который тебе прислали. Ключ действует пока живёт куб.</div>
+    <label>Ключ куба</label>
+    <input type="text" id="jk-input" placeholder="CK-XXXX-XXXX-XXXX" class="mono" maxlength="20"
+      style="font-family:'Courier New',monospace;font-size:15px;letter-spacing:.08em;text-transform:uppercase"
+      oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')submitJoinKey()">
+    <div id="jk-error" style="font-size:11px;color:var(--red);margin-top:6px;display:none"></div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn btn-ghost" onclick="closeModal('modal-join-key')">Отмена</button>
+      <button class="btn btn-accent" id="jk-submit-btn" onclick="submitJoinKey()">Войти →</button>
     </div>
   </div>
 </div>
@@ -2728,11 +2795,100 @@ async function submitCreateCube(){
   if(res && res.id){
     cube.backendId = res.id;
     cube.id = 'bc'+res.id;
-    showToast('✓ Куб синхронизирован с сервером');
-    // re-fetch to ensure world has correct IDs
+    // Show Key 2 modal
+    if(res.cube_key){
+      cube.cubeKey = res.cube_key;
+      showCubeKeyModal(res.cube_key, name, life_hours, cube.icon, cube.id);
+    } else {
+      showToast('✓ Куб синхронизирован с сервером');
+    }
     setTimeout(syncFromBackend, 1000);
   }
 }
+
+function showCubeKeyModal(key, name, lifeH, icon, cubeId){
+  window._newCubeId = cubeId;
+  window._newCubeKey = key;
+  document.getElementById('ck-icon').textContent = icon||'🧊';
+  document.getElementById('ck-name').textContent = '«'+name+'» создан!';
+  const lifeLabel = lifeH<=1?'1 час':lifeH<=6?lifeH+' часов':lifeH<=24?'24 часа':lifeH<=72?'3 дня':lifeH<=168?'7 дней':'30 дней';
+  document.getElementById('ck-life-label').textContent = 'Key 2 действует '+lifeLabel+' — пока живёт куб';
+  document.getElementById('ck-key-display').textContent = key;
+  const baseUrl = location.href.split('?')[0];
+  const inviteUrl = baseUrl+'?joinkey='+encodeURIComponent(key);
+  document.getElementById('ck-invite-url').textContent = inviteUrl;
+  window._inviteUrl = inviteUrl;
+  openModal('modal-cube-key');
+}
+function copyCubeKey(){
+  navigator.clipboard.writeText(window._newCubeKey||'').then(()=>showToast('🔑 Key 2 скопирован!'));
+}
+function copyInviteUrl(){
+  navigator.clipboard.writeText(window._inviteUrl||'').then(()=>showToast('🔗 Ссылка скопирована!'));
+}
+
+async function showCubeKeyPanel(){
+  // Creator retrieves current cube key from backend
+  const cube = app.cubes.find(c=>c.id===app.currentCubeId);
+  if(!cube) return;
+  const bid = cube.backendId || parseInt((cube.id||'').replace('bc',''));
+  if(!bid){ showToast('🔑 Ключ: '+( cube.cubeKey||'нет')); return; }
+  // Try to get from server
+  const res = await apiCall('/cubes/'+bid+'/key');
+  const key = res?.cube_key || cube.cubeKey;
+  if(!key){ showToast('❌ Только создатель видит ключ'); return; }
+  // Reuse the key modal
+  window._newCubeKey = key;
+  window._newCubeId = app.currentCubeId;
+  document.getElementById('ck-icon').textContent = cube.icon||'🧊';
+  document.getElementById('ck-name').textContent = 'Key 2 куба «'+(cube.name||'Куб')+'»';
+  document.getElementById('ck-life-label').textContent = 'Действует пока куб активен';
+  document.getElementById('ck-key-display').textContent = key;
+  const baseUrl = location.href.split('?')[0];
+  const inviteUrl = baseUrl+'?joinkey='+encodeURIComponent(key);
+  document.getElementById('ck-invite-url').textContent = inviteUrl;
+  window._inviteUrl = inviteUrl;
+  openModal('modal-cube-key');
+}
+
+async function submitJoinKey(){
+  const inp = document.getElementById('jk-input');
+  const errEl = document.getElementById('jk-error');
+  const btn = document.getElementById('jk-submit-btn');
+  const key = (inp?.value||'').trim().toUpperCase();
+  if(!key || key.length < 14){ errEl.textContent='Введи полный ключ (CK-XXXX-XXXX-XXXX)'; errEl.style.display='block'; return; }
+  errEl.style.display='none';
+  btn.textContent='Проверяю…'; btn.disabled=true;
+  const res = await apiCall('/cubes/join',{method:'POST',body:JSON.stringify({cube_key:key})});
+  btn.textContent='Войти →'; btn.disabled=false;
+  if(!res||res.detail){ errEl.textContent=res?.detail||'Ключ не найден или куб истёк'; errEl.style.display='block'; return; }
+  // Cube found — add to world and enter
+  const cubeId = 'bc'+res.id;
+  if(!app.cubes.find(c=>c.id===cubeId)){
+    const cube={id:cubeId, backendId:res.id, name:res.name, icon:res.icon||'🧊', col:res.color||'#0095F6',
+                colorCss:res.color||'#0095F6', type:res.type, life:res.life_left||3600, desc:'Вошёл по ключу', cubeKey:key};
+    app.cubes.push(cube);
+    if(wDone) addCubeToWorld(cube);
+  }
+  closeModal('modal-join-key');
+  inp.value='';
+  showToast('✅ Куб найден! Входишь…');
+  setTimeout(()=>enterInterior(cubeId), 400);
+}
+
+// Auto-join on page load if ?joinkey= in URL
+(function checkJoinKey(){
+  const params=new URLSearchParams(location.search);
+  const jk=params.get('joinkey');
+  if(!jk) return;
+  // Wait for app to load then trigger join
+  setTimeout(()=>{
+    document.getElementById('jk-input').value=jk.toUpperCase();
+    openModal('modal-join-key');
+    showToast('🔑 Обнаружен ключ куба — проверяем…');
+    submitJoinKey();
+  },2000);
+})();
 
 // ════════════════════════════════════════════════
 //  INTERIOR — ENTER / EXIT
@@ -2744,6 +2900,9 @@ function enterInterior(cubeId){
   document.getElementById('itb-name').textContent=cube?cube.name:'Куб';
   const _mkEl=document.getElementById('itb-mykey'); if(_mkEl)_mkEl.textContent=app.userKey?app.userKey.slice(0,12)+'…':'';
   document.getElementById('itb-timer').style.color='var(--cyan)';
+  // Show Key 2 button only for cube owner
+  const keyBtn=document.getElementById('itb-cube-key-btn');
+  if(keyBtn) keyBtn.style.display = (cube&&cube.isOwn)?'':'none';
   showView('v-int');
   initInteriorData(cubeId);
   switchSection('feed',document.querySelector('.sn-item.active'));
