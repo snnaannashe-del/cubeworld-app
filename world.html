@@ -2010,6 +2010,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div style="text-align:center;margin-bottom:8px">
       <div id="mpe-cur-avatar" style="font-size:52px;margin-bottom:4px">👤</div>
       <div id="mpe-cur-key" style="font-size:11px;font-family:'Courier New',monospace;color:var(--text2)"></div>
+      <div id="mpe-cur-uid" style="font-size:11px;color:var(--text3);margin-top:2px;cursor:pointer"
+           onclick="copyMyUid()" title="Нажми чтобы скопировать"></div>
     </div>
     <!-- My stats -->
     <div class="my-stats-grid" id="mpe-stats-grid">
@@ -4831,6 +4833,14 @@ function suiBlock(uid, name){
   if(card) card.remove();
 }
 
+function copyMyUid(){
+  const uid = localStorage.getItem('cw_user_id');
+  if(!uid) return;
+  navigator.clipboard.writeText('#'+uid).then(()=>showToast('📋 UID #'+uid+' скопирован')).catch(()=>{
+    prompt('Твой UID для поиска:', '#'+uid);
+  });
+}
+
 // ── ENTITY TABS ─────────────────────────────────
 // ── Entity tab rendering (async for users/cubes — calls real API) ──────────
 async function buildEntityTab(type){
@@ -4846,14 +4856,21 @@ async function buildEntityTab(type){
         <div style="font-size:12px;color:var(--text3);line-height:1.8">
           <b style="color:var(--accent)">@anna</b> — поиск по юзернейму<br>
           <b style="color:var(--accent)">#42</b> — прямой UID<br>
-          <b style="color:var(--accent)">Анна</b> — поиск по имени
+          <b style="color:var(--accent)">Анна</b> — поиск по имени / нику<br>
+          <b style="color:var(--accent)">CUBE-3IWU</b> — поиск по ключу
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:10px;padding:6px 10px;background:rgba(255,255,255,.04);border-radius:8px">
+          💡 Свой UID смотри в <b style="color:var(--accent)">Профиле</b>
         </div>
       </div>`; return;
     }
     body.innerHTML=`<div class="srch-empty" style="padding:20px"><span class="srch-ai-typing"><span></span><span></span><span></span></span></div>`;
-    const res=await apiCall('/users/search?q='+encodeURIComponent(q)+'&limit=20');
+    let res=await apiCall('/users/search?q='+encodeURIComponent(q)+'&limit=20');
     if(!res||!res.length){
-      body.innerHTML=`<div class="srch-empty"><span class="srch-empty-icon">👤</span>Пользователь не найден</div>`; return;
+      body.innerHTML=`<div class="srch-empty"><span class="srch-empty-icon">👤</span>
+        <div>Пользователь не найден</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px">Попробуй <b>#UID</b> или полное имя</div>
+      </div>`; return;
     }
     body.innerHTML=`<div style="padding:6px 0">${res.map(u=>renderUserSearchCard(u)).join('')}</div>`; return;
   }
@@ -6246,6 +6263,9 @@ async function openMyProfile(){
   const p=app.myProfile;
   document.getElementById('mpe-cur-avatar').textContent=p.avatar;
   document.getElementById('mpe-cur-key').textContent=app.userKey?app.userKey.slice(0,18)+'…':'';
+  const myUid = localStorage.getItem('cw_user_id');
+  const uidEl = document.getElementById('mpe-cur-uid');
+  if(uidEl && myUid) uidEl.textContent='Мой UID: #'+myUid+' · нажми чтобы скопировать';
   // Load real stats
   const stats=await apiCall('/activity/stats');
   const bal=await apiCall('/cube/balance');
