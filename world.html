@@ -1161,6 +1161,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <span class="itb-name" id="itb-name"></span>
     <span class="itb-enc">🔐 E2E</span>
     <span class="itb-anon">👻 Ghost</span>
+    <button onclick="copyInviteLink()" style="font-size:11px;padding:3px 9px;background:rgba(124,111,205,.18);border:1px solid rgba(124,111,205,.3);border-radius:14px;color:#c4b5fd;cursor:pointer;white-space:nowrap">🔗 Пригласить</button>
     <div class="search-wrap" style="flex:1;margin:0 10px">
       <span class="search-icon">🔍</span>
       <input class="search-input" id="global-search" type="text" placeholder="Поиск постов, чатов, групп…" autocomplete="off" oninput="onSearch(this.value)" onfocus="showSearchResults()" onblur="setTimeout(hideSearchResults,200)">
@@ -1245,14 +1246,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <div id="chat-list">
           <div class="cl-header">
             <h3>💬 Чаты</h3>
-            <button class="cl-new" onclick="openNewChat()" title="Новый чат">+</button>
-          </div>
-          <div class="cl-tabs">
-            <button class="cl-tab active" id="cl-tab-rooms" onclick="switchChatTab('rooms')">Комнаты</button>
-            <button class="cl-tab" id="cl-tab-users" onclick="switchChatTab('users')">Онлайн</button>
+            <button class="cl-new" onclick="openNewDmPrompt()" title="Новый чат">✏️</button>
           </div>
           <div class="cl-scroll" id="chat-rooms-list"></div>
-          <div class="cl-scroll" id="chat-users-list" style="display:none"></div>
         </div>
         <div id="chat-area">
           <div class="ca-header" id="ca-header" style="display:none">
@@ -1368,8 +1364,49 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
       <!-- EARN -->
       <div class="int-section" id="sec-earn">
-        <div class="earn-header">
-          <h2>💰 Заработать CUBE</h2>
+        <!-- PREMIUM REWARD BANNER -->
+        <div id="earn-premium-banner" style="margin:16px;border-radius:14px;padding:16px 18px;background:linear-gradient(135deg,rgba(124,111,205,.25),rgba(34,211,238,.15));border:1px solid rgba(124,111,205,.35)">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+            <div>
+              <div style="font-size:15px;font-weight:800;color:#e0e0f8">💎 Программа наград</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:3px">Premium → зарабатывай до <span style="color:var(--gold);font-weight:700">$5 000/мес</span></div>
+            </div>
+            <button id="earn-premium-btn" onclick="openPremiumModal()" style="padding:8px 18px;background:linear-gradient(135deg,#7c6fcd,#22d3ee);border:none;border-radius:20px;color:#fff;font-weight:700;font-size:12px;cursor:pointer">Стать Premium $6.99/мес</button>
+          </div>
+          <div id="earn-reward-stats" style="display:none;margin-top:14px">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center">
+              <div style="background:rgba(0,0,0,.2);border-radius:10px;padding:10px 6px">
+                <div style="font-size:18px;font-weight:800;color:var(--gold)" id="earn-est-usd">$0</div>
+                <div style="font-size:10px;color:var(--text3)">Оценка мес.</div>
+              </div>
+              <div style="background:rgba(0,0,0,.2);border-radius:10px;padding:10px 6px">
+                <div style="font-size:18px;font-weight:800;color:var(--cyan)" id="earn-score">0</div>
+                <div style="font-size:10px;color:var(--text3)">Очки</div>
+              </div>
+              <div style="background:rgba(0,0,0,.2);border-radius:10px;padding:10px 6px">
+                <div style="font-size:18px;font-weight:800;color:var(--green)" id="earn-online-hrs">0ч</div>
+                <div style="font-size:10px;color:var(--text3)">Онлайн</div>
+              </div>
+            </div>
+            <div style="margin-top:10px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center">
+              <div style="font-size:11px;color:var(--text2)">💬 <span id="earn-msgs">0</span> сообщ.</div>
+              <div style="font-size:11px;color:var(--text2)">📝 <span id="earn-posts">0</span> постов</div>
+              <div style="font-size:11px;color:var(--text2)">🔥 <span id="earn-reacts">0</span> реакций</div>
+              <div style="font-size:11px;color:var(--text2)">🔗 <span id="earn-invites">0</span> приглаш.</div>
+            </div>
+            <button onclick="openRewardClaimModal()" style="margin-top:12px;width:100%;padding:10px;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);border-radius:10px;color:var(--gold);font-weight:700;font-size:13px;cursor:pointer">💰 Запросить выплату</button>
+          </div>
+        </div>
+
+        <!-- WALLET CONNECTION -->
+        <div style="padding:0 16px 8px">
+          <div style="font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">🔗 Подключённые кошельки</div>
+          <div id="earn-wallets-list" style="margin-bottom:10px"></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px" id="earn-wallet-btns"></div>
+        </div>
+
+        <div class="earn-header" style="margin-top:12px">
+          <h2>⛏️ Баланс</h2>
           <div class="earn-balance">
             <div>
               <div class="eb-main" id="earn-bal-display">250</div>
@@ -1379,9 +1416,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         </div>
         <div class="streak-card" id="streak-card"></div>
         <div class="mining-bar" id="mining-bar">
-          <div class="mb-title"><span>⛏️ Майнинг активен</span><span style="color:var(--cyan)" id="mine-rate">+0.8 CUBE/мин</span></div>
+          <div class="mb-title"><span>⛏️ Онлайн-время</span><span style="color:var(--cyan)" id="mine-rate">+1 очко/мин</span></div>
           <div class="mb-bar-wrap"><div class="mb-bar" id="mine-progress" style="width:0%"></div></div>
-          <div class="mb-rate" id="mine-next">До следующей награды: 45 сек</div>
+          <div class="mb-rate" id="mine-next">Сиди в приложении — зарабатывай очки</div>
         </div>
         <div class="earn-grid" id="earn-cards"></div>
         <div style="padding:0 16px;font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Ежедневные задания</div>
@@ -1750,6 +1787,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div class="mpe-avatar-grid" id="mpe-avatar-grid"></div>
     <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:10px">Статус</label>
     <div class="mpe-status-row" id="mpe-status-row"></div>
+    <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:10px">Имя / Ник</label>
+    <input id="mpe-display-name" type="text" maxlength="40" placeholder="Как тебя называть в чате?" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;color:#e0e0f8;padding:8px 12px;font-size:12.5px;font-family:inherit;outline:none;box-sizing:border-box">
     <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:10px">Bio / Описание</label>
     <textarea id="mpe-bio" rows="2" maxlength="120" placeholder="Пару слов о себе..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;color:#e0e0f8;padding:8px 12px;font-size:12.5px;font-family:inherit;resize:none;outline:none"></textarea>
     <div style="font-size:10px;color:var(--text3);margin-top:4px;text-align:right"><span id="mpe-bio-count">0</span>/120</div>
@@ -1757,6 +1796,57 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <button class="btn btn-ghost" onclick="closeModal('modal-my-profile')">Отмена</button>
       <button class="btn btn-accent" onclick="saveMyProfile()">💾 Сохранить</button>
     </div>
+  </div>
+</div>
+
+<!-- Premium Modal -->
+<div class="modal-backdrop" id="modal-premium">
+  <div class="modal" style="max-width:420px">
+    <h3>💎 Premium подписка</h3>
+    <div style="background:linear-gradient(135deg,rgba(124,111,205,.2),rgba(34,211,238,.1));border:1px solid rgba(124,111,205,.3);border-radius:12px;padding:16px;margin-bottom:16px;text-align:center">
+      <div style="font-size:32px;font-weight:900;color:var(--gold)">$6.99<span style="font-size:14px;color:var(--text2);font-weight:400">/мес</span></div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px">Или $59.99/год (экономия 29%)</div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px">Что входит:</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="font-size:13px">💰 <b>Ежемесячные выплаты</b> до $5,000 USD</div>
+        <div style="font-size:13px">🔗 Подключение кошельков (MetaMask, Coinbase, Trust…)</div>
+        <div style="font-size:13px">📊 Статистика активности и рейтинг</div>
+        <div style="font-size:13px">⚡ Приоритет в системе сигналов</div>
+        <div style="font-size:13px">🏆 Значок Premium в профиле и чате</div>
+        <div style="font-size:13px">🔐 Закрытые Premium-кубы</div>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px">Оплата через кошелёк</div>
+    <div id="premium-wallet-connect" style="margin-bottom:14px">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Сначала подключи кошелёк:</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="premium-wallet-btns"></div>
+    </div>
+    <div id="premium-connected-wallet" style="display:none;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px">
+      ✅ Кошелёк: <span id="premium-wallet-addr" style="font-family:monospace;color:var(--green)"></span>
+    </div>
+    <button onclick="buyPremium(1)" style="width:100%;padding:13px;background:linear-gradient(135deg,#7c6fcd,#22d3ee);border:none;border-radius:10px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-bottom:8px">Оплатить $6.99 через кошелёк</button>
+    <button onclick="buyPremiumDemo()" style="width:100%;padding:10px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;color:var(--text2);font-size:12px;cursor:pointer">🧪 Демо-активация (тест)</button>
+    <div class="modal-actions" style="margin-top:10px"><button class="btn btn-ghost" onclick="closeModal('modal-premium')">Закрыть</button></div>
+  </div>
+</div>
+
+<!-- Reward Claim Modal -->
+<div class="modal-backdrop" id="modal-reward-claim">
+  <div class="modal" style="max-width:400px">
+    <h3>💰 Запросить выплату</h3>
+    <div style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:14px;margin-bottom:16px">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:6px">Оценка за текущий месяц:</div>
+      <div style="font-size:28px;font-weight:900;color:var(--gold)" id="claim-usd-display">$0.00</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">Итоговая сумма рассчитывается в конце месяца</div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px">Адрес для выплаты</div>
+    <div id="claim-wallet-list" style="margin-bottom:10px"></div>
+    <input id="claim-custom-addr" type="text" placeholder="или введи адрес вручную (0x...)" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;color:#e0e0f8;padding:9px 12px;font-size:12px;font-family:monospace;outline:none;box-sizing:border-box;margin-bottom:14px">
+    <div style="font-size:11px;color:var(--text3);margin-bottom:14px">⚡ Выплата в USDT на Polygon в течение 24ч после обработки. Минимум $1.</div>
+    <button onclick="submitRewardClaim()" style="width:100%;padding:12px;background:linear-gradient(135deg,#7c6fcd,var(--gold));border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer">Запросить выплату</button>
+    <div class="modal-actions" style="margin-top:8px"><button class="btn btn-ghost" onclick="closeModal('modal-reward-claim')">Отмена</button></div>
   </div>
 </div>
 
@@ -2393,6 +2483,13 @@ function enterWorld(){
   syncFromBackend();
   // Refresh stats every 60s
   if(!window._statInterval) window._statInterval = setInterval(syncFromBackend, 60000);
+  // Keep-alive: ping Render free tier every 4 min to prevent sleep
+  if(!window._keepAlive) window._keepAlive = setInterval(()=>fetch(CUBE_API+'/health').catch(()=>{}), 4*60*1000);
+  // Activity ping: track online time every 60s for reward system
+  if(!window._actPing) window._actPing = setInterval(()=>{
+    const tok=localStorage.getItem('cw_access_token');
+    if(tok) fetch(CUBE_API+'/activity/ping',{method:'POST',headers:{Authorization:'Bearer '+tok}}).catch(()=>{});
+  }, 60*1000);
 }
 
 document.addEventListener('mousemove',e=>{const t=document.getElementById('cube-tooltip');if(t.style.display==='block'){t.style.left=(e.clientX+14)+'px';t.style.top=(e.clientY-20)+'px';}});
@@ -2482,21 +2579,18 @@ function initInteriorData(cubeId){
     {id:'p7',author:'XOXO•••CUBE',avatar:'🌊',time:'1ч',text:'Дефляция в Японии продолжается. Иена ослабевает. Следи за USD/JPY.',reactions:{eyes:45,thinking:29},type:'signal'},
   ];
 
-  // Chat rooms
+  // Chat rooms — minimal real structure (TG-style)
   if(!app.chatMessages[cubeId]) app.chatMessages[cubeId]={};
   const cid=cubeId;
   const rooms=[
-    {id:'r0',name:'Общий чат',icon:'💬',type:'group',members:47,lastMsg:'кто что думает про btc?',time:'1м',unread:3},
-    {id:'r1',name:'Сигналы',icon:'📊',type:'group',members:23,lastMsg:'LONG BTC @ 84200',time:'3м',unread:0},
-    {id:'r2',name:'DM: Ghost',icon:'👻',type:'dm',lastMsg:'увидимся там...',time:'7м',unread:1},
-    {id:'r3',name:'NFT Drop',icon:'🎨',type:'group',members:8,lastMsg:'5 мест осталось',time:'12м',unread:0},
-    {id:'r4',name:'ИИ разработка',icon:'🧠',type:'group',members:31,lastMsg:'запустили тест GPT wrapper',time:'25м',unread:2},
+    {id:'saved',  name:'Избранное', icon:'⭐', type:'saved',  lastMsg:'Твои сохранённые сообщения', time:'', unread:0},
+    {id:'r0',     name:'Общий чат', icon:'💬', type:'group',  members:0, lastMsg:'', time:'', unread:0},
   ];
   app.chatRooms=rooms;
-  if(!app.chatMessages[cid]){app.chatMessages[cid]={};}
-  rooms.forEach(r=>{
-    if(!app.chatMessages[cid][r.id]) app.chatMessages[cid][r.id]=getSeedMessages(r);
-  });
+  if(!app.chatMessages[cid]) app.chatMessages[cid]={};
+  if(!app.chatMessages[cid]['saved']) app.chatMessages[cid]['saved']=[];
+  if(!app.chatMessages[cid]['r0'])    app.chatMessages[cid]['r0']=[];
+  app.dmConversations = app.dmConversations||{}; // {userId: {display_name, lastMsg, time, unread}}
 
   // Channels
   app.channels=[
@@ -2619,6 +2713,13 @@ function switchSection(name,el){
   // Load real data from backend when switching tabs
   if(name==='feed')    { renderFeed(); loadRealPosts(); }
   if(name==='signals') { renderSignals(); loadRealSignals(); }
+  // Clear chat badge when entering chat section
+  if(name==='chat'){
+    const el2=document.getElementById('sn-badge-chat');
+    if(el2) el2.style.display='none';
+  }
+  // Load real earn stats when opening earn section
+  if(name==='earn'){ loadEarnStats(); renderEarnWallets(); }
 }
 
 // renderFeed defined later (enhanced version with tip button)
@@ -2739,41 +2840,90 @@ let _chatOnlineUsers = []; // [{user_id, display_name}]
 let _typingTimer = null;
 let _typingSendTimer = null;
 
-// ── Tab switching ──
-function switchChatTab(tab) {
-  document.getElementById('cl-tab-rooms').classList.toggle('active', tab==='rooms');
-  document.getElementById('cl-tab-users').classList.toggle('active', tab==='users');
-  document.getElementById('chat-rooms-list').style.display = tab==='rooms' ? '' : 'none';
-  document.getElementById('chat-users-list').style.display = tab==='users' ? '' : 'none';
+// ── Tab switching (kept for compat) ──
+function switchChatTab(tab) {}
+
+// ── Render chat list (Telegram-style) ──
+function renderChatRooms(){
+  const el=document.getElementById('chat-rooms-list'); if(!el) return;
+  el.innerHTML='';
+
+  // 1. ⭐ Избранное — always first
+  const saved=(app.chatRooms||[]).find(r=>r.id==='saved');
+  if(saved) {
+    const msgs=(app.chatMessages[app.currentCubeId]||{})['saved']||[];
+    const last=msgs.length ? (msgs[msgs.length-1].text||'').slice(0,32) : 'Твои сохранённые сообщения';
+    el.appendChild(_makeChatRow({id:'saved',name:'Избранное',icon:'⭐',lastMsg:last,time:'',unread:0},
+      ()=>openRoom('saved')));
+  }
+
+  // 2. ЛС — section header + DM conversations
+  const dmEntries=Object.entries(app.dmConversations||{});
+  if(dmEntries.length) {
+    el.appendChild(_chatSectionLabel('Личные сообщения'));
+    dmEntries.forEach(([uid,info])=>{
+      el.appendChild(_makeChatRow(
+        {id:'dm:'+uid, name:info.display_name, icon:'👤',
+         lastMsg:info.lastMsg||'', time:info.time||'', unread:info.unread||0},
+        ()=>openDmWith(uid, info.display_name)));
+    });
+  }
+
+  // 3. Онлайн — people in this cube (show as DM-startable)
+  const myId=localStorage.getItem('cw_user_id');
+  const others=(_chatOnlineUsers||[]).filter(u=>String(u.user_id)!==String(myId));
+  if(others.length) {
+    el.appendChild(_chatSectionLabel('Онлайн в кубе'));
+    others.forEach(u=>{
+      const hasDm=!!(app.dmConversations||{})[u.user_id];
+      if(!hasDm) {
+        const row=_makeChatRow(
+          {id:'online:'+u.user_id, name:u.display_name, icon:'🟢',
+           lastMsg:'Нажми чтобы написать', time:'', unread:0},
+          ()=>openDmWith(u.user_id, u.display_name));
+        el.appendChild(row);
+      }
+    });
+  }
+
+  // 4. Группы куба
+  const groups=(app.chatRooms||[]).filter(r=>r.type==='group');
+  if(groups.length) {
+    el.appendChild(_chatSectionLabel('Группы куба'));
+    groups.forEach(r=>{
+      const msgs=(app.chatMessages[app.currentCubeId]||{})[r.id]||[];
+      const last=msgs.length?(msgs[msgs.length-1].text||'').slice(0,32):r.lastMsg||'';
+      const unread=r.unread||0;
+      el.appendChild(_makeChatRow({...r,lastMsg:last,unread},()=>openRoom(r.id)));
+    });
+  }
 }
 
-// ── Render room list ──
-function renderChatRooms(){
-  const el=document.getElementById('chat-rooms-list'); el.innerHTML='';
-  (app.chatRooms||[]).forEach(r=>{
-    const div=document.createElement('div'); div.className='cl-room'; div.onclick=()=>openRoom(r.id);
-    div.innerHTML=`<div class="cl-room-icon">${r.icon}</div>
-      <div class="cl-room-info"><div class="cl-room-name">${r.name}</div><div class="cl-room-last">${escHtml(r.lastMsg||'')}</div></div>
-      <div class="cl-room-meta"><div class="cl-room-time">${r.time||''}</div>${r.unread?`<div class="cl-room-unread">${r.unread}</div>`:''}</div>`;
-    el.appendChild(div);
-  });
+function _makeChatRow(r, onclick) {
+  const div=document.createElement('div');
+  div.className='cl-room'; div.onclick=onclick;
+  div.dataset.chatId=r.id;
+  div.innerHTML=`<div class="cl-room-icon">${r.icon}</div>
+    <div class="cl-room-info">
+      <div class="cl-room-name">${escHtml(r.name)}</div>
+      <div class="cl-room-last">${escHtml(r.lastMsg||'')}</div>
+    </div>
+    <div class="cl-room-meta">
+      <div class="cl-room-time">${r.time||''}</div>
+      ${r.unread?`<div class="cl-room-unread">${r.unread}</div>`:''}
+    </div>`;
+  return div;
+}
+function _chatSectionLabel(text) {
+  const div=document.createElement('div');
+  div.style.cssText='padding:8px 12px 4px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em';
+  div.textContent=text; return div;
 }
 
 // ── Online users panel ──
 function updateOnlineUsersList(users) {
   _chatOnlineUsers = users || [];
-  const el = document.getElementById('chat-users-list'); if(!el) return;
-  const myId = localStorage.getItem('cw_user_id');
-  const others = _chatOnlineUsers.filter(u => String(u.user_id) !== String(myId));
-  if(!others.length) {
-    el.innerHTML='<div class="cl-empty-users">Никого нет онлайн в этом кубе</div>'; return;
-  }
-  el.innerHTML = others.map(u=>`
-    <div class="cl-user-item" onclick="openDmWith('${u.user_id}','${escHtml(u.display_name)}')">
-      <div class="cl-user-dot"></div>
-      <div class="cl-user-name">${escHtml(u.display_name)}</div>
-      <button class="cl-dm-btn">DM</button>
-    </div>`).join('');
+  renderChatRooms(); // refresh sidebar so "Онлайн в кубе" section updates
 }
 
 // ── Open DM with user ──
@@ -2781,6 +2931,16 @@ function openDmWith(userId, displayName) {
   _chatActiveDm = {user_id: String(userId), display_name: displayName};
   _chatReplyTo = null;
   cancelReply();
+  // Register in dmConversations so it shows in sidebar
+  if(!app.dmConversations) app.dmConversations={};
+  if(!app.dmConversations[userId]) app.dmConversations[userId]={display_name:displayName,lastMsg:'',time:'',unread:0};
+  else app.dmConversations[userId].display_name=displayName;
+  // Mark active in sidebar
+  document.querySelectorAll('.cl-room').forEach(e=>e.classList.remove('active'));
+  document.querySelector(`[data-chat-id="dm:${userId}"]`)?.classList.add('active');
+  // Clear unread for this DM
+  if(app.dmConversations&&app.dmConversations[userId]) app.dmConversations[userId].unread=0;
+  updateChatBadge();
   document.getElementById('ca-header').style.display='flex';
   document.getElementById('ca-icon').textContent='👤';
   document.getElementById('ca-name').innerHTML = escHtml(displayName) + '<span class="dm-badge">DM</span>';
@@ -2838,6 +2998,16 @@ function handleIncomingDm(msg, myUserId) {
     fileData: msg.file_data, duration: msg.duration,
     reactions: {}
   });
+  // Update sidebar conversation entry
+  if(!app.dmConversations) app.dmConversations={};
+  const dmPeer=isMe ? toId : fromId;
+  const dmPeerName=isMe ? (_chatActiveDm?.display_name||toId) : (msg.display_name||'Аноним');
+  const time2=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  if(!app.dmConversations[dmPeer]) app.dmConversations[dmPeer]={display_name:dmPeerName,lastMsg:'',time:'',unread:0};
+  app.dmConversations[dmPeer].lastMsg=(msg.content||'').slice(0,30);
+  app.dmConversations[dmPeer].time=time2;
+  if(!isMe && app.currentRoomId!==dmKey) app.dmConversations[dmPeer].unread=(app.dmConversations[dmPeer].unread||0)+1;
+  renderChatRooms(); updateChatBadge();
   if(app.currentRoomId===dmKey) renderChatMsgs(dmKey);
   else if(!isMe) showToast('💬 DM от '+escHtml(msg.display_name||'кого-то'));
 }
@@ -2855,13 +3025,21 @@ function openRoom(roomId){
   document.getElementById('ca-header').style.display='flex';
   document.getElementById('ca-icon').textContent = room?.icon || '💬';
   document.getElementById('ca-name').textContent = room?.name || roomId;
-  document.getElementById('ca-members').textContent = room?.type==='group'
-    ? (room.members||'')+ ' участников · 🔐 E2E'
-    : '🔐 E2E зашифровано';
+  if(roomId==='saved') {
+    document.getElementById('ca-members').textContent = 'Твои сохранённые сообщения';
+  } else {
+    document.getElementById('ca-members').textContent = room?.type==='group'
+      ? '🔐 E2E зашифровано'
+      : '🔐 E2E зашифровано';
+  }
   document.getElementById('ca-input-panel').style.display='block';
+  // Highlight in sidebar
+  document.querySelectorAll('.cl-room').forEach(e=>e.classList.remove('active'));
+  document.querySelector(`[data-chat-id="${roomId}"]`)?.classList.add('active');
   renderChatMsgs(roomId);
   if(room) { room.unread=0; renderChatRooms(); }
-  openRoomWS(roomId);
+  updateChatBadge();
+  if(roomId!=='saved') openRoomWS(roomId);
 }
 
 // ── Render messages ──
@@ -3072,6 +3250,12 @@ function sendChatMsg() {
     const msgObj={sender:'me',text,time,type:'text',replyTo:_chatReplyTo,reactions:{}};
     addCubeRoomMsg(msgObj, 'dm:'+_chatActiveDm.user_id);
     renderChatMsgs('dm:'+_chatActiveDm.user_id);
+    // Update sidebar
+    if(!app.dmConversations) app.dmConversations={};
+    if(!app.dmConversations[_chatActiveDm.user_id]) app.dmConversations[_chatActiveDm.user_id]={display_name:_chatActiveDm.display_name,lastMsg:'',time:'',unread:0};
+    app.dmConversations[_chatActiveDm.user_id].lastMsg=text.slice(0,30);
+    app.dmConversations[_chatActiveDm.user_id].time=time;
+    renderChatRooms();
     if(_ws && _ws.readyState===WebSocket.OPEN) {
       _ws.send(JSON.stringify({type:'dm', to_user_id:_chatActiveDm.user_id, content:text,
         msg_type:'text', reply_to_id:_chatReplyTo?.id||null}));
@@ -3290,10 +3474,16 @@ function clearChatArea() {
   renderChatMsgs(rid);
 }
 
-function openNewChat(){
-  const name=prompt('Введи имя пользователя или ID для DM:');
-  if(name) showToast('Переключись на вкладку Онлайн чтобы написать пользователям в кубе');
+function openNewDmPrompt(){
+  const myId=localStorage.getItem('cw_user_id');
+  const others=(_chatOnlineUsers||[]).filter(u=>String(u.user_id)!==String(myId));
+  if(!others.length) { showToast('В кубе никого нет онлайн прямо сейчас'); return; }
+  const names=others.map((u,i)=>`${i+1}. ${u.display_name}`).join('\n');
+  const choice=prompt('Кому написать?\n\n'+names+'\n\nВведи номер:');
+  const idx=parseInt(choice)-1;
+  if(!isNaN(idx) && others[idx]) openDmWith(others[idx].user_id, others[idx].display_name);
 }
+function openNewChat(){ openNewDmPrompt(); }
 
 // ── Keep backward-compat stubs ──
 function sendFile(){ chatSendFile(); }
@@ -3668,6 +3858,35 @@ function completeTask(id, el){
 }
 function copyRefLink(){ navigator.clipboard.writeText('https://cubeworld.app/?ref='+app.userKey.slice(0,8)); showToast('🔗 Реферальная ссылка скопирована!'); }
 
+function copyInviteLink(){
+  const cube=app.cubes.find(c=>c.id===app.currentCubeId);
+  const numId=(app.currentCubeId||'').replace(/^[a-z]+/,'');
+  const name=cube?cube.name:'куб';
+  const link='https://snnaannashe-del.github.io/cubeworld-app/world.html?cube='+encodeURIComponent(numId);
+  navigator.clipboard.writeText(link).then(()=>{
+    showToast('🔗 Ссылка на «'+name+'» скопирована!');
+  }).catch(()=>{
+    // fallback: show ID only
+    showToast('🆔 ID куба: '+numId);
+  });
+}
+
+function updateChatBadge(){
+  let total=0;
+  // DM unreads
+  if(app.dmConversations){
+    Object.values(app.dmConversations).forEach(d=>{ total+=(d.unread||0); });
+  }
+  // Group room unreads
+  if(app.chatRooms){
+    app.chatRooms.forEach(r=>{ total+=(r.unread||0); });
+  }
+  const el=document.getElementById('sn-badge-chat');
+  if(!el) return;
+  if(total>0){ el.textContent=total>99?'99+':total; el.style.display=''; }
+  else { el.style.display='none'; }
+}
+
 // Mining loop
 setInterval(()=>{
   if(!document.getElementById('v-int').classList.contains('active')) return;
@@ -3909,13 +4128,101 @@ const CRYPTO_INFO = {
   trx:  {sym:'TRX',  icon:'🔴', emoji:'🔴', name:'TRON',     rate:1.5,     addr:'TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE'},
 };
 const WALLET_CONNECTORS = [
-  {id:'metamask',   icon:'🦊', name:'MetaMask',       status:'disconnected'},
-  {id:'coinbase',   icon:'🔵', name:'Coinbase Wallet', status:'disconnected'},
-  {id:'trust',      icon:'🛡️', name:'Trust Wallet',   status:'disconnected'},
-  {id:'binance',    icon:'🔶', name:'Binance',         status:'disconnected'},
-  {id:'bybit',      icon:'⚡',  name:'Bybit',          status:'disconnected'},
-  {id:'phantom',    icon:'👻', name:'Phantom',         status:'disconnected'},
+  {id:'metamask',   icon:'🦊', name:'MetaMask',        status:'disconnected', injected:'isMetaMask'},
+  {id:'coinbase',   icon:'🔵', name:'Coinbase Wallet', status:'disconnected', injected:'isCoinbaseWallet'},
+  {id:'trust',      icon:'🛡️', name:'Trust Wallet',   status:'disconnected', injected:'isTrust'},
+  {id:'okx',        icon:'⬛', name:'OKX Wallet',      status:'disconnected', injected:'isOKX', provider:'okxwallet'},
+  {id:'binance',    icon:'🔶', name:'Binance Web3',    status:'disconnected', injected:'isBinanceW3WBSC'},
+  {id:'bybit',      icon:'⚡', name:'Bybit Wallet',    status:'disconnected', injected:'isBybit'},
+  {id:'phantom',    icon:'👻', name:'Phantom',         status:'disconnected', injected:'isPhantom'},
+  {id:'rainbow',    icon:'🌈', name:'Rainbow',         status:'disconnected'},
+  {id:'manual',     icon:'📋', name:'Свой адрес',      status:'disconnected'},
 ];
+
+// State: connected wallet address
+let _connectedWalletAddr = null;
+let _connectedChainId = 137; // Polygon by default
+
+function _getEthProvider(w) {
+  if(w.provider && window[w.provider]) return window[w.provider];
+  if(!window.ethereum) return null;
+  // If multiple providers (EIP-6963 or window.ethereum.providers array)
+  if(window.ethereum.providers) {
+    const p = window.ethereum.providers.find(p => p[w.injected]);
+    if(p) return p;
+  }
+  return window.ethereum;
+}
+
+async function connectWalletReal(id) {
+  const w = WALLET_CONNECTORS.find(x=>x.id===id); if(!w) return;
+
+  // Toggle off
+  if(w.status==='connected') {
+    w.status='disconnected'; _connectedWalletAddr=null;
+    renderWalletConnectors(); renderEarnWallets();
+    showToast('🔌 '+w.name+' отключён'); return;
+  }
+
+  // Manual address entry
+  if(id==='manual') {
+    const addr = prompt('Введи адрес кошелька (0x...):');
+    if(!addr || !addr.startsWith('0x')) { showToast('❌ Неверный адрес'); return; }
+    await _finishWalletConnect(w, addr, 137);
+    return;
+  }
+
+  // Check provider
+  const provider = _getEthProvider(w);
+  if(!provider) {
+    showToast('⚠️ '+w.name+' не найден. Установи расширение или используй «Свой адрес»');
+    window.open('https://metamask.io', '_blank');
+    return;
+  }
+
+  showToast('🔗 Подключение к '+w.name+'…');
+  try {
+    const accounts = await provider.request({method:'eth_requestAccounts'});
+    if(!accounts || !accounts[0]) { showToast('❌ Аккаунт не выбран'); return; }
+    const addr = accounts[0];
+    // Switch to Polygon (chainId 137 = 0x89)
+    try {
+      await provider.request({method:'wallet_switchEthereumChain', params:[{chainId:'0x89'}]});
+      _connectedChainId = 137;
+    } catch(switchErr) {
+      if(switchErr.code === 4902) {
+        await provider.request({method:'wallet_addEthereumChain', params:[{
+          chainId:'0x89', chainName:'Polygon Mainnet',
+          nativeCurrency:{name:'MATIC',symbol:'MATIC',decimals:18},
+          rpcUrls:['https://polygon-rpc.com'],
+          blockExplorerUrls:['https://polygonscan.com']
+        }]});
+        _connectedChainId = 137;
+      }
+    }
+    await _finishWalletConnect(w, addr, _connectedChainId);
+  } catch(e) {
+    showToast('❌ Отклонено: '+e.message.slice(0,40));
+  }
+}
+
+async function _finishWalletConnect(w, addr, chainId) {
+  w.status = 'connected';
+  _connectedWalletAddr = addr;
+  // Disconnect others
+  WALLET_CONNECTORS.forEach(x=>{ if(x!==w) x.status='disconnected'; });
+  // Save to backend
+  const res = await apiCall('/wallet/link', {method:'POST', body: JSON.stringify({address:addr, chain_id:chainId})});
+  renderWalletConnectors();
+  renderEarnWallets();
+  showToast('✅ '+w.name+' подключён: '+addr.slice(0,6)+'…'+addr.slice(-4));
+  // Update premium modal if open
+  const pmw = document.getElementById('premium-wallet-addr');
+  const pmwrap = document.getElementById('premium-connected-wallet');
+  if(pmw) { pmw.textContent=addr.slice(0,8)+'…'+addr.slice(-6); pmwrap.style.display='block'; }
+  // Reload earn stats
+  loadEarnStats();
+}
 
 // ════════════════════════════════════════════════
 //  CRYPTO DEPOSIT
@@ -3928,30 +4235,151 @@ function openDepositModal(){
 function renderWalletConnectors(){
   const el=document.getElementById('wconn-grid'); if(!el) return;
   el.innerHTML=WALLET_CONNECTORS.map(w=>`
-    <div class="wconn-card ${w.status==='connected'?'connected':''}" onclick="connectWallet('${w.id}')">
+    <div class="wconn-card ${w.status==='connected'?'connected':''}" onclick="connectWalletReal('${w.id}')">
       <div class="wconn-icon">${w.icon}</div>
       <div class="wconn-info">
         <div class="wconn-name">${w.name}</div>
-        <div class="wconn-status">${w.status==='connected'?'✓ Подключён':'Нажми для подключения'}</div>
+        <div class="wconn-status">${w.status==='connected'?'✓ Подключён':'Нажми'}</div>
       </div>
-      <div class="wconn-dot"></div>
+      <div class="wconn-dot${w.status==='connected'?' active':''}"></div>
     </div>`).join('');
 }
-function connectWallet(id){
-  const w=WALLET_CONNECTORS.find(x=>x.id===id); if(!w) return;
-  if(w.status==='connected'){ w.status='disconnected'; renderWalletConnectors(); showToast('🔌 '+w.name+' отключён'); return; }
-  // Simulate connection
-  showToast('🔗 Подключение к '+w.name+'…');
+// Legacy alias
+function connectWallet(id){ connectWalletReal(id); }
+
+// ── Earn section: wallet buttons ──────────────────────────────────────────────
+function renderEarnWallets(){
+  const listEl = document.getElementById('earn-wallets-list');
+  const btnsEl = document.getElementById('earn-wallet-btns');
+  if(listEl) {
+    const connected = WALLET_CONNECTORS.filter(w=>w.status==='connected');
+    listEl.innerHTML = connected.length
+      ? connected.map(w=>`<div style="background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:8px;padding:8px 12px;font-size:12px;display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="font-size:18px">${w.icon}</span>
+          <div><div style="font-weight:700;color:var(--green)">${w.name}</div><div style="font-family:monospace;color:var(--text3);font-size:10px">${_connectedWalletAddr?_connectedWalletAddr.slice(0,10)+'…'+_connectedWalletAddr.slice(-6):''}</div></div>
+          <button onclick="connectWalletReal('${w.id}')" style="margin-left:auto;font-size:10px;padding:3px 8px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:6px;color:#f87171;cursor:pointer">Отключить</button>
+        </div>`).join('')
+      : '<div style="font-size:12px;color:var(--text3);margin-bottom:8px">Нет подключённых кошельков</div>';
+  }
+  if(btnsEl) {
+    const top = WALLET_CONNECTORS.filter(w=>w.id!=='manual').slice(0,6);
+    btnsEl.innerHTML = top.map(w=>`
+      <button onclick="connectWalletReal('${w.id}')" style="padding:8px 4px;background:${w.status==='connected'?'rgba(74,222,128,.12)':'rgba(255,255,255,.04)'};border:1px solid ${w.status==='connected'?'rgba(74,222,128,.3)':'var(--border)'};border-radius:8px;cursor:pointer;font-size:11px;color:var(--text2);display:flex;flex-direction:column;align-items:center;gap:3px">
+        <span style="font-size:20px">${w.icon}</span><span>${w.name.split(' ')[0]}</span>
+      </button>`).join('') +
+      `<button onclick="openWalletManual()" style="padding:8px 4px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:11px;color:var(--text2);display:flex;flex-direction:column;align-items:center;gap:3px">
+        <span style="font-size:20px">📋</span><span>Адрес</span>
+      </button>`;
+  }
+  // Also render premium modal wallet buttons
+  const pmBtns = document.getElementById('premium-wallet-btns');
+  if(pmBtns) {
+    pmBtns.innerHTML = WALLET_CONNECTORS.filter(w=>w.id!=='manual').slice(0,6).map(w=>`
+      <button onclick="connectWalletReal('${w.id}')" style="padding:8px 4px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:11px;color:var(--text2);display:flex;flex-direction:column;align-items:center;gap:3px">
+        <span style="font-size:18px">${w.icon}</span><span>${w.name.split(' ')[0]}</span>
+      </button>`).join('');
+  }
+}
+
+function openWalletManual(){
+  const addr = prompt('Введи адрес кошелька (0x... или другой формат):');
+  if(!addr||addr.length<10){showToast('❌ Неверный адрес');return;}
+  const w = WALLET_CONNECTORS.find(x=>x.id==='manual');
+  _finishWalletConnect(w, addr, 137);
+}
+
+// ── Premium & Rewards ─────────────────────────────────────────────────────────
+function openPremiumModal(){
+  renderEarnWallets();
+  openModal('modal-premium');
+}
+
+async function buyPremium(months){
+  if(!_connectedWalletAddr){showToast('⚠️ Сначала подключи кошелёк');return;}
+  // In production: send $6.99 USDT to platform wallet, then call /premium/activate with tx_hash
+  // For now: show instruction
+  showToast('💳 Отправь $'+( 6.99*months).toFixed(2)+' USDT на Polygon → адрес платформы');
+  // TODO: integrate real payment (e.g. request USDT transfer)
   setTimeout(()=>{
-    w.status='connected';
-    renderWalletConnectors();
-    // Simulate receiving some balance
-    const bonus = {metamask:0.002, coinbase:0.001, binance:0.05, bybit:10, trust:0.001, phantom:0.003}[id]||0;
-    if(id==='binance'||id==='bybit'){ app.cryptoBalances.usdt+=bonus; }
-    else { app.cryptoBalances.eth+=bonus; }
-    showToast('✅ '+w.name+' подключён!');
-    renderCryptoBalances();
-  }, 1400);
+    if(confirm('Имитировать успешный платёж для теста?')) buyPremiumDemo();
+  }, 2000);
+}
+
+async function buyPremiumDemo(){
+  const res = await apiCall('/premium/activate', {method:'POST', body:JSON.stringify({months:1, payment_method:'demo'})});
+  if(res && res.ok){
+    showToast('✅ Premium активирован!');
+    closeModal('modal-premium');
+    loadEarnStats();
+  } else { showToast('❌ Ошибка активации'); }
+}
+
+async function loadEarnStats(){
+  const stats = await apiCall('/activity/stats');
+  const est   = await apiCall('/rewards/estimate');
+  if(!stats) return;
+  const isPrem = stats.is_premium;
+  const banner = document.getElementById('earn-premium-banner');
+  const btn    = document.getElementById('earn-premium-btn');
+  const statsEl= document.getElementById('earn-reward-stats');
+  if(isPrem){
+    if(btn) btn.textContent='✅ Premium активен';
+    if(statsEl) statsEl.style.display='block';
+    if(est){
+      const usdEl=document.getElementById('earn-est-usd');
+      const scEl =document.getElementById('earn-score');
+      const hrEl =document.getElementById('earn-online-hrs');
+      if(usdEl) usdEl.textContent='$'+est.usd.toFixed(2);
+      if(scEl)  scEl.textContent =est.score||0;
+      if(hrEl)  hrEl.textContent =(stats.online_hours||0)+'ч';
+    }
+    const msgsEl=document.getElementById('earn-msgs');
+    const postsEl=document.getElementById('earn-posts');
+    const reactsEl=document.getElementById('earn-reacts');
+    const invEl=document.getElementById('earn-invites');
+    if(msgsEl)  msgsEl.textContent=stats.messages||0;
+    if(postsEl) postsEl.textContent=stats.posts||0;
+    if(reactsEl)reactsEl.textContent=stats.reactions_received||0;
+    if(invEl)   invEl.textContent=stats.invites||0;
+  }
+  // Load connected wallets from backend
+  const wallets = await apiCall('/wallet/my');
+  if(wallets && wallets.length){
+    _connectedWalletAddr = wallets[0].address;
+    const w = WALLET_CONNECTORS.find(x=>x.id==='manual')||WALLET_CONNECTORS[WALLET_CONNECTORS.length-1];
+    // Mark as connected if no real wallet connected
+    if(!WALLET_CONNECTORS.some(x=>x.status==='connected')){
+      w.status='connected';
+    }
+  }
+  renderEarnWallets();
+}
+
+function openRewardClaimModal(){
+  apiCall('/rewards/estimate').then(est=>{
+    const el=document.getElementById('claim-usd-display');
+    if(el&&est) el.textContent='$'+(est.usd||0).toFixed(2);
+  });
+  // Prefill wallet list
+  const listEl=document.getElementById('claim-wallet-list');
+  if(listEl && _connectedWalletAddr){
+    listEl.innerHTML=`<div style="background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:8px;padding:8px 12px;font-size:12px;margin-bottom:8px">
+      ✅ <span style="font-family:monospace">${_connectedWalletAddr.slice(0,10)}…${_connectedWalletAddr.slice(-6)}</span>
+      <button onclick="document.getElementById('claim-custom-addr').value='${_connectedWalletAddr}'" style="margin-left:8px;font-size:10px;padding:2px 6px;background:rgba(255,255,255,.08);border:1px solid var(--border);border-radius:4px;color:var(--text2);cursor:pointer">Использовать</button>
+    </div>`;
+    document.getElementById('claim-custom-addr').value=_connectedWalletAddr;
+  }
+  openModal('modal-reward-claim');
+}
+
+async function submitRewardClaim(){
+  const addr=(document.getElementById('claim-custom-addr').value||'').trim();
+  if(!addr||addr.length<10){showToast('❌ Введи адрес кошелька');return;}
+  const res=await apiCall('/rewards/claim',{method:'POST',body:JSON.stringify({wallet_address:addr})});
+  if(res&&res.ok){
+    showToast('✅ Заявка создана! $'+res.usd.toFixed(2)+' → '+addr.slice(0,8)+'…');
+    closeModal('modal-reward-claim');
+  } else { showToast('❌ '+(res?.detail||'Ошибка')); }
 }
 function renderCryptoTabs(){
   const tabsEl=document.getElementById('crypto-tabs');
@@ -4590,12 +5018,17 @@ function clickAuthor(name, avatar){
   openMemberProfile(name, avatar, 'online');
 }
 
-// Patch sendChatMsg to track message count for achievement
+// Patch sendChatMsg to track message count for achievement + backend activity
 const _origSendChatMsgBase = sendChatMsg;
 window.sendChatMsg = function(){
   _origSendChatMsgBase();
   _chatMsgCount = (_chatMsgCount||0) + 1;
   if(_chatMsgCount>=10) unlockAchievement('a3');
+  // Record in backend activity (async, fire-and-forget)
+  const tok=localStorage.getItem('cw_access_token');
+  if(tok) fetch(CUBE_API+'/activity/event',{method:'POST',
+    headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},
+    body:JSON.stringify({event:'message'})}).catch(()=>{});
 };
 
 // toggleApiPlatform — check 3-API achievement
@@ -4874,6 +5307,9 @@ function openMyProfile(){
   const p=app.myProfile;
   document.getElementById('mpe-cur-avatar').textContent=p.avatar;
   document.getElementById('mpe-cur-key').textContent=app.userKey?app.userKey.slice(0,18)+'…':'';
+  // Display name
+  const dnEl=document.getElementById('mpe-display-name');
+  if(dnEl) dnEl.value=app.displayName||p.displayName||'';
   // Avatar grid
   const grid=document.getElementById('mpe-avatar-grid');
   if(grid) grid.innerHTML=PROFILE_AVATARS.map(a=>`
@@ -4901,11 +5337,22 @@ function selectProfileStatus(v, el){
   app.myProfile.status=v;
 }
 
-function saveMyProfile(){
+async function saveMyProfile(){
   const bioEl=document.getElementById('mpe-bio');
   if(bioEl) app.myProfile.bio=bioEl.value.trim();
+  const dnEl=document.getElementById('mpe-display-name');
+  const newName=(dnEl?dnEl.value.trim():'')||app.displayName||'';
+  if(newName) { app.displayName=newName; app.myProfile.displayName=newName; }
+  // Patch backend
+  const res=await apiCall('/me',{method:'PATCH',body:JSON.stringify({
+    display_name: newName||undefined,
+    avatar_url: app.myProfile.avatar||undefined
+  })});
+  // Update visible name badge
+  const dn=document.getElementById('wb-key-badge');
+  if(dn&&newName) dn.textContent=newName;
   closeModal('modal-my-profile');
-  showToast('✅ Профиль обновлён');
+  showToast(res?'✅ Профиль сохранён':'✅ Обновлено локально');
   earnCube(5,'Обновлён профиль','🧬');
   pushNotification('🧬','Профиль обновлён · +5 CUBE');
 }
