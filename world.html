@@ -357,6 +357,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gc-type{position:absolute;top:10px;right:10px;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700}
 .gc-type.public{background:rgba(74,222,128,.1);color:var(--green)}
 .gc-type.private{background:rgba(248,113,113,.08);color:var(--red)}
+.grp-tabs{display:flex;gap:6px;padding:10px 16px 0;border-bottom:1px solid var(--border);flex-shrink:0}
+.grp-tab{padding:7px 16px;border-radius:8px 8px 0 0;font-size:12px;font-weight:600;cursor:pointer;color:var(--text2);background:none;border:none;border-bottom:2px solid transparent;transition:all .15s}
+.grp-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.grp-tab:hover:not(.active){color:#e0e0f8}
+.grp-create-btn{margin-left:auto;padding:5px 14px;border-radius:8px;font-size:12px;font-weight:600;background:var(--accent);color:#fff;border:none;cursor:pointer}
+.grp-create-btn:hover{opacity:.85}
+.grp-empty{text-align:center;padding:48px 16px;color:var(--text3);font-size:13px}
+.grp-empty-icon{font-size:36px;margin-bottom:10px}
+/* Create group modal */
+.cgm-icons{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:8px 0}
+.cgm-icon-opt{font-size:20px;padding:6px;border-radius:8px;cursor:pointer;text-align:center;border:2px solid transparent;transition:all .12s}
+.cgm-icon-opt.sel{border-color:var(--accent);background:rgba(0,149,246,.12)}
+.cgm-type-row{display:flex;gap:8px;margin:8px 0}
+.cgm-type-opt{flex:1;padding:10px;border-radius:10px;border:2px solid var(--border);cursor:pointer;text-align:center;transition:all .15s;font-size:13px}
+.cgm-type-opt.sel{border-color:var(--accent);background:rgba(0,149,246,.1)}
 
 /* ── CHANNELS ─────────────── */
 #sec-channels{flex-direction:column;overflow-y:auto}
@@ -637,17 +652,31 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .srch-hint:hover{border-color:rgba(0,149,246,.4);color:var(--accent);background:rgba(0,149,246,.07)}
 
 /* ══ ACCOUNT TYPE TOGGLE ════════════════ */
-.acc-type-row{display:flex;gap:8px;margin:12px 0}
-.acc-type-opt{flex:1;padding:10px 8px;border-radius:11px;border:1.5px solid var(--border);background:rgba(255,255,255,.03);cursor:pointer;transition:all .18s;text-align:center}
-.acc-type-opt:hover{border-color:rgba(0,149,246,.35)}
-.acc-type-opt.sel.pub{border-color:rgba(0,149,246,.6);background:rgba(0,149,246,.12)}
-.acc-type-opt.sel.hid{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.06)}
-.acc-type-icon{font-size:24px;display:block;margin-bottom:4px}
-.acc-type-name{font-size:12px;font-weight:700;color:#e0e0f8}
-.acc-type-desc{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.3}
-.acc-type-tag{display:inline-block;margin-top:5px;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;letter-spacing:.04em}
-.acc-type-opt.sel.pub .acc-type-tag{background:rgba(0,149,246,.25);color:var(--accent)}
-.acc-type-opt.sel.hid .acc-type-tag{background:rgba(255,255,255,.1);color:var(--text)}
+/* ── Account type compact toggle ── */
+.acc-toggle-wrap{display:flex;align-items:center;justify-content:center;margin:8px 0 10px;background:rgba(255,255,255,.05);border-radius:30px;padding:3px;gap:0}
+.acc-toggle-opt{flex:1;padding:7px 10px;border-radius:26px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;color:var(--text2);transition:all .18s;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.acc-toggle-opt.sel.pub{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(0,149,246,.4)}
+.acc-toggle-opt.sel.hid{background:rgba(255,255,255,.13);color:#e0e0f8}
+/* legacy stubs for old class names — not used in new markup but kept for compat */
+.acc-type-row{display:none}
+.acc-type-opt,.acc-type-icon,.acc-type-name,.acc-type-desc,.acc-type-tag{display:none}
+/* ── Search user expanded card ── */
+.sui-card{border-radius:13px;border:1px solid var(--border);background:var(--card);margin:4px 10px;overflow:hidden;transition:border-color .15s}
+.sui-card:hover{border-color:rgba(0,149,246,.25)}
+.sui-head{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer}
+.sui-ava{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.sui-info{flex:1;min-width:0}
+.sui-name{font-size:13.5px;font-weight:700;color:#e0e0f8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sui-sub{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.sui-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;background:rgba(255,255,255,.07);color:var(--text3)}
+.sui-badge.premium{background:rgba(255,193,7,.15);color:#fbbf24}
+.sui-actions{display:none;padding:4px 12px 12px;gap:6px;flex-wrap:wrap}
+.sui-card.open .sui-actions{display:flex}
+.sui-act-btn{flex:1;min-width:64px;padding:7px 4px;border-radius:9px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);display:flex;flex-direction:column;align-items:center;gap:2px;transition:all .14s}
+.sui-act-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,149,246,.08)}
+.sui-act-btn.danger:hover{border-color:var(--red);color:var(--red);background:rgba(248,113,113,.08)}
+.sui-act-btn .sa-icon{font-size:16px}
+.sui-act-btn .sa-lbl{font-size:9px;color:inherit;opacity:.8}
 .priv-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700;background:rgba(255,255,255,.08);color:var(--text2);vertical-align:middle}
 /* ══ CRYPTO DEPOSIT ══════════════════════ */
 .deposit-modal{max-width:480px;width:95%}
@@ -1396,11 +1425,40 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
       <!-- GROUPS -->
       <div class="int-section" id="sec-groups">
-        <div class="sec-header">
-          <h2>👥 Группы куба</h2>
-          <button class="btn btn-accent" style="padding:6px 14px;font-size:12px;margin-left:auto" onclick="openCreateGroup()">+ Создать</button>
+        <div class="sec-header" style="border-bottom:none;padding-bottom:0">
+          <h2>👥 Группы</h2>
+          <button class="grp-create-btn" onclick="openCreateGroup()">+ Создать</button>
+        </div>
+        <div class="grp-tabs">
+          <button class="grp-tab active" id="grp-tab-all" onclick="setGrpTab('all',this)">Все</button>
+          <button class="grp-tab" id="grp-tab-my" onclick="setGrpTab('my',this)">Мои</button>
         </div>
         <div class="groups-grid" id="groups-grid"></div>
+      </div>
+
+      <!-- CREATE GROUP MODAL -->
+      <div class="modal-backdrop" id="modal-create-group">
+        <div class="modal" style="max-width:360px">
+          <h3>👥 Новая группа</h3>
+          <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px">Иконка</label>
+          <div class="cgm-icons" id="cgm-icons"></div>
+          <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:10px">Название</label>
+          <input id="cgm-name" type="text" maxlength="40" placeholder="Название группы"
+            style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;color:#e0e0f8;padding:8px 12px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box">
+          <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:10px">Описание</label>
+          <textarea id="cgm-desc" rows="2" maxlength="120" placeholder="О чём эта группа?"
+            style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;color:#e0e0f8;padding:8px 12px;font-size:12px;font-family:inherit;resize:none;outline:none;box-sizing:border-box"></textarea>
+          <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:10px">Тип</label>
+          <div class="cgm-type-row">
+            <div class="cgm-type-opt sel" id="cgm-pub" onclick="cgmSetType('public')">🌐<br><b>Публичная</b><br><span style="font-size:10px;color:var(--text2)">видна всем</span></div>
+            <div class="cgm-type-opt" id="cgm-prv" onclick="cgmSetType('private')">🔐<br><b>Приватная</b><br><span style="font-size:10px;color:var(--text2)">только по приглашению</span></div>
+          </div>
+          <div id="cgm-err" style="font-size:11px;color:var(--red);margin-top:6px;min-height:16px"></div>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('modal-create-group')">Отмена</button>
+            <button class="btn btn-accent" onclick="submitCreateGroup()">✨ Создать</button>
+          </div>
+        </div>
       </div>
 
       <!-- CHANNELS -->
@@ -1962,21 +2020,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div class="my-stat"><div class="my-stat-val" style="color:var(--green)" id="mpe-s-inv">—</div><div class="my-stat-lbl">Рефералов</div></div>
       <div class="my-stat"><div class="my-stat-val" style="color:#f472b6" id="mpe-s-reacts">—</div><div class="my-stat-lbl">Реакций</div></div>
     </div>
-    <!-- Account Type -->
-    <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:6px;margin-top:4px">Тип аккаунта</label>
-    <div class="acc-type-row" id="acc-type-row">
-      <div class="acc-type-opt sel pub" id="acc-pub" onclick="selectAccType('public')">
-        <span class="acc-type-icon">🌐</span>
-        <div class="acc-type-name">Публичный</div>
-        <div class="acc-type-desc">Профиль, аватар и<br>статистика видны всем</div>
-        <span class="acc-type-tag">Instagram-style</span>
-      </div>
-      <div class="acc-type-opt hid" id="acc-hid" onclick="selectAccType('hidden')">
-        <span class="acc-type-icon">👻</span>
-        <div class="acc-type-name">Скрытый</div>
-        <div class="acc-type-desc">Анонимный аватар,<br>ЛС только по запросу</div>
-        <span class="acc-type-tag">Ghost-style</span>
-      </div>
+    <!-- Account Type compact toggle -->
+    <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:6px">Тип аккаунта</label>
+    <div class="acc-toggle-wrap" id="acc-type-row">
+      <div class="acc-toggle-opt sel pub" id="acc-pub" onclick="selectAccType('public')">🌐 Публичный</div>
+      <div class="acc-toggle-opt hid" id="acc-hid" onclick="selectAccType('hidden')">👻 Скрытый</div>
     </div>
     <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px">Аватар</label>
     <div class="mpe-avatar-grid" id="mpe-avatar-grid"></div>
@@ -3089,6 +3137,8 @@ function switchSection(name,el){
   }
   // Load real earn stats when opening earn section
   if(name==='earn'){ loadEarnStats(); renderEarnWallets(); }
+  // Load groups from API
+  if(name==='groups'){ loadGroups(); }
 }
 
 // renderFeed defined later (enhanced version with tip button)
@@ -3863,26 +3913,151 @@ function sendVoiceNote(){ showToast('🎤 Зажми кнопку 🎤 чтоб�
 //  GROUPS
 // ════════════════════════════════════════════════
 function renderGroups(){
-  document.getElementById('groups-grid').innerHTML=app.groups.map(g=>`
-    <div class="group-card">
-      <div class="gc-type ${g.type}">${g.type==='public'?'PUBLIC':'PRIVATE'}</div>
-      <div class="gc-icon">${g.icon}</div>
-      <div class="gc-name">${g.name}</div>
-      <div class="gc-desc">${g.desc}</div>
-      <div class="gc-footer">
-        <div class="gc-members">👥 ${g.members.toLocaleString('ru')}</div>
-        <button class="gc-join ${g.joined?'joined':'open-btn'}" onclick="toggleGroup('${g.id}',this)">${g.joined?'✓ Вступил':'Войти'}</button>
-      </div>
-    </div>`).join('');
+  // replaced by loadGroups()
 }
-function toggleGroup(id,btn){
-  const g=app.groups.find(x=>x.id===id);if(!g)return;
-  if(g.type==='private'&&!g.joined){alert('Приватная группа. Нужен ключ приглашения.');return;}
-  g.joined=!g.joined;if(g.joined)g.members++;else g.members--;
-  btn.className='gc-join '+(g.joined?'joined':'open-btn');btn.textContent=g.joined?'✓ Вступил':'Войти';
-  btn.closest('.group-card').querySelector('.gc-members').textContent='👥 '+g.members.toLocaleString('ru');
+
+// ══ GROUPS SYSTEM ══════════════════════════════════════════════
+window._grpTab = 'all';
+const _CGM_ICONS = ['👥','🧠','🎨','🔥','💎','🚀','🎮','🌐','👻','⚗️','📰','🐋','🦊','🐉','🦁','🥷','⚡','🎯','🔌','💡','🏆','🎵','📡','🛸'];
+let _cgmSelIcon = '👥', _cgmSelType = 'public';
+
+function setGrpTab(tab, el){
+  window._grpTab = tab;
+  document.querySelectorAll('.grp-tab').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  loadGroups();
 }
-function openCreateGroup(){alert('Создать группу:\nВведи название и выбери тип (публичный/приватный)');}
+
+async function loadGroups(){
+  const el = document.getElementById('groups-grid');
+  if(!el) return;
+  el.innerHTML = '<div class="grp-empty"><div class="grp-empty-icon">⏳</div>Загрузка...</div>';
+  let data;
+  if(window._grpTab === 'my'){
+    data = await apiCall('/groups/my');
+  } else {
+    data = await apiCall('/groups');
+  }
+  if(!data || !Array.isArray(data) || !data.length){
+    el.innerHTML = window._grpTab === 'my'
+      ? '<div class="grp-empty"><div class="grp-empty-icon">👥</div>Ты ещё не в группах.<br><small>Найди что-то интересное во вкладке «Все»</small></div>'
+      : '<div class="grp-empty"><div class="grp-empty-icon">🌍</div>Групп пока нет.<br><small>Создай первую!</small></div>';
+    return;
+  }
+  el.innerHTML = data.map(g => renderGroupCard(g)).join('');
+}
+
+function renderGroupCard(g){
+  const joined = g.is_member == 1 || g.is_member === true;
+  const members = (g.member_count || 0).toLocaleString('ru');
+  const handle = g.handle ? `<span style="font-size:10px;color:var(--accent)">@${escHtml(g.handle)}</span>` : '';
+  return `<div class="group-card" id="grp-card-${g.id}">
+    <div class="gc-type ${g.type}">${g.type==='public'?'PUBLIC':'PRIVATE'}</div>
+    <div class="gc-icon">${escHtml(g.icon||'👥')}</div>
+    <div class="gc-name">${escHtml(g.name)}</div>
+    ${handle}
+    <div class="gc-desc" style="margin-top:4px">${escHtml(g.description||'')}</div>
+    <div class="gc-footer" style="margin-top:10px">
+      <div class="gc-members">👥 ${members}</div>
+      ${joined
+        ? `<button class="gc-join joined" onclick="leaveGroupUI(${g.id},this)">✓ Вступил</button>`
+        : `<button class="gc-join open-btn" onclick="joinGroupUI(${g.id},this)">${g.type==='private'?'🔐 Закрытая':'Войти'}</button>`}
+    </div>
+  </div>`;
+}
+
+async function joinGroupUI(id, btn){
+  if(btn){ btn.disabled=true; btn.textContent='...'; }
+  const r = await apiCall(`/groups/${id}/join`, {method:'POST'});
+  if(r && r.joined){
+    // update card
+    const card = document.getElementById('grp-card-'+id);
+    if(card){
+      const mc = card.querySelector('.gc-members');
+      const cur = parseInt((mc?.textContent||'0').replace(/\D/g,''))||0;
+      if(mc) mc.textContent = '👥 '+(cur+1).toLocaleString('ru');
+      if(btn){ btn.className='gc-join joined'; btn.disabled=false; btn.textContent='✓ Вступил'; btn.onclick=()=>leaveGroupUI(id,btn); }
+    }
+    showToast('👥 Ты вступил в группу!');
+    earnCube(3,'Вступил в группу','👥');
+  } else {
+    if(btn){ btn.disabled=false; btn.textContent='Войти'; }
+    showToast('⚠️ Не удалось вступить');
+  }
+}
+
+async function leaveGroupUI(id, btn){
+  if(!confirm('Выйти из группы?')) return;
+  if(btn){ btn.disabled=true; btn.textContent='...'; }
+  const r = await apiCall(`/groups/${id}/leave`, {method:'POST'});
+  if(r && r.left){
+    const card = document.getElementById('grp-card-'+id);
+    if(card){
+      const mc = card.querySelector('.gc-members');
+      const cur = parseInt((mc?.textContent||'1').replace(/\D/g,''))||1;
+      if(mc) mc.textContent = '👥 '+Math.max(0,cur-1).toLocaleString('ru');
+      if(btn){ btn.className='gc-join open-btn'; btn.disabled=false; btn.textContent='Войти'; btn.onclick=()=>joinGroupUI(id,btn); }
+    }
+    if(window._grpTab==='my') loadGroups();
+    showToast('Вышел из группы');
+  } else {
+    if(btn){ btn.disabled=false; btn.textContent='✓ Вступил'; }
+    showToast('⚠️ Нельзя выйти — ты владелец группы');
+  }
+}
+
+// Create group modal
+function openCreateGroup(){
+  _cgmSelIcon = '👥'; _cgmSelType = 'public';
+  // render icon picker
+  const grid = document.getElementById('cgm-icons');
+  if(grid) grid.innerHTML = _CGM_ICONS.map(ic=>
+    `<div class="cgm-icon-opt${ic===_cgmSelIcon?' sel':''}" onclick="cgmPickIcon('${ic}',this)">${ic}</div>`
+  ).join('');
+  const nameEl = document.getElementById('cgm-name');
+  const descEl = document.getElementById('cgm-desc');
+  const errEl  = document.getElementById('cgm-err');
+  if(nameEl) nameEl.value='';
+  if(descEl) descEl.value='';
+  if(errEl)  errEl.textContent='';
+  cgmSetType('public');
+  openModal('modal-create-group');
+}
+
+function cgmPickIcon(ic, el){
+  _cgmSelIcon = ic;
+  document.querySelectorAll('.cgm-icon-opt').forEach(d=>d.classList.remove('sel'));
+  if(el) el.classList.add('sel');
+}
+
+function cgmSetType(t){
+  _cgmSelType = t;
+  document.getElementById('cgm-pub')?.classList.toggle('sel', t==='public');
+  document.getElementById('cgm-prv')?.classList.toggle('sel', t==='private');
+}
+
+async function submitCreateGroup(){
+  const name = (document.getElementById('cgm-name')?.value||'').trim();
+  const desc = (document.getElementById('cgm-desc')?.value||'').trim();
+  const errEl = document.getElementById('cgm-err');
+  if(!name){ if(errEl) errEl.textContent='Введи название'; return; }
+  if(errEl) errEl.textContent='';
+  const btn = document.querySelector('#modal-create-group .btn-accent');
+  if(btn){ btn.disabled=true; btn.textContent='Создаём...'; }
+  const r = await apiCall('/groups', {method:'POST', body:JSON.stringify({name, description:desc, icon:_cgmSelIcon, type:_cgmSelType})});
+  if(btn){ btn.disabled=false; btn.textContent='✨ Создать'; }
+  if(r && r.id){
+    closeModal('modal-create-group');
+    showToast('🎉 Группа «'+escHtml(name)+'» создана!');
+    earnCube(10,'Создал группу','👥');
+    // switch to "Мои" and reload
+    setGrpTab('my', document.getElementById('grp-tab-my'));
+    document.getElementById('grp-tab-my')?.classList.add('active');
+    document.getElementById('grp-tab-all')?.classList.remove('active');
+  } else {
+    if(errEl) errEl.textContent='Ошибка создания. Попробуй ещё раз.';
+  }
+}
 
 // renderChannels defined later as renderApiHub alias
 
@@ -4548,6 +4723,81 @@ function cubeAIAnswer(q){
   return `По запросу «${q}» у меня нет точного ответа. Попробуй спросить про CUBE, кошелёк, кубы, сигналы или API Hub. Или воспользуйся вкладками поиска выше.`;
 }
 
+// ══ USER SEARCH CARD ═══════════════════════════════════════════
+function renderUserSearchCard(u){
+  const isPremium = u.key_type && u.key_type !== 'free';
+  const uid = u.uid || ('#'+(u.id||'?'));
+  const sub = [u.username ? '@'+u.username : null, uid].filter(Boolean).join(' · ');
+  return `<div class="sui-card" id="sui-${u.id}" onclick="toggleUserCard(${u.id},this)">
+    <div class="sui-head">
+      <div class="sui-ava">${u.avatar_url||'👤'}</div>
+      <div class="sui-info">
+        <div class="sui-name">${escHtml(u.display_name||u.key_prefix||'Пользователь')}</div>
+        <div class="sui-sub">${escHtml(sub)}</div>
+      </div>
+      <span class="sui-badge${isPremium?' premium':''}">${(u.key_type||'FREE').toUpperCase()}</span>
+    </div>
+    <div class="sui-actions" id="sui-acts-${u.id}">
+      <button class="sui-act-btn" onclick="event.stopPropagation();suiViewProfile(${u.id},'${escHtml(u.display_name||'')}',event)">
+        <span class="sa-icon">👤</span><span class="sa-lbl">Профиль</span>
+      </button>
+      <button class="sui-act-btn" onclick="event.stopPropagation();suiDM(${u.id},'${escHtml(u.display_name||u.uid||'')}')">
+        <span class="sa-icon">💬</span><span class="sa-lbl">Сообщение</span>
+      </button>
+      <button class="sui-act-btn" onclick="event.stopPropagation();suiCall(${u.id},'${escHtml(u.display_name||'')}')">
+        <span class="sa-icon">📞</span><span class="sa-lbl">Звонок</span>
+      </button>
+      <button class="sui-act-btn danger" onclick="event.stopPropagation();suiClearChat(${u.id},'${escHtml(u.display_name||'')}')">
+        <span class="sa-icon">🗑</span><span class="sa-lbl">Чат</span>
+      </button>
+      <button class="sui-act-btn danger" onclick="event.stopPropagation();suiBlock(${u.id},'${escHtml(u.display_name||'')}')">
+        <span class="sa-icon">🚫</span><span class="sa-lbl">Блок</span>
+      </button>
+    </div>
+  </div>`;
+}
+
+function toggleUserCard(uid, card){
+  // Close all others first
+  document.querySelectorAll('.sui-card.open').forEach(c=>{ if(c!==card) c.classList.remove('open'); });
+  card.classList.toggle('open');
+}
+
+// ── User actions ─────────────────────────────────
+function suiViewProfile(uid, name, e){
+  // Show a mini tooltip/panel below the button with brief info
+  showToast('👤 '+name+' — открываю профиль');
+  // TODO: open full profile view when implemented
+}
+
+function suiDM(uid, name){
+  closeSrchModal();
+  openDmWith(uid, name);
+}
+
+function suiCall(uid, name){
+  showToast('📞 Звонок — '+name+' (скоро)');
+  // TODO: voice call integration
+}
+
+function suiClearChat(uid, name){
+  if(!confirm('Очистить историю переписки с '+name+'?')) return;
+  if(app.dmConversations && app.dmConversations[uid]){
+    delete app.dmConversations[uid];
+  }
+  showToast('🗑 Переписка с '+name+' удалена');
+}
+
+function suiBlock(uid, name){
+  if(!confirm('Заблокировать '+name+'?\nОн не сможет писать тебе.')) return;
+  if(!app._blocked) app._blocked=new Set();
+  app._blocked.add(String(uid));
+  showToast('🚫 '+name+' заблокирован');
+  // Close card
+  const card = document.getElementById('sui-'+uid);
+  if(card) card.remove();
+}
+
 // ── ENTITY TABS ─────────────────────────────────
 // ── Entity tab rendering (async for users/cubes — calls real API) ──────────
 async function buildEntityTab(type){
@@ -4572,15 +4822,7 @@ async function buildEntityTab(type){
     if(!res||!res.length){
       body.innerHTML=`<div class="srch-empty"><span class="srch-empty-icon">👤</span>Пользователь не найден</div>`; return;
     }
-    body.innerHTML=`<div class="srch-entity-list">${res.map(u=>`
-      <div class="srch-entity-item" onclick="closeSrchModal();showToast('👤 '+${JSON.stringify(u.display_name||u.handle)})">
-        <div class="sei-icon" style="font-size:22px">${u.avatar_url||'👤'}</div>
-        <div class="sei-info">
-          <div class="sei-name">${escHtml(u.display_name||u.handle)}</div>
-          <div class="sei-sub">${u.username?'@'+escHtml(u.username)+' · ':''}<span style="color:var(--text3)">${escHtml(u.uid)}</span></div>
-        </div>
-        <span class="sei-badge ${u.key_type==='free'?'priv':'pub'}">${u.key_type.toUpperCase()}</span>
-      </div>`).join('')}</div>`; return;
+    body.innerHTML=`<div style="padding:6px 0">${res.map(u=>renderUserSearchCard(u)).join('')}</div>`; return;
   }
 
   if(type==='cubes'){
@@ -4615,18 +4857,30 @@ async function buildEntityTab(type){
   }
 
   if(type==='groups'){
-    const items=(app.groups||[]).filter(g=>!q||g.name.toLowerCase().includes(q.toLowerCase())||(g.desc||'').toLowerCase().includes(q.toLowerCase())).map(g=>({
-      icon:g.icon||'🗂', name:g.name, sub:g.desc||'Группа',
-      badge:{cls:'pub',txt:(g.members||0)+' чел.'}, action:()=>{ closeSrchModal(); switchSection('groups',null); }
-    }));
-    body.innerHTML=items.length
-      ? `<div class="srch-entity-list">${items.map(it=>`
-          <div class="srch-entity-item" onclick="(${it.action.toString()})()">
-            <div class="sei-icon">${it.icon}</div>
-            <div class="sei-info"><div class="sei-name">${escHtml(it.name)}</div><div class="sei-sub">${escHtml(it.sub)}</div></div>
-            <span class="sei-badge ${it.badge.cls}">${escHtml(it.badge.txt)}</span>
-          </div>`).join('')}</div>`
-      : `<div class="srch-empty"><span class="srch-empty-icon">🗂</span>Групп не найдено</div>`;
+    if(!q){
+      body.innerHTML=`<div class="srch-empty">
+        <span class="srch-empty-icon">👥</span>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Поиск групп</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.8">
+          <b style="color:var(--accent)">@handle</b> — по хэндлу<br>
+          <b style="color:var(--accent)">#G42</b> — по ID группы<br>
+          <b style="color:var(--accent)">название</b> — по тексту
+        </div>
+      </div>`; return;
+    }
+    const res = await apiCall('/groups/search?q='+encodeURIComponent(q));
+    if(!res||!res.length){
+      body.innerHTML=`<div class="srch-empty"><span class="srch-empty-icon">👥</span>Группы не найдены</div>`; return;
+    }
+    body.innerHTML=`<div class="srch-entity-list">${res.map(g=>`
+      <div class="srch-entity-item" onclick="closeSrchModal();switchSection('groups',null);setTimeout(()=>setGrpTab('all',document.getElementById('grp-tab-all')),200)">
+        <div class="sei-icon">${escHtml(g.icon||'👥')}</div>
+        <div class="sei-info">
+          <div class="sei-name">${escHtml(g.name)}</div>
+          <div class="sei-sub">${g.handle?'@'+escHtml(g.handle)+' · ':''}<span style="color:var(--text3)">#G${g.id} · ${(g.member_count||0)} чел.</span></div>
+        </div>
+        <span class="sei-badge ${g.type==='public'?'pub':'priv'}">${g.type==='public'?'PUBLIC':'PRIVATE'}</span>
+      </div>`).join('')}</div>`;
     return;
   }
 
@@ -6052,7 +6306,9 @@ function syncAccTypeUI(type){
   const hid=document.getElementById('acc-hid');
   if(!pub||!hid) return;
   pub.classList.toggle('sel', type==='public');
+  pub.classList.toggle('pub', type==='public');
   hid.classList.toggle('sel', type==='hidden');
+  hid.classList.toggle('hid', type==='hidden');
   // Show/hide avatar section based on type
   const avatarLabel=document.querySelector('label[for="mpe-avatar"]');
   const grid=document.getElementById('mpe-avatar-grid');
@@ -6552,20 +6808,9 @@ function toggleMarketFav(id,el){
   else { _marketFavs.add(id); el.textContent='❤️'; el.classList.add('loved'); showToast('❤️ В избранном'); }
 }
 
-// ── Groups Enhanced ───────────────────────────
-function joinGroupEnhanced(id,el){
-  const g=app.groups.find(x=>x.id===id); if(!g) return;
-  if(g.type==='private'&&!g.joined){ showToast('🔐 Нужен ключ приглашения'); return; }
-  g.joined=!g.joined; g.joined?g.members++:g.members--;
-  if(g.joined){ earnCube(5,'Вступил в группу: '+g.name,'👥'); unlockAchievement('a1'); }
-  renderGroups();
-  pushNotification('👥',(g.joined?'Вступил: ':'Вышел: ')+g.name+(g.joined?' · +5 CUBE':''));
-}
-function openGroupChat(id){
-  const g=app.groups.find(x=>x.id===id); if(!g) return;
-  showToast('💬 Переход в чат «'+g.name+'»...');
-  setTimeout(()=>{ switchSection('chat',document.querySelectorAll('.sn-item')[1]); showToast('💬 Чат «'+g.name+'»'); },600);
-}
+// joinGroupEnhanced / openGroupChat — legacy stubs (replaced by joinGroupUI/leaveGroupUI above)
+function joinGroupEnhanced(id,el){ joinGroupUI(id,el); }
+function openGroupChat(id){ showToast('💬 Групповой чат скоро'); }
 
 // ── Typing Indicator (moved to chat section above) ──────────────────────────
 
@@ -6771,21 +7016,6 @@ function renderWalletTxs(){
       <div class="tx-dr-item"><div class="tx-dr-label">Хэш</div><div class="tx-dr-val" style="font-family:monospace;font-size:10px">#CW${String(i+1).padStart(6,'0')}</div></div>
       <div class="tx-dr-item"><div class="tx-dr-label">Статус</div><div class="tx-dr-val" style="color:var(--green)">✅ Подтверждён</div></div>
     </div>`).join('');
-}
-
-function renderGroups(){
-  const el=document.getElementById('groups-grid'); if(!el) return;
-  el.innerHTML=app.groups.map(g=>`<div class="group-card">
-    <div class="gc-type ${g.type}">${g.type==='public'?'PUBLIC':'PRIVATE'}</div>
-    <div class="gc-icon">${g.icon}</div>
-    <div class="gc-name">${g.name}</div>
-    <div class="gc-desc">${g.desc}</div>
-    <div class="gc-footer"><div class="gc-members">👥 ${g.members.toLocaleString('ru')}</div></div>
-    <div class="grp-card-actions">
-      <button class="grp-join-btn${g.joined?' joined':''}" onclick="joinGroupEnhanced('${g.id}',this)">${g.joined?'✓ Вступил':'Войти'}</button>
-      <button class="grp-chat-btn" onclick="openGroupChat('${g.id}')">💬 Чат</button>
-    </div>
-  </div>`).join('');
 }
 
 // ══ FINAL onEnterInterior ══════════════════════
