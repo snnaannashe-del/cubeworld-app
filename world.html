@@ -2127,23 +2127,38 @@ function openRoomWS(roomId){
         const time = msg.created_at
           ? new Date(msg.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})
           : '';
-        const msgObj = {
-          id: msg.id,
-          sender: isMe ? 'me' : 'them',
-          author: msg.display_name || 'Аноним',
-          text, time,
-          type: msg.msg_type || 'text',
-          replyTo: msg.reply_preview || null,
-          fileName: msg.file_name, fileSize: msg.file_size,
-          fileData: msg.file_data, duration: msg.duration,
-          expiresSecs: msg.expires_secs,
-          reactions: {}
-        };
-        app.chatMessages[cubeId][roomId].push(msgObj);
-        if(app.currentRoomId===roomId) renderChatMsgs(roomId);
+        if(isMe){
+          // Echo of my own message — just patch the server ID onto the local copy to avoid duplicate
+          const msgs = app.chatMessages[cubeId][roomId];
+          const local = msgs && msgs.slice().reverse().find(m=>m.sender==='me' && m.text===text && !m.id);
+          if(local){ local.id=msg.id; if(app.currentRoomId===roomId) renderChatMsgs(roomId); }
+          // If already has ID (shouldn't happen) — ignore completely
+        } else {
+          const msgObj = {
+            id: msg.id,
+            sender: 'them',
+            author: msg.display_name || 'Аноним',
+            text, time,
+            type: msg.msg_type || 'text',
+            replyTo: msg.reply_preview || null,
+            fileName: msg.file_name, fileSize: msg.file_size,
+            fileData: msg.file_data, duration: msg.duration,
+            expiresSecs: msg.expires_secs,
+            reactions: {}
+          };
+          app.chatMessages[cubeId][roomId].push(msgObj);
+          if(app.currentRoomId===roomId) renderChatMsgs(roomId);
+        }
       } else if(msg.type==='system'){
         app.chatMessages[cubeId][roomId].push({sender:'system',text:msg.text||'',time:'',type:'system'});
         if(app.currentRoomId===roomId) renderChatMsgs(roomId);
+      } else if(msg.type==='message_ack'){
+        // Server confirmed our message — patch in the server-assigned ID
+        const msgs = app.chatMessages[cubeId]?.[roomId];
+        if(msgs && msg.id){
+          const local = msgs.slice().reverse().find(m=>m.sender==='me' && !m.id);
+          if(local) local.id = msg.id;
+        }
       } else if(msg.type==='balance_update'){
         const prev=app.wallet.balance;
         const next=msg.balance||prev;
