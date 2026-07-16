@@ -79,6 +79,16 @@ class UpdateProfileRequest(BaseModel):
 class WalletLinkRequest(BaseModel):
     address: str
     chain_id: int = 137
+    signature: Optional[str] = None  # proof of ownership
+
+class RewardClaimRequest(BaseModel):
+    month: Optional[str] = None   # YYYY-MM, defaults to current
+    wallet_address: str
+
+class PremiumActivateRequest(BaseModel):
+    months: int = 1
+    payment_method: Optional[str] = None
+    tx_hash: Optional[str] = None
 
 class CreateCubeRequest(BaseModel):
     name: str
@@ -194,6 +204,86 @@ async def update_me(body: UpdateProfileRequest, user=Depends(get_current_user)):
 async def link_wallet(body: WalletLinkRequest, user=Depends(get_current_user)):
     db.link_wallet(user["id"], body.address, body.chain_id)
     return {"ok": True, "address": body.address}
+
+@app.get("/wallet/my")
+async def my_wallets(user=Depends(get_current_user)):
+    conn = db.get_db()
+    rows = conn.execute(
+        "SELECT address,chain_id,linked_at FROM wallets WHERE user_id=? ORDER BY id DESC",
+        (user["id"],)).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+# ── Premium ───────────────────────────────────────────────────────────────────
+
+@app.get("/premium/status")
+async def premium_status(user=Depends(get_current_user)):
+    info = db.get_premium_info(user["id"])
+    is_active = db.is_premium(user["id"])
+    return {"is_premium": is_active, "info": info}
+
+@app.post("/premium/activate")
+async def activate_premium(body: PremiumActivateRequest, user=Depends(get_current_user)):
+    db.activate_premium(user["id"], body.months, body.payment_method, body.tx_hash)
+    db.record_activity(user["id"], "invite")  # reward for upgrading
+    return {"ok": True, "message": f"Premium активирован на {body.months} мес."}
+
+# ── Activity tracking ─────────────────────────────────────────────────────────
+
+@app.post("/activity/ping")
+async def activity_ping(user=Depends(get_current_user)):
+    """Frontend calls this every 60s while tab is active."""
+    db.ping_activity(user["id"])
+    return {"ok": True}
+
+@app.get("/activity/stats")
+async def activity_stats(user=Depends(get_current_user)):
+    stats = db.get_my_activity_stats(user["id"])
+    is_prem = db.is_premium(user["id"])
+    return {**stats, "is_premium": is_prem}
+
+class ActivityEventRequest(BaseModel):
+    event: str  # message | post | reaction_received | voice | invite
+
+@app.post("/activity/event")
+async def activity_event(body: ActivityEventRequest, user=Depends(get_current_user)):
+    db.record_activity(user["id"], body.event)
+    return {"ok": True}
+
+# ── Rewards ───────────────────────────────────────────────────────────────────
+
+@app.get("/rewards/estimate")
+async def reward_estimate(user=Depends(get_current_user)):
+    return db.estimate_reward(user["id"])
+
+@app.post("/rewards/claim")
+async def reward_claim(body: RewardClaimRequest, user=Depends(get_current_user)):
+    from datetime import datetime as _dt
+    month = body.month or _dt.utcnow().strftime('%Y-%m')
+    amount, err = db.claim_reward(user["id"], month, body.wallet_address)
+    if err:
+        raise HTTPException(400, err)
+    return {"ok": True, "usd": amount, "wallet": body.wallet_address,
+            "message": f"Заявка на ${amount:.2f} создана. Выплата в течение 24ч."}
+
+@app.get("/rewards/history")
+async def reward_history(user=Depends(get_current_user)):
+    conn = db.get_db()
+    rows = conn.execute(
+        "SELECT month,score,usd_amount,wallet_address,status,created_at FROM reward_claims WHERE user_id=? ORDER BY id DESC",
+        (user["id"],)).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+@app.get("/rewards/pool")
+async def reward_pool_info():
+    conn = db.get_db()
+    row = conn.execute("SELECT * FROM reward_pool WHERE id=1").fetchone()
+    conn.close()
+    if not row: return {"total_usd": 1000000, "used_usd": 0, "remaining_usd": 1000000}
+    r = dict(row)
+    r["remaining_usd"] = r["total_usd"] - r["used_usd"]
+    return r
 
 @app.get("/cube/balance")
 async def cube_balance(user=Depends(get_current_user)):
