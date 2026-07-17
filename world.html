@@ -3219,11 +3219,21 @@ app.cubes = SEED_CUBES.map(c=>({...c}));
 // ════════════════════════════════════════════════
 function showView(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 function openModal(id){
-  document.getElementById(id).classList.add('open');
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.classList.add('open');
+  if(el.style.display==='none') el.style.display='';
   if(id==='modal-swap') initTokenSelector();
 }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-backdrop').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)b.classList.remove('open');}));
+function closeModal(id){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.classList.remove('open');
+  el.style.display='none';
+}
+document.querySelectorAll('.modal-backdrop').forEach(b=>b.addEventListener('click',e=>{
+  if(e.target===b){ b.classList.remove('open'); b.style.display='none'; }
+}));
 
 // ════════════════════════════════════════════════
 //  LANDING CANVAS
@@ -7757,10 +7767,10 @@ function renderFeed(){
           <div class="vfa-icon">💬</div>
           <span class="vfa-count" id="vfa-cc-${post.id}">${_fmtN(post.comment_count||0)}</span>
         </button>
-        <button class="vfa" onclick="vfShare('${post.id}')">
+        <div class="vfa" style="cursor:default">
           <div class="vfa-icon">👁️</div>
           <span class="vfa-count" id="vfa-vc-${post.id}">${_fmtN(post.view_count||0)}</span>
-        </button>
+        </div>
         <button class="vfa" onclick="vfShare('${post.id}')">
           <div class="vfa-icon">↗️</div>
           <span class="vfa-count">Шер</span>
@@ -8107,18 +8117,19 @@ async function _loadGrpMembers(){
   if(!_grpChatId) return;
   const members=await apiCall('/groups/'+_grpChatId+'/members');
   if(!Array.isArray(members)) return;
-  const list=document.getElementById('gmp-list');
-  if(!list) return;
-  list.innerHTML='';
   const onlineEl=document.getElementById('gco-online');
   if(onlineEl) onlineEl.textContent=members.length+' участников';
-  members.forEach(m=>{
-    const div=document.createElement('div');
-    div.className='gmp-member';
-    div.innerHTML=`<div class="gmp-av">${(m.display_name||'?')[0].toUpperCase()}</div>
-      <div class="gmp-name">@${escHtml(m.display_name||'Аноним')}</div>`;
-    list.appendChild(div);
-  });
+  // Build HTML for member cards
+  const makeItems=(cls)=>members.map(m=>`<div class="${cls}">
+    <div class="gmp-av">${(m.display_name||'?')[0].toUpperCase()}</div>
+    <div class="gmp-name">@${escHtml(m.display_name||'Аноним')}</div>
+  </div>`).join('');
+  // Side panel (always update)
+  const sideList=document.getElementById('gmp-list');
+  if(sideList) sideList.innerHTML=makeItems('gmp-member');
+  // Tab body list
+  const tabList=document.getElementById('gco-members-list');
+  if(tabList) tabList.innerHTML=makeItems('gmp-member');
 }
 
 /* ====== GROUP FULL VIEW JS ====== */
@@ -8133,7 +8144,7 @@ function gcoSwitchTab(tab, el){
     if(el2) el2.style.display='none';
   });
   const target=document.getElementById('gco-tab-'+tab);
-  if(target) target.style.display='flex';
+  if(target) target.style.display=(tab==='members')?'block':'flex';
   if(tab==='posts') _loadGroupPosts(_grpChatId);
   if(tab==='chat'){ _loadGroupMsgs(true); _startGrpPoll(); }
   if(tab==='members') _loadGrpMembers();
@@ -8156,7 +8167,7 @@ async function _uploadFile(file, progressBarId){
   let pct=10;
   const ticker=setInterval(()=>{ pct=Math.min(pct+10,85); if(bar) bar.style.width=pct+'%'; },200);
   try{
-    const res=await fetch('/upload',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('cw_token')},body:fd});
+    const res=await fetch('/upload',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('cw_access_token')},body:fd});
     clearInterval(ticker);
     const j=await res.json();
     if(bar){ bar.style.width='100%'; setTimeout(()=>{ bar.parentElement.style.display='none'; bar.style.width='0'; },600); }
@@ -8255,7 +8266,8 @@ async function submitGcoPost(){
   }
   const res=await apiCall('/groups/'+_grpChatId+'/messages','POST',{content, msg_type: msgType==='text'?'text':'file'});
   if(res && (res.ok||res.id)){
-    document.getElementById('modal-gco-post').style.display='none';
+    const modal=document.getElementById('modal-gco-post');
+    if(modal) modal.style.display='none';
     document.getElementById('gco-post-text').value='';
     gcoClearUpload();
     await _loadGroupPosts(_grpChatId);
