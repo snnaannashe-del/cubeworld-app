@@ -1993,6 +1993,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   <div id="cube-switcher">
     <span style="font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;flex-shrink:0">Кубы:</span>
     <div id="cube-tabs-wrap" style="display:flex;gap:6px;flex:1;overflow-x:auto"></div>
+    <button id="cs-key2-btn" onclick="showCubeKeyPanel()" style="display:none;flex-shrink:0;font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(0,149,246,.15);border:1px solid rgba(0,149,246,.35);color:var(--accent);cursor:pointer;white-space:nowrap">🔑 Key 2</button>
     <button class="cs-add" onclick="exitInterior()" title="Открыть другой куб">+</button>
   </div>
   <div id="int-layout">
@@ -2052,10 +2053,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       </button>
       <button class="mnb" id="mnb-groups" onclick="mobSwitch('groups',this)">
         <span class="mnb-icon">👥</span><span class="mnb-label">Группы</span>
-        <div class="mnb-dot"></div>
-      </button>
-      <button class="mnb" id="mnb-key" onclick="openModal('modal-keyshop')">
-        <span class="mnb-icon">🔑</span><span class="mnb-label">Key</span>
         <div class="mnb-dot"></div>
       </button>
       <button class="mnb" id="mnb-more" onclick="openMobMore()">
@@ -4057,6 +4054,8 @@ function enterInterior(cubeId){
   // Show Key 2 button only for cube owner
   const keyBtn=document.getElementById('itb-cube-key-btn');
   if(keyBtn) keyBtn.style.display = (cube&&cube.isOwn)?'':'none';
+  const csKey2=document.getElementById('cs-key2-btn');
+  if(csKey2) csKey2.style.display = (cube&&cube.isOwn)?'':'none';
   showView('v-int');
   initInteriorData(cubeId);
   switchSection('feed',document.querySelector('.sn-item.active'));
@@ -8932,7 +8931,7 @@ async function _uploadFile(file, progressBarId){
   let pct=10;
   const ticker=setInterval(()=>{ pct=Math.min(pct+10,85); if(bar) bar.style.width=pct+'%'; },200);
   try{
-    const res=await fetch('/upload',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('cw_access_token')},body:fd});
+    const res=await fetch(CUBE_API+'/upload',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('cw_access_token')},body:fd});
     clearInterval(ticker);
     const j=await res.json();
     if(bar){ bar.style.width='100%'; setTimeout(()=>{ bar.parentElement.style.display='none'; bar.style.width='0'; },600); }
