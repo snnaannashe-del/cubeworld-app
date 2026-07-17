@@ -152,7 +152,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 /* ══ INTERIOR — SOCIAL NETWORK ══════════ */
 #v-int{background:var(--bg);flex-direction:column}
-#int-topbar{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);flex-shrink:0;z-index:50}
+#int-topbar{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);flex-shrink:0;z-index:50;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#int-topbar::-webkit-scrollbar{display:none}
 .itb-back{background:transparent;border:1px solid var(--border);color:var(--text2);padding:5px 11px;border-radius:7px;font-size:12px;cursor:pointer;transition:all .15s;flex-shrink:0}
 .itb-back:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
 .itb-cube-icon{font-size:18px;flex-shrink:0}
@@ -186,8 +187,67 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vf-tabs{display:flex;gap:0}
 .vf-tab{padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.6);border:none;background:transparent;transition:all .2s;border-bottom:2px solid transparent;line-height:1.2}
 .vf-tab.active{color:#fff;border-bottom-color:#fff}
-.vf-upload-btn{margin-left:auto;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;color:#fff;border:1.5px solid rgba(255,255,255,.6);background:transparent;transition:all .2s}
+.vf-upload-btn{margin-left:auto;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;color:#fff;border:1.5px solid rgba(255,255,255,.6);background:transparent;transition:all .2s;flex-shrink:0}
 .vf-upload-btn:hover{background:rgba(255,255,255,.15)}
+.vf-type-pills{display:flex;gap:5px;align-items:center}
+.vf-pill{padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);transition:all .18s;white-space:nowrap}
+.vf-pill.active{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.5)}
+/* BALL post card */
+.vf-ball-card{padding:50px 24px 130px;background:var(--bg2);width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:16px;overflow-y:auto}
+.vf-ball-image{width:100%;max-height:55vh;object-fit:cover;border-radius:12px;display:block}
+.vf-ball-text{color:#e0e0f8;font-size:16px;line-height:1.7;white-space:pre-wrap}
+/* Create post modal */
+#modal-create-post{z-index:500}
+.cpm-types{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.cpm-type{border:2px solid var(--border);border-radius:14px;padding:20px 14px;cursor:pointer;text-align:center;transition:all .2s;background:var(--card)}
+.cpm-type:hover,.cpm-type.sel{border-color:var(--accent);background:rgba(0,149,246,.08)}
+.cpm-type-icon{font-size:32px;margin-bottom:6px}
+.cpm-type-name{font-size:14px;font-weight:700;color:#e0e0f8;margin-bottom:3px}
+.cpm-type-desc{font-size:11px;color:var(--text2)}
+.cpm-fields{display:flex;flex-direction:column;gap:10px}
+.cpm-inp{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;color:#e0e0f8;padding:9px 12px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box}
+.cpm-inp:focus{border-color:rgba(0,149,246,.5)}
+.cpm-inp-ta{min-height:80px;resize:vertical}
+/* Group chat overlay */
+#grp-chat-overlay{position:fixed;inset:0;background:var(--bg);z-index:600;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1)}
+#grp-chat-overlay.open{transform:translateX(0)}
+.gco-topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);flex-shrink:0}
+.gco-back{background:transparent;border:1px solid var(--border);color:var(--text2);padding:5px 11px;border-radius:7px;font-size:13px;cursor:pointer}
+.gco-icon{font-size:22px}
+.gco-name{font-size:15px;font-weight:700;color:#e0e0f8;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gco-online{font-size:11px;color:var(--green);margin-left:auto;flex-shrink:0}
+.gco-members-btn{background:transparent;border:1px solid var(--border);border-radius:7px;padding:5px 10px;font-size:12px;color:var(--text2);cursor:pointer}
+.gco-msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.gco-msg{display:flex;align-items:flex-start;gap:8px;padding:4px 0}
+.gco-msg.me{flex-direction:row-reverse}
+.gco-av{width:32px;height:32px;border-radius:50%;background:rgba(0,149,246,.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.gco-bubble{max-width:72%;background:rgba(255,255,255,.06);border-radius:12px 12px 12px 2px;padding:8px 12px}
+.gco-msg.me .gco-bubble{background:rgba(0,149,246,.22);border-radius:12px 12px 2px 12px}
+.gco-bubble-name{font-size:10px;color:var(--accent);font-weight:700;margin-bottom:2px}
+.gco-bubble-text{font-size:13px;color:#e0e0f8;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.gco-bubble-time{font-size:10px;color:var(--text3);margin-top:3px;text-align:right}
+.gco-input-row{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:rgba(255,255,255,.01);flex-shrink:0}
+.gco-input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:20px;color:#e0e0f8;padding:9px 16px;font-size:13px;font-family:inherit;outline:none}
+.gco-input:focus{border-color:rgba(0,149,246,.4)}
+.gco-send{background:rgba(0,149,246,.6);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s}
+.gco-send:hover{background:rgba(0,149,246,.9)}
+/* Group members panel (slides from right within overlay) */
+#grp-members-panel{position:absolute;top:0;right:0;bottom:0;width:min(300px,85vw);background:#0d0d28;border-left:1px solid var(--border);z-index:10;transform:translateX(100%);transition:transform .28s;overflow-y:auto;padding:14px}
+#grp-members-panel.open{transform:translateX(0)}
+.gmp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.gmp-title{font-size:14px;font-weight:700;color:#e0e0f8}
+.gmp-close{background:transparent;border:none;color:var(--text2);font-size:18px;cursor:pointer;padding:2px 6px}
+.gmp-member{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border2)}
+.gmp-av{width:36px;height:36px;border-radius:50%;background:rgba(0,149,246,.25);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
+.gmp-name{font-size:13px;color:var(--text)}
+/* Group card join-key row */
+.gc-key-row{display:flex;gap:6px;margin-top:8px}
+.gc-key-input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;color:#e0e0f8;padding:6px 10px;font-size:12px;font-family:'Courier New',monospace;outline:none}
+.gc-key-input:focus{border-color:rgba(0,149,246,.4)}
+.gc-key-submit{background:rgba(0,149,246,.5);border:none;border-radius:7px;color:#fff;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer}
+/* group card open chat btn */
+.gc-open-chat{margin-top:6px;width:100%;padding:7px;border-radius:8px;border:none;background:rgba(0,149,246,.18);color:var(--accent);font-size:12px;font-weight:700;cursor:pointer;transition:all .18s}
+.gc-open-chat:hover{background:rgba(0,149,246,.35)}
 .vf-container{position:absolute;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory}
 .vf-container::-webkit-scrollbar{display:none}
 .vf-card{height:100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -1236,13 +1296,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
    MOBILE BOTTOM NAV & BOTTOM SHEET
 ══════════════════════════════════════════════════════ */
 #mob-nav{display:none}
+#mob-more-sheet{display:none}
+#mob-backdrop{display:none}
 
 @media(max-width:768px){
+  /* ── show mobile-only elements ── */
+  #mob-nav{display:flex!important}
+  #mob-more-sheet{display:block}
+  #mob-backdrop{display:none}
+  #mob-backdrop.open{display:block;opacity:1}
+
   /* ── hide desktop sidebar ── */
   #int-sidenav{display:none!important}
 
-  /* ── compact topbar ── */
-  #int-topbar{padding:6px 10px;gap:6px;flex-wrap:nowrap}
+  /* ── compact topbar — scrollable slider ── */
+  #int-topbar{padding:6px 10px;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  #int-topbar::-webkit-scrollbar{display:none}
   .itb-back{padding:4px 9px;font-size:11px;flex-shrink:0}
   .itb-enc,.itb-anon,.itb-mykey,#itb-cube-key-btn{display:none!important}
   .itb-name{font-size:13px}
@@ -1653,7 +1722,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <span class="mnb-badge" id="mob-badge-chat" style="display:none"></span>
         <div class="mnb-dot"></div>
       </button>
-      <button class="mnb mnb-center" id="mnb-feed2" onclick="mobSwitch('feed',document.getElementById('mnb-feed'))">
+      <button class="mnb mnb-center" id="mnb-feed2" onclick="openCreatePost()">
         <div class="mnb-center-ring">
           <span style="font-size:24px">➕</span>
         </div>
@@ -1721,8 +1790,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           <div class="vf-tabs">
             <button class="vf-tab active" onclick="vfSwitchTab('foryou',this)">Для тебя</button>
             <button class="vf-tab" onclick="vfSwitchTab('following',this)">Подписки</button>
+            <button class="vf-tab" onclick="vfSwitchTab('top',this)">🔥 Топ</button>
           </div>
-          <button class="vf-upload-btn" onclick="openVideoUpload()">+ Видео</button>
+          <div class="vf-type-pills" id="vf-type-pills">
+            <button class="vf-pill active" id="vfp-all" onclick="vfFilterType('all',this)">Все</button>
+            <button class="vf-pill" id="vfp-short" onclick="vfFilterType('short',this)">▶ SHORT</button>
+            <button class="vf-pill" id="vfp-ball" onclick="vfFilterType('ball',this)">🟡 BALL</button>
+          </div>
+          <button class="vf-upload-btn" onclick="openCreatePost()">+ Пост</button>
         </div>
         <!-- scrollable video cards -->
         <div class="vf-container" id="vf-container"></div>
@@ -1759,6 +1834,65 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
             <input class="vfcp-input" id="vfcp-input" placeholder="Написать комментарий..." onkeydown="if(event.key==='Enter')submitVfComment()">
             <button class="vfcp-send" onclick="submitVfComment()">→</button>
           </div>
+        </div>
+      </div>
+
+      <!-- ═══ CREATE POST MODAL ═════════════════════════════════════ -->
+      <div class="modal-backdrop" id="modal-create-post">
+        <div class="modal" style="max-width:420px">
+          <h3>✨ Новый пост</h3>
+          <div class="cpm-types" id="cpm-types">
+            <div class="cpm-type sel" id="cpm-short" onclick="cpmSelectType('short')">
+              <div class="cpm-type-icon">▶️</div>
+              <div class="cpm-type-name">SHORT</div>
+              <div class="cpm-type-desc">Видео · TikTok-стиль</div>
+            </div>
+            <div class="cpm-type" id="cpm-ball" onclick="cpmSelectType('ball')">
+              <div class="cpm-type-icon">🟡</div>
+              <div class="cpm-type-name">BALL</div>
+              <div class="cpm-type-desc">Фото · Текст · Файл</div>
+            </div>
+          </div>
+          <div class="cpm-fields" id="cpm-short-fields">
+            <input class="cpm-inp" id="cpm-video-url" placeholder="📹 Ссылка на видео (YouTube / .mp4)">
+            <input class="cpm-inp" id="cpm-music" placeholder="🎵 Музыка (необязательно)">
+            <textarea class="cpm-inp cpm-inp-ta" id="cpm-desc-short" placeholder="Описание #хэштег"></textarea>
+          </div>
+          <div class="cpm-fields" id="cpm-ball-fields" style="display:none">
+            <input class="cpm-inp" id="cpm-image-url" placeholder="🖼️ Ссылка на фото (необязательно)">
+            <textarea class="cpm-inp cpm-inp-ta" id="cpm-desc-ball" placeholder="Что на уме? Текст, мысль, новость…" style="min-height:100px"></textarea>
+          </div>
+          <div id="cpm-err" style="font-size:11px;color:var(--red);min-height:14px;margin-top:4px"></div>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('modal-create-post')">Отмена</button>
+            <button class="btn btn-accent" id="cpm-submit-btn" onclick="submitCreatePost()">🚀 Опубликовать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ GROUP CHAT OVERLAY ════════════════════════════════════ -->
+      <div id="grp-chat-overlay">
+        <div class="gco-topbar">
+          <button class="gco-back" onclick="closeGroupChat()">← Назад</button>
+          <span class="gco-icon" id="gco-icon">👥</span>
+          <span class="gco-name" id="gco-name">Группа</span>
+          <span class="gco-online" id="gco-online"></span>
+          <button class="gco-members-btn" onclick="toggleGrpMembersPanel()">👥 Участники</button>
+        </div>
+        <div class="gco-msgs" id="gco-msgs">
+          <div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">Загружаем историю...</div>
+        </div>
+        <!-- members slide panel -->
+        <div id="grp-members-panel">
+          <div class="gmp-header">
+            <span class="gmp-title">Участники</span>
+            <button class="gmp-close" onclick="toggleGrpMembersPanel()">✕</button>
+          </div>
+          <div id="gmp-list"></div>
+        </div>
+        <div class="gco-input-row">
+          <input class="gco-input" id="gco-input" placeholder="Сообщение в группу…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendGroupMsg();}">
+          <button class="gco-send" onclick="sendGroupMsg()">↑</button>
         </div>
       </div>
 
@@ -2646,7 +2780,15 @@ async function _tryRefreshToken(){
   }catch(e){ _refreshing=false; return false; }
 }
 
-async function apiCall(path, opts={}){
+async function apiCall(path, methodOrOpts={}, bodyObj){
+  // Support both: apiCall(path, {method,body,...}) and apiCall(path, 'POST', {body})
+  let opts = {};
+  if(typeof methodOrOpts === 'string'){
+    opts.method = methodOrOpts;
+    if(bodyObj !== undefined) opts.body = JSON.stringify(bodyObj);
+  } else if(methodOrOpts && typeof methodOrOpts === 'object') {
+    opts = methodOrOpts;
+  }
   const token = localStorage.getItem('cw_access_token');
   const headers = {'Content-Type':'application/json'};
   if(token) headers['Authorization'] = 'Bearer '+token;
@@ -2688,6 +2830,7 @@ async function syncFromBackend(){
       if(dn) dn.textContent = me.display_name;
     }
     if(me.id) localStorage.setItem('cw_user_id', me.id);
+    if(me.display_name) localStorage.setItem('cw_display_name', me.display_name);
     // Restore account_type from DB (survives browser clear)
     if(me.account_type){
       app.myProfile.accountType = me.account_type;
@@ -4592,19 +4735,51 @@ function renderGroupCard(g){
   const joined = g.is_member == 1 || g.is_member === true;
   const members = (g.member_count || 0).toLocaleString('ru');
   const handle = g.handle ? `<span style="font-size:10px;color:var(--accent)">@${escHtml(g.handle)}</span>` : '';
+  const isPrivate = g.type === 'private';
+  const joinBtn = joined
+    ? `<button class="gc-join joined" onclick="leaveGroupUI(${g.id},this)">✓ Вступил</button>`
+    : isPrivate
+      ? `<button class="gc-join open-btn" onclick="toggleGcKeyRow(${g.id})">🔐 Войти по ключу</button>`
+      : `<button class="gc-join open-btn" onclick="joinGroupUI(${g.id},this)">Войти</button>`;
+  const keyRow = (!joined && isPrivate)
+    ? `<div class="gc-key-row" id="gc-key-row-${g.id}" style="display:none">
+        <input class="gc-key-input" id="gc-key-inp-${g.id}" placeholder="Введи ключ группы…" onkeydown="if(event.key==='Enter')joinGroupByKey(${g.id})">
+        <button class="gc-key-submit" onclick="joinGroupByKey(${g.id})">→</button>
+       </div>` : '';
+  const chatBtn = joined
+    ? `<button class="gc-open-chat" onclick="openGroupChat(${g.id},'${escHtml(g.name)}','${escHtml(g.icon||'👥')}')">💬 Открыть чат</button>` : '';
   return `<div class="group-card" id="grp-card-${g.id}">
-    <div class="gc-type ${g.type}">${g.type==='public'?'PUBLIC':'PRIVATE'}</div>
+    <div class="gc-type ${g.type}">${isPrivate?'PRIVATE':'PUBLIC'}</div>
     <div class="gc-icon">${escHtml(g.icon||'👥')}</div>
     <div class="gc-name">${escHtml(g.name)}</div>
     ${handle}
     <div class="gc-desc" style="margin-top:4px">${escHtml(g.description||'')}</div>
     <div class="gc-footer" style="margin-top:10px">
       <div class="gc-members">👥 ${members}</div>
-      ${joined
-        ? `<button class="gc-join joined" onclick="leaveGroupUI(${g.id},this)">✓ Вступил</button>`
-        : `<button class="gc-join open-btn" onclick="joinGroupUI(${g.id},this)">${g.type==='private'?'🔐 Закрытая':'Войти'}</button>`}
+      ${joinBtn}
     </div>
+    ${keyRow}
+    ${chatBtn}
   </div>`;
+}
+
+function toggleGcKeyRow(id){
+  const row = document.getElementById('gc-key-row-'+id);
+  if(row) row.style.display = row.style.display==='none' ? 'flex' : 'none';
+}
+
+async function joinGroupByKey(id){
+  const inp = document.getElementById('gc-key-inp-'+id);
+  const key = (inp?.value||'').trim();
+  if(!key){ showToast('Введи ключ группы'); return; }
+  const r = await apiCall('/groups/join-key','POST',{key});
+  if(r && r.joined){
+    showToast('🎉 Вступил в группу!');
+    earnCube(3,'Вступил в группу','👥');
+    loadGroups();
+  } else {
+    showToast('❌ Неверный ключ');
+  }
 }
 
 async function joinGroupUI(id, btn){
@@ -7388,6 +7563,7 @@ function vfSwitchTab(tab, el){
   _vfTab = tab;
   document.querySelectorAll('.vf-tab').forEach(t=>t.classList.remove('active'));
   if(el) el.classList.add('active');
+  if(tab==='top'){ renderFeed(); return; }  // sort locally, no new fetch needed
   loadVideoFeed();
 }
 
@@ -7398,37 +7574,60 @@ function renderFeed(){
   container.innerHTML='';
   const myId = localStorage.getItem('cw_user_id');
 
-  if(!_vfPosts.length){
-    container.innerHTML=`<div class="vf-empty"><div class="vf-empty-icon">🎬</div><div class="vf-empty-text">Нет видео</div><div class="vf-empty-sub">Подпишись на кого-нибудь или загрузи первое видео</div></div>`;
+  // Apply type filter
+  let posts = _vfPosts;
+  if(_vfTypeFilter==='short') posts=posts.filter(p=>!p.post_type||p.post_type==='short');
+  else if(_vfTypeFilter==='ball') posts=posts.filter(p=>p.post_type==='ball');
+
+  // Sort for "top" tab
+  if(_vfTab==='top') posts=[...posts].sort((a,b)=>(b.likes||0)-(a.likes||0));
+
+  if(!posts.length){
+    container.innerHTML=`<div class="vf-empty"><div class="vf-empty-icon">${_vfTypeFilter==='ball'?'🟡':'🎬'}</div><div class="vf-empty-text">Нет постов</div><div class="vf-empty-sub">Нажми «+ Пост» чтобы быть первым!</div></div>`;
     return;
   }
 
-  _vfPosts.forEach(post=>{
+  posts.forEach(post=>{
+    const isBall = post.post_type==='ball';
     const card = document.createElement('div');
     card.className = 'vf-card';
     card.dataset.postId = String(post.id);
     card.dataset.userId = String(post.user_id||'');
 
-    // Media area
     let mediaHtml = '';
-    const vid = post.video_url || '';
-    if(vid){
-      const ytM = vid.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
-      if(ytM){
-        mediaHtml=`<div class="vf-iframe-wrap"><iframe src="https://www.youtube.com/embed/${ytM[1]}?autoplay=0&mute=1&controls=1&modestbranding=1&rel=0&playsinline=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div>`;
+    if(isBall){
+      // BALL: photo or text
+      if(post.image_url){
+        mediaHtml=`<div class="vf-ball-card"><img class="vf-ball-image" src="${escHtml(post.image_url)}" onerror="this.style.display='none'" loading="lazy"><div class="vf-ball-text">${escHtml(post.description||post.content||'')}</div></div>`;
       } else {
-        mediaHtml=`<video class="vf-video" src="${escHtml(vid)}" loop playsinline preload="metadata" onclick="_vfTogglePlay(this)"></video><div class="vf-pause-indicator" id="vf-pi-${post.id}"><div class="vf-pause-icon">▶</div></div>`;
+        const bg=['#0a0a22','#0d1a2e','#0a1e0a','#1e0a14','#1a1420'];
+        const bi=Math.abs((String(post.id||'')).split('').reduce((a,c)=>a+c.charCodeAt(0),0))%bg.length;
+        mediaHtml=`<div class="vf-ball-card" style="background:${bg[bi]}"><div class="vf-ball-text" style="font-size:clamp(14px,3vw,20px)">${escHtml(post.description||post.content||'')}</div></div>`;
       }
     } else {
-      const bg=['#1a1a4e','#1e0a2e','#0a2e1e','#2e1a0a','#0a1e2e'];
-      const bi=Math.abs((String(post.id||'')).split('').reduce((a,c)=>a+c.charCodeAt(0),0))%bg.length;
-      mediaHtml=`<div class="vf-text-post" style="background:linear-gradient(135deg,${bg[bi]}99,${bg[(bi+2)%bg.length]}99)">${escHtml(post.description||post.content||'')}</div>`;
+      // SHORT: video
+      const vid = post.video_url || '';
+      if(vid){
+        const ytM = vid.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+        if(ytM){
+          mediaHtml=`<div class="vf-iframe-wrap"><iframe src="https://www.youtube.com/embed/${ytM[1]}?autoplay=0&mute=1&controls=1&modestbranding=1&rel=0&playsinline=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div>`;
+        } else {
+          mediaHtml=`<video class="vf-video" src="${escHtml(vid)}" loop playsinline preload="metadata" onclick="_vfTogglePlay(this)"></video><div class="vf-pause-indicator" id="vf-pi-${post.id}"><div class="vf-pause-icon">▶</div></div>`;
+        }
+      } else {
+        const bg=['#1a1a4e','#1e0a2e','#0a2e1e','#2e1a0a','#0a1e2e'];
+        const bi=Math.abs((String(post.id||'')).split('').reduce((a,c)=>a+c.charCodeAt(0),0))%bg.length;
+        mediaHtml=`<div class="vf-text-post" style="background:linear-gradient(135deg,${bg[bi]}99,${bg[(bi+2)%bg.length]}99)">${escHtml(post.description||post.content||'')}</div>`;
+      }
     }
 
     const isFollowing = !!(app.vfFollowing||{})[post.user_id];
     const isLiked = !!(app.vfLiked||{})[post.id];
     const letter = (post.display_name||'?')[0].toUpperCase();
     const isMine = String(post.user_id)===String(myId);
+    const typeBadge = isBall
+      ? `<span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(251,191,36,.15);color:var(--gold);font-weight:700;margin-left:5px">BALL</span>`
+      : `<span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(0,149,246,.15);color:var(--accent);font-weight:700;margin-left:5px">SHORT</span>`;
 
     card.innerHTML=`${mediaHtml}
       <div class="vf-card-gradient"></div>
@@ -7440,6 +7639,10 @@ function renderFeed(){
         <button class="vfa" onclick="openVfComments('${post.id}')">
           <div class="vfa-icon">💬</div>
           <span class="vfa-count" id="vfa-cc-${post.id}">${_fmtN(post.comment_count||0)}</span>
+        </button>
+        <button class="vfa" onclick="vfShare('${post.id}')">
+          <div class="vfa-icon">👁️</div>
+          <span class="vfa-count" id="vfa-vc-${post.id}">${_fmtN(post.view_count||0)}</span>
         </button>
         <button class="vfa" onclick="vfShare('${post.id}')">
           <div class="vfa-icon">↗️</div>
@@ -7459,7 +7662,7 @@ function renderFeed(){
       <div class="vf-info">
         <div class="vfi-author-row">
           <div class="vfi-avatar" onclick="clickAuthor('${escHtml(post.display_name||'')}')">${letter}</div>
-          <span class="vfi-name">@${escHtml(post.display_name||'Аноним')}</span>
+          <span class="vfi-name">@${escHtml(post.display_name||'Аноним')}</span>${typeBadge}
           ${!isMine?`<button class="vfi-follow-btn${isFollowing?' following':''}" id="vfi-fb-${post.user_id}" onclick="vfFollow('${post.user_id}')">${isFollowing?'Отписаться':'Подписаться'}</button>`:''}
         </div>
         <div class="vfi-desc">${escHtml(post.description||post.content||'')}</div>
@@ -7469,13 +7672,18 @@ function renderFeed(){
     container.appendChild(card);
   });
 
-  // IntersectionObserver for autoplay of native <video>
+  // IntersectionObserver: autoplay video + track views
   _vfObserver = new IntersectionObserver(entries=>{
     entries.forEach(entry=>{
-      const vid=entry.target.querySelector('video.vf-video');
-      if(!vid) return;
-      if(entry.isIntersecting){ vid.play().catch(()=>{}); }
-      else { vid.pause(); }
+      const postId=entry.target.dataset.postId;
+      if(entry.isIntersecting){
+        const vid=entry.target.querySelector('video.vf-video');
+        if(vid) vid.play().catch(()=>{});
+        if(postId) _trackPostView(postId);
+      } else {
+        const vid=entry.target.querySelector('video.vf-video');
+        if(vid) vid.pause();
+      }
     });
   },{root:container,threshold:0.65});
   container.querySelectorAll('.vf-card').forEach(c=>_vfObserver.observe(c));
@@ -7595,13 +7803,193 @@ async function submitVideoPost(){
   const btn=document.getElementById('vfu-submit-btn');
   if(btn){btn.disabled=true;btn.textContent='Публикуем...';}
   const cubeId=app.currentCubeId||1;
-  const data=await apiCall('/feed/post','POST',{cube_id:cubeId,video_url:videoUrl,description:desc,music});
+  const data=await apiCall('/feed/post','POST',{cube_id:cubeId,video_url:videoUrl,description:desc,music,post_type:'short'});
   if(btn){btn.disabled=false;btn.textContent='Опубликовать 🚀';}
   if(!data){showToast('Ошибка публикации');return;}
   closeVideoUpload();
   showToast('Видео опубликовано! 🎬');
   _vfPosts.unshift(data);
   renderFeed();
+}
+
+// ═══ CREATE POST (unified SHORT/BALL) ════════════════════════════
+let _cpmType = 'short';
+function openCreatePost(){
+  _cpmType='short';
+  document.getElementById('cpm-short').classList.add('sel');
+  document.getElementById('cpm-ball').classList.remove('sel');
+  document.getElementById('cpm-short-fields').style.display='flex';
+  document.getElementById('cpm-ball-fields').style.display='none';
+  document.getElementById('cpm-video-url').value='';
+  document.getElementById('cpm-music').value='';
+  document.getElementById('cpm-desc-short').value='';
+  document.getElementById('cpm-image-url').value='';
+  document.getElementById('cpm-desc-ball').value='';
+  document.getElementById('cpm-err').textContent='';
+  openModal('modal-create-post');
+}
+function cpmSelectType(t){
+  _cpmType=t;
+  document.getElementById('cpm-short').classList.toggle('sel',t==='short');
+  document.getElementById('cpm-ball').classList.toggle('sel',t==='ball');
+  document.getElementById('cpm-short-fields').style.display=t==='short'?'flex':'none';
+  document.getElementById('cpm-ball-fields').style.display=t==='ball'?'flex':'none';
+}
+async function submitCreatePost(){
+  const errEl=document.getElementById('cpm-err');
+  errEl.textContent='';
+  let payload={post_type:_cpmType,cube_id:app.currentCubeId||1};
+  if(_cpmType==='short'){
+    payload.video_url=(document.getElementById('cpm-video-url')?.value||'').trim();
+    payload.music=(document.getElementById('cpm-music')?.value||'').trim();
+    payload.description=(document.getElementById('cpm-desc-short')?.value||'').trim();
+    if(!payload.description){errEl.textContent='Добавь описание';return;}
+  } else {
+    payload.image_url=(document.getElementById('cpm-image-url')?.value||'').trim();
+    payload.description=(document.getElementById('cpm-desc-ball')?.value||'').trim();
+    if(!payload.description){errEl.textContent='Напиши что-нибудь';return;}
+    payload.video_url='';
+  }
+  const btn=document.getElementById('cpm-submit-btn');
+  if(btn){btn.disabled=true;btn.textContent='Публикуем...';}
+  const data=await apiCall('/feed/post','POST',payload);
+  if(btn){btn.disabled=false;btn.textContent='🚀 Опубликовать';}
+  if(!data){errEl.textContent='Ошибка публикации, попробуй ещё';return;}
+  closeModal('modal-create-post');
+  showToast(_cpmType==='short'?'Видео опубликовано! 🎬':'Пост опубликован! 🟡');
+  earnCube(5,'Новый пост','📝');
+  _vfPosts.unshift(data);
+  renderFeed();
+}
+
+// ═══ FEED TYPE FILTER ════════════════════════════════════════════
+let _vfTypeFilter = 'all';
+function vfFilterType(type, el){
+  _vfTypeFilter=type;
+  document.querySelectorAll('.vf-pill').forEach(p=>p.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderFeed();
+}
+
+// ═══ VIEW COUNTING ════════════════════════════════════════════════
+const _vfViewedPosts = new Set();
+function _trackPostView(postId){
+  if(_vfViewedPosts.has(String(postId))) return;
+  _vfViewedPosts.add(String(postId));
+  apiCall('/feed/'+postId+'/view','POST').catch(()=>{});
+  const vcEl=document.getElementById('vfa-vc-'+postId);
+  if(vcEl){const n=parseInt(vcEl.textContent.replace(/\D/g,'')||'0')+1; vcEl.textContent=_fmtN(n);}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  GROUP CHAT  (Telegram-style)
+// ═══════════════════════════════════════════════════════════════════
+let _grpChatId = null;
+let _grpChatPollTimer = null;
+let _grpChatLastId = 0;
+
+async function openGroupChat(groupId, groupName, groupIcon){
+  _grpChatId = groupId;
+  _grpChatLastId = 0;
+  document.getElementById('gco-name').textContent = groupName||'Группа';
+  document.getElementById('gco-icon').textContent = groupIcon||'👥';
+  document.getElementById('gco-online').textContent = '';
+  document.getElementById('grp-chat-overlay').classList.add('open');
+  document.getElementById('grp-members-panel').classList.remove('open');
+  await _loadGroupMsgs(true);
+  _startGrpPoll();
+  // Load members
+  _loadGrpMembers();
+}
+
+function closeGroupChat(){
+  document.getElementById('grp-chat-overlay').classList.remove('open');
+  _stopGrpPoll();
+  _grpChatId=null;
+}
+
+function toggleGrpMembersPanel(){
+  document.getElementById('grp-members-panel').classList.toggle('open');
+}
+
+async function _loadGroupMsgs(scrollBottom=false){
+  if(!_grpChatId) return;
+  const msgs=await apiCall('/groups/'+_grpChatId+'/messages');
+  if(!Array.isArray(msgs)) return;
+  const myId=localStorage.getItem('cw_user_id');
+  const container=document.getElementById('gco-msgs');
+  if(!container) return;
+  const wasAtBottom=container.scrollHeight-container.scrollTop-container.clientHeight<80;
+  container.innerHTML='';
+  if(!msgs.length){
+    container.innerHTML='<div style="text-align:center;color:var(--text3);padding:32px;font-size:13px">Напишите первое сообщение 👋</div>';
+    return;
+  }
+  msgs.forEach(m=>{
+    const isMe=String(m.user_id)===String(myId);
+    const t=m.created_at?new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}):'';
+    const letter=(m.display_name||'?')[0].toUpperCase();
+    const div=document.createElement('div');
+    div.className='gco-msg'+(isMe?' me':'');
+    div.innerHTML=`<div class="gco-av">${letter}</div>
+      <div class="gco-bubble">
+        ${!isMe?`<div class="gco-bubble-name">@${escHtml(m.display_name||'Аноним')}</div>`:''}
+        <div class="gco-bubble-text">${escHtml(m.content)}</div>
+        <div class="gco-bubble-time">${t}</div>
+      </div>`;
+    container.appendChild(div);
+    if(m.id>_grpChatLastId) _grpChatLastId=m.id;
+  });
+  if(scrollBottom||wasAtBottom) container.scrollTop=container.scrollHeight;
+}
+
+async function sendGroupMsg(){
+  if(!_grpChatId) return;
+  const inp=document.getElementById('gco-input');
+  const txt=(inp?.value||'').trim();
+  if(!txt) return;
+  inp.value='';
+  // Optimistic
+  const myId=localStorage.getItem('cw_user_id');
+  const myName=localStorage.getItem('cw_display_name')||'Я';
+  const container=document.getElementById('gco-msgs');
+  const div=document.createElement('div');
+  div.className='gco-msg me';
+  const t=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  div.innerHTML=`<div class="gco-av">${(myName||'?')[0].toUpperCase()}</div>
+    <div class="gco-bubble"><div class="gco-bubble-text">${escHtml(txt)}</div><div class="gco-bubble-time">${t} ✓</div></div>`;
+  container?.appendChild(div);
+  container.scrollTop=container.scrollHeight;
+  await apiCall('/groups/'+_grpChatId+'/messages','POST',{content:txt});
+}
+
+function _startGrpPoll(){
+  _stopGrpPoll();
+  _grpChatPollTimer=setInterval(async()=>{
+    if(!_grpChatId){_stopGrpPoll();return;}
+    await _loadGroupMsgs();
+  },4000);
+}
+function _stopGrpPoll(){
+  if(_grpChatPollTimer){clearInterval(_grpChatPollTimer);_grpChatPollTimer=null;}
+}
+
+async function _loadGrpMembers(){
+  if(!_grpChatId) return;
+  const members=await apiCall('/groups/'+_grpChatId+'/members');
+  if(!Array.isArray(members)) return;
+  const list=document.getElementById('gmp-list');
+  if(!list) return;
+  list.innerHTML='';
+  const onlineEl=document.getElementById('gco-online');
+  if(onlineEl) onlineEl.textContent=members.length+' участников';
+  members.forEach(m=>{
+    const div=document.createElement('div');
+    div.className='gmp-member';
+    div.innerHTML=`<div class="gmp-av">${(m.display_name||'?')[0].toUpperCase()}</div>
+      <div class="gmp-name">@${escHtml(m.display_name||'Аноним')}</div>`;
+    list.appendChild(div);
+  });
 }
 
 function renderSignals(){
