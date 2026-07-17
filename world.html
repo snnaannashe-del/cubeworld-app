@@ -204,7 +204,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vf-filter-toggle.active{background:rgba(0,149,246,.25);border-color:rgba(0,149,246,.5);color:#fff}
 /* BALL post card */
 .vf-ball-card{padding:50px 24px 130px;background:var(--bg2);width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:16px;overflow-y:auto}
-.vf-ball-image{width:100%;max-height:55vh;object-fit:cover;border-radius:12px;display:block}
+.vf-ball-image{width:100%;max-height:80vh;object-fit:contain;border-radius:12px;display:block;background:#000}
 .vf-ball-text{color:#e0e0f8;font-size:16px;line-height:1.7;white-space:pre-wrap}
 /* Create post modal */
 #modal-create-post{z-index:500}
@@ -490,8 +490,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .onboard-skip:hover{color:var(--text2)}
 
 /* ═══ ACHIEVEMENT ANIMATION ═════════════════════════════════════════════ */
-#ach-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.6);background:linear-gradient(135deg,#0c0c22,#1a1a40);border:1px solid rgba(251,191,36,.4);border-radius:20px;padding:24px 32px;text-align:center;z-index:99000;display:none;min-width:260px;box-shadow:0 0 60px rgba(251,191,36,.25)}
-#ach-toast.show{display:block;animation:achPop .5s cubic-bezier(.34,1.56,.64,1) forwards}
+#ach-toast{display:none!important}
+#ach-toast.show{display:none!important}
 @keyframes achPop{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}70%{transform:translate(-50%,-50%) scale(1.05)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
 .ach-rays{position:absolute;inset:-20px;background:conic-gradient(from 0deg,transparent 0%,rgba(251,191,36,.08) 10%,transparent 20%);animation:achSpin 4s linear infinite;border-radius:50%;pointer-events:none}
 @keyframes achSpin{to{transform:rotate(360deg)}}
@@ -552,13 +552,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vf-container{position:absolute;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch}
 .vf-container::-webkit-scrollbar{display:none}
 .vf-card{height:100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
-.vf-video{width:100%;height:100%;object-fit:cover;cursor:pointer}
+.vf-video{width:100%;height:100%;object-fit:contain;background:#000;cursor:pointer}
 /* TikTok progress bar */
 .vf-progress{position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(255,255,255,.15);z-index:15;pointer-events:none}
 .vf-progress-fill{height:100%;background:#fff;width:0;transition:width .25s linear}
 /* mute button */
-.vf-mute-btn{position:absolute;top:14px;right:14px;z-index:15;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
-.vf-mute-btn:hover{background:rgba(0,0,0,.65)}
+.vf-mute-btn{display:none!important}
+/* reaction hover popup */
+.vfi-react-popup{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);border-radius:40px;padding:8px 14px;display:flex;gap:14px;align-items:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;transform:translateX(-50%) translateY(8px);white-space:nowrap;z-index:20}
+.vf-info:hover .vfi-react-popup{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.vfi-react-btn{background:none;border:none;cursor:pointer;font-size:22px;display:flex;flex-direction:column;align-items:center;gap:2px;color:#fff;padding:2px 4px;border-radius:10px;transition:transform .15s}
+.vfi-react-btn:hover{transform:scale(1.25)}
+.vfi-react-btn.active-like .vfi-react-icon{filter:drop-shadow(0 0 6px #ff4b77)}
+.vfi-react-btn.active-fire .vfi-react-icon{filter:drop-shadow(0 0 6px #ff7a00)}
+.vfi-react-btn.active-dislike .vfi-react-icon{filter:drop-shadow(0 0 6px #8888ff)}
+.vfi-react-icon{font-size:22px;line-height:1}
+.vfi-react-count{font-size:10px;color:rgba(255,255,255,.7);line-height:1}
 .vf-iframe-wrap{width:100%;height:100%}
 .vf-iframe-wrap iframe{width:100%;height:100%;border:none}
 .vf-text-post{display:flex;align-items:center;justify-content:center;padding:60px 32px 120px;text-align:center;color:#fff;font-size:20px;line-height:1.7;width:100%;background:linear-gradient(135deg,rgba(0,60,160,.5),rgba(120,0,80,.4))}
@@ -8156,9 +8165,10 @@ function renderFeed(){
       : `<span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(0,149,246,.15);color:var(--accent);font-weight:700;margin-left:5px">SHORT</span>`;
 
     const hasVideo = !isBall && (post.video_url||'').length > 0 && !(post.video_url||'').includes('youtube');
+    const isDisliked = !!_vfDislikes[post.id];
+    const isFired = !!_vfFires[post.id];
     card.innerHTML=`${mediaHtml}
       <div class="vf-card-gradient"></div>
-      ${hasVideo?`<button class="vf-mute-btn" id="vf-mute-${post.id}" onclick="vfToggleMute('${post.id}',this)" title="Звук">🔇</button>`:''}
       ${hasVideo?`<div class="vf-progress"><div class="vf-progress-fill" id="vf-prog-${post.id}"></div></div>`:''}
       <div class="vf-actions">
         ${!isMine?`<div class="vfa-author-wrap">
@@ -8167,18 +8177,6 @@ function renderFeed(){
             <div class="vfa-follow-dot${isFollowing?' following':''}" id="vfa-fd-${post.user_id}" onclick="event.stopPropagation();vfFollow('${post.user_id}')">${isFollowing?'✓':'+'}</div>
           </div>
         </div>`:''}
-        <button class="vfa" onclick="vfLike('${post.id}',this)">
-          <div class="vfa-icon${isLiked?' liked':''}" id="vfa-heart-${post.id}">❤️</div>
-          <span class="vfa-count" id="vfa-lc-${post.id}">${_fmtN(post.likes||0)}</span>
-        </button>
-        <button class="vfa" onclick="vfDislike('${post.id}',this)">
-          <div class="vfa-icon" id="vfa-dislike-${post.id}">👎</div>
-          <span class="vfa-count" id="vfa-dc-${post.id}">${_fmtN(post.dislikes||0)}</span>
-        </button>
-        <button class="vfa" onclick="vfFire('${post.id}',this)">
-          <div class="vfa-icon" id="vfa-fire-${post.id}">🔥</div>
-          <span class="vfa-count" id="vfa-fc-${post.id}">${_fmtN(post.fires||0)}</span>
-        </button>
         <button class="vfa" onclick="openVfComments('${post.id}')">
           <div class="vfa-icon">💬</div>
           <span class="vfa-count" id="vfa-cc-${post.id}">${_fmtN(post.comment_count||0)}</span>
@@ -8196,11 +8194,25 @@ function renderFeed(){
           <span class="vfa-count">CUBE</span>
         </button>
       </div>
-      <div class="vf-info">
+      <div class="vf-info" style="position:relative">
+        <div class="vfi-react-popup">
+          <button class="vfi-react-btn${isLiked?' active-like':''}" id="vfr-like-${post.id}" onclick="vfLike('${post.id}',this)">
+            <span class="vfi-react-icon">❤️</span>
+            <span class="vfi-react-count" id="vfa-lc-${post.id}">${_fmtN(post.likes||0)}</span>
+          </button>
+          <button class="vfi-react-btn${isFired?' active-fire':''}" id="vfr-fire-${post.id}" onclick="vfFire('${post.id}',this)">
+            <span class="vfi-react-icon">🔥</span>
+            <span class="vfi-react-count" id="vfa-fc-${post.id}">${_fmtN(post.fires||0)}</span>
+          </button>
+          <button class="vfi-react-btn${isDisliked?' active-dislike':''}" id="vfr-dislike-${post.id}" onclick="vfDislike('${post.id}',this)">
+            <span class="vfi-react-icon">👎</span>
+            <span class="vfi-react-count" id="vfa-dc-${post.id}">${_fmtN(post.dislikes||0)}</span>
+          </button>
+        </div>
         <div class="vfi-author-row">
           <div class="vfi-avatar" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">${letter}</div>
           <span class="vfi-name" style="cursor:pointer" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">@${escHtml(post.display_name||'Аноним')}</span>${typeBadge}
-          ${!isMine?`<button class="vfi-follow-btn${isFollowing?' following':''}" id="vfi-fb-${post.user_id}" onclick="vfFollow('${post.user_id}')">${isFollowing?'Подписаться':'Отписаться'}</button>`:''}
+          ${!isMine?`<button class="vfi-follow-btn${isFollowing?' following':''}" id="vfi-fb-${post.user_id}" onclick="vfFollow('${post.user_id}')">${isFollowing?'Отписаться':'Подписаться'}</button>`:''}
         </div>
         ${post.title?`<div class="vfi-title">${escHtml(post.title)}</div>`:''}
         <div class="vfi-desc">${escHtml(post.description||post.content||'')}</div>
@@ -8272,13 +8284,13 @@ function _vfPlaceholders(){
 }
 
 async function vfLike(postId,btn){
-  const heartEl=document.getElementById('vfa-heart-'+postId);
   const lcEl=document.getElementById('vfa-lc-'+postId);
   const data=await apiCall('/feed/'+postId+'/like','POST');
   if(!data) return;
   if(!app.vfLiked)app.vfLiked={};
   app.vfLiked[postId]=data.liked;
-  if(heartEl) heartEl.classList.toggle('liked',data.liked);
+  const popBtn=document.getElementById('vfr-like-'+postId);
+  if(popBtn) popBtn.classList.toggle('active-like',data.liked);
   if(lcEl) lcEl.textContent=_fmtN(data.likes);
   const p=_vfPosts.find(x=>String(x.id)===String(postId));
   if(p) p.likes=data.likes;
@@ -8498,9 +8510,9 @@ const _vfFires = {}; // postId → bool
 function vfDislike(postId, btn){
   const already = _vfDislikes[postId];
   _vfDislikes[postId] = !already;
-  const icon=document.getElementById('vfa-dislike-'+postId);
+  const popBtn=document.getElementById('vfr-dislike-'+postId);
+  if(popBtn) popBtn.classList.toggle('active-dislike', !already);
   const cnt=document.getElementById('vfa-dc-'+postId);
-  if(icon) icon.classList.toggle('liked', !already);
   if(cnt){const n=parseInt(cnt.textContent||'0');cnt.textContent=!already?n+1:Math.max(0,n-1);}
   apiCall('/feed/'+postId+'/dislike','POST').catch(()=>{});
 }
@@ -8508,9 +8520,9 @@ function vfDislike(postId, btn){
 function vfFire(postId, btn){
   const already = _vfFires[postId];
   _vfFires[postId] = !already;
-  const icon=document.getElementById('vfa-fire-'+postId);
+  const popBtn=document.getElementById('vfr-fire-'+postId);
+  if(popBtn) popBtn.classList.toggle('active-fire', !already);
   const cnt=document.getElementById('vfa-fc-'+postId);
-  if(icon) icon.classList.toggle('liked', !already);
   if(cnt){const n=parseInt(cnt.textContent||'0');cnt.textContent=!already?n+1:Math.max(0,n-1);}
   apiCall('/feed/'+postId+'/fire','POST').catch(()=>{});
 }
@@ -10006,8 +10018,7 @@ const _grpOvId='grp-chat-overlay';
   if(typeof _orig!=='function') return;
   window.unlockAchievement=function(id){
     _orig(id);
-    const meta=_achMeta[id];
-    if(meta) _showAchToast(meta.icon, meta.name, meta.desc);
+    // achievement popup disabled
   };
 })();
 </script>
