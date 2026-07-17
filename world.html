@@ -848,7 +848,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 /* ── CHAT ─────────────── */
 /* ── CHAT ─────────────────── */
 #sec-chat{flex-direction:row}
-#chat-list{width:230px;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+#chat-list{width:min(calc(100vh*9/16),380px);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
 /* Chat quick-access pills (Избранное / Группы куба) */
 .chat-qa-strip{display:flex;gap:7px;padding:7px 12px;overflow-x:auto;border-bottom:1px solid var(--border);flex-shrink:0;-webkit-overflow-scrolling:touch}
 .chat-qa-strip::-webkit-scrollbar{display:none}
@@ -4576,7 +4576,7 @@ function switchSection(name,el){
     document.getElementById('mob-badge-chat')?.style.setProperty('display','none');
     if(!_chatActiveDm && app._lastDm)
       setTimeout(()=>openDmWith(app._lastDm.user_id, app._lastDm.display_name), 50);
-    setTimeout(initChatStories, 100);
+    loadDmInbox().then(()=>{ setTimeout(initChatStories, 50); });
   }
   if(name==='earn')   { loadEarnStats(); renderEarnWallets(); }
   if(name==='groups') { loadGroups(); }
@@ -4742,39 +4742,22 @@ function renderChatRooms(){
   el.innerHTML='';
   if(qa) qa.innerHTML='';
 
-  // ── QUICK-ACCESS STRIP: Избранное + Общий чат + Группы куба ──
+  // ── QUICK-ACCESS STRIP: Группы куба only (Избранное + Общий чат are now in stories bar) ──
   if(qa){
-    // Избранное pill
-    const savedMsgs=(app.chatMessages[app.currentCubeId]||{})['saved']||[];
-    const savedPill=document.createElement('button');
-    savedPill.className='chat-qa-pill';
-    savedPill.innerHTML=`<span class="gi gi-28 g-gold-c" style="flex-shrink:0"><i class="ti ti-star" style="font-size:12px;color:#FBB924"></i></span><span>Избранное</span>`;
-    savedPill.onclick=()=>openRoom('saved');
-    qa.appendChild(savedPill);
-
-    // Общий чат pill (if it exists)
-    const generalRoom=(app.chatRooms||[]).find(r=>r.id==='general'||r.name==='Общий чат');
-    if(generalRoom){
-      const gPill=document.createElement('button');
-      const gUnread=generalRoom.unread||0;
-      gPill.className='chat-qa-pill';
-      gPill.innerHTML=`<span class="gi gi-28 g-signal-c" style="flex-shrink:0"><i class="ti ti-message-dots" style="font-size:12px;color:#6399FF"></i></span><span>Общий чат</span>${gUnread?`<span class="qa-badge">${gUnread}</span>`:''}`;
-      gPill.onclick=()=>openRoom(generalRoom.id);
-      qa.appendChild(gPill);
-    }
-
-    // Группы куба pills (skip r0/Общий чат — already added above)
     const groups=(app.chatRooms||[]).filter(r=>r.type==='group' && r.id!=='r0' && r.name!=='Общий чат');
-    groups.forEach(r=>{
-      const unread=r.unread||0;
-      const pill=document.createElement('button');
-      pill.className='chat-qa-pill';
-      // icon: use emoji if it's plain, skip HTML strings
-      const icon=r.icon&&!r.icon.startsWith('<')?r.icon:'💬';
-      pill.innerHTML=`<span style="font-size:14px">${escHtml(icon)}</span><span>${escHtml(r.name||'Группа')}</span>${unread?`<span class="qa-badge">${unread}</span>`:''}`;
-      pill.onclick=()=>openRoom(r.id);
-      qa.appendChild(pill);
-    });
+    if(!groups.length){ qa.style.display='none'; }
+    else {
+      qa.style.display='';
+      groups.forEach(r=>{
+        const unread=r.unread||0;
+        const pill=document.createElement('button');
+        pill.className='chat-qa-pill';
+        const icon=r.icon&&!r.icon.startsWith('<')?r.icon:'💬';
+        pill.innerHTML=`<span style="font-size:14px">${escHtml(icon)}</span><span>${escHtml(r.name||'Группа')}</span>${unread?`<span class="qa-badge">${unread}</span>`:''}`;
+        pill.onclick=()=>openRoom(r.id);
+        qa.appendChild(pill);
+      });
+    }
   }
 
   // ── DM LIST (clean: only user conversations) ──
@@ -4858,6 +4841,30 @@ function updateOnlineUsersList(users) {
 }
 
 // ── Open DM with user ──
+/* ── Load DM inbox from backend ─────────────────────────────────────────── */
+async function loadDmInbox(){
+  const token=localStorage.getItem('cw_token');
+  if(!token) return;
+  try{
+    const r=await fetch(`${API}/dm/inbox`,{headers:{'Authorization':'Bearer '+token}});
+    if(!r.ok) return;
+    const list=await r.json();
+    if(!app.dmConversations) app.dmConversations={};
+    list.forEach(item=>{
+      const uid=String(item.peer_id);
+      // merge: don't overwrite existing open conversations
+      const existing=app.dmConversations[uid]||{};
+      app.dmConversations[uid]={
+        display_name: item.display_name || existing.display_name || '?',
+        lastMsg: item.last_msg || existing.lastMsg || '',
+        time: item.time || existing.time || '',
+        unread: item.unread || 0,
+      };
+    });
+    renderChatRooms();
+  } catch(e){ /* silent */ }
+}
+
 function openDmWith(userId, displayName) {
   _chatActiveDm = {user_id: String(userId), display_name: displayName};
   app._lastDm = {user_id: String(userId), display_name: displayName};
@@ -10163,7 +10170,23 @@ let _storyAnimFrame=null;
 
 function buildStoriesBar(container){
   if(!container) return;
-  let html=`<div class="story-item" onclick="openMyStory()">
+  // Saved + General chat as icon-only "story ring" items at the start
+  const generalRoom=(app.chatRooms||[]).find(r=>r.id==='general'||r.name==='Общий чат'||r.id==='r0');
+  const generalId = generalRoom ? generalRoom.id : 'r0';
+  const generalUnread = generalRoom ? (generalRoom.unread||0) : 0;
+  let html=`<div class="story-item" onclick="openRoom('saved')" title="Избранное">
+    <div class="story-ring seen" style="background:linear-gradient(135deg,#FBB924,#F5820D)">
+      <div class="story-av" style="font-size:16px">⭐</div>
+    </div>
+    <div class="story-name">Избр.</div>
+  </div>
+  <div class="story-item" onclick="openRoom('${escHtml(generalId)}')" title="Общий чат">
+    <div class="story-ring${generalUnread?'':' seen'}" style="${generalUnread?'':'background:linear-gradient(135deg,#6399FF,#0095F6)'}">
+      <div class="story-av" style="font-size:16px">💬</div>
+    </div>
+    <div class="story-name" style="${generalUnread?'color:var(--accent);font-weight:700':''}">Чат${generalUnread?` <span style="background:var(--accent);color:#fff;font-size:8px;padding:0 3px;border-radius:5px">${generalUnread}</span>`:''}</div>
+  </div>
+  <div class="story-item" onclick="openMyStory()">
     <div class="story-ring add"><div class="story-av" style="font-size:22px">+</div></div>
     <div class="story-name">Мой</div>
   </div>`;
@@ -10552,10 +10575,10 @@ function toggleChatStories(){
     if(icon) icon.style.transform='';
   }
 }
-// Init: populate on section switch to chat
+// Init: populate on section switch to chat (rebuild each time to reflect fresh unread counts)
 function initChatStories(){
   const inner = document.getElementById('chat-stories-inner');
-  if(inner && !inner.dataset.built){ buildStoriesBar(inner); inner.dataset.built='1'; }
+  if(inner){ buildStoriesBar(inner); inner.dataset.built='1'; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
