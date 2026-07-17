@@ -10575,10 +10575,20 @@ function toggleChatStories(){
     if(icon) icon.style.transform='';
   }
 }
-// Init: populate on section switch to chat (rebuild each time to reflect fresh unread counts)
+// Init: populate + auto-open on section switch to chat
 function initChatStories(){
   const inner = document.getElementById('chat-stories-inner');
   if(inner){ buildStoriesBar(inner); inner.dataset.built='1'; }
+  // Auto-open the drawer so Избранное + Общий чат are always visible
+  const drawer = document.getElementById('chat-stories-drawer');
+  const btn = document.getElementById('chat-stories-btn');
+  const icon = document.getElementById('cs-toggle-icon');
+  if(drawer && !drawer.classList.contains('open')){
+    drawer.classList.add('open');
+    _chatStoriesOpen = true;
+    if(btn) btn.style.color='var(--accent)';
+    if(icon) icon.style.transform='rotate(180deg)';
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
