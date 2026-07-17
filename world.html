@@ -2,8 +2,16 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>CubeWorld — Next-Gen Anonymous Social</title>
+<!-- PWA -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CubeWorld">
+<meta name="theme-color" content="#030310">
+<meta name="description" content="CubeWorld — Next-Gen Anonymous Social Network with CUBE token">
+<link rel="manifest" href="data:application/json,{%22name%22:%22CubeWorld%22,%22short_name%22:%22CubeWorld%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%23030310%22,%22theme_color%22:%22%23030310%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230095F6'/%3E%3Ctext y='.9em' font-size='80' x='10'%3E🧊%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22any%22,%22type%22:%22image/svg+xml%22}]}">
 <!-- No external dependencies — pure 2D canvas world -->
 <style>
 /* ══════════════════════════════════════════
@@ -435,6 +443,110 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .nai-hints{display:flex;flex-direction:column;gap:8px;margin-top:16px;align-items:center}
 .nai-hint{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:20px;padding:7px 18px;font-size:12px;color:var(--text2);cursor:pointer;transition:all .14s;white-space:nowrap}
 .nai-hint:hover{background:rgba(255,255,255,.1);color:var(--text)}
+
+/* ═══ STORIES BAR ═══════════════════════════════════════════════════════ */
+.stories-bar{display:flex;align-items:center;gap:12px;padding:10px 14px;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.stories-bar::-webkit-scrollbar{display:none}
+.story-item{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;flex-shrink:0}
+.story-ring{width:54px;height:54px;border-radius:50%;padding:2px;background:var(--ig-grad);display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.story-ring:hover{transform:scale(1.06)}
+.story-ring.seen{background:rgba(255,255,255,.12)}
+.story-ring.add{background:rgba(255,255,255,.08);border:2px dashed rgba(255,255,255,.2)}
+.story-av{width:46px;height:46px;border-radius:50%;background:var(--bg2);border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff}
+.story-name{font-size:10px;color:var(--text3);max-width:58px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Story viewer overlay */
+#story-overlay{position:fixed;inset:0;background:#000;z-index:20000;display:none;flex-direction:column}
+#story-overlay.open{display:flex}
+.story-progress-bar{display:flex;gap:3px;padding:10px 12px 6px;flex-shrink:0}
+.story-seg{flex:1;height:3px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden}
+.story-seg-fill{height:100%;background:#fff;width:0;transition:width linear}
+.story-seg-fill.done{width:100%}
+.story-header{display:flex;align-items:center;gap:10px;padding:6px 14px 10px;flex-shrink:0}
+.story-av-sm{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff}
+.story-content{flex:1;display:flex;align-items:center;justify-content:center;font-size:22px;padding:20px;cursor:pointer}
+.story-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:18px;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1}
+
+/* ═══ PROFILE EDIT MODAL ════════════════════════════════════════════════ */
+.prof-avatar-grid{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.prof-av-pick{font-size:26px;background:rgba(255,255,255,.05);border:2px solid transparent;border-radius:10px;padding:5px;cursor:pointer;transition:all .14s;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+.prof-av-pick.sel{border-color:var(--accent);background:rgba(0,149,246,.15)}
+.prof-av-pick:hover{background:rgba(255,255,255,.1)}
+
+/* ═══ ONBOARDING ════════════════════════════════════════════════════════ */
+#onboard-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);z-index:30000;display:none;align-items:center;justify-content:center;padding:20px}
+#onboard-overlay.open{display:flex}
+.onboard-card{background:#0c0c22;border:1px solid rgba(0,149,246,.3);border-radius:20px;padding:32px 28px;max-width:400px;width:100%;text-align:center;animation:fadeUp .25s ease}
+.onboard-icon{font-size:52px;margin-bottom:12px}
+.onboard-title{font-size:20px;font-weight:800;color:#e0e0f8;margin-bottom:8px}
+.onboard-sub{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:24px}
+.onboard-steps{display:flex;justify-content:center;gap:6px;margin-bottom:20px}
+.onboard-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .2s}
+.onboard-dot.active{background:var(--accent);width:20px;border-radius:4px}
+.onboard-next{width:100%;padding:13px;border-radius:12px;background:rgba(0,149,246,.6);border:1px solid rgba(0,149,246,.8);color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .16s}
+.onboard-next:hover{background:rgba(0,149,246,.85)}
+.onboard-skip{font-size:12px;color:var(--text3);cursor:pointer;margin-top:12px;padding:4px}
+.onboard-skip:hover{color:var(--text2)}
+
+/* ═══ ACHIEVEMENT ANIMATION ═════════════════════════════════════════════ */
+#ach-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.6);background:linear-gradient(135deg,#0c0c22,#1a1a40);border:1px solid rgba(251,191,36,.4);border-radius:20px;padding:24px 32px;text-align:center;z-index:99000;display:none;min-width:260px;box-shadow:0 0 60px rgba(251,191,36,.25)}
+#ach-toast.show{display:block;animation:achPop .5s cubic-bezier(.34,1.56,.64,1) forwards}
+@keyframes achPop{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}70%{transform:translate(-50%,-50%) scale(1.05)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.ach-rays{position:absolute;inset:-20px;background:conic-gradient(from 0deg,transparent 0%,rgba(251,191,36,.08) 10%,transparent 20%);animation:achSpin 4s linear infinite;border-radius:50%;pointer-events:none}
+@keyframes achSpin{to{transform:rotate(360deg)}}
+.ach-icon{font-size:48px;margin-bottom:8px;position:relative;z-index:1}
+.ach-label{font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.ach-name{font-size:16px;font-weight:800;color:#e0e0f8;margin-bottom:4px}
+.ach-desc{font-size:12px;color:var(--text2)}
+
+/* ═══ POST SHARING SHEET ════════════════════════════════════════════════ */
+#share-sheet{position:fixed;bottom:0;left:0;right:0;background:#0d0d26;border-top:1px solid var(--border);border-radius:20px 20px 0 0;padding:14px 16px 28px;z-index:15000;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.18,1);max-width:600px;margin:0 auto}
+#share-sheet.open{transform:translateY(0)}
+.share-handle{width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 16px}
+.share-title{font-size:14px;font-weight:700;color:#e0e0f8;margin-bottom:14px;text-align:center}
+.share-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.share-btn{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:10px 6px;border-radius:12px;transition:background .14s}
+.share-btn:hover{background:rgba(255,255,255,.06)}
+.share-btn-icon{width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px}
+.share-btn-label{font-size:10px;color:var(--text3);text-align:center}
+.share-url-row{display:flex;gap:8px;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px}
+.share-url{flex:1;font-size:11px;color:var(--text3);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.share-copy-btn{background:rgba(0,149,246,.2);border:1px solid rgba(0,149,246,.4);color:var(--accent);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer}
+#share-backdrop{position:fixed;inset:0;z-index:14999;display:none}
+#share-backdrop.open{display:block}
+
+/* ═══ COMMENTS PANEL (improved) ════════════════════════════════════════ */
+.vfc-panel{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:8000;display:none;align-items:flex-end;justify-content:center}
+.vfc-panel.open{display:flex}
+.vfc-sheet{background:#0c0c22;border-radius:18px 18px 0 0;width:100%;max-width:580px;max-height:75vh;display:flex;flex-direction:column;animation:slideUp .2s ease}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.vfc-header{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.vfc-title{flex:1;font-size:14px;font-weight:700;color:#e0e0f8;text-align:center}
+.vfc-close{background:rgba(255,255,255,.07);border:none;color:var(--text3);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px}
+.vfc-list{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.vfc-comment{display:flex;gap:10px;align-items:flex-start}
+.vfc-av{width:32px;height:32px;border-radius:50%;background:rgba(0,149,246,.25);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.vfc-bubble{flex:1}
+.vfc-author{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:3px}
+.vfc-text{font-size:13px;color:#e0e0f8;line-height:1.5;word-break:break-word}
+.vfc-time{font-size:10px;color:var(--text3);margin-top:3px}
+.vfc-input-row{display:flex;gap:10px;padding:10px 14px;border-top:1px solid var(--border);flex-shrink:0}
+.vfc-input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:20px;color:#e0e0f8;padding:9px 16px;font-size:13px;font-family:inherit;outline:none}
+.vfc-input:focus{border-color:rgba(0,149,246,.4)}
+.vfc-send{background:var(--accent);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .16s}
+
+/* ═══ GROUP CREATION FLOW ═══════════════════════════════════════════════ */
+.gcreate-step{display:none}
+.gcreate-step.active{display:block}
+.gcreate-icons{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.gcreate-icon-btn{font-size:24px;width:44px;height:44px;background:rgba(255,255,255,.05);border:2px solid transparent;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s}
+.gcreate-icon-btn.sel{border-color:var(--accent);background:rgba(0,149,246,.15)}
+.gcreate-privacy{display:flex;gap:8px;margin:10px 0}
+.gcreate-priv-btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.03);cursor:pointer;text-align:center;font-size:12px;color:var(--text2);transition:all .15s}
+.gcreate-priv-btn.sel{border-color:var(--accent);background:rgba(0,149,246,.12);color:var(--accent);font-weight:700}
+
+/* ═══ SWIPE FEEDBACK ════════════════════════════════════════════════════ */
+.swipe-indicator{position:fixed;left:0;top:50%;transform:translateY(-50%);width:4px;height:60px;background:var(--accent);border-radius:0 4px 4px 0;opacity:0;transition:opacity .2s;pointer-events:none;z-index:601}
+.swipe-indicator.show{opacity:1}
 .vf-container{position:absolute;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory}
 .vf-container::-webkit-scrollbar{display:none}
 .vf-card{height:100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -5273,12 +5385,14 @@ async function submitSignal(){
   renderSignals();
   earnCube(15,'Опубликовал сигнал','🎯'); completeTaskById('t3');
   unlockAchievement('a4'); pushNotification('🎯','Твой сигнал опубликован · +15 CUBE');
-  // Try to sync to backend (non-blocking)
+  // Sync to backend (non-blocking) — try cube endpoint first, fallback to /signals
   const cubeNumId=(app.currentCubeId||'').replace(/^[a-z]+/,'');
+  const sigPayload={ticker:pair.split('/')[0]||'BTC',direction:dir.toUpperCase(),
+    entry_price:parseFloat(entry)||0,tp_price:parseFloat(tp)||0,sl_price:parseFloat(sl)||0,content:''};
   if(cubeNumId && !isNaN(Number(cubeNumId))){
-    apiCall('/cubes/'+cubeNumId+'/signals','POST',
-      {ticker:pair.split('/')[0]||'BTC',direction:dir.toUpperCase(),
-       entry_price:parseFloat(entry)||0,tp_price:parseFloat(tp)||0,sl_price:parseFloat(sl)||0});
+    apiCall('/cubes/'+cubeNumId+'/signals','POST',sigPayload);
+  } else {
+    apiCall('/signals','POST',sigPayload);
   }
 }
 
@@ -8262,9 +8376,12 @@ async function openGroupChat(groupId, groupName, groupIcon){
   gcoSwitchTab('posts', document.getElementById('gcotab-posts'));
   // Preload members count
   _loadGrpMembers();
+  // Connect WebSocket (defined later in page, after DOMContentLoaded equivalent)
+  setTimeout(()=>{ if(typeof _connectGroupWs==='function') _connectGroupWs(groupId); }, 150);
 }
 
 function closeGroupChat(){
+  if(typeof _disconnectGroupWs==='function') _disconnectGroupWs();
   document.getElementById('grp-chat-overlay').classList.remove('open');
   _stopGrpPoll();
   _grpChatId=null;
@@ -9188,10 +9305,501 @@ function saveUniverse(){
       if(me && me.id) localStorage.setItem('cw_user_id', me.id);
     }).catch(()=>{});
     setTimeout(function(){ enterWorld(); }, 0);
+    // Show onboarding for first-time users
+    if(!localStorage.getItem('cw_onboarded')){
+      setTimeout(openOnboarding, 1200);
+    }
   } else {
     // No auth — redirect to landing page
     window.location.replace('index.html');
   }
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   WEBSOCKET GROUP CHAT CLIENT
+═══════════════════════════════════════════════════════════════════════ */
+let _grpWs = null;
+
+function _connectGroupWs(groupId){
+  if(_grpWs){ try{_grpWs.close();}catch(e){} _grpWs=null; }
+  const token=localStorage.getItem('cw_access_token');
+  if(!token) return _startGrpPoll && _startGrpPoll();
+  const proto=location.protocol==='https:'?'wss:':'ws:';
+  const base=typeof CUBE_API!=='undefined'?CUBE_API.replace(/^https?/,'').replace(/^:/,''):'//cubeworld-backend.onrender.com';
+  const wsUrl=`${proto}${base}/ws/group/${token}/${groupId}`;
+  try{
+    _grpWs=new WebSocket(wsUrl);
+    _grpWs.onopen=()=>{ if(typeof _stopGrpPoll==='function') _stopGrpPoll(); };
+    _grpWs.onmessage=(e)=>{
+      try{
+        const data=JSON.parse(e.data);
+        const myId=localStorage.getItem('cw_user_id');
+        const container=document.getElementById('gco-msgs');
+        if(!container) return;
+        if(data.type==='group_msg' && data.id>(_grpChatLastId||0)){
+          _grpChatLastId=data.id;
+          const typingRow=container.querySelector('#gco-typing-row');
+          const {sep,key}=_grpDateSep(data.created_at||new Date().toISOString());
+          if(key!==_grpLastDateSep){_grpLastDateSep=key; container.insertBefore(sep,typingRow||null);}
+          const div=_buildGroupMsg(data,myId);
+          if(typingRow) container.insertBefore(div,typingRow); else container.appendChild(div);
+          const atBottom=container.scrollHeight-container.scrollTop-container.clientHeight<80;
+          if(atBottom) container.scrollTop=container.scrollHeight;
+        } else if(data.type==='typing'){
+          _showTyping(data.display_name);
+        }
+      }catch(err){}
+    };
+    _grpWs.onclose=()=>{ _grpWs=null; if(typeof _startGrpPoll==='function') _startGrpPoll(); };
+    _grpWs.onerror=()=>{ _grpWs=null; if(typeof _startGrpPoll==='function') _startGrpPoll(); };
+    // Keepalive ping every 25s
+    const _pingInterval=setInterval(()=>{
+      if(_grpWs && _grpWs.readyState===WebSocket.OPEN) _grpWs.send(JSON.stringify({type:'ping'}));
+      else clearInterval(_pingInterval);
+    },25000);
+  }catch(e){ if(typeof _startGrpPoll==='function') _startGrpPoll(); }
+}
+
+function _disconnectGroupWs(){
+  if(_grpWs){ try{_grpWs.close();}catch(e){} _grpWs=null; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STORIES BAR
+═══════════════════════════════════════════════════════════════════════ */
+const _storiesData=[
+  {uid:'demo1',name:'Alex',av:'🦊',content:'🌅 Новый день — новые возможности!',time:'2м назад',seen:false},
+  {uid:'demo2',name:'Maria',av:'🌸',content:'💡 Идея дня: создай свой куб и пригласи друзей',time:'15м назад',seen:false},
+  {uid:'demo3',name:'Crypto',av:'₿',content:'📈 BTC пробивает $100k! Время для сигналов',time:'1ч назад',seen:true},
+  {uid:'demo4',name:'Dev',av:'👨‍💻',content:'🚀 CubeWorld v2 в разработке. Следи за обновлениями!',time:'3ч назад',seen:true},
+];
+let _storyIdx=0;
+let _storyTimer=null;
+let _storyAnimFrame=null;
+
+function buildStoriesBar(container){
+  if(!container) return;
+  let html=`<div class="story-item" onclick="openMyStory()">
+    <div class="story-ring add"><div class="story-av" style="font-size:22px">+</div></div>
+    <div class="story-name">Мой</div>
+  </div>`;
+  _storiesData.forEach((s,i)=>{
+    html+=`<div class="story-item" onclick="openStoryViewer(${i})">
+      <div class="story-ring${s.seen?' seen':''}">
+        <div class="story-av">${s.av}</div>
+      </div>
+      <div class="story-name">${escHtml(s.name)}</div>
+    </div>`;
+  });
+  container.innerHTML=html;
+}
+
+function openStoryViewer(idx){
+  _storyIdx=idx;
+  const ov=document.getElementById('story-overlay');
+  if(!ov) return;
+  ov.classList.add('open');
+  _renderStory();
+}
+
+function _renderStory(){
+  const s=_storiesData[_storyIdx];
+  if(!s){ closeStoryViewer(); return; }
+  s.seen=true;
+  document.getElementById('story-av-sm').textContent=s.av;
+  document.getElementById('story-user-name').textContent=s.name;
+  document.getElementById('story-time-ago').textContent=s.time;
+  document.getElementById('story-content').innerHTML=`<div style="font-size:32px;color:#fff;text-align:center;line-height:1.5">${s.content}</div>`;
+  // Progress bars
+  const bar=document.getElementById('story-prog-bar');
+  bar.innerHTML=_storiesData.map((_,i)=>`<div class="story-seg"><div class="story-seg-fill${i<_storyIdx?' done':''}"></div></div>`).join('');
+  // Animate current segment
+  if(_storyTimer) clearInterval(_storyTimer);
+  if(_storyAnimFrame) cancelAnimationFrame(_storyAnimFrame);
+  const fill=bar.querySelectorAll('.story-seg-fill')[_storyIdx];
+  if(fill){
+    const dur=4000; const start=Date.now();
+    function tick(){
+      const pct=Math.min(100,(Date.now()-start)/dur*100);
+      fill.style.width=pct+'%';
+      if(pct<100){ _storyAnimFrame=requestAnimationFrame(tick); }
+      else{ storyNext(); }
+    }
+    _storyAnimFrame=requestAnimationFrame(tick);
+  }
+}
+
+function storyNext(){
+  if(_storyAnimFrame) cancelAnimationFrame(_storyAnimFrame);
+  _storyIdx++;
+  if(_storyIdx>=_storiesData.length){ closeStoryViewer(); return; }
+  _renderStory();
+}
+
+function closeStoryViewer(){
+  if(_storyAnimFrame) cancelAnimationFrame(_storyAnimFrame);
+  if(_storyTimer) clearInterval(_storyTimer);
+  const ov=document.getElementById('story-overlay');
+  if(ov) ov.classList.remove('open');
+}
+
+function openMyStory(){
+  showToast('📸 Добавление истории скоро!');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ONBOARDING
+═══════════════════════════════════════════════════════════════════════ */
+const _obSteps=[
+  {icon:'🌐',title:'Добро пожаловать в CubeWorld',sub:'Анонимная соцсеть нового поколения. Общайся, создавай контент и зарабатывай CUBE токены.'},
+  {icon:'📦',title:'Твой Куб — твой мир',sub:'Создай свой куб и пригласи друзей. Каждый куб — это уникальное пространство для общения.'},
+  {icon:'🏆',title:'Зарабатывай CUBE токены',sub:'За посты, комментарии и активность ты получаешь CUBE. Трать их на ключи, апгрейды и эксклюзив.'},
+];
+let _obStep=0;
+
+function openOnboarding(){
+  const ov=document.getElementById('onboard-overlay');
+  if(!ov) return;
+  _obStep=0;
+  _renderObStep();
+  ov.classList.add('open');
+}
+
+function _renderObStep(){
+  const s=_obSteps[_obStep];
+  document.getElementById('ob-icon').textContent=s.icon;
+  document.getElementById('ob-title').textContent=s.title;
+  document.getElementById('ob-sub').textContent=s.sub;
+  // Dots
+  const dots=document.getElementById('ob-dots');
+  dots.innerHTML=_obSteps.map((_,i)=>`<div class="onboard-dot${i===_obStep?' active':''}"></div>`).join('');
+  const btn=document.getElementById('ob-next-btn');
+  btn.textContent=_obStep<_obSteps.length-1?'Далее →':'Поехали! 🚀';
+}
+
+function onboardNext(){
+  if(_obStep<_obSteps.length-1){ _obStep++; _renderObStep(); }
+  else onboardFinish();
+}
+
+function onboardFinish(){
+  localStorage.setItem('cw_onboarded','1');
+  const ov=document.getElementById('onboard-overlay');
+  if(ov) ov.classList.remove('open');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ACHIEVEMENT TOAST (animated overlay for legacy + new achievements)
+═══════════════════════════════════════════════════════════════════════ */
+const _achMeta={
+  a1:{icon:'📝',name:'Первый пост',desc:'Ты опубликовал первый пост!'},
+  a2:{icon:'📝',name:'Пост опубликован',desc:'Контент создан — отличное начало!'},
+  a3:{icon:'💬',name:'Активный чат',desc:'10 сообщений в чате'},
+  a4:{icon:'📊',name:'Сигнальщик',desc:'Опубликован торговый сигнал'},
+  a5:{icon:'👥',name:'Социальный',desc:'Вступил в куб или группу'},
+  a6:{icon:'💰',name:'Первые CUBE',desc:'Баланс растёт!'},
+  a7:{icon:'⬆️',name:'Новый уровень!',desc:'XP растёт, растёшь и ты'},
+  a8:{icon:'📦',name:'Мой куб',desc:'Создан собственный куб'},
+  a9:{icon:'🔄',name:'Реакции',desc:'3 реакции поставлено'},
+  a10:{icon:'💸',name:'Транзакция',desc:'CUBE отправлены'},
+};
+
+function _showAchToast(icon, name, desc){
+  const toast=document.getElementById('ach-toast');
+  if(!toast) return;
+  document.getElementById('ach-icon').textContent=icon||'🏆';
+  document.getElementById('ach-name').textContent=name||'Достижение';
+  document.getElementById('ach-desc').textContent=desc||'';
+  toast.classList.remove('show');
+  void toast.offsetWidth;
+  toast.style.display='block';
+  toast.classList.add('show');
+  setTimeout(()=>{ toast.classList.remove('show'); setTimeout(()=>{ toast.style.display='none'; },400); },3000);
+}
+
+// Hook into the existing unlockAchievement to also show the fancy toast
+const _origUnlockAch=window.unlockAchievement;
+// Override will be set after page load via patchAchievements below
+
+/* ═══════════════════════════════════════════════════════════════════════
+   POST SHARING SHEET
+═══════════════════════════════════════════════════════════════════════ */
+let _sharePostId=null;
+
+function openShareSheet(postId){
+  _sharePostId=postId;
+  const sheet=document.getElementById('share-sheet');
+  const backdrop=document.getElementById('share-backdrop');
+  const grid=document.getElementById('share-grid');
+  const urlText=document.getElementById('share-url-text');
+  if(!sheet) return;
+  const shareUrl=`${location.origin}${location.pathname}?post=${postId}`;
+  urlText.textContent=shareUrl;
+  grid.innerHTML=[
+    {icon:'👥',label:'В группу',fn:`shareToGroup(${postId})`},
+    {icon:'💬',label:'В DM',fn:`shareToDm(${postId})`},
+    {icon:'🔗',label:'Скопировать',fn:'shareCopyLink()'},
+    {icon:'📤',label:'Поделиться',fn:`shareNative(${postId})`},
+  ].map(b=>`<div class="share-btn" onclick="${b.fn}">
+    <div class="share-btn-icon">${b.icon}</div>
+    <div class="share-btn-label">${b.label}</div>
+  </div>`).join('');
+  backdrop.classList.add('open');
+  sheet.classList.add('open');
+}
+
+function closeShareSheet(){
+  document.getElementById('share-sheet')?.classList.remove('open');
+  document.getElementById('share-backdrop')?.classList.remove('open');
+}
+
+function shareCopyLink(){
+  const url=document.getElementById('share-url-text')?.textContent||location.href;
+  navigator.clipboard.writeText(url).then(()=>showToast('🔗 Ссылка скопирована!')).catch(()=>showToast('Ссылка: '+url));
+  closeShareSheet();
+}
+
+function shareNative(postId){
+  const url=`${location.origin}${location.pathname}?post=${postId}`;
+  if(navigator.share){
+    navigator.share({title:'CubeWorld пост',text:'Посмотри этот пост на CubeWorld!',url}).catch(()=>{});
+  } else { shareCopyLink(); }
+  closeShareSheet();
+}
+
+function shareToGroup(postId){
+  closeShareSheet();
+  showToast('👥 Выбери группу для отправки');
+  // TODO: open group selector
+}
+
+function shareToDm(postId){
+  closeShareSheet();
+  openNewDmPrompt();
+  showToast('💬 Выбери пользователя');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   COMMENTS PANEL (IMPROVED)
+═══════════════════════════════════════════════════════════════════════ */
+let _vfcPostId=null;
+let _vfcComments={};
+
+function openComments(postId){
+  _vfcPostId=postId;
+  const panel=document.getElementById('vfc-panel');
+  if(!panel) return;
+  panel.classList.add('open');
+  _renderComments();
+}
+
+function closeComments(){
+  document.getElementById('vfc-panel')?.classList.remove('open');
+}
+
+function _renderComments(){
+  const list=document.getElementById('vfc-list');
+  if(!list) return;
+  const comments=_vfcComments[_vfcPostId]||[];
+  if(!comments.length){
+    list.innerHTML='<div style="text-align:center;color:var(--text3);padding:32px;font-size:13px">Первым оставь комментарий!</div>';
+    return;
+  }
+  list.innerHTML=comments.map(c=>`<div class="vfc-comment">
+    <div class="vfc-av">${(c.name||'?')[0].toUpperCase()}</div>
+    <div class="vfc-bubble">
+      <div class="vfc-author">${escHtml(c.name||'Аноним')}</div>
+      <div class="vfc-text">${escHtml(c.text)}</div>
+      <div class="vfc-time">${c.time||''}</div>
+    </div>
+  </div>`).join('');
+  list.scrollTop=list.scrollHeight;
+}
+
+function submitVfcComment(){
+  const inp=document.getElementById('vfc-input');
+  const text=inp?.value.trim();
+  if(!text||!_vfcPostId) return;
+  if(!_vfcComments[_vfcPostId]) _vfcComments[_vfcPostId]=[];
+  _vfcComments[_vfcPostId].push({
+    name:localStorage.getItem('cw_display_name')||'Аноним',
+    text,
+    time:'только что',
+  });
+  inp.value='';
+  _renderComments();
+  showToast('💬 Комментарий добавлен');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PROFILE EDITING
+═══════════════════════════════════════════════════════════════════════ */
+const _profAvatars=['👤','🦊','🐺','🦁','🐯','🦅','🐉','👾','🤖','🎭','🌟','💎','🔥','⚡','🌈','🎪'];
+let _profSelAv='';
+
+function openProfileEdit(){
+  // Delegates to the full profile modal
+  if(typeof openMyProfile==='function') openMyProfile();
+  else openModal('modal-my-profile');
+}
+
+function selectProfAv(av){
+  _profSelAv=av;
+  document.querySelectorAll('.prof-av-pick').forEach(el=>{
+    el.classList.toggle('sel',el.textContent===av);
+  });
+}
+
+async function saveProfileEdit(){
+  const name=(document.getElementById('prof-name-inp')?.value||'').trim();
+  const bio=(document.getElementById('prof-bio-inp')?.value||'').trim();
+  if(!name){ showToast('Введи имя'); return; }
+  localStorage.setItem('cw_display_name',name);
+  localStorage.setItem('cw_bio',bio);
+  localStorage.setItem('cw_avatar',_profSelAv);
+  // Patch backend
+  try{
+    await apiCall('/me','PATCH',{display_name:name,avatar_url:_profSelAv,bio});
+  }catch(e){}
+  // Update UI
+  const nameEls=document.querySelectorAll('.sui-name,.prof-name-display');
+  nameEls.forEach(el=>el.textContent=name);
+  showToast('✅ Профиль обновлён');
+  closeModal('modal-profile-edit');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   IMAGE COMPRESSION BEFORE UPLOAD
+═══════════════════════════════════════════════════════════════════════ */
+function _compressImage(file, maxW=1200, quality=0.82){
+  return new Promise((resolve)=>{
+    if(!file.type.startsWith('image/')||file.size<300*1024){ resolve(file); return; }
+    const reader=new FileReader();
+    reader.onload=(e)=>{
+      const img=new Image();
+      img.onload=()=>{
+        let w=img.width, h=img.height;
+        if(w>maxW){ h=Math.round(h*maxW/w); w=maxW; }
+        const canvas=document.createElement('canvas');
+        canvas.width=w; canvas.height=h;
+        const ctx=canvas.getContext('2d');
+        ctx.drawImage(img,0,0,w,h);
+        canvas.toBlob((blob)=>{
+          if(!blob||blob.size>=file.size){ resolve(file); return; }
+          resolve(new File([blob],file.name,{type:'image/jpeg',lastModified:Date.now()}));
+        },'image/jpeg',quality);
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SWIPE GESTURES
+═══════════════════════════════════════════════════════════════════════ */
+(function initSwipeGestures(){
+  let touchStartX=0, touchStartY=0, touchStartT=0;
+
+  function onTouchStart(e){
+    touchStartX=e.touches[0].clientX;
+    touchStartY=e.touches[0].clientY;
+    touchStartT=Date.now();
+  }
+
+  function onTouchEnd(e){
+    const dx=e.changedTouches[0].clientX-touchStartX;
+    const dy=e.changedTouches[0].clientY-touchStartY;
+    const dt=Date.now()-touchStartT;
+    if(Math.abs(dx)<Math.abs(dy)*0.7||Math.abs(dx)<40||dt>500) return;
+    const isRight=dx>0;
+    // Check if group overlay is open
+    const grpOv=document.getElementById('grp-chat-overlay');
+    if(grpOv && grpOv.classList.contains('open')){
+      if(isRight && touchStartX<60){ _showSwipeIndicator(); closeGroupChat(); return; }
+    }
+    // Swipe on feed tabs (left/right between Home/Search/etc)
+    const feed=document.getElementById('vf-feed');
+    if(feed && feed.style.display!=='none'){
+      const tabs=['home','search','signals','market'];
+      const nav=document.querySelector('.nav-bar');
+      if(!nav) return;
+      // find active tab index
+      const activeBtn=nav.querySelector('.nav-btn.active');
+      if(!activeBtn) return;
+      const allBtns=[...nav.querySelectorAll('.nav-btn')];
+      const idx=allBtns.indexOf(activeBtn);
+      if(isRight && idx>0){ allBtns[idx-1].click(); }
+      else if(!isRight && idx<allBtns.length-1){ allBtns[idx+1].click(); }
+    }
+  }
+
+  document.addEventListener('touchstart',onTouchStart,{passive:true});
+  document.addEventListener('touchend',onTouchEnd,{passive:true});
+})();
+
+function _showSwipeIndicator(){
+  const el=document.getElementById('swipe-indicator');
+  if(!el) return;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),400);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STORIES BAR INJECTION INTO FEED
+═══════════════════════════════════════════════════════════════════════ */
+(function injectStoriesBar(){
+  function tryInject(){
+    if(document.getElementById('stories-bar-injected')) return;
+    const feed=document.getElementById('sec-feed');
+    if(!feed){ setTimeout(tryInject,600); return; }
+    const bar=document.createElement('div');
+    bar.className='stories-bar';
+    bar.id='stories-bar-injected';
+    // Insert after vf-header
+    const header=feed.querySelector('.vf-header');
+    if(header) header.after(bar); else feed.prepend(bar);
+    buildStoriesBar(bar);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',tryInject);
+  else setTimeout(tryInject,400);
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SWIPE GESTURE — correct overlay id
+═══════════════════════════════════════════════════════════════════════ */
+// _grpOvId is the actual group chat overlay element id
+const _grpOvId='grp-chat-overlay';
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PATCH cpmHandleImageFile TO COMPRESS BEFORE UPLOAD
+═══════════════════════════════════════════════════════════════════════ */
+(function patchImageUpload(){
+  const _origCpm=window.cpmHandleImageFile;
+  if(typeof _origCpm==='function'){
+    window.cpmHandleImageFile=async function(input){
+      const file=input?.files?.[0]; if(!file) return;
+      const compressed=await _compressImage(file);
+      // Swap out file in a new DataTransfer
+      const dt=new DataTransfer();
+      dt.items.add(compressed);
+      input.files=dt.files;
+      return _origCpm(input);
+    };
+  }
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PATCH unlockAchievement TO SHOW FANCY TOAST
+═══════════════════════════════════════════════════════════════════════ */
+(function patchAchievements(){
+  const _orig=window.unlockAchievement;
+  if(typeof _orig!=='function') return;
+  window.unlockAchievement=function(id){
+    _orig(id);
+    const meta=_achMeta[id];
+    if(meta) _showAchToast(meta.icon, meta.name, meta.desc);
+  };
 })();
 </script>
 
@@ -9307,6 +9915,92 @@ function saveUniverse(){
     <button class="nai-send-btn" onclick="naiSend()">↑</button>
   </div>
 </div>
+
+<!-- ══ STORY VIEWER OVERLAY ════════════════════════════════════════════ -->
+<div id="story-overlay">
+  <div class="story-progress-bar" id="story-prog-bar"></div>
+  <div class="story-header">
+    <div class="story-av-sm" id="story-av-sm">?</div>
+    <div style="flex:1">
+      <div id="story-user-name" style="font-size:13px;font-weight:700;color:#fff"></div>
+      <div id="story-time-ago" style="font-size:10px;color:rgba(255,255,255,.5)"></div>
+    </div>
+    <button class="story-close" onclick="closeStoryViewer()">✕</button>
+  </div>
+  <div class="story-content" id="story-content" onclick="storyNext()"></div>
+</div>
+
+<!-- ══ ONBOARDING OVERLAY ══════════════════════════════════════════════ -->
+<div id="onboard-overlay">
+  <div class="onboard-card">
+    <div class="onboard-icon" id="ob-icon">🌐</div>
+    <div class="onboard-title" id="ob-title">Добро пожаловать в CubeWorld</div>
+    <div class="onboard-sub" id="ob-sub">Анонимная соцсеть нового поколения. Общайся, создавай контент и зарабатывай CUBE токены.</div>
+    <div class="onboard-steps" id="ob-dots"></div>
+    <button class="onboard-next" id="ob-next-btn" onclick="onboardNext()">Начать →</button>
+    <div class="onboard-skip" onclick="onboardFinish()">Пропустить</div>
+  </div>
+</div>
+
+<!-- ══ ACHIEVEMENT TOAST ════════════════════════════════════════════════ -->
+<div id="ach-toast">
+  <div class="ach-rays"></div>
+  <div class="ach-icon" id="ach-icon">🏆</div>
+  <div class="ach-label">Достижение разблокировано</div>
+  <div class="ach-name" id="ach-name">Первый пост</div>
+  <div class="ach-desc" id="ach-desc">Вы опубликовали первый пост!</div>
+</div>
+
+<!-- ══ SHARE SHEET ══════════════════════════════════════════════════════ -->
+<div id="share-backdrop" onclick="closeShareSheet()"></div>
+<div id="share-sheet">
+  <div class="share-handle"></div>
+  <div class="share-title">Поделиться</div>
+  <div class="share-grid" id="share-grid"></div>
+  <div class="share-url-row">
+    <div class="share-url" id="share-url-text"></div>
+    <button class="share-copy-btn" onclick="shareCopyLink()">Копировать</button>
+  </div>
+</div>
+
+<!-- ══ COMMENTS PANEL ══════════════════════════════════════════════════ -->
+<div class="vfc-panel" id="vfc-panel">
+  <div class="vfc-sheet">
+    <div class="vfc-header">
+      <div style="width:28px"></div>
+      <div class="vfc-title">Комментарии</div>
+      <button class="vfc-close" onclick="closeComments()">✕</button>
+    </div>
+    <div class="vfc-list" id="vfc-list"></div>
+    <div class="vfc-input-row">
+      <input class="vfc-input" id="vfc-input" placeholder="Написать комментарий…"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitVfcComment();}">
+      <button class="vfc-send" onclick="submitVfcComment()">↑</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PROFILE EDIT MODAL ══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-profile-edit" onclick="if(event.target===this)closeModal('modal-profile-edit')">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-header">
+      <div class="modal-title">Редактировать профиль</div>
+      <button class="modal-close" onclick="closeModal('modal-profile-edit')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px">Аватар</div>
+      <div class="prof-avatar-grid" id="prof-av-grid"></div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px">Имя</div>
+      <input class="inp" id="prof-name-inp" placeholder="Введите имя…" style="margin-bottom:12px">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px">Bio</div>
+      <textarea class="inp" id="prof-bio-inp" placeholder="Расскажи о себе…" rows="3" style="resize:none;margin-bottom:16px"></textarea>
+      <button class="btn-primary" style="width:100%" onclick="saveProfileEdit()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SWIPE FEEDBACK INDICATOR ════════════════════════════════════════ -->
+<div class="swipe-indicator" id="swipe-indicator"></div>
 
 </body>
 </html>
