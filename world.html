@@ -284,7 +284,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .int-section.active{display:flex}
 
 /* ── FEED — TikTok Style ─── */
-#sec-feed{flex-direction:column;display:flex;position:relative;background:#000;overflow:hidden;height:100%;isolation:isolate}
+#sec-feed{flex-direction:column;position:relative;background:#000;overflow:hidden;height:100%;isolation:isolate}
 /* vf-container must fill entire sec-feed — stories bar is overlay */
 #sec-feed>.vf-container{flex:1;height:100%}
 
@@ -1932,7 +1932,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .int-section.slide-from-left{transform:translateX(-40px)!important}
 
   /* Feed: flex fills section */
-  #sec-feed{display:flex;flex-direction:column}
+  #sec-feed{flex-direction:column}
 
   /* ── bottom nav ── */
   #mob-nav{
@@ -4405,8 +4405,8 @@ function initInteriorData(cubeId){
   if(!app.chatMessages[cubeId]) app.chatMessages[cubeId]={};
   const cid=cubeId;
   const rooms=[
-    {id:'saved',  name:'Избранное', icon:'<span class="gi gi-36 g-gold" style="border-radius:12px"><i class="ti ti-star"></i></span>', type:'saved',  lastMsg:'Твои сохранённые сообщения', time:'', unread:0},
-    {id:'r0',     name:'Общий чат', icon:'<span class="gi gi-36 g-teal" style="border-radius:12px"><i class="ti ti-message-dots"></i></span>', type:'group',  members:0, lastMsg:'', time:'', unread:0},
+    {id:'saved',  name:'Избранное', icon:'⭐', type:'saved',  lastMsg:'Твои сохранённые сообщения', time:'', unread:0},
+    {id:'r0',     name:'Общий чат', icon:'💬', type:'group',  members:0, lastMsg:'', time:'', unread:0},
   ];
   app.chatRooms=rooms;
   if(!app.chatMessages[cid]) app.chatMessages[cid]={};
@@ -4763,15 +4763,15 @@ function renderChatRooms(){
       qa.appendChild(gPill);
     }
 
-    // Группы куба pills
-    const groups=(app.chatRooms||[]).filter(r=>r.type==='group');
+    // Группы куба pills (skip r0/Общий чат — already added above)
+    const groups=(app.chatRooms||[]).filter(r=>r.type==='group' && r.id!=='r0' && r.name!=='Общий чат');
     groups.forEach(r=>{
-      const msgs=(app.chatMessages[app.currentCubeId]||{})[r.id]||[];
       const unread=r.unread||0;
       const pill=document.createElement('button');
       pill.className='chat-qa-pill';
+      // icon: use emoji if it's plain, skip HTML strings
       const icon=r.icon&&!r.icon.startsWith('<')?r.icon:'💬';
-      pill.innerHTML=`<span style="font-size:14px">${icon}</span><span>${escHtml(r.name||'Группа')}</span>${unread?`<span class="qa-badge">${unread}</span>`:''}`;
+      pill.innerHTML=`<span style="font-size:14px">${escHtml(icon)}</span><span>${escHtml(r.name||'Группа')}</span>${unread?`<span class="qa-badge">${unread}</span>`:''}`;
       pill.onclick=()=>openRoom(r.id);
       qa.appendChild(pill);
     });
@@ -5038,7 +5038,11 @@ function openRoom(roomId){
   const idx = (app.chatRooms||[]).findIndex(r=>r.id===roomId);
   if(idx>=0) document.querySelectorAll('.cl-room')[idx]?.classList.add('active');
   document.getElementById('ca-header').style.display='flex';
-  document.getElementById('ca-icon').textContent = room?.icon || '💬';
+  // room.icon may be an HTML string (gi icon) — use innerHTML, not textContent
+  const caIcon = document.getElementById('ca-icon');
+  const roomIcon = room?.icon || '💬';
+  if(roomIcon.startsWith('<')) caIcon.innerHTML = roomIcon;
+  else caIcon.textContent = roomIcon;
   document.getElementById('ca-name').textContent = room?.name || roomId;
   if(roomId==='saved') {
     document.getElementById('ca-members').textContent = 'Твои сохранённые сообщения';
