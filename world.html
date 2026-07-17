@@ -901,7 +901,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .mc-buy:hover{background:rgba(251,191,36,.25)}
 
 /* ══ ONLINE MEMBERS ══════════════════════ */
-#members-panel{width:190px;border-left:1px solid var(--border);background:rgba(255,255,255,.01);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width .2s}
+#members-panel{width:190px;border-left:1px solid var(--border);background:rgba(255,255,255,.01);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width .3s ease}
 #members-panel.hidden{width:0;border-left:none}
 .mp-header{padding:9px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .mp-title{font-size:10px;font-weight:700;color:var(--text2);letter-spacing:.07em;text-transform:uppercase}
@@ -1242,12 +1242,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #int-sidenav{display:none!important}
 
   /* ── compact topbar ── */
-  #int-topbar{padding:6px 10px;gap:7px}
-  .itb-back{padding:4px 9px;font-size:11px}
-  .itb-enc,.itb-anon,.itb-mykey{display:none}
+  #int-topbar{padding:6px 10px;gap:6px;flex-wrap:nowrap}
+  .itb-back{padding:4px 9px;font-size:11px;flex-shrink:0}
+  .itb-enc,.itb-anon,.itb-mykey,#itb-cube-key-btn{display:none!important}
   .itb-name{font-size:13px}
-  .itb-timer{font-size:11px}
-  #cube-tabs-wrap{display:none}
+  .itb-timer{font-size:11px;margin-left:0}
+  /* Search bar compact on mobile */
+  .search-btn{min-width:0!important;flex:1!important;padding:6px 10px!important}
+  .search-btn-shortcut{display:none!important}
+  /* Wallet CUBE badge compact */
+  #itb-wallet{padding:3px 8px!important}
+  /* Hide cube switcher strip entirely on mobile */
+  #cube-switcher{display:none!important}
 
   /* ── main layout adjusts ── */
   #int-layout{flex-direction:column;overflow:hidden;flex:1}
@@ -1393,15 +1399,72 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   }
   .mms-footer-btn:active{background:rgba(255,255,255,.12)}
 
+  /* ── Online members panel → bottom drawer on mobile ── */
+  #members-panel{
+    position:fixed!important;
+    bottom:62px;left:0;right:0;
+    width:100%!important;
+    max-height:65vh;
+    border-left:none!important;
+    border-top:1px solid rgba(255,255,255,.1)!important;
+    border-radius:20px 20px 0 0;
+    background:#0d0d28!important;
+    z-index:250;
+    transform:translateY(100%);
+    transition:transform .36s cubic-bezier(.32,0,.18,1)!important;
+    box-shadow:0 -8px 40px rgba(0,0,0,.6);
+  }
+  #members-panel:not(.hidden){transform:translateY(0)}
+  #members-panel.hidden{
+    transform:translateY(100%)!important;
+    width:100%!important;
+  }
+  /* Backdrop for members drawer */
+  #mob-members-backdrop{
+    position:fixed;inset:0;z-index:249;
+    background:rgba(0,0,0,.5);
+    backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+    display:none;opacity:0;transition:opacity .3s;
+  }
+  #mob-members-backdrop.open{display:block;opacity:1}
+  /* Handle bar at top of drawer */
+  .mp-header{padding:10px 14px 8px!important}
+  .mp-header::before{
+    content:'';display:block;
+    width:36px;height:4px;border-radius:2px;
+    background:rgba(255,255,255,.2);
+    margin:0 auto 10px;
+  }
+  /* Members toggle button styling */
+  #members-toggle-btn{
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:8px;padding:5px 9px;
+    font-size:14px;cursor:pointer;
+    flex-shrink:0;
+  }
+
   /* ── global bottom padding for sections behind nav ── */
   .int-section:not(#sec-feed){padding-bottom:62px}
   #sec-feed{padding-bottom:62px}
 
-  /* ── chat layout fix on mobile ── */
-  #sec-chat{flex-direction:column!important}
-  #chat-list{width:100%!important;border-right:none!important;border-bottom:1px solid var(--border);max-height:45%}
-  #chat-area{flex:1}
-  .ca-input-panel{padding:8px 10px!important}
+  /* ── chat layout on mobile: list on top, area below ── */
+  #sec-chat{flex-direction:column!important;overflow:hidden}
+  #chat-list{
+    width:100%!important;border-right:none!important;
+    border-bottom:1px solid var(--border);
+    flex:0 0 auto;max-height:42%;min-height:100px;
+  }
+  .cl-scroll{max-height:none!important;overflow-y:auto}
+  #chat-area{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+  .ca-msgs{flex:1;overflow-y:auto!important}
+  .ca-input-panel{padding:8px 10px!important;flex-shrink:0}
+  /* When a chat is open, hide the list to give full space to chat */
+  #sec-chat.chat-open #chat-list{display:none!important}
+  #sec-chat.chat-open #chat-area{flex:1!important}
+  /* Back button in chat area on mobile */
+  #ca-mob-back{display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0;cursor:pointer;color:var(--accent);font-size:13px;font-weight:600}
+  #ca-mob-back span{font-size:18px}
 
   /* ── modal full-screen on mobile ── */
   .modal-wrap{align-items:flex-end!important;padding:0!important}
@@ -1709,6 +1772,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           <div class="cl-scroll" id="chat-rooms-list"></div>
         </div>
         <div id="chat-area">
+          <!-- Mobile back button (only visible when chat is open on mobile) -->
+          <div id="ca-mob-back" style="display:none" onclick="mobChatBack()">
+            <span>‹</span> Назад к чатам
+          </div>
           <div class="ca-header" id="ca-header" style="display:none">
             <span class="ca-icon" id="ca-icon"></span>
             <div style="flex:1;min-width:0">
@@ -1721,7 +1788,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
             </div>
           </div>
           <div class="ca-msgs" id="ca-msgs">
-            <div class="ca-empty">💬 Выбери чат или пользователя слева</div>
+            <div class="ca-empty" id="ca-empty-placeholder">💬 Выбери чат выше</div>
           </div>
           <div id="ca-input-panel" style="display:none">
             <div class="emoji-picker" id="emoji-picker"></div>
@@ -1958,10 +2025,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       </div>
 
     </main>
-    <!-- Online members right panel -->
-    <div id="members-panel">
+    <!-- Online members panel (right sidebar desktop / bottom drawer mobile) -->
+    <div id="mob-members-backdrop" onclick="toggleMembersPanel()"></div>
+    <div id="members-panel" class="hidden">
       <div class="mp-header">
-        <span class="mp-title">Онлайн</span>
+        <span class="mp-title">👥 Онлайн в кубе</span>
         <button class="mp-toggle" onclick="toggleMembersPanel()">×</button>
       </div>
       <div class="mp-list" id="members-list"></div>
@@ -3834,9 +3902,10 @@ function updateOnlineUsersList(users) {
 // ── Open DM with user ──
 function openDmWith(userId, displayName) {
   _chatActiveDm = {user_id: String(userId), display_name: displayName};
-  app._lastDm = {user_id: String(userId), display_name: displayName}; // persist across cube switches
+  app._lastDm = {user_id: String(userId), display_name: displayName};
   _chatReplyTo = null;
   cancelReply();
+  _mobOpenChat();
   // Register in dmConversations so it shows in sidebar
   if(!app.dmConversations) app.dmConversations={};
   if(!app.dmConversations[userId]) app.dmConversations[userId]={display_name:displayName,lastMsg:'',time:'',unread:0};
@@ -3979,12 +4048,32 @@ function handleIncomingDm(msg, myUserId) {
 }
 
 // ── Open room ──
+// ── Mobile chat: show chat area full screen, hide list ─────────────────────
+function _mobOpenChat(){
+  if(window.innerWidth<=768){
+    document.getElementById('sec-chat')?.classList.add('chat-open');
+    const backBtn=document.getElementById('ca-mob-back');
+    if(backBtn) backBtn.style.display='flex';
+  }
+}
+function mobChatBack(){
+  document.getElementById('sec-chat')?.classList.remove('chat-open');
+  const backBtn=document.getElementById('ca-mob-back');
+  if(backBtn) backBtn.style.display='none';
+  // Clear active chat header
+  const h=document.getElementById('ca-header'); if(h) h.style.display='none';
+  const msgs=document.getElementById('ca-msgs'); if(msgs) msgs.innerHTML='<div class="ca-empty">💬 Выбери чат выше</div>';
+  const ip=document.getElementById('ca-input-panel'); if(ip) ip.style.display='none';
+  app.currentRoomId=null; _chatActiveDm=null;
+}
+
 function openRoom(roomId){
   _stopDmPoll();
   _chatActiveDm = null;
   app._lastDm = null; // user explicitly opened a cube room, clear DM memory
   _chatReplyTo = null;
   cancelReply();
+  _mobOpenChat();
   app.currentRoomId = roomId;
   const room = (app.chatRooms||[]).find(r=>r.id===roomId);
   document.querySelectorAll('.cl-room').forEach(el=>el.classList.remove('active'));
@@ -6200,7 +6289,16 @@ function renderMembers(){
   <div class="mp-section-lbl">Не активны — ${rest.length}</div>${rest.map(row).join('')}`;
 }
 function toggleMembersPanel(){
-  const p=document.getElementById('members-panel'); if(p) p.classList.toggle('hidden');
+  const p=document.getElementById('members-panel');
+  const bd=document.getElementById('mob-members-backdrop');
+  if(!p) return;
+  const isMob = window.innerWidth<=768;
+  const isHidden = p.classList.contains('hidden');
+  p.classList.toggle('hidden');
+  if(isMob && bd){
+    if(isHidden){ bd.classList.add('open'); }
+    else{ bd.classList.remove('open'); }
+  }
 }
 function openMemberProfile(name, avatar, status){
   document.getElementById('prof-avatar').textContent=avatar;
