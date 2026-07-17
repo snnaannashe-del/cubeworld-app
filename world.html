@@ -2371,12 +2371,19 @@ function openRoomWS(roomId){
   _ws.onmessage = e => {
     try{
       const msg = JSON.parse(e.data);
+      const myUserId = localStorage.getItem('cw_user_id');
+      // DM and balance_update must work even outside a cube
+      if(msg.type==='dm'){ handleIncomingDm(msg, myUserId); return; }
+      if(msg.type==='balance_update'){
+        const prev=app.wallet.balance, next=msg.balance||prev;
+        if(next>prev){ app.wallet.balance=next; syncWalletUI(); showToast('💰 +'+(next-prev).toLocaleString('ru')+' CUBE!'); }
+        return;
+      }
       const cubeId = app.currentCubeId;
       if(!cubeId) return;
       if(!app.chatMessages[cubeId]) app.chatMessages[cubeId]={};
       if(!app.chatMessages[cubeId][roomId]) app.chatMessages[cubeId][roomId]=[];
 
-      const myUserId = localStorage.getItem('cw_user_id');
       if(msg.type==='joined'){
         const badge=document.getElementById('chat-online');
         if(badge) badge.textContent=msg.online+' онлайн';
@@ -3475,7 +3482,43 @@ function openDmWith(userId, displayName) {
         if(app.currentRoomId===dmKey) renderChatMsgs(dmKey);
       }).catch(()=>{});
   }
+  // Start polling so messages never get lost if WS drops
+  _startDmPoll(userId, displayName, dmKey);
 }
+
+// ── DM polling fallback ──
+let _dmPollTimer = null;
+function _startDmPoll(userId, displayName, dmKey){
+  _stopDmPoll();
+  const myId = localStorage.getItem('cw_user_id');
+  _dmPollTimer = setInterval(async ()=>{
+    if(app.currentRoomId!==dmKey){ _stopDmPoll(); return; }
+    const token = localStorage.getItem('cw_access_token');
+    if(!token||!myId) return;
+    try{
+      const r = await fetch(CUBE_API+'/dm/'+userId,{headers:{Authorization:'Bearer '+token}});
+      if(!r.ok) return;
+      const msgs = await r.json();
+      if(!msgs||!msgs.length) return;
+      const store = _dmStore(dmKey);
+      let added=false;
+      for(const m of msgs){
+        if(!store.find(x=>x.id===m.id)){
+          store.push({
+            id:m.id,
+            sender:String(m.from_user_id)===String(myId)?'me':'them',
+            author:String(m.from_user_id)===String(myId)?'Я':displayName,
+            text:m.content, time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+            type:m.msg_type||'text', fileName:m.file_name, fileSize:m.file_size, duration:m.duration, reactions:{}
+          });
+          added=true;
+        }
+      }
+      if(added && app.currentRoomId===dmKey) renderChatMsgs(dmKey);
+    }catch(e){}
+  }, 8000);
+}
+function _stopDmPoll(){ if(_dmPollTimer){clearInterval(_dmPollTimer);_dmPollTimer=null;} }
 
 // ── Handle incoming DM ──
 // DMs are stored under the fixed key '__dm__' so they're consistent
@@ -3537,6 +3580,7 @@ function handleIncomingDm(msg, myUserId) {
 
 // ── Open room ──
 function openRoom(roomId){
+  _stopDmPoll();
   _chatActiveDm = null;
   app._lastDm = null; // user explicitly opened a cube room, clear DM memory
   _chatReplyTo = null;
