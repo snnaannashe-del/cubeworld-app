@@ -248,6 +248,61 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 /* group card open chat btn */
 .gc-open-chat{margin-top:6px;width:100%;padding:7px;border-radius:8px;border:none;background:rgba(0,149,246,.18);color:var(--accent);font-size:12px;font-weight:700;cursor:pointer;transition:all .18s}
 .gc-open-chat:hover{background:rgba(0,149,246,.35)}
+/* Group full view overhaul */
+#grp-chat-overlay{position:fixed;inset:0;background:var(--bg);z-index:600;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1)}
+#grp-chat-overlay.open{transform:translateX(0)}
+.gco-topbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);flex-shrink:0;min-height:54px}
+.gco-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);flex-shrink:0;background:rgba(255,255,255,.01)}
+.gco-tab{padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.5);border:none;background:transparent;border-bottom:2px solid transparent;transition:all .18s}
+.gco-tab.active{color:#fff;border-bottom-color:var(--accent)}
+.gco-body{flex:1;overflow:hidden;display:flex;flex-direction:column}
+/* Group posts feed */
+.gco-posts{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:12px}
+.gco-post{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.gco-post-header{display:flex;align-items:center;gap:8px;padding:10px 12px}
+.gco-post-av{width:34px;height:34px;border-radius:50%;background:rgba(0,149,246,.25);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.gco-post-meta{flex:1}
+.gco-post-name{font-size:13px;font-weight:600;color:#e0e0f8}
+.gco-post-time{font-size:10px;color:var(--text3)}
+.gco-post-img{width:100%;max-height:400px;object-fit:cover;display:block;cursor:pointer}
+.gco-post-video{width:100%;max-height:400px;background:#000;display:block}
+.gco-post-doc{display:flex;align-items:center;gap:10px;padding:12px;background:rgba(255,255,255,.03);border-top:1px solid var(--border);cursor:pointer}
+.gco-post-doc-icon{font-size:28px}
+.gco-post-doc-name{font-size:12px;color:var(--text);font-weight:600}
+.gco-post-doc-size{font-size:10px;color:var(--text3)}
+.gco-post-text{padding:10px 12px;font-size:14px;color:#e0e0f8;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.gco-post-text a{color:var(--accent);text-decoration:none}
+.gco-post-text a:hover{text-decoration:underline}
+.gco-post-actions{display:flex;gap:6px;padding:8px 12px;border-top:1px solid var(--border2)}
+.gco-post-btn{background:transparent;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .15s;display:flex;align-items:center;gap:4px}
+.gco-post-btn:hover{background:rgba(255,255,255,.06);color:var(--text)}
+.gco-post-btn.liked{color:var(--red)}
+/* Group create post toolbar */
+.gco-toolbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:rgba(255,255,255,.01);flex-shrink:0}
+.gco-tool-btn{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text2);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.gco-tool-btn:hover{background:rgba(255,255,255,.12);color:var(--text)}
+.gco-tool-btn.primary{background:rgba(0,149,246,.2);border-color:rgba(0,149,246,.4);color:var(--accent)}
+/* File upload area */
+.file-drop-zone{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.file-drop-zone:hover,.file-drop-zone.drag{border-color:var(--accent);background:rgba(0,149,246,.05)}
+.file-drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.file-preview{position:relative;margin-top:8px}
+.file-preview img,.file-preview video{max-width:100%;max-height:200px;border-radius:8px;display:block}
+.file-preview-name{font-size:11px;color:var(--text2);margin-top:4px;display:flex;align-items:center;gap:6px}
+.file-remove{background:var(--red);border:none;border-radius:50%;width:18px;height:18px;color:#fff;font-size:10px;cursor:pointer;line-height:18px;text-align:center}
+/* Upload progress */
+.upload-progress{height:3px;background:rgba(0,149,246,.2);border-radius:2px;margin-top:6px;overflow:hidden;display:none}
+.upload-progress-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .3s;width:0}
+/* Auto-link style in chat */
+.chat-link{color:var(--accent);text-decoration:none;word-break:break-all}
+.chat-link:hover{text-decoration:underline}
+/* Mobile scroll fixes */
+@media(max-width:768px){
+  .gco-posts{-webkit-overflow-scrolling:touch}
+  .gco-msgs{-webkit-overflow-scrolling:touch}
+  #sec-chat .ca-msgs{-webkit-overflow-scrolling:touch}
+  .groups-grid{-webkit-overflow-scrolling:touch}
+}
 .vf-container{position:absolute;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory}
 .vf-container::-webkit-scrollbar{display:none}
 .vf-card{height:100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -1317,7 +1372,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .itb-name{font-size:13px}
   .itb-timer{font-size:11px;margin-left:0}
   /* Search bar compact on mobile */
-  .search-btn{min-width:0!important;flex:1!important;padding:6px 10px!important}
+  .search-btn{min-width:0!important;max-width:38px!important;flex:0 0 38px!important;padding:6px 10px!important;border-radius:50%!important}
+  .search-btn span:not(.search-btn-icon){display:none!important}
   .search-btn-shortcut{display:none!important}
   /* Wallet CUBE badge compact */
   #itb-wallet{padding:3px 8px!important}
@@ -1854,12 +1910,24 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
             </div>
           </div>
           <div class="cpm-fields" id="cpm-short-fields">
-            <input class="cpm-inp" id="cpm-video-url" placeholder="📹 Ссылка на видео (YouTube / .mp4)">
+            <div class="file-drop-zone" id="cpm-video-drop" onclick="document.getElementById('cpm-video-file').click()">
+              <input type="file" id="cpm-video-file" accept="video/*,video/mp4" style="display:none" onchange="cpmHandleVideoFile(this)">
+              <div id="cpm-video-drop-label">🎬 Нажми чтобы загрузить видео<br><span style="font-size:11px;color:var(--text3)">MP4, WebM, MOV · до 50 МБ</span></div>
+              <div class="file-preview" id="cpm-video-preview" style="display:none"></div>
+              <div class="upload-progress" id="cpm-video-progress"><div class="upload-progress-bar" id="cpm-video-bar"></div></div>
+            </div>
+            <input class="cpm-inp" id="cpm-video-url" placeholder="или вставь ссылку YouTube / .mp4" style="margin-top:6px">
             <input class="cpm-inp" id="cpm-music" placeholder="🎵 Музыка (необязательно)">
             <textarea class="cpm-inp cpm-inp-ta" id="cpm-desc-short" placeholder="Описание #хэштег"></textarea>
           </div>
           <div class="cpm-fields" id="cpm-ball-fields" style="display:none">
-            <input class="cpm-inp" id="cpm-image-url" placeholder="🖼️ Ссылка на фото (необязательно)">
+            <div class="file-drop-zone" id="cpm-image-drop" onclick="document.getElementById('cpm-image-file').click()">
+              <input type="file" id="cpm-image-file" accept="image/*" style="display:none" onchange="cpmHandleImageFile(this)">
+              <div id="cpm-image-drop-label">🖼️ Нажми чтобы загрузить фото<br><span style="font-size:11px;color:var(--text3)">JPG, PNG, GIF, WebP · до 10 МБ</span></div>
+              <div class="file-preview" id="cpm-image-preview" style="display:none"></div>
+              <div class="upload-progress" id="cpm-image-progress"><div class="upload-progress-bar" id="cpm-image-bar"></div></div>
+            </div>
+            <input class="cpm-inp" id="cpm-image-url" placeholder="или вставь ссылку на фото" style="margin-top:6px">
             <textarea class="cpm-inp cpm-inp-ta" id="cpm-desc-ball" placeholder="Что на уме? Текст, мысль, новость…" style="min-height:100px"></textarea>
           </div>
           <div id="cpm-err" style="font-size:11px;color:var(--red);min-height:14px;margin-top:4px"></div>
@@ -1870,19 +1938,54 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         </div>
       </div>
 
-      <!-- ═══ GROUP CHAT OVERLAY ════════════════════════════════════ -->
+      <!-- ═══ GROUP FULL VIEW OVERLAY ═════════════════════════════════ -->
       <div id="grp-chat-overlay">
+        <!-- topbar -->
         <div class="gco-topbar">
           <button class="gco-back" onclick="closeGroupChat()">← Назад</button>
           <span class="gco-icon" id="gco-icon">👥</span>
-          <span class="gco-name" id="gco-name">Группа</span>
-          <span class="gco-online" id="gco-online"></span>
-          <button class="gco-members-btn" onclick="toggleGrpMembersPanel()">👥 Участники</button>
+          <div style="flex:1;min-width:0">
+            <div class="gco-name" id="gco-name">Группа</div>
+            <div class="gco-online" id="gco-online" style="font-size:10px;color:var(--text3)"></div>
+          </div>
+          <button class="gco-members-btn" title="Участники" onclick="toggleGrpMembersPanel()">👥</button>
+          <button class="gco-members-btn" title="Позвонить" onclick="showToast('📞 Голосовые звонки скоро!')">📞</button>
+          <button class="gco-members-btn" title="Ещё" onclick="showToast('Настройки группы скоро')">⋯</button>
         </div>
-        <div class="gco-msgs" id="gco-msgs">
-          <div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">Загружаем историю...</div>
+        <!-- tabs: Посты | Чат | Участники -->
+        <div class="gco-tabs">
+          <button class="gco-tab active" id="gcotab-posts" onclick="gcoSwitchTab('posts',this)">📋 Посты</button>
+          <button class="gco-tab" id="gcotab-chat"  onclick="gcoSwitchTab('chat',this)">💬 Чат</button>
+          <button class="gco-tab" id="gcotab-members" onclick="gcoSwitchTab('members',this)">👥 Участники</button>
         </div>
-        <!-- members slide panel -->
+        <!-- POSTS TAB -->
+        <div class="gco-body" id="gco-tab-posts">
+          <div class="gco-posts" id="gco-posts">
+            <div style="text-align:center;color:var(--text3);padding:40px;font-size:13px">⏳ Загружаем посты…</div>
+          </div>
+          <div class="gco-toolbar">
+            <button class="gco-tool-btn" onclick="gcoUploadFile('image')">🖼️ Фото</button>
+            <button class="gco-tool-btn" onclick="gcoUploadFile('video')">🎬 Видео</button>
+            <button class="gco-tool-btn" onclick="gcoUploadFile('doc')">📄 Файл</button>
+            <button class="gco-tool-btn primary" style="margin-left:auto" onclick="gcoCreateTextPost()">✍️ Написать</button>
+          </div>
+        </div>
+        <!-- CHAT TAB -->
+        <div class="gco-body" id="gco-tab-chat" style="display:none">
+          <div class="gco-msgs" id="gco-msgs">
+            <div style="text-align:center;color:var(--text3);padding:40px;font-size:13px">💬 Начни переписку</div>
+          </div>
+          <div class="gco-input-row">
+            <button class="gco-members-btn" onclick="gcoAttachInChat()" title="Прикрепить">📎</button>
+            <input class="gco-input" id="gco-input" placeholder="Сообщение…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendGroupMsg();}">
+            <button class="gco-send" onclick="sendGroupMsg()">↑</button>
+          </div>
+        </div>
+        <!-- MEMBERS TAB -->
+        <div class="gco-body" id="gco-tab-members" style="display:none;overflow-y:auto;padding:14px">
+          <div id="gco-members-list"></div>
+        </div>
+        <!-- members slide panel (from topbar button) -->
         <div id="grp-members-panel">
           <div class="gmp-header">
             <span class="gmp-title">Участники</span>
@@ -1890,9 +1993,24 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           </div>
           <div id="gmp-list"></div>
         </div>
-        <div class="gco-input-row">
-          <input class="gco-input" id="gco-input" placeholder="Сообщение в группу…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendGroupMsg();}">
-          <button class="gco-send" onclick="sendGroupMsg()">↑</button>
+        <!-- hidden file inputs -->
+        <input type="file" id="gco-file-image" accept="image/*" style="display:none" onchange="gcoHandleFile(this,'image')">
+        <input type="file" id="gco-file-video" accept="video/*" style="display:none" onchange="gcoHandleFile(this,'video')">
+        <input type="file" id="gco-file-doc" accept=".pdf,.doc,.docx,.txt,.zip,.xls,.xlsx,.ppt,.pptx" style="display:none" onchange="gcoHandleFile(this,'doc')">
+        <input type="file" id="gco-file-chat" accept="image/*,video/*,.pdf,.doc,.docx" style="display:none" onchange="gcoHandleFileInChat(this)">
+      </div>
+
+      <!-- ═══ CREATE POST MODAL (in group) ════════════════════════════ -->
+      <div class="modal-backdrop" id="modal-gco-post">
+        <div class="modal" style="max-width:420px">
+          <h3 id="gco-post-modal-title">✍️ Написать пост</h3>
+          <textarea class="cpm-inp cpm-inp-ta" id="gco-post-text" placeholder="Что хочешь сказать группе?" style="min-height:120px;margin-bottom:10px"></textarea>
+          <div id="gco-post-file-preview" style="display:none"></div>
+          <div id="gco-post-err" style="font-size:11px;color:var(--red);min-height:14px"></div>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('modal-gco-post')">Отмена</button>
+            <button class="btn btn-accent" id="gco-post-submit-btn" onclick="submitGcoPost()">🚀 Опубликовать</button>
+          </div>
         </div>
       </div>
 
@@ -4747,7 +4865,7 @@ function renderGroupCard(g){
         <button class="gc-key-submit" onclick="joinGroupByKey(${g.id})">→</button>
        </div>` : '';
   const chatBtn = joined
-    ? `<button class="gc-open-chat" onclick="openGroupChat(${g.id},'${escHtml(g.name)}','${escHtml(g.icon||'👥')}')">💬 Открыть чат</button>` : '';
+    ? `<button class="gc-open-chat" onclick="openGroupChat(${g.id},'${escHtml(g.name)}','${escHtml(g.icon||'👥')}')">👥 Открыть группу</button>` : '';
   return `<div class="group-card" id="grp-card-${g.id}">
     <div class="gc-type ${g.type}">${isPrivate?'PRIVATE':'PUBLIC'}</div>
     <div class="gc-icon">${escHtml(g.icon||'👥')}</div>
@@ -7536,9 +7654,8 @@ function toggleMarketFav(id,el){
   else { _marketFavs.add(id); el.textContent='❤️'; el.classList.add('loved'); showToast('❤️ В избранном'); }
 }
 
-// joinGroupEnhanced / openGroupChat — legacy stubs (replaced by joinGroupUI/leaveGroupUI above)
+// joinGroupEnhanced — legacy stub
 function joinGroupEnhanced(id,el){ joinGroupUI(id,el); }
-function openGroupChat(id){ showToast('💬 Групповой чат скоро'); }
 
 // ── Typing Indicator (moved to chat section above) ──────────────────────────
 
@@ -7896,9 +8013,9 @@ async function openGroupChat(groupId, groupName, groupIcon){
   document.getElementById('gco-online').textContent = '';
   document.getElementById('grp-chat-overlay').classList.add('open');
   document.getElementById('grp-members-panel').classList.remove('open');
-  await _loadGroupMsgs(true);
-  _startGrpPoll();
-  // Load members
+  // Start on Посты tab
+  gcoSwitchTab('posts', document.getElementById('gcotab-posts'));
+  // Preload members count
   _loadGrpMembers();
 }
 
@@ -7931,10 +8048,22 @@ async function _loadGroupMsgs(scrollBottom=false){
     const letter=(m.display_name||'?')[0].toUpperCase();
     const div=document.createElement('div');
     div.className='gco-msg'+(isMe?' me':'');
+    let bubbleContent='';
+    // Try to detect file messages
+    let parsedMsg=null;
+    try{ if(m.content && m.content.startsWith('{')) parsedMsg=JSON.parse(m.content); }catch(e){}
+    if(parsedMsg && parsedMsg.url){
+      const txt=parsedMsg.text?`<div class="gco-bubble-text">${_linkify(parsedMsg.text)}</div>`:'';
+      if(parsedMsg.type==='image') bubbleContent=`<img src="${escHtml(parsedMsg.url)}" style="max-width:200px;border-radius:8px;display:block;cursor:pointer" onclick="window.open('${escHtml(parsedMsg.url)}','_blank')">${txt}`;
+      else if(parsedMsg.type==='video') bubbleContent=`<video src="${escHtml(parsedMsg.url)}" style="max-width:200px;border-radius:8px" controls></video>${txt}`;
+      else bubbleContent=`<a href="${escHtml(parsedMsg.url)}" target="_blank" class="chat-link">📄 Файл</a>${txt}`;
+    } else {
+      bubbleContent=`<div class="gco-bubble-text">${_linkify(escHtml(m.content||''))}</div>`;
+    }
     div.innerHTML=`<div class="gco-av">${letter}</div>
       <div class="gco-bubble">
         ${!isMe?`<div class="gco-bubble-name">@${escHtml(m.display_name||'Аноним')}</div>`:''}
-        <div class="gco-bubble-text">${escHtml(m.content)}</div>
+        ${bubbleContent}
         <div class="gco-bubble-time">${t}</div>
       </div>`;
     container.appendChild(div);
@@ -7991,6 +8120,234 @@ async function _loadGrpMembers(){
     list.appendChild(div);
   });
 }
+
+/* ====== GROUP FULL VIEW JS ====== */
+
+// Tab switching
+function gcoSwitchTab(tab, el){
+  document.querySelectorAll('.gco-tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  // Hide all tab bodies
+  ['gco-tab-posts','gco-tab-chat','gco-tab-members'].forEach(id=>{
+    const el2=document.getElementById(id);
+    if(el2) el2.style.display='none';
+  });
+  const target=document.getElementById('gco-tab-'+tab);
+  if(target) target.style.display='flex';
+  if(tab==='posts') _loadGroupPosts(_grpChatId);
+  if(tab==='chat'){ _loadGroupMsgs(true); _startGrpPoll(); }
+  if(tab==='members') _loadGrpMembers();
+  if(tab!=='chat') _stopGrpPoll();
+}
+
+// Linkify URLs → clickable anchors
+function _linkify(text){
+  if(!text) return '';
+  const esc=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return esc.replace(/(https?:\/\/[^\s<>"']+)/g,'<a href="$1" target="_blank" rel="noopener" class="chat-link">$1</a>');
+}
+
+// ---- FILE UPLOAD HELPERS ----
+async function _uploadFile(file, progressBarId){
+  const bar=progressBarId ? document.getElementById(progressBarId) : null;
+  if(bar){ bar.parentElement.style.display='block'; bar.style.width='10%'; }
+  const fd=new FormData();
+  fd.append('file', file);
+  let pct=10;
+  const ticker=setInterval(()=>{ pct=Math.min(pct+10,85); if(bar) bar.style.width=pct+'%'; },200);
+  try{
+    const res=await fetch('/upload',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('cw_token')},body:fd});
+    clearInterval(ticker);
+    const j=await res.json();
+    if(bar){ bar.style.width='100%'; setTimeout(()=>{ bar.parentElement.style.display='none'; bar.style.width='0'; },600); }
+    return j.ok ? j.url : null;
+  }catch(e){ clearInterval(ticker); if(bar) bar.parentElement.style.display='none'; return null; }
+}
+
+// ---- CREATE POST MODAL UPLOAD ----
+let _cpmVideoUrl='', _cpmImageUrl='';
+
+async function cpmHandleVideoFile(input){
+  const file=input.files[0]; if(!file) return;
+  const label=document.getElementById('cpm-video-drop-label');
+  const preview=document.getElementById('cpm-video-preview');
+  if(label) label.textContent='⏳ Загрузка…';
+  const url=await _uploadFile(file,'cpm-video-bar');
+  if(url){
+    _cpmVideoUrl=url;
+    document.getElementById('cpm-video-url').value=url;
+    if(preview){ preview.style.display='block'; preview.innerHTML=`<video src="${url}" style="max-width:100%;max-height:140px;border-radius:8px" controls></video>`; }
+    if(label) label.style.display='none';
+  } else {
+    if(label) label.textContent='❌ Ошибка загрузки, попробуй снова';
+    showToast('Ошибка загрузки видео');
+  }
+}
+
+async function cpmHandleImageFile(input){
+  const file=input.files[0]; if(!file) return;
+  const label=document.getElementById('cpm-image-drop-label');
+  const preview=document.getElementById('cpm-image-preview');
+  if(label) label.textContent='⏳ Загрузка…';
+  const url=await _uploadFile(file,'cpm-image-bar');
+  if(url){
+    _cpmImageUrl=url;
+    document.getElementById('cpm-image-url').value=url;
+    if(preview){ preview.style.display='block'; preview.innerHTML=`<img src="${url}" style="max-width:100%;max-height:140px;border-radius:8px;object-fit:cover">`; }
+    if(label) label.style.display='none';
+  } else {
+    if(label) label.textContent='❌ Ошибка загрузки, попробуй снова';
+    showToast('Ошибка загрузки фото');
+  }
+}
+
+// ---- GROUP POST FUNCTIONS ----
+function gcoUploadFile(type){
+  const map={image:'gco-file-image',video:'gco-file-video',doc:'gco-file-doc'};
+  const inp=document.getElementById(map[type]);
+  if(inp) inp.click();
+}
+
+let _gcoUploadedUrl='', _gcoUploadedType='';
+
+async function gcoHandleFile(input, type){
+  const file=input.files[0]; if(!file) return;
+  showToast('⏳ Загружаем файл…');
+  const url=await _uploadFile(file, null);
+  if(url){
+    _gcoUploadedUrl=url;
+    _gcoUploadedType=type;
+    const preview=document.getElementById('gco-post-file-preview');
+    if(preview){
+      preview.style.display='block';
+      if(type==='image') preview.innerHTML=`<img src="${url}" style="max-width:100%;max-height:120px;border-radius:8px;object-fit:cover"><button class="file-remove" onclick="gcoClearUpload()">✕</button>`;
+      else if(type==='video') preview.innerHTML=`<video src="${url}" style="max-width:100%;max-height:120px;border-radius:8px" controls></video><button class="file-remove" onclick="gcoClearUpload()">✕</button>`;
+      else preview.innerHTML=`<div style="padding:8px;background:var(--bg2);border-radius:8px;font-size:13px">📄 ${escHtml(file.name)}</div><button class="file-remove" onclick="gcoClearUpload()">✕</button>`;
+    }
+    // Open post modal with pre-filled file
+    document.getElementById('modal-gco-post').style.display='flex';
+  } else {
+    showToast('❌ Ошибка загрузки');
+  }
+}
+
+function gcoClearUpload(){
+  _gcoUploadedUrl=''; _gcoUploadedType='';
+  const preview=document.getElementById('gco-post-file-preview');
+  if(preview){ preview.style.display='none'; preview.innerHTML=''; }
+}
+
+function gcoCreateTextPost(){
+  gcoClearUpload();
+  document.getElementById('modal-gco-post').style.display='flex';
+}
+
+async function submitGcoPost(){
+  if(!_grpChatId) return;
+  const text=(document.getElementById('gco-post-text')?.value||'').trim();
+  if(!text && !_gcoUploadedUrl){ showToast('Напиши текст или прикрепи файл'); return; }
+  const token=localStorage.getItem('cw_token');
+  // Post as group message with special type
+  const msgType=_gcoUploadedType||'text';
+  let content=text;
+  if(_gcoUploadedUrl){
+    content=JSON.stringify({text, url:_gcoUploadedUrl, type:_gcoUploadedType});
+  }
+  const res=await apiCall('/groups/'+_grpChatId+'/messages','POST',{content, msg_type: msgType==='text'?'text':'file'});
+  if(res && (res.ok||res.id)){
+    document.getElementById('modal-gco-post').style.display='none';
+    document.getElementById('gco-post-text').value='';
+    gcoClearUpload();
+    await _loadGroupPosts(_grpChatId);
+  } else {
+    showToast('Ошибка публикации');
+  }
+}
+
+function _renderGcoPost(m){
+  const name=escHtml(m.display_name||'Аноним');
+  const time=m.created_at ? new Date(m.created_at).toLocaleString('ru',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'}) : '';
+  let mediaHtml='', textHtml='', parsed=null;
+  try{ if(m.content && m.content.startsWith('{')) parsed=JSON.parse(m.content); }catch(e){}
+  if(parsed){
+    textHtml=`<div class="gco-post-text">${_linkify(parsed.text||'')}</div>`;
+    if(parsed.type==='image') mediaHtml=`<img class="gco-post-img" src="${escHtml(parsed.url)}" onclick="window.open('${escHtml(parsed.url)}','_blank')">`;
+    else if(parsed.type==='video') mediaHtml=`<video class="gco-post-video" src="${escHtml(parsed.url)}" controls></video>`;
+    else if(parsed.url) mediaHtml=`<a class="gco-post-doc chat-link" href="${escHtml(parsed.url)}" target="_blank">📄 Скачать файл</a>`;
+  } else {
+    textHtml=`<div class="gco-post-text">${_linkify(m.content||'')}</div>`;
+  }
+  const div=document.createElement('div');
+  div.className='gco-post';
+  div.innerHTML=`<div class="gco-post-header">
+    <div class="gco-av">${name[0].toUpperCase()}</div>
+    <div><div class="gco-post-name">@${name}</div><div class="gco-post-time">${time}</div></div>
+  </div>
+  ${mediaHtml}${textHtml}
+  <div class="gco-post-actions">
+    <button class="gco-post-action" onclick="gcoLikePost(${m.id},this)">❤️ <span class="gco-likes">0</span></button>
+    <button class="gco-post-action">💬 Комм.</button>
+    <button class="gco-post-action" onclick="navigator.share&&navigator.share({url:location.href})">↗️ Поделиться</button>
+  </div>`;
+  return div;
+}
+
+async function _loadGroupPosts(groupId){
+  if(!groupId) return;
+  const container=document.getElementById('gco-posts');
+  if(!container) return;
+  container.innerHTML='<div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">Загрузка…</div>';
+  // Load messages from group and render file ones as posts
+  const msgs=await apiCall('/groups/'+groupId+'/messages');
+  if(!Array.isArray(msgs)||!msgs.length){
+    container.innerHTML='<div style="text-align:center;color:var(--text3);padding:32px;font-size:13px">Постов пока нет.<br>Будь первым!</div>';
+    return;
+  }
+  container.innerHTML='';
+  // Show all messages as posts (newest first)
+  [...msgs].reverse().forEach(m=>{
+    container.appendChild(_renderGcoPost(m));
+  });
+}
+
+function gcoLikePost(msgId, btn){
+  const span=btn.querySelector('.gco-likes');
+  if(!span) return;
+  const n=parseInt(span.textContent||'0')+1;
+  span.textContent=n;
+  btn.style.color='var(--accent)';
+}
+
+// Chat file attachment
+function gcoAttachInChat(){
+  const inp=document.getElementById('gco-file-chat');
+  if(inp) inp.click();
+}
+
+async function gcoHandleFileInChat(input){
+  const file=input.files[0]; if(!file) return;
+  showToast('⏳ Загружаем…');
+  const url=await _uploadFile(file, null);
+  if(!url){ showToast('Ошибка загрузки'); return; }
+  const isImg=file.type.startsWith('image/');
+  const isVid=file.type.startsWith('video/');
+  const type=isImg?'image':isVid?'video':'doc';
+  const content=JSON.stringify({text:'', url, type});
+  const res=await apiCall('/groups/'+_grpChatId+'/messages','POST',{content, msg_type:'file'});
+  if(res&&(res.ok||res.id)){
+    input.value='';
+    await _loadGroupMsgs(true);
+  } else {
+    showToast('Ошибка отправки');
+  }
+}
+
+// Group call (stub)
+function gcoStartCall(){
+  showToast('📞 Звонок скоро будет доступен!');
+}
+
+/* ====== END GROUP FULL VIEW JS ====== */
 
 function renderSignals(){
   const el=document.getElementById('signals-grid'); if(!el) return;
