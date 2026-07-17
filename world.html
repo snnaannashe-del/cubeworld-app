@@ -288,8 +288,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 /* vf-container must fill entire sec-feed — stories bar is overlay */
 #sec-feed>.vf-container{flex:1;height:100%}
 .vf-header{position:absolute;top:0;left:0;right:0;z-index:20;padding:10px 14px 6px;display:flex;align-items:center;gap:8px;background:linear-gradient(to bottom,rgba(0,0,0,.88) 0%,rgba(0,0,0,.55) 55%,transparent 100%);pointer-events:auto}
-/* Stories bar injected into feed — must be absolute so it doesn't steal height from vf-container */
-#stories-bar-injected{position:absolute!important;top:46px!important;left:0!important;right:0!important;z-index:19!important;background:linear-gradient(to bottom,rgba(0,0,0,.55) 0%,transparent 100%)!important;pointer-events:auto}
+/* Chat stories drawer */
+#chat-stories-drawer{overflow:hidden;max-height:0;transition:max-height .32s cubic-bezier(.4,0,.2,1);border-bottom:1px solid transparent;flex-shrink:0}
+#chat-stories-drawer.open{max-height:96px;border-bottom-color:var(--border)}
+.chat-stories-inner{display:flex;align-items:center;gap:10px;padding:8px 12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.chat-stories-inner::-webkit-scrollbar{display:none}
+.cs-toggle{background:none;border:none;cursor:pointer;color:var(--text3);padding:2px 6px;border-radius:6px;transition:all .15s;display:flex;align-items:center;gap:3px;font-size:11px}
+.cs-toggle:hover{background:rgba(255,255,255,.06);color:var(--text)}
+.cs-toggle .ti{font-size:13px;transition:transform .3s}
 .vf-tabs{display:flex;gap:0}
 .vf-tab{padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.6);border:none;background:transparent;transition:all .2s;border-bottom:2px solid transparent;line-height:1.2}
 .vf-tab.active{color:#fff;border-bottom-color:#fff}
@@ -2044,8 +2050,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #sec-feed{padding-bottom:0;height:100%}
   /* vf-container fills ALL of sec-feed height — stories bar is absolute overlay */
   #sec-feed .vf-container{flex:1;height:100%;width:100%}
-  /* Ensure stories bar is absolute on mobile */
-  #stories-bar-injected{position:absolute!important;top:44px!important;left:0!important;right:0!important;z-index:19!important}
+  /* Chat stories drawer on mobile — full width */
+  #chat-stories-drawer.open{max-height:88px}
   #sec-feed .vf-actions{bottom:74px}
   #sec-feed .vf-info{padding-bottom:74px}
 
@@ -2557,8 +2563,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div class="int-section" id="sec-chat">
         <div id="chat-list">
           <div class="cl-header">
-            <h3>💬 Чаты</h3>
-            <button class="cl-new" onclick="openNewDmPrompt()" title="Новый чат">✏️</button>
+            <h3><i class="ti ti-message-circle" style="font-size:14px;margin-right:4px;opacity:.7"></i>Чаты</h3>
+            <div style="display:flex;align-items:center;gap:4px">
+              <button class="cs-toggle" id="chat-stories-btn" onclick="toggleChatStories()" title="Сторис">
+                <i class="ti ti-users" id="cs-toggle-icon"></i><span id="cs-toggle-label">Сторис</span>
+              </button>
+              <button class="cl-new" onclick="openNewDmPrompt()" title="Новый чат"><i class="ti ti-edit" style="font-size:15px"></i></button>
+            </div>
+          </div>
+          <div id="chat-stories-drawer">
+            <div class="chat-stories-inner" id="chat-stories-inner"></div>
           </div>
           <div class="cl-scroll" id="chat-rooms-list"></div>
         </div>
@@ -4476,6 +4490,7 @@ function switchSection(name,el){
     document.getElementById('mob-badge-chat')?.style.setProperty('display','none');
     if(!_chatActiveDm && app._lastDm)
       setTimeout(()=>openDmWith(app._lastDm.user_id, app._lastDm.display_name), 50);
+    setTimeout(initChatStories, 100);
   }
   if(name==='earn')   { loadEarnStats(); renderEarnWallets(); }
   if(name==='groups') { loadGroups(); }
@@ -10306,24 +10321,33 @@ function _showSwipeIndicator(){
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   STORIES BAR INJECTION INTO FEED
+   CHAT STORIES DRAWER
 ═══════════════════════════════════════════════════════════════════════ */
-(function injectStoriesBar(){
-  function tryInject(){
-    if(document.getElementById('stories-bar-injected')) return;
-    const feed=document.getElementById('sec-feed');
-    if(!feed){ setTimeout(tryInject,600); return; }
-    const bar=document.createElement('div');
-    bar.className='stories-bar';
-    bar.id='stories-bar-injected';
-    // Insert after vf-header
-    const header=feed.querySelector('.vf-header');
-    if(header) header.after(bar); else feed.prepend(bar);
-    buildStoriesBar(bar);
+let _chatStoriesOpen = false;
+function toggleChatStories(){
+  _chatStoriesOpen = !_chatStoriesOpen;
+  const drawer = document.getElementById('chat-stories-drawer');
+  const btn = document.getElementById('chat-stories-btn');
+  const icon = document.getElementById('cs-toggle-icon');
+  if(!drawer) return;
+  if(_chatStoriesOpen){
+    drawer.classList.add('open');
+    if(btn) btn.style.color='var(--accent)';
+    if(icon) icon.style.transform='rotate(180deg)';
+    // Populate on first open
+    const inner = document.getElementById('chat-stories-inner');
+    if(inner && !inner.dataset.built){ buildStoriesBar(inner); inner.dataset.built='1'; }
+  } else {
+    drawer.classList.remove('open');
+    if(btn) btn.style.color='';
+    if(icon) icon.style.transform='';
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',tryInject);
-  else setTimeout(tryInject,400);
-})();
+}
+// Init: populate on section switch to chat
+function initChatStories(){
+  const inner = document.getElementById('chat-stories-inner');
+  if(inner && !inner.dataset.built){ buildStoriesBar(inner); inner.dataset.built='1'; }
+}
 
 /* ═══════════════════════════════════════════════════════════════════════
    SWIPE GESTURE — correct overlay id
