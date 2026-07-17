@@ -284,7 +284,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .int-section.active{display:flex}
 
 /* ── FEED — TikTok Style ─── */
-#sec-feed{flex-direction:column;display:flex;position:relative;background:#000;overflow:hidden;height:100%}
+#sec-feed{flex-direction:column;display:flex;position:relative;background:#000;overflow:hidden;height:100%;isolation:isolate}
 /* vf-container must fill entire sec-feed — stories bar is overlay */
 #sec-feed>.vf-container{flex:1;height:100%}
 
@@ -308,13 +308,20 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 /* Tabs drawer — always at top of the 9:16 column on desktop, overlay on mobile */
 .vf-tabs-drawer{position:absolute;top:0;left:0;right:0;z-index:30;background:linear-gradient(to bottom,rgba(0,0,0,.92) 0%,rgba(0,0,0,.6) 65%,transparent 100%);transition:transform .3s cubic-bezier(.4,0,.2,1);pointer-events:auto}
-.vf-tabs-drawer.hidden{transform:translateY(-100%)}
+.vf-tabs-drawer.hidden{transform:translateY(-110%);pointer-events:none}
 .vf-tabs-row{display:flex;align-items:center;gap:0;padding:10px 14px 0}
 .vf-tab2{padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;color:rgba(255,255,255,.5);border:none;background:transparent;transition:all .2s;border-bottom:2.5px solid transparent;letter-spacing:.02em}
 .vf-tab2.active{color:#fff;border-bottom-color:#fff}
 .vf-tab2:hover{color:rgba(255,255,255,.8)}
 .vf-tabs-toggle{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.45);font-size:18px;margin-left:auto;padding:6px 8px;transition:all .2s;display:flex;align-items:center}
 .vf-tabs-toggle:hover{color:#fff}
+/* Persistent bird button — shows when tabs are hidden */
+.vf-tabs-bird{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:31;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 14px;color:rgba(255,255,255,.7);cursor:pointer;font-size:12px;display:flex;align-items:center;gap:5px;transition:opacity .25s,transform .25s;opacity:0;pointer-events:none}
+.vf-tabs-bird.show{opacity:1;pointer-events:auto}
+.vf-tabs-bird:hover{background:rgba(0,0,0,.8);color:#fff}
+/* Cube-switcher bird button (mobile) — shows when cs is hidden */
+#cs-bird-btn{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:1200;background:rgba(10,10,30,.8);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 14px;color:rgba(255,255,255,.7);cursor:pointer;font-size:11px;display:flex;align-items:center;gap:5px;transition:opacity .25s;opacity:0;pointer-events:none}
+#cs-bird-btn.show{opacity:1;pointer-events:auto}
 
 /* ── FEED FAB (speed-dial action button) ── */
 .vf-fab-wrap{position:absolute;right:12px;bottom:80px;z-index:15;display:flex;flex-direction:column;align-items:center;gap:0}
@@ -842,6 +849,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 /* ── CHAT ─────────────────── */
 #sec-chat{flex-direction:row}
 #chat-list{width:230px;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+/* Chat quick-access pills (Избранное / Группы куба) */
+.chat-qa-strip{display:flex;gap:7px;padding:7px 12px;overflow-x:auto;border-bottom:1px solid var(--border);flex-shrink:0;-webkit-overflow-scrolling:touch}
+.chat-qa-strip::-webkit-scrollbar{display:none}
+.chat-qa-pill{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);cursor:pointer;white-space:nowrap;flex-shrink:0;font-size:11px;color:var(--text2);transition:all .15s}
+.chat-qa-pill:hover,.chat-qa-pill.active-room{background:rgba(0,149,246,.12);border-color:rgba(0,149,246,.3);color:#e0e0f8}
+.chat-qa-pill .qa-icon{font-size:14px}
+.chat-qa-pill .qa-badge{background:var(--accent);color:#fff;font-size:8px;font-weight:700;padding:1px 4px;border-radius:6px;min-width:14px;text-align:center}
 .cl-header{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .cl-header h3{font-size:13px;font-weight:700;color:#e0e0f8}
 .cl-tabs{display:flex;gap:2px;padding:6px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
@@ -2256,6 +2270,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <button id="cs-key2-btn" onclick="showCubeKeyPanel()" style="display:none;flex-shrink:0;font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(0,149,246,.15);border:1px solid rgba(0,149,246,.35);color:var(--accent);cursor:pointer;white-space:nowrap">🔑 Key 2</button>
     <button class="cs-add" onclick="exitInterior()" title="Открыть другой куб">+</button>
   </div>
+  <!-- Bird button for cube-switcher (mobile only, shows when cs is scrolled away) -->
+  <button id="cs-bird-btn" onclick="showCubeSwitcher()">
+    <i class="ti ti-chevron-down" style="font-size:12px"></i> Кубы
+  </button>
   <div id="int-layout">
     <!-- LEFT NAV -->
     <nav id="int-sidenav">
@@ -2375,6 +2393,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
         <!-- Desktop: 9:16 feed column -->
         <div class="vf-feed-col" id="vf-feed-col" style="width:min(calc(100vh*9/16),430px)">
+          <!-- Bird button: shows when tabs are hidden, calls toggleVfTabsDrawer() -->
+          <button class="vf-tabs-bird" id="vf-tabs-bird" onclick="toggleVfTabsDrawer()">
+            <i class="ti ti-chevron-down" style="font-size:13px"></i> Shorts · Post · Rec · Top
+          </button>
           <!-- Tabs drawer (shown inside the 9:16 col on desktop, overlays full feed on mobile) -->
           <div class="vf-tabs-drawer" id="vf-tabs-drawer">
             <div class="vf-tabs-row">
@@ -2635,6 +2657,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           <div id="chat-stories-drawer">
             <div class="chat-stories-inner" id="chat-stories-inner"></div>
           </div>
+          <!-- Quick-access pills: Избранное + Группы куба -->
+          <div class="chat-qa-strip" id="chat-qa-strip"></div>
+          <!-- DM-only list -->
           <div class="cl-scroll" id="chat-rooms-list"></div>
         </div>
         <div id="chat-area">
@@ -4713,21 +4738,60 @@ function switchChatTab(tab) {}
 // ── Render chat list (Telegram-style) ──
 function renderChatRooms(){
   const el=document.getElementById('chat-rooms-list'); if(!el) return;
+  const qa=document.getElementById('chat-qa-strip');
   el.innerHTML='';
+  if(qa) qa.innerHTML='';
 
-  // 1. ⭐ Избранное — always first
-  const saved=(app.chatRooms||[]).find(r=>r.id==='saved');
-  if(saved) {
-    const msgs=(app.chatMessages[app.currentCubeId]||{})['saved']||[];
-    const last=msgs.length ? (msgs[msgs.length-1].text||'').slice(0,32) : 'Твои сохранённые сообщения';
-    el.appendChild(_makeChatRow({id:'saved',name:'Избранное',icon:'⭐',lastMsg:last,time:'',unread:0},
-      ()=>openRoom('saved')));
+  // ── QUICK-ACCESS STRIP: Избранное + Общий чат + Группы куба ──
+  if(qa){
+    // Избранное pill
+    const savedMsgs=(app.chatMessages[app.currentCubeId]||{})['saved']||[];
+    const savedPill=document.createElement('button');
+    savedPill.className='chat-qa-pill';
+    savedPill.innerHTML=`<span class="gi gi-28 g-gold-c" style="flex-shrink:0"><i class="ti ti-star" style="font-size:12px;color:#FBB924"></i></span><span>Избранное</span>`;
+    savedPill.onclick=()=>openRoom('saved');
+    qa.appendChild(savedPill);
+
+    // Общий чат pill (if it exists)
+    const generalRoom=(app.chatRooms||[]).find(r=>r.id==='general'||r.name==='Общий чат');
+    if(generalRoom){
+      const gPill=document.createElement('button');
+      const gUnread=generalRoom.unread||0;
+      gPill.className='chat-qa-pill';
+      gPill.innerHTML=`<span class="gi gi-28 g-signal-c" style="flex-shrink:0"><i class="ti ti-message-dots" style="font-size:12px;color:#6399FF"></i></span><span>Общий чат</span>${gUnread?`<span class="qa-badge">${gUnread}</span>`:''}`;
+      gPill.onclick=()=>openRoom(generalRoom.id);
+      qa.appendChild(gPill);
+    }
+
+    // Группы куба pills
+    const groups=(app.chatRooms||[]).filter(r=>r.type==='group');
+    groups.forEach(r=>{
+      const msgs=(app.chatMessages[app.currentCubeId]||{})[r.id]||[];
+      const unread=r.unread||0;
+      const pill=document.createElement('button');
+      pill.className='chat-qa-pill';
+      const icon=r.icon&&!r.icon.startsWith('<')?r.icon:'💬';
+      pill.innerHTML=`<span style="font-size:14px">${icon}</span><span>${escHtml(r.name||'Группа')}</span>${unread?`<span class="qa-badge">${unread}</span>`:''}`;
+      pill.onclick=()=>openRoom(r.id);
+      qa.appendChild(pill);
+    });
   }
 
-  // 2. ЛС — section header + DM conversations
+  // ── DM LIST (clean: only user conversations) ──
   const dmEntries=Object.entries(app.dmConversations||{});
-  if(dmEntries.length) {
-    el.appendChild(_chatSectionLabel('Личные сообщения'));
+  const myId=localStorage.getItem('cw_user_id');
+  const others=(_chatOnlineUsers||[]).filter(u=>String(u.user_id)!==String(myId));
+
+  if(!dmEntries.length && !others.length){
+    const empty=document.createElement('div');
+    empty.style.cssText='padding:28px 16px;text-align:center;color:var(--text3);font-size:12px;line-height:1.7';
+    empty.innerHTML='<div style="font-size:28px;margin-bottom:8px">💬</div>Здесь появятся личные сообщения от участников куба';
+    el.appendChild(empty);
+    return;
+  }
+
+  // Active DM conversations
+  if(dmEntries.length){
     dmEntries.forEach(([uid,info])=>{
       el.appendChild(_makeChatRow(
         {id:'dm:'+uid, name:info.display_name, icon:'👤',
@@ -4736,32 +4800,16 @@ function renderChatRooms(){
     });
   }
 
-  // 3. Онлайн — people in this cube (show as DM-startable)
-  const myId=localStorage.getItem('cw_user_id');
-  const others=(_chatOnlineUsers||[]).filter(u=>String(u.user_id)!==String(myId));
-  if(others.length) {
-    el.appendChild(_chatSectionLabel('Онлайн в кубе'));
+  // Online users without DMs
+  if(others.length){
+    if(dmEntries.length) el.appendChild(_chatSectionLabel('Онлайн в кубе'));
     others.forEach(u=>{
-      const hasDm=!!(app.dmConversations||{})[u.user_id];
-      if(!hasDm) {
-        const row=_makeChatRow(
+      if(!(app.dmConversations||{})[u.user_id]){
+        el.appendChild(_makeChatRow(
           {id:'online:'+u.user_id, name:u.display_name, icon:'🟢',
            lastMsg:'Нажми чтобы написать', time:'', unread:0},
-          ()=>openDmWith(u.user_id, u.display_name));
-        el.appendChild(row);
+          ()=>openDmWith(u.user_id, u.display_name)));
       }
-    });
-  }
-
-  // 4. Группы куба
-  const groups=(app.chatRooms||[]).filter(r=>r.type==='group');
-  if(groups.length) {
-    el.appendChild(_chatSectionLabel('Группы куба'));
-    groups.forEach(r=>{
-      const msgs=(app.chatMessages[app.currentCubeId]||{})[r.id]||[];
-      const last=msgs.length?(msgs[msgs.length-1].text||'').slice(0,32):r.lastMsg||'';
-      const unread=r.unread||0;
-      el.appendChild(_makeChatRow({...r,lastMsg:last,unread},()=>openRoom(r.id)));
     });
   }
 }
@@ -8513,13 +8561,16 @@ function toggleVfTabsDrawer(){
   _vfTabsDrawerHidden = !_vfTabsDrawerHidden;
   const drawer = document.getElementById('vf-tabs-drawer');
   const chev = document.getElementById('vf-tabs-chevron');
+  const bird = document.getElementById('vf-tabs-bird');
   if(!drawer) return;
   if(_vfTabsDrawerHidden){
     drawer.classList.add('hidden');
-    if(chev){ chev.className='ti ti-chevron-down'; }
+    if(chev) chev.className='ti ti-chevron-down';
+    if(bird) bird.classList.add('show');
   } else {
     drawer.classList.remove('hidden');
-    if(chev){ chev.className='ti ti-chevron-up'; }
+    if(chev) chev.className='ti ti-chevron-up';
+    if(bird) bird.classList.remove('show');
   }
 }
 
@@ -8539,40 +8590,48 @@ function toggleVfFab(postId){
   if(isOpen) setTimeout(()=>{ if(_vfFabOpen===postId){ fab.classList.remove('open'); _vfFabOpen=null; }}, 4000);
 }
 
-// Cube-switcher auto-hide on mobile scroll (hide after 2nd scroll, show on scroll-up)
+// Cube-switcher auto-hide on mobile scroll (hide after 3rd scroll, show on bird-btn)
+function showCubeSwitcher(){
+  const cs = document.getElementById('cube-switcher');
+  const bird = document.getElementById('cs-bird-btn');
+  if(cs){ cs.classList.remove('cs-hidden'); _csScrollCount=0; _csHidden=false; }
+  if(bird) bird.classList.remove('show');
+}
+let _csScrollCount=0, _csHidden=false, _csLastY=0;
 (function initCubeScrollHide(){
   function setup(){
     const cs = document.getElementById('cube-switcher');
     if(!cs) return;
-    let _scrollCount = 0;
-    let _lastY = 0;
-    let _csHidden = false;
-    // Listen on int-main or window scroll events
-    const containers = [
-      document.getElementById('int-main'),
-      document.querySelector('.int-section.active'),
-      window
-    ].filter(Boolean);
     function onScroll(e){
-      if(window.innerWidth > 768) return; // desktop: no auto-hide
+      if(window.innerWidth > 768) return;
+      const bird = document.getElementById('cs-bird-btn');
       const tgt = e.target === document ? document.documentElement : e.target;
-      const currentY = tgt.scrollTop !== undefined ? tgt.scrollTop : window.scrollY;
-      const delta = currentY - _lastY;
-      _lastY = currentY;
-      if(delta > 10){ // scrolling down
-        _scrollCount++;
-        if(_scrollCount >= 2 && !_csHidden){ _csHidden=true; cs.classList.add('cs-hidden'); }
-      } else if(delta < -10){ // scrolling up
-        _scrollCount = 0;
-        if(_csHidden){ _csHidden=false; cs.classList.remove('cs-hidden'); }
+      const currentY = (tgt.scrollTop !== undefined ? tgt.scrollTop : 0) || window.scrollY || 0;
+      const delta = currentY - _csLastY;
+      _csLastY = currentY;
+      if(delta > 8){
+        _csScrollCount++;
+        if(_csScrollCount >= 3 && !_csHidden){
+          _csHidden=true;
+          cs.classList.add('cs-hidden');
+          if(bird) bird.classList.add('show');
+        }
+      } else if(delta < -8){
+        if(_csHidden){ showCubeSwitcher(); }
+        else { _csScrollCount = Math.max(0, _csScrollCount-1); }
       }
     }
-    // Observe section switches to re-attach
-    containers.forEach(c=>{ try{ c.addEventListener('scroll', onScroll, {passive:true}); }catch(e){} });
-    window.addEventListener('scroll', onScroll, {passive:true});
+    // Attach to all scrollable containers inside int-main
+    const intMain = document.getElementById('int-main');
+    if(intMain) intMain.addEventListener('scroll', onScroll, {passive:true, capture:true});
+    document.addEventListener('scroll', onScroll, {passive:true, capture:true});
+    // Re-reset on section switch
+    document.querySelectorAll('.sn-item,.mnb').forEach(btn=>{
+      btn.addEventListener('click', ()=>{ _csScrollCount=0; if(!_csHidden) return; showCubeSwitcher(); });
+    });
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', setup);
-  else setTimeout(setup, 500);
+  else setTimeout(setup, 600);
 })();
 
 function renderFeed(){
