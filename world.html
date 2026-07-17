@@ -584,19 +584,31 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vf-iframe-wrap iframe{width:100%;height:100%;border:none}
 .vf-text-post{display:flex;align-items:center;justify-content:center;padding:60px 32px 120px;text-align:center;color:#fff;font-size:20px;line-height:1.7;width:100%;background:linear-gradient(135deg,rgba(0,60,160,.5),rgba(120,0,80,.4))}
 .vf-card-gradient{position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,transparent 100%);pointer-events:none;z-index:2}
-/* right action bar */
-.vf-actions{position:absolute;right:10px;bottom:90px;display:flex;flex-direction:column;align-items:center;gap:18px;z-index:10}
+/* right action bar — only author avatar visible, actions appear on hover */
+.vf-actions{position:absolute;right:10px;bottom:100px;display:flex;flex-direction:column;align-items:center;gap:0;z-index:10}
 .vfa{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;padding:0;outline:none}
 .vfa-icon{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:22px;transition:all .2s;color:#fff}
 .vfa-icon:hover,.vfa-icon:active{background:rgba(255,255,255,.28);transform:scale(1.12)}
 .vfa-icon.liked{background:rgba(255,50,90,.35)}
 .vfa-count{font-size:11px;color:#fff;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.8)}
-.vfa-author-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
-.vfa-author-av{width:42px;height:42px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;background:#222;color:#fff;cursor:pointer;position:relative;overflow:visible}
+/* author avatar */
+.vfa-author-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+.vfa-author-av{width:50px;height:50px;border-radius:50%;border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;background:#222;color:#fff;cursor:pointer;position:relative;overflow:visible;transition:transform .2s}
+.vfa-author-wrap:hover .vfa-author-av{transform:scale(1.08)}
 .vfa-follow-dot{position:absolute;bottom:-3px;right:-3px;width:20px;height:20px;border-radius:50%;background:#fe2c55;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;line-height:1;border:2px solid #000;font-weight:700}
 .vfa-follow-dot.following{background:#555;font-size:11px}
+/* hover action popup — appears to the left of avatar on hover */
+.vfa-action-popup{position:absolute;right:58px;top:50%;transform:translateY(-50%) translateX(8px);background:rgba(0,0,0,.78);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.13);border-radius:36px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:12px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:30;min-width:54px}
+.vfa-author-wrap:hover .vfa-action-popup{opacity:1;pointer-events:auto;transform:translateY(-50%) translateX(0)}
+.vfap-btn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff;padding:2px;border-radius:10px;transition:transform .15s;min-width:40px}
+.vfap-btn:hover{transform:scale(1.2)}
+.vfap-btn .vfap-icon{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:18px;transition:background .15s}
+.vfap-btn:hover .vfap-icon{background:rgba(255,255,255,.25)}
+.vfap-btn .vfap-icon i.ti{font-size:18px}
+.vfap-btn .vfap-count{font-size:10px;color:rgba(255,255,255,.75);font-weight:700;line-height:1}
+.vfap-btn.vfap-liked .vfap-icon{background:rgba(255,50,90,.35)}
 /* bottom info overlay */
-.vf-info{position:absolute;bottom:0;left:0;right:65px;padding:14px 14px 20px;z-index:10}
+.vf-info{position:absolute;bottom:0;left:0;right:75px;padding:14px 14px 20px;z-index:10}
 .vfi-author-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
 .vfi-avatar{width:38px;height:38px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;background:#222;color:#fff;flex-shrink:0;cursor:pointer}
 .vfi-name{font-size:14px;font-weight:700;color:#fff;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,.6)}
@@ -8183,44 +8195,37 @@ function renderFeed(){
       <div class="vf-card-gradient"></div>
       ${hasVideo?`<div class="vf-progress"><div class="vf-progress-fill" id="vf-prog-${post.id}"></div></div>`:''}
       <div class="vf-actions">
-        ${!isMine?`<div class="vfa-author-wrap">
+        <div class="vfa-author-wrap">
           <div class="vfa-author-av" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">
             ${letter}
-            <div class="vfa-follow-dot${isFollowing?' following':''}" id="vfa-fd-${post.user_id}" onclick="event.stopPropagation();vfFollow('${post.user_id}')">${isFollowing?'✓':'+'}</div>
+            ${!isMine?`<div class="vfa-follow-dot${isFollowing?' following':''}" id="vfa-fd-${post.user_id}" onclick="event.stopPropagation();vfFollow('${post.user_id}')">${isFollowing?'✓':'+'}</div>`:''}
           </div>
-        </div>`:''}
-        <button class="vfa" onclick="openVfComments('${post.id}')">
-          <div class="vfa-icon"><i class="ti ti-message-circle"></i></div>
-          <span class="vfa-count" id="vfa-cc-${post.id}">${_fmtN(post.comment_count||0)}</span>
-        </button>
-        <button class="vfa" onclick="vfShare('${post.id}')">
-          <div class="vfa-icon"><i class="ti ti-share"></i></div>
-          <span class="vfa-count">${_fmtN(post.share_count||0)||'Шер'}</span>
-        </button>
-        <div class="vfa" style="cursor:default">
-          <div class="vfa-icon"><i class="ti ti-eye"></i></div>
-          <span class="vfa-count" id="vfa-vc-${post.id}">${_fmtN(post.view_count||0)}</span>
+          <!-- hover popup with all actions -->
+          <div class="vfa-action-popup">
+            <button class="vfap-btn${isLiked?' vfap-liked':''}" id="vfap-like-${post.id}" onclick="vfLike('${post.id}',this)">
+              <div class="vfap-icon">❤️</div>
+              <span class="vfap-count" id="vfa-lc-${post.id}">${_fmtN(post.likes||0)}</span>
+            </button>
+            <button class="vfap-btn" onclick="openVfComments('${post.id}')">
+              <div class="vfap-icon"><i class="ti ti-message-circle"></i></div>
+              <span class="vfap-count" id="vfa-cc-${post.id}">${_fmtN(post.comment_count||0)}</span>
+            </button>
+            <div class="vfap-btn" style="cursor:default">
+              <div class="vfap-icon"><i class="ti ti-eye"></i></div>
+              <span class="vfap-count" id="vfa-vc-${post.id}">${_fmtN(post.view_count||0)}</span>
+            </div>
+            <button class="vfap-btn" onclick="vfShare('${post.id}')">
+              <div class="vfap-icon"><i class="ti ti-share"></i></div>
+              <span class="vfap-count">${_fmtN(post.share_count||0)||''}</span>
+            </button>
+            <button class="vfap-btn" onclick="openTip('${escHtml(post.display_name||'')}','${post.id}')">
+              <div class="vfap-icon"><i class="ti ti-diamond"></i></div>
+              <span class="vfap-count">CUBE</span>
+            </button>
+          </div>
         </div>
-        <button class="vfa" onclick="openTip('${escHtml(post.display_name||'')}','${post.id}')">
-          <div class="vfa-icon"><i class="ti ti-diamond"></i></div>
-          <span class="vfa-count">CUBE</span>
-        </button>
       </div>
       <div class="vf-info" style="position:relative">
-        <div class="vfi-react-popup">
-          <button class="vfi-react-btn${isLiked?' active-like':''}" id="vfr-like-${post.id}" onclick="vfLike('${post.id}',this)">
-            <span class="vfi-react-icon">❤️</span>
-            <span class="vfi-react-count" id="vfa-lc-${post.id}">${_fmtN(post.likes||0)}</span>
-          </button>
-          <button class="vfi-react-btn${isFired?' active-fire':''}" id="vfr-fire-${post.id}" onclick="vfFire('${post.id}',this)">
-            <span class="vfi-react-icon">🔥</span>
-            <span class="vfi-react-count" id="vfa-fc-${post.id}">${_fmtN(post.fires||0)}</span>
-          </button>
-          <button class="vfi-react-btn${isDisliked?' active-dislike':''}" id="vfr-dislike-${post.id}" onclick="vfDislike('${post.id}',this)">
-            <span class="vfi-react-icon">👎</span>
-            <span class="vfi-react-count" id="vfa-dc-${post.id}">${_fmtN(post.dislikes||0)}</span>
-          </button>
-        </div>
         <div class="vfi-author-row">
           <div class="vfi-avatar" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">${letter}</div>
           <span class="vfi-name" style="cursor:pointer" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">@${escHtml(post.display_name||'Аноним')}</span>${typeBadge}
@@ -8301,8 +8306,8 @@ async function vfLike(postId,btn){
   if(!data) return;
   if(!app.vfLiked)app.vfLiked={};
   app.vfLiked[postId]=data.liked;
-  const popBtn=document.getElementById('vfr-like-'+postId);
-  if(popBtn) popBtn.classList.toggle('active-like',data.liked);
+  const popBtn=document.getElementById('vfap-like-'+postId);
+  if(popBtn) popBtn.classList.toggle('vfap-liked',data.liked);
   if(lcEl) lcEl.textContent=_fmtN(data.likes);
   const p=_vfPosts.find(x=>String(x.id)===String(postId));
   if(p) p.likes=data.likes;
