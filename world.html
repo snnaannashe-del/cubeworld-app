@@ -233,37 +233,40 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 /* Tabler Icons global sizing */
 .sn-icon i.ti{font-size:17px;line-height:1}
 .mnb-icon i.ti{font-size:24px;line-height:1}
-/* ══ DALI gradient icon system ══ */
-.gi{border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
-.gi i.ti{color:#fff!important;line-height:1}
+/* ══ Icon system: rounded squares, single palette ══ */
+/* Base icon container */
+.gi{border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.07)}
+.gi i.ti{color:rgba(255,255,255,.6)!important;line-height:1}
 .gi-32{width:32px;height:32px}.gi-32 i.ti{font-size:16px}
 .gi-36{width:36px;height:36px;border-radius:11px}.gi-36 i.ti{font-size:18px}
 .gi-40{width:40px;height:40px;border-radius:12px}.gi-40 i.ti{font-size:20px}
 .gi-44{width:44px;height:44px;border-radius:14px}.gi-44 i.ti{font-size:22px}
 .gi-28{width:28px;height:28px;border-radius:8px}.gi-28 i.ti{font-size:14px}
-/* Gradient palette */
-.g-blue{background:linear-gradient(135deg,#0095F6,#5B59FF)}
-.g-teal{background:linear-gradient(135deg,#11C4D1,#0095F6)}
-.g-green{background:linear-gradient(135deg,#00C896,#0DBF8A)}
-.g-orange{background:linear-gradient(135deg,#FF9500,#FF6B35)}
-.g-red{background:linear-gradient(135deg,#FF3B30,#FF2D55)}
-.g-purple{background:linear-gradient(135deg,#8B5CF6,#6366F1)}
-.g-indigo{background:linear-gradient(135deg,#6366F1,#818CF8)}
-.g-gold{background:linear-gradient(135deg,#F59E0B,#FF9500)}
-.g-pink{background:linear-gradient(135deg,#EC4899,#F43F5E)}
-.g-slate{background:linear-gradient(135deg,#475569,#1e293b)}
-.g-cyan{background:linear-gradient(135deg,#22D3EE,#0095F6)}
-.g-signal{background:linear-gradient(135deg,#00C896,#F59E0B)}
-.g-mine{background:linear-gradient(135deg,#64748B,#334155)}
-.g-game{background:linear-gradient(135deg,#F59E0B,#EF4444)}
-.g-rose{background:linear-gradient(135deg,#FB7185,#F43F5E)}
-.g-violet{background:linear-gradient(135deg,#A78BFA,#8B5CF6)}
-/* Mobile nav gradient icons */
-.mnb-gi{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;transition:all .22s cubic-bezier(.34,1.56,.64,1)}
-.mnb-gi i.ti{font-size:18px;color:#fff}
-.mnb.active .mnb-gi{box-shadow:0 4px 16px rgba(0,0,0,.4)}
-/* Sn-item: icon no longer needs extra color override since gradient handles it */
-.sn-item.active .sn-icon .gi{box-shadow:0 2px 12px rgba(0,149,246,.4)}
+/* ── Semantic colour accents (use sparingly) ── */
+/* Nav active: blue only */
+.g-blue{background:linear-gradient(135deg,#0095F6,#5263FF)}
+.g-blue i.ti{color:#fff!important}
+/* Content colour — subtle tints for tasks/earn/activity */
+.g-earn{background:linear-gradient(135deg,#1a2e1a,#1e3a10);border:1px solid rgba(74,222,128,.15)}
+.g-earn i.ti{color:#4ade80!important}
+.g-signal-c{background:linear-gradient(135deg,#1a1e2e,#1a1e3a);border:1px solid rgba(99,153,255,.15)}
+.g-signal-c i.ti{color:#6399FF!important}
+.g-warn{background:linear-gradient(135deg,#2e1a0a,#3a2010);border:1px solid rgba(251,146,60,.15)}
+.g-warn i.ti{color:#FB923C!important}
+.g-danger{background:linear-gradient(135deg,#2e0a0a,#3a1010);border:1px solid rgba(248,113,113,.15)}
+.g-danger i.ti{color:#F87171!important}
+.g-gold-c{background:linear-gradient(135deg,#2e240a,#3a2c08);border:1px solid rgba(251,191,36,.15)}
+.g-gold-c i.ti{color:#FBB924!important}
+.g-mine{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07)}
+.g-mine i.ti{color:rgba(255,255,255,.4)!important}
+/* Mobile nav icons */
+.mnb-gi{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);transition:all .22s cubic-bezier(.34,1.56,.64,1)}
+.mnb-gi i.ti{font-size:18px;color:rgba(255,255,255,.45)}
+.mnb.active .mnb-gi{background:rgba(0,149,246,.18);box-shadow:0 2px 12px rgba(0,149,246,.2)}
+.mnb.active .mnb-gi i.ti{color:var(--accent)}
+/* Active sidebar icon */
+.sn-item.active .sn-icon .gi{background:linear-gradient(135deg,#0095F6,#5263FF)!important;box-shadow:0 2px 10px rgba(0,149,246,.35)}
+.sn-item.active .sn-icon .gi i.ti{color:#fff!important}
 .mms-icon i.ti{font-size:22px;line-height:1;color:inherit}
 .vfa-icon i.ti{font-size:21px;line-height:1}
 .search-btn-icon i.ti{font-size:14px;opacity:.6}
@@ -1973,14 +1976,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     display:flex;align-items:center;justify-content:center;font-size:22px;
   }
   .mms-icon i.ti{font-size:22px;color:#fff}
-  .mms-gold{background:linear-gradient(135deg,#F59E0B,#FF9500)}
-  .mms-blue{background:linear-gradient(135deg,#22D3EE,#0095F6)}
-  .mms-green{background:linear-gradient(135deg,#EC4899,#F43F5E)}
-  .mms-cyan{background:linear-gradient(135deg,#00C896,#F59E0B)}
-  .mms-pink{background:linear-gradient(135deg,#FF3B30,#FF2D55)}
-  .mms-purple{background:linear-gradient(135deg,#6366F1,#818CF8)}
-  .mms-orange{background:linear-gradient(135deg,#8B5CF6,#6366F1)}
-  .mms-indigo{background:linear-gradient(135deg,#475569,#1e293b)}
+  .mms-gold{background:rgba(251,191,36,.18);border:1px solid rgba(251,191,36,.2)}
+  .mms-blue{background:rgba(34,211,238,.15);border:1px solid rgba(34,211,238,.18)}
+  .mms-green{background:rgba(244,114,182,.12);border:1px solid rgba(244,114,182,.15)}
+  .mms-cyan{background:rgba(0,149,246,.15);border:1px solid rgba(0,149,246,.18)}
+  .mms-pink{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.15)}
+  .mms-purple{background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.15)}
+  .mms-orange{background:rgba(251,146,60,.12);border:1px solid rgba(251,146,60,.15)}
+  .mms-indigo{background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.15)}
   .mms-footer{text-align:center}
   .mms-footer-btn{
     padding:11px 28px;border-radius:12px;border:1px solid rgba(255,255,255,.12);
@@ -2205,23 +2208,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <!-- LEFT NAV -->
     <nav id="int-sidenav">
       <div class="sn-section">Главное</div>
-      <div class="sn-item active" onclick="switchSection('feed',this)"><span class="sn-icon"><span class="gi gi-32 g-blue"><i class="ti ti-home"></i></span></span>Лента</div>
-      <div class="sn-item" onclick="switchSection('chat',this)"><span class="sn-icon"><span class="gi gi-32 g-teal"><i class="ti ti-message-circle"></i></span></span>Чаты<span class="sn-badge" id="sn-badge-chat" style="display:none"></span></div>
-      <div class="sn-item" onclick="switchSection('groups',this)"><span class="sn-icon"><span class="gi gi-32 g-orange"><i class="ti ti-users"></i></span></span>Группы</div>
+      <div class="sn-item active" onclick="switchSection('feed',this)"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-home"></i></span></span>Лента</div>
+      <div class="sn-item" onclick="switchSection('chat',this)"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-message-circle"></i></span></span>Чаты<span class="sn-badge" id="sn-badge-chat" style="display:none"></span></div>
+      <div class="sn-item" onclick="switchSection('groups',this)"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-users"></i></span></span>Группы</div>
       <div class="sn-divider"></div>
       <div class="sn-section">Контент</div>
-      <div class="sn-item" onclick="switchSection('channels',this)"><span class="sn-icon"><span class="gi gi-32 g-purple"><i class="ti ti-plug-connected"></i></span></span>API Хаб</div>
-      <div class="sn-item" onclick="switchSection('signals',this)"><span class="sn-icon"><span class="gi gi-32 g-signal"><i class="ti ti-target"></i></span></span>Сигналы<span class="sn-badge" id="sn-badge-sig" style="display:none"></span></div>
-      <div class="sn-item" onclick="switchSection('market',this);renderMarket()"><span class="sn-icon"><span class="gi gi-32 g-red"><i class="ti ti-shopping-bag"></i></span></span>Маркетплейс</div>
+      <div class="sn-item" onclick="switchSection('channels',this)"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-plug-connected"></i></span></span>API Хаб</div>
+      <div class="sn-item" onclick="switchSection('signals',this)"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-target"></i></span></span>Сигналы<span class="sn-badge" id="sn-badge-sig" style="display:none"></span></div>
+      <div class="sn-item" onclick="switchSection('market',this);renderMarket()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-shopping-bag"></i></span></span>Маркетплейс</div>
       <div class="sn-divider"></div>
       <div class="sn-section">Монетизация</div>
-      <div class="sn-item" onclick="switchSection('earn',this)"><span class="sn-icon"><span class="gi gi-32 g-gold"><i class="ti ti-coin"></i></span></span>Заработать</div>
-      <div class="sn-item" onclick="switchSection('wallet',this)"><span class="sn-icon"><span class="gi gi-32 g-cyan"><i class="ti ti-wallet"></i></span></span>Кошелёк</div>
+      <div class="sn-item" onclick="switchSection('earn',this)"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-coin"></i></span></span>Заработать</div>
+      <div class="sn-item" onclick="switchSection('wallet',this)"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-wallet"></i></span></span>Кошелёк</div>
       <div class="sn-divider"></div>
       <div class="sn-section">Инструменты</div>
-      <div class="sn-item" onclick="switchSection('analytics',this);renderAnalytics()"><span class="sn-icon"><span class="gi gi-32 g-indigo"><i class="ti ti-chart-bar"></i></span></span>Аналитика</div>
-      <div class="sn-item" onclick="openReferralModal()"><span class="sn-icon"><span class="gi gi-32 g-pink"><i class="ti ti-link"></i></span></span>Рефералы</div>
-      <div class="sn-item" onclick="openMyProfile()"><span class="sn-icon"><span class="gi gi-32 g-slate"><i class="ti ti-user-circle"></i></span></span>Мой профиль</div>
+      <div class="sn-item" onclick="switchSection('analytics',this);renderAnalytics()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-chart-bar"></i></span></span>Аналитика</div>
+      <div class="sn-item" onclick="openReferralModal()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-link"></i></span></span>Рефералы</div>
+      <div class="sn-item" onclick="openMyProfile()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-user-circle"></i></span></span>Мой профиль</div>
       <div class="sn-divider"></div>
       <div style="padding:10px 12px 6px;font-size:10px;color:var(--text3);line-height:1.65">
         <div style="margin-bottom:6px;color:var(--green);font-weight:700;font-size:11px"><i class="ti ti-ghost" style="font-size:12px"></i> Ghost Mode ON</div>
@@ -2243,11 +2246,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <!-- ═══ MOBILE BOTTOM NAV ════════════════════════════════════════════ -->
     <nav id="mob-nav" aria-label="Mobile navigation">
       <button class="mnb active" id="mnb-feed" onclick="mobSwitch('feed',this)">
-        <span class="mnb-icon"><span class="mnb-gi g-blue"><i class="ti ti-home"></i></span></span><span class="mnb-label">Лента</span>
+        <span class="mnb-icon"><span class="mnb-gi"><i class="ti ti-home"></i></span></span><span class="mnb-label">Лента</span>
         <div class="mnb-dot"></div>
       </button>
       <button class="mnb" id="mnb-chat" onclick="mobSwitch('chat',this)">
-        <span class="mnb-icon"><span class="mnb-gi g-teal"><i class="ti ti-message-circle"></i></span></span><span class="mnb-label">Чаты</span>
+        <span class="mnb-icon"><span class="mnb-gi"><i class="ti ti-message-circle"></i></span></span><span class="mnb-label">Чаты</span>
         <span class="mnb-badge" id="mob-badge-chat" style="display:none"></span>
         <div class="mnb-dot"></div>
       </button>
@@ -2257,11 +2260,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         </div>
       </button>
       <button class="mnb" id="mnb-groups" onclick="mobSwitch('groups',this)">
-        <span class="mnb-icon"><span class="mnb-gi g-orange"><i class="ti ti-users"></i></span></span><span class="mnb-label">Группы</span>
+        <span class="mnb-icon"><span class="mnb-gi"><i class="ti ti-users"></i></span></span><span class="mnb-label">Группы</span>
         <div class="mnb-dot"></div>
       </button>
       <button class="mnb" id="mnb-more" onclick="openMobMore()">
-        <span class="mnb-icon"><span class="mnb-gi g-slate"><i class="ti ti-dots"></i></span></span><span class="mnb-label">Ещё</span>
+        <span class="mnb-icon"><span class="mnb-gi"><i class="ti ti-dots"></i></span></span><span class="mnb-label">Ещё</span>
         <div class="mnb-dot"></div>
       </button>
     </nav>
@@ -2273,35 +2276,35 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div class="mms-title">CubeWorld</div>
       <div class="mms-grid">
         <button class="mms-item" onclick="mobSwitch('earn',null);closeMobMore()">
-          <div class="mms-icon mms-gold"><i class="ti ti-coin"></i></div>
+          <div class="mms-icon mms-gold"><i class="ti ti-coin" style="color:#FBB924"></i></div>
           <span>Заработать</span>
         </button>
         <button class="mms-item" onclick="mobSwitch('wallet',null);closeMobMore()">
-          <div class="mms-icon mms-blue"><i class="ti ti-wallet"></i></div>
+          <div class="mms-icon mms-blue"><i class="ti ti-wallet" style="color:#22D3EE"></i></div>
           <span>Кошелёк</span>
         </button>
         <button class="mms-item" onclick="openReferralModal();closeMobMore()">
-          <div class="mms-icon mms-green"><i class="ti ti-link"></i></div>
+          <div class="mms-icon mms-green"><i class="ti ti-link" style="color:#F472B6"></i></div>
           <span>Рефералы</span>
         </button>
         <button class="mms-item" onclick="mobSwitch('signals',null);closeMobMore()">
-          <div class="mms-icon mms-cyan"><i class="ti ti-target"></i></div>
+          <div class="mms-icon mms-cyan"><i class="ti ti-target" style="color:#60A5FA"></i></div>
           <span>Сигналы</span>
         </button>
         <button class="mms-item" onclick="mobSwitch('market',null);closeMobMore()">
-          <div class="mms-icon mms-pink"><i class="ti ti-shopping-bag"></i></div>
+          <div class="mms-icon mms-pink"><i class="ti ti-shopping-bag" style="color:#F87171"></i></div>
           <span>Маркет</span>
         </button>
         <button class="mms-item" onclick="mobSwitch('analytics',null);closeMobMore()">
-          <div class="mms-icon mms-purple"><i class="ti ti-chart-bar"></i></div>
+          <div class="mms-icon mms-purple"><i class="ti ti-chart-bar" style="color:#A78BFA"></i></div>
           <span>Аналитика</span>
         </button>
         <button class="mms-item" onclick="mobSwitch('channels',null);closeMobMore()">
-          <div class="mms-icon mms-orange"><i class="ti ti-plug-connected"></i></div>
+          <div class="mms-icon mms-orange"><i class="ti ti-plug-connected" style="color:#FB923C"></i></div>
           <span>API Хаб</span>
         </button>
         <button class="mms-item" onclick="openMyProfile();closeMobMore()">
-          <div class="mms-icon mms-indigo"><i class="ti ti-user-circle"></i></div>
+          <div class="mms-icon mms-indigo"><i class="ti ti-user-circle" style="color:#818CF8"></i></div>
           <span>Профиль</span>
         </button>
       </div>
@@ -3723,20 +3726,20 @@ const app = {
     dailyEarned: 12.4, totalEarned: 1847,
     txs: [
       {dir:'in', icon:'<span class="gi gi-36 g-mine"><i class="ti ti-pickaxe"></i></span>',desc:'Майнинг награда',        time:'2м назад', amount:'+3'},
-      {dir:'in', icon:'<span class="gi gi-36 g-blue"><i class="ti ti-pencil"></i></span>',desc:'Создал пост',            time:'15м назад',amount:'+10'},
-      {dir:'in', icon:'<span class="gi gi-36 g-purple"><i class="ti ti-rocket"></i></span>',desc:'Вошёл в куб',            time:'1ч назад', amount:'+5'},
-      {dir:'out',icon:'<span class="gi gi-36 g-red"><i class="ti ti-coin"></i></span>',desc:'Чаевые автору',          time:'2ч назад', amount:'-10'},
-      {dir:'in', icon:'<span class="gi gi-36 g-signal"><i class="ti ti-target"></i></span>',desc:'Опубликовал сигнал',     time:'3ч назад', amount:'+8'},
-      {dir:'in', icon:'<span class="gi gi-36 g-game"><i class="ti ti-device-gamepad-2"></i></span>',desc:'Выиграл в CryptoTetris', time:'5ч назад', amount:'+22'},
+      {dir:'in', icon:'<span class="gi gi-36 g-signal-c"><i class="ti ti-pencil"></i></span>',desc:'Создал пост',            time:'15м назад',amount:'+10'},
+      {dir:'in', icon:'<span class="gi gi-36 g-signal-c"><i class="ti ti-rocket"></i></span>',desc:'Вошёл в куб',            time:'1ч назад', amount:'+5'},
+      {dir:'out',icon:'<span class="gi gi-36 g-danger"><i class="ti ti-coin"></i></span>',desc:'Чаевые автору',          time:'2ч назад', amount:'-10'},
+      {dir:'in', icon:'<span class="gi gi-36 g-earn"><i class="ti ti-target"></i></span>',desc:'Опубликовал сигнал',     time:'3ч назад', amount:'+8'},
+      {dir:'in', icon:'<span class="gi gi-36 g-gold-c"><i class="ti ti-device-gamepad-2"></i></span>',desc:'Выиграл в CryptoTetris', time:'5ч назад', amount:'+22'},
     ]
   },
   tasks: [
-    {id:'t1',icon:'<span class="gi gi-40 g-blue"><i class="ti ti-pencil"></i></span>',title:'Опубликуй пост',      desc:'Поделись мыслью анонимно',  reward:10,done:false},
-    {id:'t2',icon:'<span class="gi gi-40 g-teal"><i class="ti ti-message-circle"></i></span>',title:'Отправь 5 сообщений', desc:'В любом чате куба',          reward:8, done:false},
-    {id:'t3',icon:'<span class="gi gi-40 g-signal"><i class="ti ti-target"></i></span>',title:'Создай сигнал',       desc:'Поделись торговой идеей',   reward:15,done:false},
-    {id:'t4',icon:'<span class="gi gi-40 g-orange"><i class="ti ti-users"></i></span>',title:'Вступи в группу',     desc:'Присоединись к сообществу', reward:5, done:false},
-    {id:'t5',icon:'<span class="gi gi-40 g-purple"><i class="ti ti-plug-connected"></i></span>',title:'Подключи API канал',  desc:'Добавь внешний источник',   reward:12,done:false},
-    {id:'t6',icon:'<span class="gi gi-40 g-gold"><i class="ti ti-coin"></i></span>',title:'Отправь чаевые',      desc:'Поддержи автора CUBE',      reward:3, done:false},
+    {id:'t1',icon:'<span class="gi gi-40 g-signal-c"><i class="ti ti-pencil"></i></span>',title:'Опубликуй пост',      desc:'Поделись мыслью анонимно',  reward:10,done:false},
+    {id:'t2',icon:'<span class="gi gi-40 g-signal-c"><i class="ti ti-message-circle"></i></span>',title:'Отправь 5 сообщений', desc:'В любом чате куба',          reward:8, done:false},
+    {id:'t3',icon:'<span class="gi gi-40 g-earn"><i class="ti ti-target"></i></span>',title:'Создай сигнал',       desc:'Поделись торговой идеей',   reward:15,done:false},
+    {id:'t4',icon:'<span class="gi gi-40 g-signal-c"><i class="ti ti-users"></i></span>',title:'Вступи в группу',     desc:'Присоединись к сообществу', reward:5, done:false},
+    {id:'t5',icon:'<span class="gi gi-40 g-earn"><i class="ti ti-plug-connected"></i></span>',title:'Подключи API канал',  desc:'Добавь внешний источник',   reward:12,done:false},
+    {id:'t6',icon:'<span class="gi gi-40 g-gold-c"><i class="ti ti-coin"></i></span>',title:'Отправь чаевые',      desc:'Поддержи автора CUBE',      reward:3, done:false},
   ],
   mineProgress: 0, tipTarget: null, tipAmount: 5,
 };
@@ -7180,11 +7183,11 @@ function renderKeyInventory(){
 //  NOTIFICATIONS
 // ════════════════════════════════════════════════
 const app_notifications = [
-  {id:'n1',icon:'<span class="gi gi-28 g-red"><i class="ti ti-heart-filled"></i></span>',text:'7A2F•••CUBE поставил реакцию на твой пост',time:'2м',unread:true},
-  {id:'n2',icon:'<span class="gi gi-28 g-gold"><i class="ti ti-coin"></i></span>',text:'NN90•••CUBE отправил 10 CUBE чаевых',time:'15м',unread:true},
-  {id:'n3',icon:'<span class="gi gi-28 g-purple"><i class="ti ti-rocket"></i></span>',text:'Ghost Room удалится через 5 минут — успей сохранить данные',time:'23м',unread:true},
-  {id:'n4',icon:'<span class="gi gi-28 g-signal"><i class="ti ti-target"></i></span>',text:'Новый сигнал BTC/USDT в группе Crypto Whales',time:'45м',unread:false},
-  {id:'n5',icon:'<span class="gi gi-28 g-orange"><i class="ti ti-users"></i></span>',text:'3 новых участника вступили в AI Builders',time:'1ч',unread:false},
+  {id:'n1',icon:'<span class="gi gi-28 g-danger"><i class="ti ti-heart-filled"></i></span>',text:'7A2F•••CUBE поставил реакцию на твой пост',time:'2м',unread:true},
+  {id:'n2',icon:'<span class="gi gi-28 g-gold-c"><i class="ti ti-coin"></i></span>',text:'NN90•••CUBE отправил 10 CUBE чаевых',time:'15м',unread:true},
+  {id:'n3',icon:'<span class="gi gi-28 g-warn"><i class="ti ti-rocket"></i></span>',text:'Ghost Room удалится через 5 минут — успей сохранить данные',time:'23м',unread:true},
+  {id:'n4',icon:'<span class="gi gi-28 g-earn"><i class="ti ti-target"></i></span>',text:'Новый сигнал BTC/USDT в группе Crypto Whales',time:'45м',unread:false},
+  {id:'n5',icon:'<span class="gi gi-28 g-signal-c"><i class="ti ti-users"></i></span>',text:'3 новых участника вступили в AI Builders',time:'1ч',unread:false},
   {id:'n6',icon:'<span class="gi gi-28 g-mine"><i class="ti ti-pickaxe"></i></span>',text:'Майнинг: +3 CUBE зачислено',time:'2ч',unread:false},
 ];
 function toggleNotifications(){
@@ -8511,19 +8514,19 @@ function renderFeed(){
           </div>
         </div>`:''}
         <button class="vfa" onclick="vfLike('${post.id}',this)">
-          <div class="vfa-icon${isLiked?' liked':''}" id="vfa-heart-${post.id}" style="${isLiked?'background:linear-gradient(135deg,#FF3B30,#FF2D55);border-color:rgba(255,45,85,.5)':''}"><i class="ti ti-heart${isLiked?'-filled':''}"></i></div>
+          <div class="vfa-icon${isLiked?' liked':''}" id="vfa-heart-${post.id}"><i class="ti ti-heart${isLiked?'-filled':''}"></i></div>
           <span class="vfa-count" id="vfa-lc-${post.id}">${_fmtN(post.likes||0)}</span>
         </button>
         <button class="vfa" onclick="openVfComments('${post.id}')">
-          <div class="vfa-icon" style="background:linear-gradient(135deg,rgba(17,196,209,.45),rgba(0,149,246,.35))"><i class="ti ti-message-circle"></i></div>
+          <div class="vfa-icon"><i class="ti ti-message-circle"></i></div>
           <span class="vfa-count" id="vfa-cc-${post.id}">${_fmtN(post.comment_count||0)}</span>
         </button>
         <button class="vfa" onclick="vfShare('${post.id}')">
-          <div class="vfa-icon" style="background:linear-gradient(135deg,rgba(139,92,246,.45),rgba(99,102,241,.35))"><i class="ti ti-share-3"></i></div>
+          <div class="vfa-icon"><i class="ti ti-share-3"></i></div>
           <span class="vfa-count">${_fmtN(post.share_count||0)||''}</span>
         </button>
         <div class="vfa" style="cursor:default">
-          <div class="vfa-icon" style="background:linear-gradient(135deg,rgba(71,85,105,.5),rgba(30,41,59,.4))"><i class="ti ti-eye"></i></div>
+          <div class="vfa-icon"><i class="ti ti-eye"></i></div>
           <span class="vfa-count" id="vfa-vc-${post.id}">${_fmtN(post.view_count||0)}</span>
         </div>
       </div>
@@ -8621,8 +8624,6 @@ async function vfLike(postId,btn){
   app.vfLiked[postId]=data.liked;
   if(heartEl){
     heartEl.classList.toggle('liked',data.liked);
-    heartEl.style.background=data.liked?'linear-gradient(135deg,#FF3B30,#FF2D55)':'';
-    heartEl.style.borderColor=data.liked?'rgba(255,45,85,.5)':'';
     const ico=heartEl.querySelector('i.ti');
     if(ico) ico.className=data.liked?'ti ti-heart-filled':'ti ti-heart';
   }
