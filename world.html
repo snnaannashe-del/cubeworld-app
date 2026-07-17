@@ -8425,7 +8425,9 @@ async function submitCreatePost(){
     payload.title=(document.getElementById('cpm-title-short')?.value||'').trim();
     payload.description=(document.getElementById('cpm-desc-short')?.value||'').trim();
     payload.tags=_parseTags(document.getElementById('cpm-tags-short')?.value||'');
-    if(!payload.video_url&&!payload.description){errEl.textContent='Добавь видео или описание';return;}
+    if(!payload.video_url&&!payload.description&&!payload.title){errEl.textContent='Добавь видео, описание или заголовок';return;}
+    // Fallback: if description is empty, use title so old backend accepts it
+    if(!payload.description) payload.description = payload.title||'-';
   } else {
     payload.image_url=(document.getElementById('cpm-image-url')?.value||_cpmImageUrl||'').trim();
     payload.file_url=payload.image_url; // store as file_url too for non-image files
@@ -8433,13 +8435,46 @@ async function submitCreatePost(){
     payload.description=(document.getElementById('cpm-desc-ball')?.value||'').trim();
     payload.tags=_parseTags(document.getElementById('cpm-tags-ball')?.value||'');
     if(!payload.title&&!payload.description&&!payload.image_url){errEl.textContent='Добавь заголовок или текст';return;}
+    // Fallback: if description is empty, use title so old backend accepts it
+    if(!payload.description) payload.description = payload.title;
     payload.video_url='';
   }
   const btn=document.getElementById('cpm-submit-btn');
   if(btn){btn.disabled=true;btn.textContent='Публикуем...';}
-  const data=await apiCall('/feed/post','POST',payload);
+  // Send only fields the backend model knows — extra fields cause Pydantic 422
+  const serverPayload={
+    post_type: payload.post_type,
+    cube_id: payload.cube_id,
+    video_url: payload.video_url||'',
+    image_url: payload.image_url||'',
+    description: payload.description||payload.title||'-',
+    music: payload.music||''
+  };
+  let data=null;
+  try{
+    const token=localStorage.getItem('cw_access_token');
+    const resp=await fetch(API_BASE+'/feed/post',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify(serverPayload)
+    });
+    if(!resp.ok){
+      let errBody='';
+      try{const j=await resp.json();errBody=j.detail?JSON.stringify(j.detail):JSON.stringify(j);}catch(e){errBody=await resp.text().catch(()=>'');}
+      if(btn){btn.disabled=false;btn.textContent='🚀 Опубликовать';}
+      errEl.textContent='Ошибка '+resp.status+': '+(String(errBody)).slice(0,200);
+      return;
+    }
+    data=await resp.json();
+    // Enrich with client-side fields not yet saved by old backend
+    if(data){ data.title=payload.title||''; data.tags=payload.tags||[]; }
+  }catch(e){
+    if(btn){btn.disabled=false;btn.textContent='🚀 Опубликовать';}
+    errEl.textContent='Сеть: '+String(e).slice(0,100);
+    return;
+  }
   if(btn){btn.disabled=false;btn.textContent='🚀 Опубликовать';}
-  if(!data){errEl.textContent='Ошибка публикации, попробуй ещё';return;}
+  if(!data){errEl.textContent='Пустой ответ сервера';return;}
   closeModal('modal-create-post');
   showToast(_cpmType==='short'?'SHORT опубликован! 🎬':'POST опубликован! 📝');
   earnCube(5,'Новый пост','📝');
