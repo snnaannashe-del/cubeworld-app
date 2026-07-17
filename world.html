@@ -287,6 +287,46 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #sec-feed{flex-direction:column;display:flex;position:relative;background:#000;overflow:hidden;height:100%}
 /* vf-container must fill entire sec-feed — stories bar is overlay */
 #sec-feed>.vf-container{flex:1;height:100%}
+
+/* Desktop: 9:16 centred column + right create-post panel */
+@media(min-width:769px){
+  #sec-feed{flex-direction:row;align-items:stretch;background:#0a0a14}
+  .vf-feed-col{display:flex;flex-direction:column;height:100%;flex-shrink:0;position:relative;background:#000}
+  .vf-create-side{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:rgba(255,255,255,.02);border-left:1px solid rgba(255,255,255,.06)}
+  .vf-create-side-btn{display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;padding:28px 40px;border-radius:20px;border:1.5px dashed rgba(255,255,255,.14);transition:all .2s;background:transparent}
+  .vf-create-side-btn:hover{border-color:rgba(0,149,246,.5);background:rgba(0,149,246,.04)}
+  .vf-create-side-icon{width:64px;height:64px;border-radius:20px;background:rgba(0,149,246,.12);border:1px solid rgba(0,149,246,.25);display:flex;align-items:center;justify-content:center}
+  .vf-create-side-icon .ti{font-size:30px;color:var(--accent)}
+  .vf-create-side-title{font-size:16px;font-weight:700;color:#e0e0f8}
+  .vf-create-side-desc{font-size:12px;color:var(--text3);text-align:center;line-height:1.5;max-width:200px}
+  /* Hide the vf-header on desktop — tabs in drawer */
+  .vf-header{display:none!important}
+  /* Desktop: snap-scroll inside the 9:16 col */
+  #sec-feed>.vf-container{display:none}
+  .vf-feed-col>.vf-container{flex:1;height:0}
+}
+
+/* Tabs drawer — always at top of the 9:16 column on desktop, overlay on mobile */
+.vf-tabs-drawer{position:absolute;top:0;left:0;right:0;z-index:30;background:linear-gradient(to bottom,rgba(0,0,0,.92) 0%,rgba(0,0,0,.6) 65%,transparent 100%);transition:transform .3s cubic-bezier(.4,0,.2,1);pointer-events:auto}
+.vf-tabs-drawer.hidden{transform:translateY(-100%)}
+.vf-tabs-row{display:flex;align-items:center;gap:0;padding:10px 14px 0}
+.vf-tab2{padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;color:rgba(255,255,255,.5);border:none;background:transparent;transition:all .2s;border-bottom:2.5px solid transparent;letter-spacing:.02em}
+.vf-tab2.active{color:#fff;border-bottom-color:#fff}
+.vf-tab2:hover{color:rgba(255,255,255,.8)}
+.vf-tabs-toggle{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.45);font-size:18px;margin-left:auto;padding:6px 8px;transition:all .2s;display:flex;align-items:center}
+.vf-tabs-toggle:hover{color:#fff}
+
+/* ── FEED FAB (speed-dial action button) ── */
+.vf-fab-wrap{position:absolute;right:12px;bottom:80px;z-index:15;display:flex;flex-direction:column;align-items:center;gap:0}
+.vf-fab-trigger{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#0095F6,#5263FF);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,149,246,.45);transition:transform .22s,box-shadow .22s;flex-shrink:0}
+.vf-fab-trigger:hover,.vf-fab-trigger:active{transform:scale(1.08);box-shadow:0 6px 26px rgba(0,149,246,.6)}
+.vf-fab-items{display:flex;flex-direction:column;align-items:center;gap:10px;padding-bottom:12px;max-height:0;overflow:hidden;opacity:0;pointer-events:none;transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .25s}
+.vf-fab-wrap.open .vf-fab-items{max-height:260px;opacity:1;pointer-events:auto}
+.vf-fab-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;background:none;border:none;padding:0;color:#fff;outline:none;transform:translateY(8px);transition:transform .25s}
+.vf-fab-wrap.open .vf-fab-item{transform:translateY(0)}
+/* author avatar stays above FAB items */
+.vf-fab-author{display:flex;flex-direction:column;align-items:center;gap:0;margin-bottom:8px}
+
 .vf-header{position:absolute;top:0;left:0;right:0;z-index:20;padding:10px 14px 6px;display:flex;align-items:center;gap:8px;background:linear-gradient(to bottom,rgba(0,0,0,.88) 0%,rgba(0,0,0,.55) 55%,transparent 100%);pointer-events:auto}
 /* Chat stories drawer */
 #chat-stories-drawer{overflow:hidden;max-height:0;transition:max-height .32s cubic-bezier(.4,0,.2,1);border-bottom:1px solid transparent;flex-shrink:0}
@@ -719,7 +759,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vf-iframe-wrap iframe{width:100%;height:100%;border:none}
 .vf-text-post{display:flex;align-items:center;justify-content:center;padding:60px 32px 120px;text-align:center;color:#fff;font-size:20px;line-height:1.7;width:100%;background:linear-gradient(135deg,rgba(0,60,160,.5),rgba(120,0,80,.4))}
 .vf-card-gradient{position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,transparent 100%);pointer-events:none;z-index:2}
-/* ── RIGHT ACTION BAR — TikTok style ── */
+/* ── RIGHT ACTION BAR (mobile fallback, replaced by FAB) ── */
 .vf-actions{position:absolute;right:10px;bottom:70px;display:flex;flex-direction:column;align-items:center;gap:22px;z-index:10}
 /* each action item */
 .vfa{display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;cursor:pointer;padding:0;outline:none;color:#fff}
@@ -735,7 +775,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vfa-follow-dot{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:22px;height:22px;border-radius:50%;background:#fe2c55;color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center;line-height:1;border:2px solid #000;font-weight:700;cursor:pointer}
 .vfa-follow-dot.following{background:rgba(255,255,255,.25);font-size:11px}
 /* bottom info overlay */
-.vf-info{position:absolute;bottom:0;left:0;right:72px;padding:16px 16px 22px;z-index:10}
+.vf-info{position:absolute;bottom:0;left:0;right:76px;padding:16px 16px 22px;z-index:10}
 .vfi-author-row{display:flex;align-items:center;gap:7px;margin-bottom:6px}
 .vfi-name{font-size:14px;font-weight:800;color:#fff;cursor:pointer;text-shadow:0 1px 6px rgba(0,0,0,.8);letter-spacing:.01em}
 .vfi-title{font-size:15px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:4px;text-shadow:0 1px 6px rgba(0,0,0,.8)}
@@ -2046,14 +2086,20 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
   /* ── global bottom padding for sections behind nav ── */
   .int-section:not(#sec-feed){padding-bottom:62px}
-  /* feed: padding on the vf-actions/vf-info overlays, NOT the section itself */
-  #sec-feed{padding-bottom:0;height:100%}
-  /* vf-container fills ALL of sec-feed height — stories bar is absolute overlay */
-  #sec-feed .vf-container{flex:1;height:100%;width:100%}
+  /* feed: mobile = full column, no right panel */
+  #sec-feed{padding-bottom:0;height:100%;flex-direction:column!important}
+  .vf-feed-col{width:100%!important;height:100%!important}
+  .vf-create-side{display:none!important}
+  /* vf-container fills ALL height on mobile */
+  #sec-feed .vf-container,.vf-feed-col .vf-container{flex:1;height:100%;width:100%}
   /* Chat stories drawer on mobile — full width */
   #chat-stories-drawer.open{max-height:88px}
+  #sec-feed .vf-fab-wrap,.vf-feed-col .vf-fab-wrap{bottom:80px}
   #sec-feed .vf-actions{bottom:74px}
   #sec-feed .vf-info{padding-bottom:74px}
+  /* cube-switcher auto-hide transition */
+  #cube-switcher{transition:max-height .3s ease,opacity .3s ease,padding .3s ease;max-height:50px;overflow:hidden}
+  #cube-switcher.cs-hidden{max-height:0!important;opacity:0!important;padding-top:0!important;padding-bottom:0!important;border-bottom:none!important}
 
   /* ── chat layout on mobile: list on top, area below ── */
   #sec-chat{flex-direction:column!important;overflow:hidden}
@@ -2324,21 +2370,36 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
       <!-- FEED — TikTok Video -->
       <div class="int-section active" id="sec-feed">
-        <div class="vf-header" id="vf-header">
-          <div class="vf-tabs">
-            <button class="vf-tab active" onclick="vfSwitchTab('foryou',this)">Для тебя</button>
-            <button class="vf-tab" onclick="vfSwitchTab('following',this)">Подписки</button>
-            <button class="vf-tab" onclick="vfSwitchTab('top',this)">🔥 Топ</button>
+        <!-- Legacy header (mobile overlay, hidden on desktop) -->
+        <div class="vf-header" id="vf-header" style="display:none"></div>
+
+        <!-- Desktop: 9:16 feed column -->
+        <div class="vf-feed-col" id="vf-feed-col" style="width:min(calc(100vh*9/16),430px)">
+          <!-- Tabs drawer (shown inside the 9:16 col on desktop, overlays full feed on mobile) -->
+          <div class="vf-tabs-drawer" id="vf-tabs-drawer">
+            <div class="vf-tabs-row">
+              <button class="vf-tab2 active" onclick="vfSwitchTab2('shorts',this)">Shorts</button>
+              <button class="vf-tab2" onclick="vfSwitchTab2('post',this)">Post</button>
+              <button class="vf-tab2" onclick="vfSwitchTab2('rec',this)">Rec</button>
+              <button class="vf-tab2" onclick="vfSwitchTab2('top',this)">Top</button>
+              <button class="vf-tabs-toggle" onclick="toggleVfTabsDrawer()" title="Скрыть шапку"><i class="ti ti-chevron-up" id="vf-tabs-chevron"></i></button>
+            </div>
           </div>
-          <div class="vf-type-pills" id="vf-type-pills" style="max-width:none;opacity:1;overflow:visible">
-            <button class="vf-pill active" id="vfp-all" onclick="vfFilterType('all',this)">Все</button>
-            <button class="vf-pill" id="vfp-short" onclick="vfFilterType('short',this)">▶ SHORT</button>
-            <button class="vf-pill" id="vfp-post" onclick="vfFilterType('ball',this)">📝 POST</button>
-          </div>
-          <button class="vf-upload-btn" onclick="openCreatePost()"><i class="ti ti-pencil-plus"></i> Создать</button>
+          <!-- scrollable video cards -->
+          <div class="vf-container" id="vf-container"></div>
         </div>
-        <!-- scrollable video cards -->
-        <div class="vf-container" id="vf-container"></div>
+
+        <!-- Desktop right: create post panel -->
+        <div class="vf-create-side" id="vf-create-side">
+          <button class="vf-create-side-btn" onclick="openCreatePost()">
+            <div class="vf-create-side-icon"><i class="ti ti-pencil-plus"></i></div>
+            <div class="vf-create-side-title">Создать пост</div>
+            <div class="vf-create-side-desc">Shorts, фото, текст или трансляция — поделись с кубом</div>
+          </button>
+          <div style="font-size:11px;color:var(--text3);text-align:center;max-width:220px;line-height:1.6">
+            Твои посты увидят все участники куба · Зарабатывай <span style="color:var(--gold)">CUBE</span> за активность
+          </div>
+        </div>
         <!-- upload overlay -->
         <div class="vf-upload-overlay" id="vf-upload-overlay" style="display:none">
           <div class="vf-upload-modal">
@@ -8434,6 +8495,86 @@ function vfSwitchTab(tab, el){
   loadVideoFeed();
 }
 
+// New 4-tab system: Shorts | Post | Rec | Top
+const _vfTab2Map = { shorts:'short', post:'ball', rec:'rec', top:'top' };
+function vfSwitchTab2(tab, el){
+  document.querySelectorAll('.vf-tab2').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  // Map tab to type filter
+  if(tab==='shorts'){ _vfTab='foryou'; _vfTypeFilter='short'; renderFeed(); return; }
+  if(tab==='post'){   _vfTab='foryou'; _vfTypeFilter='ball';  renderFeed(); return; }
+  if(tab==='rec'){    _vfTab='following'; _vfTypeFilter='all'; loadVideoFeed(); return; }
+  if(tab==='top'){    _vfTab='top'; _vfTypeFilter='all'; renderFeed(); return; }
+}
+
+// Toggle tabs drawer visibility (chevron collapses header)
+let _vfTabsDrawerHidden = false;
+function toggleVfTabsDrawer(){
+  _vfTabsDrawerHidden = !_vfTabsDrawerHidden;
+  const drawer = document.getElementById('vf-tabs-drawer');
+  const chev = document.getElementById('vf-tabs-chevron');
+  if(!drawer) return;
+  if(_vfTabsDrawerHidden){
+    drawer.classList.add('hidden');
+    if(chev){ chev.className='ti ti-chevron-down'; }
+  } else {
+    drawer.classList.remove('hidden');
+    if(chev){ chev.className='ti ti-chevron-up'; }
+  }
+}
+
+// FAB speed-dial toggle
+let _vfFabOpen = null;
+function toggleVfFab(postId){
+  // Close previous
+  if(_vfFabOpen && _vfFabOpen !== postId){
+    const prev = document.getElementById('vf-fab-'+_vfFabOpen);
+    if(prev) prev.classList.remove('open');
+  }
+  const fab = document.getElementById('vf-fab-'+postId);
+  if(!fab) return;
+  const isOpen = fab.classList.toggle('open');
+  _vfFabOpen = isOpen ? postId : null;
+  // Auto-close after 4s
+  if(isOpen) setTimeout(()=>{ if(_vfFabOpen===postId){ fab.classList.remove('open'); _vfFabOpen=null; }}, 4000);
+}
+
+// Cube-switcher auto-hide on mobile scroll (hide after 2nd scroll, show on scroll-up)
+(function initCubeScrollHide(){
+  function setup(){
+    const cs = document.getElementById('cube-switcher');
+    if(!cs) return;
+    let _scrollCount = 0;
+    let _lastY = 0;
+    let _csHidden = false;
+    // Listen on int-main or window scroll events
+    const containers = [
+      document.getElementById('int-main'),
+      document.querySelector('.int-section.active'),
+      window
+    ].filter(Boolean);
+    function onScroll(e){
+      if(window.innerWidth > 768) return; // desktop: no auto-hide
+      const tgt = e.target === document ? document.documentElement : e.target;
+      const currentY = tgt.scrollTop !== undefined ? tgt.scrollTop : window.scrollY;
+      const delta = currentY - _lastY;
+      _lastY = currentY;
+      if(delta > 10){ // scrolling down
+        _scrollCount++;
+        if(_scrollCount >= 2 && !_csHidden){ _csHidden=true; cs.classList.add('cs-hidden'); }
+      } else if(delta < -10){ // scrolling up
+        _scrollCount = 0;
+        if(_csHidden){ _csHidden=false; cs.classList.remove('cs-hidden'); }
+      }
+    }
+    // Observe section switches to re-attach
+    containers.forEach(c=>{ try{ c.addEventListener('scroll', onScroll, {passive:true}); }catch(e){} });
+    window.addEventListener('scroll', onScroll, {passive:true});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', setup);
+  else setTimeout(setup, 500);
+})();
+
 function renderFeed(){
   const container = document.getElementById('vf-container');
   if(!container) return;
@@ -8521,29 +8662,34 @@ function renderFeed(){
     card.innerHTML=`${mediaHtml}
       <div class="vf-card-gradient"></div>
       ${hasVideo?`<div class="vf-progress"><div class="vf-progress-fill" id="vf-prog-${post.id}"></div></div>`:''}
-      <div class="vf-actions">
-        ${!isMine?`<div class="vfa-author-wrap">
-          <div class="vfa-author-av" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">
-            ${letter}
-            <div class="vfa-follow-dot${isFollowing?' following':''}" id="vfa-fd-${post.user_id}" onclick="event.stopPropagation();vfFollow('${post.user_id}')">${isFollowing?'✓':'+'}</div>
+      <div class="vf-fab-wrap" id="vf-fab-${post.id}">
+        <div class="vf-fab-items">
+          ${!isMine?`<div class="vf-fab-author">
+            <div class="vfa-author-av" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">
+              ${letter}
+              <div class="vfa-follow-dot${isFollowing?' following':''}" id="vfa-fd-${post.user_id}" onclick="event.stopPropagation();vfFollow('${post.user_id}')">${isFollowing?'✓':'+'}</div>
+            </div>
+          </div>`:''}
+          <button class="vf-fab-item" onclick="vfLike('${post.id}',this)">
+            <div class="vfa-icon${isLiked?' liked':''}" id="vfa-heart-${post.id}"><i class="ti ti-heart${isLiked?'-filled':''}"></i></div>
+            <span class="vfa-count" id="vfa-lc-${post.id}">${_fmtN(post.likes||0)}</span>
+          </button>
+          <button class="vf-fab-item" onclick="openVfComments('${post.id}')">
+            <div class="vfa-icon"><i class="ti ti-message-circle"></i></div>
+            <span class="vfa-count" id="vfa-cc-${post.id}">${_fmtN(post.comment_count||0)}</span>
+          </button>
+          <button class="vf-fab-item" onclick="vfShare('${post.id}')">
+            <div class="vfa-icon"><i class="ti ti-share-3"></i></div>
+            <span class="vfa-count">${_fmtN(post.share_count||0)||''}</span>
+          </button>
+          <div class="vf-fab-item" style="cursor:default">
+            <div class="vfa-icon"><i class="ti ti-eye"></i></div>
+            <span class="vfa-count" id="vfa-vc-${post.id}">${_fmtN(post.view_count||0)}</span>
           </div>
-        </div>`:''}
-        <button class="vfa" onclick="vfLike('${post.id}',this)">
-          <div class="vfa-icon${isLiked?' liked':''}" id="vfa-heart-${post.id}"><i class="ti ti-heart${isLiked?'-filled':''}"></i></div>
-          <span class="vfa-count" id="vfa-lc-${post.id}">${_fmtN(post.likes||0)}</span>
-        </button>
-        <button class="vfa" onclick="openVfComments('${post.id}')">
-          <div class="vfa-icon"><i class="ti ti-message-circle"></i></div>
-          <span class="vfa-count" id="vfa-cc-${post.id}">${_fmtN(post.comment_count||0)}</span>
-        </button>
-        <button class="vfa" onclick="vfShare('${post.id}')">
-          <div class="vfa-icon"><i class="ti ti-share-3"></i></div>
-          <span class="vfa-count">${_fmtN(post.share_count||0)||''}</span>
-        </button>
-        <div class="vfa" style="cursor:default">
-          <div class="vfa-icon"><i class="ti ti-eye"></i></div>
-          <span class="vfa-count" id="vfa-vc-${post.id}">${_fmtN(post.view_count||0)}</span>
         </div>
+        <button class="vf-fab-trigger" onclick="toggleVfFab('${post.id}')">
+          <i class="ti ti-layout-grid"></i>
+        </button>
       </div>
       <div class="vf-info">
         <div class="vfi-author-row">
