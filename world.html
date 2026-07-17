@@ -4807,6 +4807,7 @@ function clearChatArea() {
 
 function openNewDmPrompt(){
   // Open search modal → Users tab so user can find whom to DM
+  _srchQ='';
   openSrchModal();
   // Switch to users tab
   const usersTab=document.querySelector('#srch-tabs .srch-tab:nth-child(3)');
@@ -5066,46 +5067,29 @@ async function loadRealSignals(){
   }
 }
 
-// Create a new signal and POST to backend
+function openNewSignal(){openModal('modal-signal');}
 async function submitSignal(){
-  const ticker    = (document.getElementById('sig-ticker')?.value||'BTC').trim().toUpperCase();
-  const direction = document.getElementById('sig-dir')?.value||'LONG';
-  const entry     = parseFloat(document.getElementById('sig-entry')?.value||0);
-  const tp        = parseFloat(document.getElementById('sig-tp')?.value||0);
-  const sl        = parseFloat(document.getElementById('sig-sl')?.value||0);
-  const content   = (document.getElementById('sig-content')?.value||'').trim();
-  if(!ticker) return;
-
-  // Optimistic local add
-  app.signals.unshift({id:'ls'+Date.now(),dir:direction.toLowerCase(),pair:ticker+'/USDT',
-    entry:'$'+entry,tp:'$'+tp,sl:'$'+sl,author:(app.userKey||'ANON').slice(0,4)+'•••',
-    time:'только что',reactions:{rocket:0,fire:0},pnl:''});
-  renderSignals();
-  closeModal('modal-new-signal');
-  earnCube(5,'Опубликовал сигнал','📡');
-
-  const cubeNumId = (app.currentCubeId||'').replace(/^[a-z]+/,'');
-  if(cubeNumId && !isNaN(cubeNumId)){
-    await apiCall('/cubes/'+cubeNumId+'/signals',{
-      method:'POST',
-      body:JSON.stringify({ticker,direction,entry_price:entry,tp_price:tp,sl_price:sl,content})
-    });
-  }
-}
-function openNewSignal(){openModal('modal-new-signal');}
-function submitSignal(){
-  const pair=document.getElementById('sig-pair').value||'BTC/USDT';
-  const dir=document.getElementById('sig-dir').value;
-  const entry=document.getElementById('sig-entry').value||'0';
-  const tp=document.getElementById('sig-tp').value||'0';
-  const sl=document.getElementById('sig-sl').value||'0';
+  const pair=(document.getElementById('sig-pair')?.value||'BTC/USDT').trim().toUpperCase();
+  const dir=document.getElementById('sig-dir')?.value||'long';
+  const entry=document.getElementById('sig-entry')?.value||'0';
+  const tp=document.getElementById('sig-tp')?.value||'0';
+  const sl=document.getElementById('sig-sl')?.value||'0';
   const arr=new Uint8Array(4);crypto.getRandomValues(arr);
-  const id=Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase();
-  app.signals.unshift({id:'u'+Date.now(),pair:pair.toUpperCase(),dir,entry,tp,sl,author:id.slice(0,4)+'•••CUBE',time:'только что',reactions:{rocket:0,fire:0},pnl:'0%'});
-  closeModal('modal-signal');['sig-pair','sig-entry','sig-tp','sig-sl'].forEach(i=>document.getElementById(i).value='');
+  const anonId=Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase();
+  app.signals.unshift({id:'u'+Date.now(),pair,dir,entry,tp,sl,
+    author:(app.userKey||anonId).slice(0,4)+'•••CUBE',time:'только что',reactions:{rocket:0,fire:0},pnl:'0%'});
+  closeModal('modal-signal');
+  ['sig-pair','sig-entry','sig-tp','sig-sl'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
   renderSignals();
   earnCube(15,'Опубликовал сигнал','🎯'); completeTaskById('t3');
   unlockAchievement('a4'); pushNotification('🎯','Твой сигнал опубликован · +15 CUBE');
+  // Try to sync to backend (non-blocking)
+  const cubeNumId=(app.currentCubeId||'').replace(/^[a-z]+/,'');
+  if(cubeNumId && !isNaN(Number(cubeNumId))){
+    apiCall('/cubes/'+cubeNumId+'/signals','POST',
+      {ticker:pair.split('/')[0]||'BTC',direction:dir.toUpperCase(),
+       entry_price:parseFloat(entry)||0,tp_price:parseFloat(tp)||0,sl_price:parseFloat(sl)||0});
+  }
 }
 
 // ════════════════════════════════════════════════
@@ -5635,7 +5619,7 @@ function renderUserSearchCard(u){
   const sub = [u.username ? '@'+u.username : null, uid].filter(Boolean).join(' · ');
   return `<div class="sui-card" id="sui-${u.id}" onclick="toggleUserCard(${u.id},this)">
     <div class="sui-head">
-      <div class="sui-ava">${u.avatar_url||'👤'}</div>
+      <div class="sui-ava">${u.avatar_url&&(u.avatar_url.startsWith('/')||u.avatar_url.startsWith('http'))?`<img src="${escHtml(u.avatar_url)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover" onerror="this.parentElement.textContent='👤'">`:escHtml(u.avatar_url||'👤')}</div>
       <div class="sui-info">
         <div class="sui-name">${escHtml(u.display_name||u.key_prefix||'Пользователь')}</div>
         <div class="sui-sub">${escHtml(sub)}</div>
@@ -7993,9 +7977,9 @@ function openCreatePost(){
   document.getElementById('cpm-err').textContent='';
   // Reset file previews
   const vp=document.getElementById('cpm-video-preview'); if(vp){vp.style.display='none';vp.innerHTML='';}
-  const vl=document.getElementById('cpm-video-drop-label'); if(vl){vl.style.display='';vl.textContent='🎬 Нажми чтобы загрузить видео';}
+  const vl=document.getElementById('cpm-video-drop-label'); if(vl){vl.style.display='';vl.innerHTML='🎬 Нажми чтобы загрузить видео<br><span style="font-size:11px;color:var(--text3)">MP4, WebM, MOV · до 50 МБ</span>';}
   const ip=document.getElementById('cpm-image-preview'); if(ip){ip.style.display='none';ip.innerHTML='';}
-  const il=document.getElementById('cpm-image-drop-label'); if(il){il.style.display='';il.textContent='🖼️ Нажми чтобы загрузить фото';}
+  const il=document.getElementById('cpm-image-drop-label'); if(il){il.style.display='';il.innerHTML='🖼️ Нажми чтобы загрузить фото<br><span style="font-size:11px;color:var(--text3)">JPG, PNG, GIF, WebP · до 10 МБ</span>';}
   const vf=document.getElementById('cpm-video-file'); if(vf) vf.value='';
   const imf=document.getElementById('cpm-image-file'); if(imf) imf.value='';
   openModal('modal-create-post');
@@ -8387,9 +8371,9 @@ function _renderGcoPost(m){
   </div>
   ${mediaHtml}${textHtml}
   <div class="gco-post-actions">
-    <button class="gco-post-action" onclick="gcoLikePost(${m.id},this)">❤️ <span class="gco-likes">0</span></button>
-    <button class="gco-post-action">💬 Комм.</button>
-    <button class="gco-post-action" onclick="navigator.share&&navigator.share({url:location.href})">↗️ Поделиться</button>
+    <button class="gco-post-btn" onclick="gcoLikePost(${m.id},this)">❤️ <span class="gco-likes">0</span></button>
+    <button class="gco-post-btn">💬 Комм.</button>
+    <button class="gco-post-btn" onclick="navigator.share&&navigator.share({url:location.href})">↗️ Поделиться</button>
   </div>`;
   return div;
 }
