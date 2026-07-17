@@ -1621,8 +1621,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .search-btn-shortcut{display:none!important}
   /* Wallet CUBE badge compact */
   #itb-wallet{padding:3px 8px!important}
-  /* Hide cube switcher strip entirely on mobile */
-  #cube-switcher{display:none!important}
+  /* Cube switcher strip — visible on mobile, compact */
+  #cube-switcher{
+    display:flex!important;
+    padding:5px 10px;
+    gap:5px;
+    border-bottom:1px solid var(--border);
+    background:rgba(0,0,0,.25);
+    overflow-x:auto;
+    flex-shrink:0;
+    -webkit-overflow-scrolling:touch;
+    scroll-behavior:smooth;
+  }
+  #cube-switcher::-webkit-scrollbar{display:none}
+  #cube-switcher>span{font-size:9px!important;white-space:nowrap}
+  .cube-tab{font-size:10px!important;padding:3px 9px!important;gap:3px!important;white-space:nowrap}
+  .ct-timer{font-size:9px!important}
 
   /* ── main layout adjusts ── */
   #int-layout{flex-direction:column;overflow:hidden;flex:1}
