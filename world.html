@@ -8418,7 +8418,7 @@ function cpmSelectType(t){
 async function submitCreatePost(){
   const errEl=document.getElementById('cpm-err');
   errEl.textContent='';
-  let payload={post_type:_cpmType,cube_id:app.currentCubeId||1};
+  let payload={post_type:_cpmType,cube_id:parseInt(app.currentCubeId)||1};
   if(_cpmType==='short'){
     payload.video_url=(document.getElementById('cpm-video-url')?.value||_cpmVideoUrl||'').trim();
     payload.music=(document.getElementById('cpm-music')?.value||'').trim();
@@ -8444,7 +8444,7 @@ async function submitCreatePost(){
   // Send only fields the backend model knows — extra fields cause Pydantic 422
   const serverPayload={
     post_type: payload.post_type,
-    cube_id: payload.cube_id,
+    cube_id: parseInt(payload.cube_id)||1,
     video_url: payload.video_url||'',
     image_url: payload.image_url||'',
     description: payload.description||payload.title||'-',
