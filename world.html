@@ -197,12 +197,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vf-tab.active{color:#fff;border-bottom-color:#fff}
 .vf-upload-btn{margin-left:auto;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;color:#fff;border:1.5px solid rgba(255,255,255,.6);background:transparent;transition:all .2s;flex-shrink:0}
 .vf-upload-btn:hover{background:rgba(255,255,255,.15)}
-.vf-type-pills{display:flex;gap:5px;align-items:center;max-width:0;overflow:hidden;opacity:0;transition:max-width .3s ease,opacity .25s ease;white-space:nowrap}
-.vf-header:hover .vf-type-pills,.vf-type-pills.expanded{max-width:280px;opacity:1}
+.vf-type-pills{display:flex;gap:5px;align-items:center;white-space:nowrap;margin-left:auto}
 .vf-pill{padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);transition:all .18s;white-space:nowrap;flex-shrink:0}
 .vf-pill.active{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.5)}
-/* toggle btn to reveal pills on mobile */
-.vf-filter-toggle{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:16px;color:rgba(255,255,255,.7);font-size:11px;font-weight:700;padding:4px 9px;cursor:pointer;flex-shrink:0;transition:all .18s}
+.vf-filter-toggle{display:none}
 .vf-filter-toggle.active{background:rgba(0,149,246,.25);border-color:rgba(0,149,246,.5);color:#fff}
 /* BALL post card */
 .vf-ball-card{padding:50px 24px 130px;background:var(--bg2);width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:16px;overflow-y:auto}
@@ -2119,13 +2117,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
             <button class="vf-tab" onclick="vfSwitchTab('following',this)">Подписки</button>
             <button class="vf-tab" onclick="vfSwitchTab('top',this)">🔥 Топ</button>
           </div>
-          <button class="vf-filter-toggle" id="vf-filter-toggle" onclick="vfToggleFilters(this)" title="Фильтры">⚙️</button>
-          <div class="vf-type-pills" id="vf-type-pills">
+          <div class="vf-type-pills" id="vf-type-pills" style="max-width:none;opacity:1;overflow:visible">
             <button class="vf-pill active" id="vfp-all" onclick="vfFilterType('all',this)">Все</button>
             <button class="vf-pill" id="vfp-short" onclick="vfFilterType('short',this)">▶ SHORT</button>
             <button class="vf-pill" id="vfp-post" onclick="vfFilterType('ball',this)">📝 POST</button>
           </div>
-          <button class="vf-upload-btn" onclick="openCreatePost()">+ Пост</button>
+          <button class="vf-upload-btn" onclick="openCreatePost()">✏️ Создать</button>
         </div>
         <!-- scrollable video cards -->
         <div class="vf-container" id="vf-container"></div>
@@ -8078,13 +8075,6 @@ function vfSwitchTab(tab, el){
   loadVideoFeed();
 }
 
-function vfToggleFilters(btn){
-  const pills=document.getElementById('vf-type-pills');
-  if(!pills) return;
-  const expanded=pills.classList.toggle('expanded');
-  btn.classList.toggle('active', expanded);
-}
-
 function renderFeed(){
   const container = document.getElementById('vf-container');
   if(!container) return;
@@ -8101,7 +8091,9 @@ function renderFeed(){
   if(_vfTab==='top') posts=[...posts].sort((a,b)=>(b.likes||0)-(a.likes||0));
 
   if(!posts.length){
-    container.innerHTML=`<div class="vf-empty"><div class="vf-empty-icon">${_vfTypeFilter==='ball'?'🟡':'🎬'}</div><div class="vf-empty-text">Нет постов</div><div class="vf-empty-sub">Нажми «+ Пост» чтобы быть первым!</div></div>`;
+    const _emptyIcon = _vfTypeFilter==='short'?'🎬':_vfTypeFilter==='ball'?'📝':'✨';
+    const _emptyLabel = _vfTypeFilter==='short'?'Нет видео (SHORT)':_vfTypeFilter==='ball'?'Нет постов (POST)':'Лента пуста';
+    container.innerHTML=`<div class="vf-empty"><div class="vf-empty-icon">${_emptyIcon}</div><div class="vf-empty-text">${_emptyLabel}</div><div class="vf-empty-sub">Нажми ✏️ Создать — опубликуй SHORT или POST,<br>и он появится здесь сразу!</div></div>`;
     return;
   }
 
@@ -8476,10 +8468,21 @@ async function submitCreatePost(){
   if(btn){btn.disabled=false;btn.textContent='🚀 Опубликовать';}
   if(!data){errEl.textContent='Пустой ответ сервера';return;}
   closeModal('modal-create-post');
-  showToast(_cpmType==='short'?'SHORT опубликован! 🎬':'POST опубликован! 📝');
+  const _typeLabel = _cpmType==='short'?'SHORT 🎬':'POST 📝';
+  showToast(_typeLabel+' опубликован! Смотри в ленте ↓');
   earnCube(5,'Новый пост','📝');
+  // Reset filters so the new post is always visible
+  _vfTypeFilter='all';
+  document.querySelectorAll('.vf-pill').forEach(p=>p.classList.remove('active'));
+  const allPill=document.getElementById('vfp-all'); if(allPill) allPill.classList.add('active');
+  // Switch to "For you" tab
+  const foryouBtn=document.querySelector('.vf-tab'); if(foryouBtn){foryouBtn.click();}
+  _vfTab='foryou';
   _vfPosts.unshift(data);
   renderFeed();
+  // Scroll feed to top so user sees the new post
+  const vfCont=document.getElementById('vf-container');
+  if(vfCont) setTimeout(()=>vfCont.scrollTo({top:0,behavior:'smooth'}),100);
 }
 
 // ═══ TAG PARSER ═══════════════════════════════════════════════════
