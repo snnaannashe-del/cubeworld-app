@@ -9009,7 +9009,10 @@ async function _uploadFile(file, progressBarId){
     clearInterval(ticker);
     const j=await res.json();
     if(bar){ bar.style.width='100%'; setTimeout(()=>{ bar.parentElement.style.display='none'; bar.style.width='0'; },600); }
-    return j.ok ? j.url : null;
+    if(!j.ok) return null;
+    // Make absolute URL if backend returns relative path like /uploads/...
+    const url = j.url;
+    return (url && url.startsWith('/')) ? CUBE_API + url : url;
   }catch(e){ clearInterval(ticker); if(bar) bar.parentElement.style.display='none'; return null; }
 }
 
