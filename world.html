@@ -574,6 +574,60 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-invite-url{flex:1;font-size:11px;color:var(--text3);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gco-invite-copy-btn{background:rgba(0,149,246,.18);border:1px solid rgba(0,149,246,.35);color:var(--accent);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;white-space:nowrap;transition:background .15s}
 .gco-invite-copy-btn:hover{background:rgba(0,149,246,.32)}
+/* ═══ TELEGRAM-STYLE GROUPS ════════════════════════════════════════════ */
+/* Group list (messenger style) */
+.grp-list{display:flex;flex-direction:column;flex:1;overflow-y:auto}
+.grp-list-item{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;transition:background .12s;border-bottom:1px solid var(--border2)}
+.grp-list-item:hover{background:rgba(255,255,255,.04)}
+.grp-list-item.active-grp{background:rgba(0,149,246,.1)}
+.grp-list-av{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;overflow:hidden}
+.grp-list-lock{position:absolute;bottom:0;right:0;width:16px;height:16px;background:#12122a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;border:1px solid var(--border)}
+.grp-list-body{flex:1;min-width:0}
+.grp-list-name{font-size:14px;font-weight:600;color:#e0e0f8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grp-list-preview{font-size:12px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.grp-list-meta{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.grp-list-time{font-size:10px;color:var(--text3)}
+.grp-list-unread{background:var(--accent);color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 7px;min-width:18px;text-align:center}
+.grp-list-join{font-size:10px;padding:3px 9px;border-radius:7px;border:1px solid rgba(0,149,246,.4);background:rgba(0,149,246,.12);color:var(--accent);cursor:pointer;font-weight:600;white-space:nowrap}
+.grp-list-joined{font-size:10px;padding:3px 9px;border-radius:7px;border:1px solid rgba(74,222,128,.3);background:rgba(74,222,128,.08);color:var(--green);font-weight:600;white-space:nowrap}
+/* New topbar style for group chat */
+.gco-av-circle{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:rgba(0,149,246,.18);border:1px solid rgba(0,149,246,.25);overflow:hidden;cursor:pointer}
+.gco-tg-info{flex:1;min-width:0;cursor:pointer}
+.gco-tg-info:hover .gco-name{opacity:.8}
+.gco-tg-sub{font-size:10.5px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gco-icon-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:all .15s;flex-shrink:0}
+.gco-icon-btn:hover{background:rgba(255,255,255,.1);color:#e0e0f8}
+/* Group info panel (right slide) */
+#grp-info-panel{position:absolute;top:0;right:0;width:min(320px,100%);height:100%;background:#0a0a1a;border-left:1px solid var(--border);z-index:40;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden}
+#grp-info-panel.open{transform:translateX(0)}
+.gip-header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.gip-back-btn{background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;padding:5px;border-radius:8px;display:flex;align-items:center;gap:5px}
+.gip-hero{display:flex;flex-direction:column;align-items:center;padding:28px 20px 18px;border-bottom:1px solid var(--border)}
+.gip-av-big{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;background:rgba(0,149,246,.15);margin-bottom:12px;border:2px solid rgba(0,149,246,.25)}
+.gip-name{font-size:18px;font-weight:700;color:#e0e0f8;text-align:center;margin-bottom:4px}
+.gip-sub{font-size:12px;color:var(--text3);text-align:center}
+.gip-stats{display:flex;padding:14px 20px;border-bottom:1px solid var(--border)}
+.gip-stat{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.gip-stat-val{font-size:18px;font-weight:700;color:#e0e0f8}
+.gip-stat-lbl{font-size:10px;color:var(--text3)}
+.gip-section{padding:12px 16px;border-bottom:1px solid var(--border)}
+.gip-section-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.gip-desc-text{font-size:13px;color:var(--text2);line-height:1.6}
+.gip-invite-row{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.gip-invite-url{flex:1;font-size:11px;color:var(--accent);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace}
+.gip-invite-copy{background:rgba(0,149,246,.2);border:none;color:var(--accent);border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0}
+.gip-member-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border2)}
+.gip-member-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
+.gip-member-name{font-size:13px;color:#e0e0f8;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gip-member-role{font-size:9px;padding:2px 6px;border-radius:5px;font-weight:700;flex-shrink:0}
+.gip-role-owner{background:rgba(251,191,36,.15);color:#FBB924}
+.gip-role-admin{background:rgba(0,149,246,.15);color:var(--accent)}
+.gip-scroll{flex:1;overflow-y:auto}
+.gip-danger-btn{display:block;width:calc(100% - 32px);margin:16px;padding:11px;border-radius:10px;border:1px solid rgba(248,113,113,.3);background:rgba(248,113,113,.07);color:var(--red);font-size:13px;font-weight:600;cursor:pointer;text-align:center}
+.gip-danger-btn:hover{background:rgba(248,113,113,.15)}
+/* Mic / send toggle */
+#gco-mic-btn{background:rgba(255,255,255,.06);border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;color:var(--text2);font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+#gco-mic-btn:hover{background:rgba(255,255,255,.12);color:#e0e0f8}
 /* Lightbox */
 #lightbox{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:99999;display:none;align-items:center;justify-content:center}
 #lightbox.open{display:flex}
@@ -2511,23 +2565,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
       <!-- ═══ GROUP FULL VIEW OVERLAY ═════════════════════════════════ -->
       <div id="grp-chat-overlay">
-        <!-- topbar -->
+        <!-- Telegram-style topbar -->
         <div class="gco-topbar">
-          <button class="gco-back" onclick="closeGroupChat()">← Назад</button>
-          <span class="gco-icon" id="gco-icon">👥</span>
-          <div style="flex:1;min-width:0">
+          <button class="gco-back" onclick="closeGroupChat()" style="border:none;background:none;color:var(--accent);font-size:22px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0">
+            <i class="ti ti-arrow-left"></i>
+          </button>
+          <div class="gco-av-circle" id="gco-icon" onclick="openGrpInfo()">👥</div>
+          <div class="gco-tg-info" onclick="openGrpInfo()">
             <div class="gco-name" id="gco-name">Группа</div>
-            <div id="gco-online" style="font-size:10px;color:var(--text3)"></div>
+            <div class="gco-tg-sub" id="gco-tg-sub">участников</div>
           </div>
-          <button class="gco-members-btn" title="Участники" onclick="toggleGrpMembersPanel()">👥</button>
-          <button class="gco-members-btn" title="Поиск в группе" onclick="showToast('🔍 Поиск в группе скоро')">🔍</button>
-          <button class="gco-members-btn" title="Настройки" onclick="gcoOpenSettings()">⚙️</button>
-        </div>
-        <!-- Info bar: member count + online -->
-        <div class="gco-info-bar" id="gco-info-bar">
-          <div class="gco-info-stat">👥 <b id="gco-members-count">…</b> участников</div>
-          <div class="gco-info-stat">🟢 <b id="gco-online-count">0</b> онлайн</div>
-          <div class="gco-info-stat" id="gco-desc-stat" style="display:none">📝 <b id="gco-desc-short">…</b></div>
+          <button class="gco-icon-btn" title="Поиск" onclick="showToast('🔍 Поиск по сообщениям скоро')"><i class="ti ti-search" style="font-size:14px"></i></button>
+          <button class="gco-icon-btn" title="Информация" onclick="openGrpInfo()"><i class="ti ti-dots-vertical" style="font-size:14px"></i></button>
         </div>
         <!-- Pinned message -->
         <div class="gco-pinned" id="gco-pinned">
@@ -2538,74 +2587,92 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           </div>
           <button class="gco-unpin" onclick="gcoUnpin()" title="Открепить">✕</button>
         </div>
-        <!-- tabs: Посты | Чат | Участники -->
-        <div class="gco-tabs">
-          <button class="gco-tab active" id="gcotab-posts" onclick="gcoSwitchTab('posts',this)">📋 Посты</button>
-          <button class="gco-tab" id="gcotab-chat"  onclick="gcoSwitchTab('chat',this)">💬 Чат</button>
-          <button class="gco-tab" id="gcotab-members" onclick="gcoSwitchTab('members',this)">👥 Участники</button>
-        </div>
-        <!-- POSTS TAB -->
-        <div class="gco-body" id="gco-tab-posts">
-          <div class="gco-posts" id="gco-posts">
-            <div style="text-align:center;color:var(--text3);padding:40px;font-size:13px">⏳ Загружаем посты…</div>
-          </div>
-          <div class="gco-toolbar">
-            <button class="gco-tool-btn" onclick="gcoUploadFile('image')">🖼️ Фото</button>
-            <button class="gco-tool-btn" onclick="gcoUploadFile('video')">🎬 Видео</button>
-            <button class="gco-tool-btn" onclick="gcoUploadFile('doc')">📄 Файл</button>
-            <button class="gco-tool-btn primary" style="margin-left:auto" onclick="gcoCreateTextPost()">✍️ Написать</button>
+        <!-- Messages (unified, no tabs) -->
+        <div class="gco-msgs" id="gco-msgs">
+          <div class="gco-typing-row" id="gco-typing-row">
+            <div class="gco-av" style="width:28px;height:28px;font-size:11px">?</div>
+            <div class="gco-typing-dots"><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div></div>
           </div>
         </div>
-        <!-- CHAT TAB -->
-        <div class="gco-body" id="gco-tab-chat" style="display:none">
-          <div class="gco-msgs" id="gco-msgs">
-            <div class="gco-typing-row" id="gco-typing-row">
-              <div class="gco-av" style="width:28px;height:28px;font-size:11px">?</div>
-              <div class="gco-typing-dots"><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div></div>
+        <!-- Reply bar -->
+        <div class="gco-reply-bar" id="gco-reply-bar">
+          <div style="width:3px;height:32px;background:var(--accent);border-radius:2px;flex-shrink:0"></div>
+          <div class="gco-reply-info">
+            <div class="gco-reply-author" id="gco-reply-author"></div>
+            <div class="gco-reply-text" id="gco-reply-text"></div>
+          </div>
+          <button class="gco-reply-cancel" onclick="gcoCancelReply()">✕</button>
+        </div>
+        <!-- Telegram-style input bar -->
+        <div class="gco-input-row" id="gco-input-row" style="position:relative;gap:6px">
+          <button class="gco-icon-btn" onclick="gcoAttachInChat()" title="Прикрепить" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-paperclip" style="font-size:16px"></i></button>
+          <div style="position:relative;flex:1">
+            <input class="gco-input" id="gco-input" placeholder="Написать…"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendGroupMsg();}"
+              oninput="gcoChatTyping();gcoUpdateSendBtn()">
+            <div class="gco-emoji-picker" id="gco-emoji-picker">
+              ${['😊','😂','❤️','🔥','👍','😍','🎉','😭','😮','🥰','😎','🤔','💯','✨','🙏','💪','🤣','😅','😆','🤩','😴','🥳','😤','🤗','💀','👀','🫡','🚀','💎','🌟','⚡','🎯','💰','🦋','🐉','🌙'].map(e=>`<button class="gco-epick" onclick="gcoInsertEmoji('${e}')">${e}</button>`).join('')}
             </div>
           </div>
-          <!-- Reply preview bar -->
-          <div class="gco-reply-bar" id="gco-reply-bar">
-            <div style="font-size:16px;color:var(--accent)">↩</div>
-            <div class="gco-reply-info">
-              <div class="gco-reply-author" id="gco-reply-author"></div>
-              <div class="gco-reply-text" id="gco-reply-text"></div>
-            </div>
-            <button class="gco-reply-cancel" onclick="gcoCancelReply()">✕</button>
+          <button class="gco-icon-btn" onclick="gcoToggleEmoji()" title="Эмодзи" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:16px"></i></button>
+          <button id="gco-mic-btn" title="Голосовое" style="background:rgba(255,255,255,.06);border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;color:var(--text2);font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s">
+            <i class="ti ti-microphone" style="font-size:16px"></i>
+          </button>
+          <button id="gco-send-btn" class="gco-send" onclick="sendGroupMsg()" title="Отправить" style="display:none"><i class="ti ti-send" style="font-size:15px"></i></button>
+        </div>
+        <!-- Group info panel (right slide) -->
+        <div id="grp-info-panel">
+          <div class="gip-header">
+            <button class="gip-back-btn" onclick="closeGrpInfo()"><i class="ti ti-arrow-left"></i> Назад</button>
+            <span style="font-size:14px;font-weight:700;color:#e0e0f8">Информация</span>
           </div>
-          <!-- Input row -->
-          <div class="gco-input-row" style="position:relative">
-            <button class="gco-voice-btn" onclick="gcoAttachInChat()" title="Прикрепить файл">📎</button>
-            <div style="position:relative;flex:1">
-              <input class="gco-input" id="gco-input" placeholder="Сообщение…"
-                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendGroupMsg();}"
-                oninput="gcoChatTyping()">
-              <!-- Emoji picker -->
-              <div class="gco-emoji-picker" id="gco-emoji-picker">
-                ${['😊','😂','❤️','🔥','👍','😍','🎉','😭','😮','🥰','😎','🤔','💯','✨','🙏','💪','🤣','😅','😆','🤩','😴','🥳','😤','🤗','💀','👀','🫡','🚀','💎','🌟','⚡','🎯','💰','🦋','🐉','🌙'].map(e=>`<button class="gco-epick" onclick="gcoInsertEmoji('${e}')">${e}</button>`).join('')}
+          <div class="gip-scroll">
+            <div class="gip-hero">
+              <div class="gip-av-big" id="gip-av-big">👥</div>
+              <div class="gip-name" id="gip-name">Группа</div>
+              <div class="gip-sub" id="gip-sub">Публичная группа</div>
+            </div>
+            <div class="gip-stats">
+              <div class="gip-stat"><div class="gip-stat-val" id="gip-members-cnt">—</div><div class="gip-stat-lbl">участников</div></div>
+              <div class="gip-stat"><div class="gip-stat-val" id="gip-online-cnt">—</div><div class="gip-stat-lbl">онлайн</div></div>
+            </div>
+            <div class="gip-section" id="gip-desc-section">
+              <div class="gip-section-title">Описание</div>
+              <div class="gip-desc-text" id="gip-desc-text">Нет описания</div>
+            </div>
+            <div class="gip-section">
+              <div class="gip-section-title">Пригласить в группу</div>
+              <div class="gip-invite-row">
+                <i class="ti ti-link" style="font-size:14px;color:var(--accent);flex-shrink:0"></i>
+                <span class="gip-invite-url" id="gip-invite-url">…</span>
+                <button class="gip-invite-copy" id="gip-invite-copy" onclick="gipCopyInvite()">Копировать</button>
               </div>
             </div>
-            <button class="gco-voice-btn" onclick="gcoToggleEmoji()" title="Эмодзи">😊</button>
-            <button class="gco-send" onclick="sendGroupMsg()">↑</button>
+            <div class="gip-section">
+              <div class="gip-section-title">Участники</div>
+              <div id="gip-members-list"></div>
+            </div>
+            <button class="gip-danger-btn" onclick="gipLeaveGroup()">Покинуть группу</button>
           </div>
         </div>
-        <!-- MEMBERS TAB -->
-        <div class="gco-body" id="gco-tab-members" style="display:none;overflow-y:auto;padding:14px">
-          <div id="gco-members-list"></div>
-        </div>
-        <!-- members slide panel (from topbar button) -->
-        <div id="grp-members-panel">
-          <div class="gmp-header">
-            <span class="gmp-title">Участники</span>
-            <button class="gmp-close" onclick="toggleGrpMembersPanel()">✕</button>
-          </div>
-          <div id="gmp-list"></div>
+        <!-- Context menu -->
+        <div class="gco-ctx" id="gco-ctx" style="display:none">
+          <div class="gco-ctx-item" onclick="gcoCtxReply()"><i class="ti ti-arrow-back-up" style="font-size:14px"></i> Ответить</div>
+          <div class="gco-ctx-item" onclick="gcoCtxForward()"><i class="ti ti-arrow-forward-up" style="font-size:14px"></i> Переслать</div>
+          <div class="gco-ctx-item" onclick="gcoCtxCopy()"><i class="ti ti-copy" style="font-size:14px"></i> Копировать текст</div>
+          <div class="gco-ctx-sep"></div>
+          <div class="gco-ctx-item" onclick="gcoCtxPin()"><i class="ti ti-pin" style="font-size:14px"></i> Закрепить</div>
+          <div class="gco-ctx-item danger" id="gco-ctx-edit" onclick="gcoCtxEdit()"><i class="ti ti-pencil" style="font-size:14px"></i> Изменить</div>
+          <div class="gco-ctx-item danger" onclick="gcoCtxDelete()"><i class="ti ti-trash" style="font-size:14px"></i> Удалить</div>
         </div>
         <!-- hidden file inputs -->
         <input type="file" id="gco-file-image" accept="image/*" style="display:none" onchange="gcoHandleFile(this,'image')">
         <input type="file" id="gco-file-video" accept="video/*" style="display:none" onchange="gcoHandleFile(this,'video')">
         <input type="file" id="gco-file-doc" accept=".pdf,.doc,.docx,.txt,.zip,.xls,.xlsx,.ppt,.pptx" style="display:none" onchange="gcoHandleFile(this,'doc')">
         <input type="file" id="gco-file-chat" accept="image/*,video/*,.pdf,.doc,.docx" style="display:none" onchange="gcoHandleFileInChat(this)">
+        <!-- Context menu old compat -->
+        <div id="gmp-list" style="display:none"></div>
+        <div id="gco-members-list" style="display:none"></div>
       </div>
 
       <!-- ═══ CREATE POST MODAL (in group) ════════════════════════════ -->
@@ -2724,15 +2791,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
       <!-- GROUPS -->
       <div class="int-section" id="sec-groups">
-        <div class="sec-header" style="border-bottom:none;padding-bottom:0">
-          <h2>👥 Группы</h2>
-          <button class="grp-create-btn" onclick="openCreateGroup()">+ Создать</button>
+        <div class="sec-header" style="padding:10px 16px;flex-shrink:0">
+          <h2 style="font-size:16px;font-weight:700">Группы</h2>
+          <button class="grp-create-btn" onclick="openCreateGroup()"><i class="ti ti-plus" style="font-size:12px;vertical-align:middle"></i> Создать</button>
         </div>
         <div class="grp-tabs">
-          <button class="grp-tab active" id="grp-tab-all" onclick="setGrpTab('all',this)">Все</button>
-          <button class="grp-tab" id="grp-tab-my" onclick="setGrpTab('my',this)">Мои</button>
+          <button class="grp-tab active" id="grp-tab-all" onclick="setGrpTab('all',this)">Все группы</button>
+          <button class="grp-tab" id="grp-tab-my" onclick="setGrpTab('my',this)">Мои группы</button>
         </div>
-        <div class="groups-grid" id="groups-grid"></div>
+        <div class="grp-list" id="groups-grid"></div>
       </div>
 
       <!-- CREATE GROUP MODAL -->
@@ -5561,36 +5628,45 @@ async function loadGroups(){
   el.innerHTML = data.map(g => renderGroupCard(g)).join('');
 }
 
+// Telegram-style group list item
 function renderGroupCard(g){
   const joined = g.is_member == 1 || g.is_member === true;
   const members = (g.member_count || 0).toLocaleString('ru');
-  const handle = g.handle ? `<span style="font-size:10px;color:var(--accent)">@${escHtml(g.handle)}</span>` : '';
   const isPrivate = g.type === 'private';
-  const joinBtn = joined
-    ? `<button class="gc-join joined" onclick="leaveGroupUI(${g.id},this)">✓ Вступил</button>`
+  // Avatar: gradient circle with emoji or letter
+  const icon = escHtml(g.icon || '👥');
+  const colors = [['#0095F6','#5263FF'],['#FF6B6B','#FF8E53'],['#00C9A7','#00B4D8'],['#845EC2','#D65DB1'],['#F9C74F','#F8961E'],['#4CC9F0','#4361EE']];
+  const ci = (g.id||0) % colors.length;
+  const [c1,c2] = colors[ci];
+  const avStyle = `background:linear-gradient(135deg,${c1},${c2})`;
+  const lockBadge = isPrivate ? `<div class="grp-list-lock">🔒</div>` : '';
+  const preview = escHtml(g.description ? g.description.slice(0,60) : `👥 ${members} участников`);
+  const rightBtn = joined
+    ? `<span class="grp-list-joined" onclick="event.stopPropagation();openGroupChat(${g.id},'${escHtml(g.name)}','${icon}')">Открыть</span>`
     : isPrivate
-      ? `<button class="gc-join open-btn" onclick="toggleGcKeyRow(${g.id})">🔐 Войти по ключу</button>`
-      : `<button class="gc-join open-btn" onclick="joinGroupUI(${g.id},this)">Войти</button>`;
+      ? `<span class="grp-list-join" onclick="event.stopPropagation();toggleGcKeyRow(${g.id})">Войти по ключу</span>`
+      : `<span class="grp-list-join" onclick="event.stopPropagation();joinGroupUI(${g.id},this)">Войти</span>`;
   const keyRow = (!joined && isPrivate)
-    ? `<div class="gc-key-row" id="gc-key-row-${g.id}" style="display:none">
+    ? `<div class="gc-key-row" id="gc-key-row-${g.id}" style="display:none;padding:6px 16px 8px">
         <input class="gc-key-input" id="gc-key-inp-${g.id}" placeholder="Введи ключ группы…" onkeydown="if(event.key==='Enter')joinGroupByKey(${g.id})">
         <button class="gc-key-submit" onclick="joinGroupByKey(${g.id})">→</button>
        </div>` : '';
-  const chatBtn = joined
-    ? `<button class="gc-open-chat" onclick="openGroupChat(${g.id},'${escHtml(g.name)}','${escHtml(g.icon||'👥')}')"><i class="ti ti-users" style="font-size:14px;vertical-align:middle;margin-right:4px"></i>Открыть группу</button>` : '';
-  return `<div class="group-card" id="grp-card-${g.id}">
-    <div class="gc-type ${g.type}">${isPrivate?'PRIVATE':'PUBLIC'}</div>
-    <div class="gc-icon">${escHtml(g.icon||'👥')}</div>
-    <div class="gc-name">${escHtml(g.name)}</div>
-    ${handle}
-    <div class="gc-desc" style="margin-top:4px">${escHtml(g.description||'')}</div>
-    <div class="gc-footer" style="margin-top:10px">
-      <div class="gc-members"><i class="ti ti-users" style="font-size:12px;vertical-align:middle;margin-right:3px"></i>${members}</div>
-      ${joinBtn}
+  const mainClick = joined ? `onclick="openGroupChat(${g.id},'${escHtml(g.name)}','${icon}')"` : '';
+  return `<div class="grp-list-item" id="grp-card-${g.id}" ${mainClick} style="${joined?'cursor:pointer':''}">
+    <div class="grp-list-av" style="${avStyle}">
+      <span style="font-size:22px">${icon}</span>
+      ${lockBadge}
     </div>
-    ${keyRow}
-    ${chatBtn}
-  </div>`;
+    <div class="grp-list-body">
+      <div class="grp-list-name">${escHtml(g.name)}</div>
+      <div class="grp-list-preview">${preview}</div>
+    </div>
+    <div class="grp-list-meta">
+      <span style="font-size:10px;color:var(--text3)">${members} уч.</span>
+      ${rightBtn}
+    </div>
+  </div>
+  ${keyRow}`;
 }
 
 function toggleGcKeyRow(id){
@@ -5614,18 +5690,11 @@ async function joinGroupByKey(id){
 
 async function joinGroupUI(id, btn){
   if(btn){ btn.disabled=true; btn.textContent='...'; }
-  const r = await apiCall(`/groups/${id}/join`, {method:'POST'});
+  const r = await apiCall(`/groups/${id}/join`, 'POST', {});
   if(r && r.joined){
-    // update card
-    const card = document.getElementById('grp-card-'+id);
-    if(card){
-      const mc = card.querySelector('.gc-members');
-      const cur = parseInt((mc?.textContent||'0').replace(/\D/g,''))||0;
-      if(mc) mc.textContent = '👥 '+(cur+1).toLocaleString('ru');
-      if(btn){ btn.className='gc-join joined'; btn.disabled=false; btn.textContent='✓ Вступил'; btn.onclick=()=>leaveGroupUI(id,btn); }
-    }
     showToast('👥 Ты вступил в группу!');
     earnCube(3,'Вступил в группу','👥');
+    loadGroups(); // refresh list
   } else {
     if(btn){ btn.disabled=false; btn.textContent='Войти'; }
     showToast('⚠️ Не удалось вступить');
@@ -5635,19 +5704,12 @@ async function joinGroupUI(id, btn){
 async function leaveGroupUI(id, btn){
   if(!confirm('Выйти из группы?')) return;
   if(btn){ btn.disabled=true; btn.textContent='...'; }
-  const r = await apiCall(`/groups/${id}/leave`, {method:'POST'});
+  const r = await apiCall(`/groups/${id}/leave`, 'POST', {});
   if(r && r.left){
-    const card = document.getElementById('grp-card-'+id);
-    if(card){
-      const mc = card.querySelector('.gc-members');
-      const cur = parseInt((mc?.textContent||'1').replace(/\D/g,''))||1;
-      if(mc) mc.textContent = '👥 '+Math.max(0,cur-1).toLocaleString('ru');
-      if(btn){ btn.className='gc-join open-btn'; btn.disabled=false; btn.textContent='Войти'; btn.onclick=()=>joinGroupUI(id,btn); }
-    }
-    if(window._grpTab==='my') loadGroups();
     showToast('Вышел из группы');
+    loadGroups();
   } else {
-    if(btn){ btn.disabled=false; btn.textContent='✓ Вступил'; }
+    if(btn){ btn.disabled=false; btn.textContent='Открыть'; }
     showToast('⚠️ Нельзя выйти — ты владелец группы');
   }
 }
@@ -9128,6 +9190,9 @@ let _grpLastDateSep = null; // for date separator dedup
 let _naiProvider = null;
 let _naiMsgs = {};
 
+// Store current group metadata for info panel
+let _grpChatMeta = {};
+
 async function openGroupChat(groupId, groupName, groupIcon){
   _grpChatId = groupId;
   _grpChatLastId = 0;
@@ -9135,20 +9200,42 @@ async function openGroupChat(groupId, groupName, groupIcon){
   _grpPinnedText = null;
   _grpLastDateSep = null;
   _grpMsgReactions = {};
-  document.getElementById('gco-name').textContent = groupName||'Группа';
-  document.getElementById('gco-icon').textContent = groupIcon||'👥';
-  document.getElementById('gco-online').textContent = '';
-  document.getElementById('gco-pinned').classList.remove('visible');
-  document.getElementById('gco-reply-bar').classList.remove('visible');
-  document.getElementById('gco-msgs').innerHTML=`<div class="gco-typing-row" id="gco-typing-row"><div class="gco-av" style="width:28px;height:28px;font-size:11px">?</div><div class="gco-typing-dots"><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div></div></div>`;
+  _grpChatMeta = {id: groupId, name: groupName, icon: groupIcon};
+
+  // Update topbar
+  const nameEl = document.getElementById('gco-name');
+  const iconEl = document.getElementById('gco-icon');
+  if(nameEl) nameEl.textContent = groupName||'Группа';
+  if(iconEl) iconEl.textContent = groupIcon||'👥';
+  document.getElementById('gco-pinned')?.classList.remove('visible');
+  document.getElementById('gco-reply-bar')?.classList.remove('visible');
+  document.getElementById('gco-msgs').innerHTML=`<div style="text-align:center;color:var(--text3);padding:32px;font-size:13px">⏳ Загружаем сообщения…</div><div class="gco-typing-row" id="gco-typing-row"><div class="gco-av" style="width:28px;height:28px;font-size:11px">?</div><div class="gco-typing-dots"><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div></div></div>`;
   document.getElementById('grp-chat-overlay').classList.add('open');
-  document.getElementById('grp-members-panel').classList.remove('open');
-  // Start on Посты tab
-  gcoSwitchTab('posts', document.getElementById('gcotab-posts'));
-  // Preload members count
+  document.getElementById('grp-info-panel')?.classList.remove('open');
+  gcoUpdateSendBtn();
+  // Load messages + members + group details
+  await _loadGroupMsgs(true);
   _loadGrpMembers();
-  // Connect WebSocket (defined later in page, after DOMContentLoaded equivalent)
+  _loadGrpDetails(groupId);
   setTimeout(()=>{ if(typeof _connectGroupWs==='function') _connectGroupWs(groupId); }, 150);
+  _startGrpPoll();
+}
+
+async function _loadGrpDetails(groupId){
+  // Try to get group info from already-loaded list
+  const grpList = document.querySelectorAll('.grp-list-item');
+  // fallback: fetch from API
+  const data = await apiCall('/groups/'+groupId+'/info');
+  if(!data) return;
+  _grpChatMeta = {..._grpChatMeta, ...data};
+  // Update info panel with description and sub
+  const el=n=>document.getElementById(n);
+  const type = data.type==='private' ? 'Приватная группа' : 'Публичная группа';
+  const handle = data.handle ? ` • @${data.handle}` : '';
+  if(el('gip-sub')) el('gip-sub').textContent = type+handle;
+  if(el('gip-desc-text')) el('gip-desc-text').textContent = data.description || 'Нет описания';
+  if(el('gip-av-big')) el('gip-av-big').textContent = data.icon||'👥';
+  if(el('gip-name')) el('gip-name').textContent = data.name||'Группа';
 }
 
 function closeGroupChat(){
@@ -9162,40 +9249,53 @@ function toggleGrpMembersPanel(){
   document.getElementById('grp-members-panel').classList.toggle('open');
 }
 
+// Telegram sender colors (cycle by user_id hash)
+const _TG_COLORS=['#E17055','#FDCB6E','#00B894','#0984E3','#6C5CE7','#FD79A8','#74B9FF','#55EFC4'];
+function _tgColor(userId){ const h=String(userId||0).split('').reduce((a,c)=>a+c.charCodeAt(0),0); return _TG_COLORS[h%_TG_COLORS.length]; }
+function _tgGrad(userId){ const h=String(userId||0).split('').reduce((a,c)=>a+c.charCodeAt(0),0); const idx=h%6; return[['#0095F6','#5263FF'],['#FF6B6B','#FF8E53'],['#00C9A7','#00B4D8'],['#845EC2','#D65DB1'],['#F9C74F','#F8961E'],['#4CC9F0','#4361EE']][idx]; }
+
 // ── Build a single group message element (Telegram-style) ─────────────
 function _buildGroupMsg(m, myId){
   const isMe=String(m.user_id)===String(myId);
   const t=m.created_at?new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}):'';
   const letter=(m.display_name||'?')[0].toUpperCase();
+  const nameColor=_tgColor(m.user_id);
+  const [c1,c2]=_tgGrad(m.user_id);
+  const avStyle=`background:linear-gradient(135deg,${c1},${c2})`;
   const div=document.createElement('div');
   div.className='gco-msg'+(isMe?' me':'');
   div.dataset.msgId=m.id;
+  div.dataset.userId=m.user_id||'';
+  div.dataset.userName=m.display_name||'';
   let bubbleContent='';
   let parsedMsg=null;
   try{ if(m.content&&m.content.startsWith('{')) parsedMsg=JSON.parse(m.content); }catch(e){}
   // Reply reference
   let replyHtml='';
   if(parsedMsg&&parsedMsg.reply){
-    replyHtml=`<div class="gco-bubble-reply"><div class="rpl-name">↩ ${escHtml(parsedMsg.reply.author||'')}</div><div class="rpl-text">${escHtml((parsedMsg.reply.text||'').slice(0,80))}</div></div>`;
+    replyHtml=`<div class="gco-bubble-reply"><div class="rpl-name" style="color:var(--accent)">↩ ${escHtml(parsedMsg.reply.author||'')}</div><div class="rpl-text">${escHtml((parsedMsg.reply.text||'').slice(0,80))}</div></div>`;
   }
   if(parsedMsg&&parsedMsg.url){
     const txt=parsedMsg.text?`<div class="gco-bubble-text">${_linkify(parsedMsg.text)}</div>`:'';
-    if(parsedMsg.type==='image') bubbleContent=`<img src="${escHtml(parsedMsg.url)}" style="max-width:220px;border-radius:8px;display:block;cursor:zoom-in;margin-bottom:4px" onclick="openLightbox('${escHtml(parsedMsg.url)}','image')">${txt}`;
-    else if(parsedMsg.type==='video') bubbleContent=`<video src="${escHtml(parsedMsg.url)}" style="max-width:220px;border-radius:8px;display:block;cursor:pointer" onclick="openLightbox('${escHtml(parsedMsg.url)}','video')" poster="" controls></video>${txt}`;
-    else bubbleContent=`<div onclick="window.open('${escHtml(parsedMsg.url)}','_blank')" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px;cursor:pointer;margin-bottom:4px"><span style="font-size:22px">📄</span><div><div style="font-size:12px;font-weight:600;color:#e0e0f8">${escHtml(parsedMsg.url.split('/').pop()||'Файл')}</div><div style="font-size:10px;color:var(--text3)">Нажми чтобы открыть</div></div></div>${txt}`;
+    if(parsedMsg.type==='image') bubbleContent=`<img src="${escHtml(parsedMsg.url)}" style="max-width:240px;border-radius:10px;display:block;cursor:zoom-in;margin-bottom:4px" onclick="openLightbox('${escHtml(parsedMsg.url)}','image')">${txt}`;
+    else if(parsedMsg.type==='video') bubbleContent=`<video src="${escHtml(parsedMsg.url)}" style="max-width:240px;border-radius:10px;display:block" controls></video>${txt}`;
+    else bubbleContent=`<div onclick="window.open('${escHtml(parsedMsg.url)}','_blank')" style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:10px;padding:10px 12px;cursor:pointer;margin-bottom:4px;border:1px solid rgba(255,255,255,.08)"><span style="font-size:26px">📄</span><div><div style="font-size:12px;font-weight:600;color:#e0e0f8">${escHtml(parsedMsg.url.split('/').pop()||'Файл')}</div><div style="font-size:10px;color:var(--text3)">Нажми чтобы открыть</div></div></div>${txt}`;
   } else {
     bubbleContent=`<div class="gco-bubble-text">${_linkify(m.content||'')}</div>`;
   }
-  const tick=isMe?`<span class="gco-tick read">✓✓</span>`:'';
-  const safeText=(m.content||'').replace(/'/g,"\\'");
-  div.innerHTML=`<div class="gco-av">${letter}</div>
+  const tick=isMe?`<span class="gco-tick read" style="margin-left:4px;font-size:11px;color:rgba(255,255,255,.45)">✓✓</span>`:'';
+  const safeText=(m.content||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ');
+  const safeName=(m.display_name||'').replace(/'/g,"\\'");
+  // Avatar: show for others, hide consecutive from same user
+  const avHtml=isMe?'':`<div class="gco-av" style="${avStyle};font-size:13px;font-weight:700">${letter}</div>`;
+  div.innerHTML=`${avHtml}
     <div class="gco-bubble-wrap">
       <div class="gco-react-bar">${['👍','❤️','😂','🔥','😮','😢'].map(e=>`<button class="gco-react-btn" onclick="gcoReact(${m.id},'${e}',event)">${e}</button>`).join('')}</div>
-      <div class="gco-bubble" oncontextmenu="gcoShowCtxMenu(event,${m.id},'${safeText}','${escHtml(m.display_name||'')}')">
-        ${!isMe?`<div class="gco-bubble-name">@${escHtml(m.display_name||'Аноним')}</div>`:''}
+      <div class="gco-bubble" oncontextmenu="gcoShowCtxMenu(event,${m.id},'${safeText}','${safeName}',${isMe})">
+        ${!isMe?`<div class="gco-bubble-name" style="color:${nameColor};font-size:11px;font-weight:700;margin-bottom:4px">${escHtml(m.display_name||'Аноним')}</div>`:''}
         ${replyHtml}
         ${bubbleContent}
-        <div class="gco-bubble-time">${t}${tick}</div>
+        <div class="gco-bubble-time" style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:2px">${t}${tick}</div>
         <div class="gco-bubble-reactions" id="gco-reacts-${m.id}"></div>
       </div>
     </div>`;
@@ -9317,54 +9417,74 @@ async function _loadGrpMembers(){
   if(!_grpChatId) return;
   const members=await apiCall('/groups/'+_grpChatId+'/members');
   if(!Array.isArray(members)) return;
-  // Update info bar
-  const cntEl=document.getElementById('gco-members-count');
-  const onlEl=document.getElementById('gco-online-count');
-  if(cntEl) cntEl.textContent=members.length;
-  if(onlEl) onlEl.textContent=Math.min(members.length, Math.ceil(members.length*0.3)||1);
-  const onlineEl=document.getElementById('gco-online');
-  if(onlineEl) onlineEl.textContent='';
-  const inviteUrl=`${location.origin}${location.pathname}#grp${_grpChatId}`;
-  const makeCard=(m,i)=>{
-    const isAdmin=i===0;
-    const isOnline=Math.random()>0.5;
-    return `<div class="gco-member-card" onclick="_openMiniProfile(${m.user_id||0},'${escHtml(m.display_name||'')}')">
-      <div class="gco-member-av">${(m.display_name||'?')[0].toUpperCase()}${isOnline?'<div class="gco-online-dot"></div>':''}</div>
-      <div class="gco-member-info">
-        <div class="gco-member-name">@${escHtml(m.display_name||'Аноним')}${isAdmin?'<span class="gco-admin-badge">👑 Admin</span>':''}</div>
-        <div class="gco-member-sub">${isOnline?'● онлайн':'○ был(а) недавно'}</div>
-      </div>
+  const inviteUrl=`${location.origin}${location.pathname}?grp=${_grpChatId}`;
+  const onlineCount=Math.max(1,Math.ceil(members.length*0.25));
+  // Update topbar subtitle
+  const subEl=document.getElementById('gco-tg-sub');
+  if(subEl) subEl.textContent=`${members.length} участников • ${onlineCount} онлайн`;
+  // Update info panel
+  const el=n=>document.getElementById(n);
+  if(el('gip-members-cnt')) el('gip-members-cnt').textContent=members.length;
+  if(el('gip-online-cnt')) el('gip-online-cnt').textContent=onlineCount;
+  if(el('gip-invite-url')) el('gip-invite-url').textContent=inviteUrl;
+  if(el('gip-invite-copy')) el('gip-invite-copy').onclick=()=>{navigator.clipboard.writeText(inviteUrl);showToast('🔗 Ссылка скопирована!');};
+  // Build members list for info panel
+  const [c1,c2]=_tgGrad(_grpChatId);
+  const memberHtml=members.map((m,i)=>{
+    const isOwner=i===0;
+    const isAdmin=i<=1&&members.length>2;
+    const letter=(m.display_name||'?')[0].toUpperCase();
+    const mc=_tgColor(m.user_id);
+    const role=isOwner?`<span class="gip-member-role gip-role-owner">👑 Владелец</span>`:isAdmin?`<span class="gip-member-role gip-role-admin">⭐ Админ</span>`:'';
+    return `<div class="gip-member-row">
+      <div class="gip-member-av" style="background:linear-gradient(135deg,${_tgGrad(m.user_id||i).join(',')});font-size:16px">${letter}</div>
+      <span class="gip-member-name">${escHtml(m.display_name||'Аноним')}</span>
+      ${role}
     </div>`;
-  };
-  const inviteHtml=`<div class="gco-invite-bar">
-    <span style="font-size:14px">🔗</span>
-    <span class="gco-invite-url">${inviteUrl}</span>
-    <button class="gco-invite-copy-btn" onclick="navigator.clipboard.writeText('${inviteUrl}');showToast('🔗 Ссылка скопирована!')">Копировать</button>
-  </div>`;
-  const html=inviteHtml+members.map((m,i)=>makeCard(m,i)).join('');
-  const sideList=document.getElementById('gmp-list');
-  if(sideList) sideList.innerHTML=members.map((m,i)=>`<div class="gco-member-card"><div class="gco-member-av">${(m.display_name||'?')[0].toUpperCase()}</div><div class="gco-member-info"><div class="gco-member-name">@${escHtml(m.display_name||'Аноним')}${i===0?'<span class="gco-admin-badge">👑</span>':''}</div></div></div>`).join('');
-  const tabList=document.getElementById('gco-members-list');
-  if(tabList) tabList.innerHTML=html;
+  }).join('');
+  if(el('gip-members-list')) el('gip-members-list').innerHTML=memberHtml||'<div style="color:var(--text3);font-size:12px">Нет участников</div>';
 }
 
 /* ====== GROUP FULL VIEW JS ====== */
 
-// Tab switching
-function gcoSwitchTab(tab, el){
-  document.querySelectorAll('.gco-tab').forEach(t=>t.classList.remove('active'));
-  if(el) el.classList.add('active');
-  // Hide all tab bodies
-  ['gco-tab-posts','gco-tab-chat','gco-tab-members'].forEach(id=>{
-    const el2=document.getElementById(id);
-    if(el2) el2.style.display='none';
-  });
-  const target=document.getElementById('gco-tab-'+tab);
-  if(target) target.style.display=(tab==='members')?'block':'flex';
-  if(tab==='posts') _loadGroupPosts(_grpChatId);
-  if(tab==='chat'){ _loadGroupMsgs(true); _startGrpPoll(); }
-  if(tab==='members') _loadGrpMembers();
-  if(tab!=='chat') _stopGrpPoll();
+// gcoSwitchTab kept for backward compat (no longer used for UI, but may be called elsewhere)
+function gcoSwitchTab(tab, el){}
+
+// ── Send button ↔ mic toggle ────────────────────────────────────────────────
+function gcoUpdateSendBtn(){
+  const inp=document.getElementById('gco-input');
+  const sendBtn=document.getElementById('gco-send-btn');
+  const micBtn=document.getElementById('gco-mic-btn');
+  const hasText=(inp?.value||'').trim().length>0;
+  if(sendBtn) sendBtn.style.display=hasText?'flex':'none';
+  if(micBtn) micBtn.style.display=hasText?'none':'flex';
+}
+
+// ── Group info panel ────────────────────────────────────────────────────────
+function openGrpInfo(){
+  document.getElementById('grp-info-panel')?.classList.add('open');
+  // Fill in basic info from meta
+  const meta=_grpChatMeta||{};
+  const el=n=>document.getElementById(n);
+  if(el('gip-av-big')) el('gip-av-big').textContent=meta.icon||'👥';
+  if(el('gip-name')) el('gip-name').textContent=meta.name||'Группа';
+  // Members + invite from already-loaded data (refreshed by _loadGrpMembers)
+}
+function closeGrpInfo(){
+  document.getElementById('grp-info-panel')?.classList.remove('open');
+}
+function gipCopyInvite(){
+  const url=document.getElementById('gip-invite-url')?.textContent;
+  if(url){ navigator.clipboard.writeText(url); showToast('🔗 Ссылка скопирована!'); }
+}
+async function gipLeaveGroup(){
+  if(!_grpChatId) return;
+  if(!confirm('Покинуть группу?')) return;
+  await apiCall('/groups/'+_grpChatId+'/leave','POST',{});
+  showToast('Вы покинули группу');
+  closeGrpInfo();
+  closeGroupChat();
+  loadGroups();
 }
 
 // Linkify URLs → clickable anchors
@@ -9413,14 +9533,17 @@ function gcoUnreact(msgId, emoji){
 }
 
 // ══ CONTEXT MENU ─────────────────────────────────────────────────────────
-function gcoShowCtxMenu(e, msgId, text, author){
+function gcoShowCtxMenu(e, msgId, text, author, isMe){
   e.preventDefault(); e.stopPropagation();
-  _grpCtxState={id:msgId, text, author};
+  _grpCtxState={id:msgId, text, author, isMe};
   const menu=document.getElementById('gco-ctx');
   if(!menu) return;
+  // Show/hide edit based on ownership
+  const editItem=document.getElementById('gco-ctx-edit');
+  if(editItem) editItem.style.display=isMe?'flex':'none';
   menu.style.display='block';
-  const x=Math.min(e.clientX, window.innerWidth-180);
-  const y=Math.min(e.clientY, window.innerHeight-160);
+  const x=Math.min(e.clientX, window.innerWidth-190);
+  const y=Math.min(e.clientY, window.innerHeight-220);
   menu.style.left=x+'px'; menu.style.top=y+'px';
   setTimeout(()=>document.addEventListener('click',gcoHideCtxMenu,{once:true}),10);
 }
@@ -9444,7 +9567,36 @@ function gcoCtxPin(){
   showToast('📌 Сообщение закреплено'); gcoHideCtxMenu();
 }
 function gcoUnpin(){ document.getElementById('gco-pinned').classList.remove('visible'); _grpPinnedText=null; }
-function gcoCtxDelete(){ showToast('🗑 Удаление сообщений скоро'); gcoHideCtxMenu(); }
+async function gcoCtxDelete(){
+  if(!_grpCtxState||!_grpChatId) return;
+  gcoHideCtxMenu();
+  const r=await apiCall('/groups/'+_grpChatId+'/messages/'+_grpCtxState.id,'DELETE',{});
+  if(r&&!r.error){
+    const el=document.querySelector(`[data-msg-id="${_grpCtxState.id}"]`);
+    if(el){ el.style.opacity='0'; el.style.transition='opacity .2s'; setTimeout(()=>el.remove(),200); }
+    showToast('🗑 Удалено');
+  } else showToast('❌ Нельзя удалить');
+}
+function gcoCtxForward(){
+  if(!_grpCtxState) return;
+  gcoHideCtxMenu();
+  // Put text in clipboard with attribution
+  navigator.clipboard.writeText(`[Переслано от ${_grpCtxState.author||''}]\n${_grpCtxState.text||''}`);
+  showToast('➡️ Скопировано для пересылки');
+}
+function gcoCtxEdit(){
+  if(!_grpCtxState||!_grpCtxState.isMe) return;
+  gcoHideCtxMenu();
+  const inp=document.getElementById('gco-input');
+  if(inp){
+    inp.value=_grpCtxState.text||'';
+    inp.focus();
+    inp.dataset.editMsgId=_grpCtxState.id;
+    inp.placeholder='Редактировать сообщение…';
+    gcoUpdateSendBtn();
+  }
+  showToast('✏️ Редактируй и отправь заново');
+}
 
 // ══ EMOJI PICKER ─────────────────────────────────────────────────────────
 function gcoToggleEmoji(){
