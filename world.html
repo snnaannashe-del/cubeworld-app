@@ -1733,7 +1733,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <nav id="int-sidenav">
       <div class="sn-section">Главное</div>
       <div class="sn-item active" onclick="switchSection('feed',this)"><span class="sn-icon">🏠</span>Лента</div>
-      <div class="sn-item" onclick="switchSection('chat',this)"><span class="sn-icon">💬</span>Чаты<span class="sn-badge" id="sn-badge-chat">3</span></div>
+      <div class="sn-item" onclick="switchSection('chat',this)"><span class="sn-icon">💬</span>Чаты<span class="sn-badge" id="sn-badge-chat" style="display:none"></span></div>
       <div class="sn-item" onclick="switchSection('groups',this)"><span class="sn-icon">👥</span>Группы</div>
       <div class="sn-divider"></div>
       <div class="sn-section">Контент</div>
@@ -4806,13 +4806,12 @@ function clearChatArea() {
 }
 
 function openNewDmPrompt(){
-  const myId=localStorage.getItem('cw_user_id');
-  const others=(_chatOnlineUsers||[]).filter(u=>String(u.user_id)!==String(myId));
-  if(!others.length) { showToast('В кубе никого нет онлайн прямо сейчас'); return; }
-  const names=others.map((u,i)=>`${i+1}. ${u.display_name}`).join('\n');
-  const choice=prompt('Кому написать?\n\n'+names+'\n\nВведи номер:');
-  const idx=parseInt(choice)-1;
-  if(!isNaN(idx) && others[idx]) openDmWith(others[idx].user_id, others[idx].display_name);
+  // Open search modal → Users tab so user can find whom to DM
+  openSrchModal();
+  // Switch to users tab
+  const usersTab=document.querySelector('#srch-tabs .srch-tab:nth-child(3)');
+  setSrchTab('users', usersTab);
+  setTimeout(()=>{ const inp=document.getElementById('srch-main-input'); if(inp){ inp.value=''; inp.focus(); } }, 120);
 }
 function openNewChat(){ openNewDmPrompt(); }
 
@@ -5671,9 +5670,50 @@ function toggleUserCard(uid, card){
 
 // ── User actions ─────────────────────────────────
 function suiViewProfile(uid, name, e){
-  // Show a mini tooltip/panel below the button with brief info
-  showToast('👤 '+name+' — открываю профиль');
-  // TODO: open full profile view when implemented
+  _openMiniProfile(uid, name);
+}
+
+async function _openMiniProfile(uid, name){
+  openSrchModal();
+  const usersTab=document.querySelector('#srch-tabs .srch-tab:nth-child(3)');
+  setSrchTab('users', usersTab);
+  const body=document.getElementById('srch-body');
+  if(!body) return;
+  const letter=(name||'?')[0].toUpperCase();
+  body.innerHTML=`<div style="padding:20px;text-align:center">
+    <div style="width:56px;height:56px;border-radius:50%;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:24px;color:#fff;font-weight:700;margin-bottom:10px">${letter}</div>
+    <div style="font-weight:700;font-size:15px;color:#e0e0f8;margin-bottom:4px">${escHtml(name||'Пользователь')}</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:14px">UID #${uid}</div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-accent" style="padding:7px 16px;font-size:12px" onclick="closeSrchModal();switchSection('chat',null);setTimeout(()=>openDmWith(${uid},'${escHtml(name||'')}'),80)">💬 Написать</button>
+      <button class="btn btn-ghost" style="padding:7px 16px;font-size:12px" id="mini-follow-btn-${uid}" onclick="vfFollow('${uid}');this.textContent=((app.vfFollowing||{})[${uid}]?'✓ Подписан':'➕ Подписаться')">➕ Подписаться</button>
+    </div>
+    <div id="mini-posts-${uid}" style="margin-top:16px;font-size:12px;color:var(--text3);text-align:center">⏳ Загружаем посты…</div>
+  </div>`;
+  // Try loading from global feed cache first
+  const feedPosts=(_vfPosts||[]).filter(p=>String(p.user_id)===String(uid));
+  _renderMiniPosts(uid, feedPosts);
+  // Also reload feed to get fresh data if not loaded
+  if(!_vfPosts.length){
+    const data=await apiCall('/feed');
+    if(Array.isArray(data)){ _vfPosts=data; _renderMiniPosts(uid, data.filter(p=>String(p.user_id)===String(uid))); }
+  }
+}
+
+function _renderMiniPosts(uid, posts){
+  const container=document.getElementById('mini-posts-'+uid);
+  if(!container) return;
+  if(!posts.length){ container.innerHTML='<div style="padding:12px 0;color:var(--text3);font-size:12px">Нет публичных постов</div>'; return; }
+  container.innerHTML=`<div style="border-top:1px solid var(--border);margin-top:4px">
+    <div style="font-size:11px;font-weight:700;color:var(--text3);padding:8px 14px;text-transform:uppercase;letter-spacing:.06em">Посты</div>
+    ${posts.slice(0,6).map(p=>`
+    <div style="padding:8px 14px;border-top:1px solid rgba(255,255,255,.05);font-size:13px;color:var(--text);cursor:pointer" onclick="closeSrchModal();switchSection('feed',null)">
+      ${p.image_url?`<img src="${escHtml(p.image_url)}" style="width:100%;max-height:100px;object-fit:cover;border-radius:8px;margin-bottom:5px" onerror="this.style.display='none'">`:
+        p.post_type==='short'?`<span style="font-size:11px;color:var(--accent)">🎬 Видео · </span>`:''}
+      <span>${escHtml((p.description||p.content||'').slice(0,80))}</span>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px">❤️ ${p.likes||0} · 👁️ ${p.view_count||0}</div>
+    </div>`).join('')}
+  </div>`;
 }
 
 function suiDM(uid, name){
@@ -5794,7 +5834,7 @@ async function buildEntityTab(type){
       body.innerHTML=`<div class="srch-empty"><span class="srch-empty-icon">👥</span>Группы не найдены</div>`; return;
     }
     body.innerHTML=`<div class="srch-entity-list">${res.map(g=>`
-      <div class="srch-entity-item" onclick="closeSrchModal();switchSection('groups',null);setTimeout(()=>setGrpTab('all',document.getElementById('grp-tab-all')),200)">
+      <div class="srch-entity-item" onclick="closeSrchModal();setTimeout(()=>openGroupChat(${g.id},'${escHtml(g.name)}','${escHtml(g.icon||'👥')}'),100)">
         <div class="sei-icon">${escHtml(g.icon||'👥')}</div>
         <div class="sei-info">
           <div class="sei-name">${escHtml(g.name)}</div>
@@ -7912,15 +7952,8 @@ function vfShare(postId){
   else{navigator.clipboard.writeText(url).then(()=>showToast('Ссылка скопирована! 🔗')).catch(()=>showToast('Скопируй URL: '+url));}
 }
 
-function openVideoUpload(){
-  document.getElementById('vf-upload-overlay').style.display='flex';
-}
-function closeVideoUpload(){
-  document.getElementById('vf-upload-overlay').style.display='none';
-  document.getElementById('vfu-url').value='';
-  document.getElementById('vfu-desc').value='';
-  document.getElementById('vfu-music').value='';
-}
+function openVideoUpload(){ openCreatePost(); }  // legacy → new modal
+function closeVideoUpload(){ closeModal('modal-create-post'); }
 
 async function submitVideoPost(){
   const videoUrl=(document.getElementById('vfu-url')?.value||'').trim();
@@ -8105,12 +8138,55 @@ async function sendGroupMsg(){
 function _startGrpPoll(){
   _stopGrpPoll();
   _grpChatPollTimer=setInterval(async()=>{
-    if(!_grpChatId){_stopGrpPoll();return;}
-    await _loadGroupMsgs();
+    if(!_grpChatId){ _stopGrpPoll(); return; }
+    await _pollNewGroupMsgs();
   },4000);
 }
 function _stopGrpPoll(){
   if(_grpChatPollTimer){clearInterval(_grpChatPollTimer);_grpChatPollTimer=null;}
+}
+
+async function _pollNewGroupMsgs(){
+  if(!_grpChatId) return;
+  const msgs=await apiCall('/groups/'+_grpChatId+'/messages');
+  if(!Array.isArray(msgs)) return;
+  const container=document.getElementById('gco-msgs');
+  if(!container) return;
+  const myId=localStorage.getItem('cw_user_id');
+  const wasAtBottom=container.scrollHeight-container.scrollTop-container.clientHeight<80;
+  let added=false;
+  msgs.forEach(m=>{
+    if(m.id<=_grpChatLastId) return; // already shown
+    _grpChatLastId=m.id;
+    added=true;
+    const isMe=String(m.user_id)===String(myId);
+    const t=m.created_at?new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}):'';
+    const letter=(m.display_name||'?')[0].toUpperCase();
+    const div=document.createElement('div');
+    div.className='gco-msg'+(isMe?' me':'');
+    let bubbleContent='';
+    let parsedMsg=null;
+    try{ if(m.content&&m.content.startsWith('{')) parsedMsg=JSON.parse(m.content); }catch(e){}
+    if(parsedMsg&&parsedMsg.url){
+      const txt=parsedMsg.text?`<div class="gco-bubble-text">${_linkify(parsedMsg.text)}</div>`:'';
+      if(parsedMsg.type==='image') bubbleContent=`<img src="${escHtml(parsedMsg.url)}" style="max-width:200px;border-radius:8px;display:block;cursor:pointer" onclick="window.open('${escHtml(parsedMsg.url)}','_blank')">${txt}`;
+      else if(parsedMsg.type==='video') bubbleContent=`<video src="${escHtml(parsedMsg.url)}" style="max-width:200px;border-radius:8px" controls></video>${txt}`;
+      else bubbleContent=`<a href="${escHtml(parsedMsg.url)}" target="_blank" class="chat-link">📄 Файл</a>${txt}`;
+    } else {
+      bubbleContent=`<div class="gco-bubble-text">${_linkify(escHtml(m.content||''))}</div>`;
+    }
+    div.innerHTML=`<div class="gco-av">${letter}</div>
+      <div class="gco-bubble">
+        ${!isMe?`<div class="gco-bubble-name">@${escHtml(m.display_name||'Аноним')}</div>`:''}
+        ${bubbleContent}
+        <div class="gco-bubble-time">${t}</div>
+      </div>`;
+    // Remove placeholder if present
+    const placeholder=container.querySelector('.ca-empty');
+    if(placeholder) placeholder.remove();
+    container.appendChild(div);
+  });
+  if(added&&wasAtBottom) container.scrollTop=container.scrollHeight;
 }
 
 async function _loadGrpMembers(){
