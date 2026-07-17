@@ -251,7 +251,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 /* ── FEED — TikTok Style ─── */
 #sec-feed{flex-direction:column;display:flex;position:relative;background:#000;overflow:hidden;height:100%}
-.vf-header{position:absolute;top:0;left:0;right:0;z-index:20;padding:12px 14px 8px;display:flex;align-items:center;gap:8px;background:linear-gradient(to bottom,rgba(0,0,0,.8) 0%,rgba(0,0,0,.3) 60%,transparent 100%);pointer-events:auto}
+/* vf-container must fill entire sec-feed — stories bar is overlay */
+#sec-feed>.vf-container{flex:1;height:100%}
+.vf-header{position:absolute;top:0;left:0;right:0;z-index:20;padding:10px 14px 6px;display:flex;align-items:center;gap:8px;background:linear-gradient(to bottom,rgba(0,0,0,.88) 0%,rgba(0,0,0,.55) 55%,transparent 100%);pointer-events:auto}
+/* Stories bar injected into feed — must be absolute so it doesn't steal height from vf-container */
+#stories-bar-injected{position:absolute!important;top:46px!important;left:0!important;right:0!important;z-index:19!important;background:linear-gradient(to bottom,rgba(0,0,0,.55) 0%,transparent 100%)!important;pointer-events:auto}
 .vf-tabs{display:flex;gap:0}
 .vf-tab{padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.6);border:none;background:transparent;transition:all .2s;border-bottom:2px solid transparent;line-height:1.2}
 .vf-tab.active{color:#fff;border-bottom-color:#fff}
@@ -271,7 +275,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   display:flex;flex-direction:column;justify-content:center;align-items:center;
   gap:14px;overflow-y:auto;box-sizing:border-box
 }
-/* POST image: show at natural uploaded ratio, max 90% of card */
+/* Full-screen image card (replaces vf-ball-card for image posts) */
+.vf-img-card{position:absolute;inset:0;overflow:hidden;background:#000}
+.vf-img-bg{position:absolute;inset:-40px;background-size:cover;background-position:center;filter:blur(28px) brightness(.35) saturate(1.3);z-index:0;will-change:filter}
+.vf-img-main{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;display:block}
+/* POST image legacy */
 .vf-ball-image{
   max-width:100%;
   max-height:70vh;
@@ -1998,7 +2006,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   /* ── global bottom padding for sections behind nav ── */
   .int-section:not(#sec-feed){padding-bottom:62px}
   /* feed: padding on the vf-actions/vf-info overlays, NOT the section itself */
-  #sec-feed{padding-bottom:0}
+  #sec-feed{padding-bottom:0;height:100%}
+  /* vf-container fills ALL of sec-feed height — stories bar is absolute overlay */
+  #sec-feed .vf-container{flex:1;height:100%;width:100%}
+  /* Ensure stories bar is absolute on mobile */
+  #stories-bar-injected{position:absolute!important;top:44px!important;left:0!important;right:0!important;z-index:19!important}
   #sec-feed .vf-actions{bottom:74px}
   #sec-feed .vf-info{padding-bottom:74px}
 
@@ -4422,7 +4434,7 @@ function switchSection(name,el){
   if(mobMap[name]) document.getElementById(mobMap[name])?.classList.add('active');
 
   // Load data
-  if(name==='feed')     { loadVideoFeed(); }
+  if(name==='feed')     { loadVideoFeed(); setTimeout(()=>{ const c=document.getElementById('vf-container'); if(c){ const h=c.clientHeight||c.getBoundingClientRect().height; if(h) c.querySelectorAll('.vf-card').forEach(x=>{x.style.height=h+'px';x.style.minHeight=h+'px';}); }}, 100); }
   if(name==='signals')  { renderSignals(); loadRealSignals(); }
   if(name==='chat'){
     document.getElementById('sn-badge-chat')?.style.setProperty('display','none');
@@ -8391,7 +8403,8 @@ function renderFeed(){
       const fileUrl=post.image_url||post.file_url||'';
       const isImg=fileUrl&&/\.(jpe?g|png|gif|webp|svg|bmp|avif)(\?|$)/i.test(fileUrl);
       if(fileUrl&&isImg){
-        mediaHtml=`<div class="vf-ball-card"><img class="vf-ball-image" src="${escHtml(fileUrl)}" onerror="this.style.display='none'" loading="lazy"><div class="vf-ball-text">${escHtml(post.title||post.description||post.content||'')}</div></div>`;
+        // Full-screen image with blurred background (like Instagram/TikTok)
+        mediaHtml=`<div class="vf-img-card"><div class="vf-img-bg" style="background-image:url('${escHtml(fileUrl)}')"></div><img class="vf-img-main" src="${escHtml(fileUrl)}" onerror="this.style.opacity='.3'" loading="lazy"></div>`;
       } else if(fileUrl){
         // Non-image file attachment
         const fname=fileUrl.split('/').pop().split('?')[0];
@@ -8497,14 +8510,15 @@ function renderFeed(){
   },{root:container,threshold:0.65});
   // Pin each card height to the container's client height for exact snap-scroll
   function _fixCardHeights(){
-    const h = container.clientHeight;
+    const h = container.clientHeight||container.getBoundingClientRect().height;
     if(!h) return;
     container.querySelectorAll('.vf-card').forEach(c=>{ c.style.height = h+'px'; c.style.minHeight = h+'px'; });
   }
-  _fixCardHeights();
+  // Double-RAF ensures layout is fully settled before measuring
+  requestAnimationFrame(()=>requestAnimationFrame(_fixCardHeights));
   // Disconnect previous observer before creating new one (prevents leaks)
   if(window._vfRO){ window._vfRO.disconnect(); }
-  window._vfRO = new ResizeObserver(_fixCardHeights);
+  window._vfRO = new ResizeObserver(()=>requestAnimationFrame(_fixCardHeights));
   window._vfRO.observe(container);
   container.querySelectorAll('.vf-card').forEach(c=>_vfObserver.observe(c));
 }
