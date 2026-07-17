@@ -303,6 +303,138 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #sec-chat .ca-msgs{-webkit-overflow-scrolling:touch}
   .groups-grid{-webkit-overflow-scrolling:touch}
 }
+
+/* ═══ TELEGRAM-STYLE GROUP ENHANCEMENTS ════════════════════════════════ */
+/* Bubble wrap + tail */
+.gco-bubble-wrap{position:relative;max-width:72%}
+.gco-msg.me .gco-bubble-wrap{margin-left:auto}
+.gco-bubble{position:relative;border-radius:14px 14px 14px 2px;padding:8px 12px;background:rgba(255,255,255,.07)}
+.gco-bubble::before{content:'';position:absolute;bottom:0;left:-7px;width:0;height:0;border-top:8px solid transparent;border-right:7px solid rgba(255,255,255,.07)}
+.gco-msg.me .gco-bubble{background:rgba(0,149,246,.25);border-radius:14px 14px 2px 14px}
+.gco-msg.me .gco-bubble::before{display:none}
+.gco-msg.me .gco-bubble::after{content:'';position:absolute;bottom:0;right:-7px;width:0;height:0;border-top:8px solid transparent;border-left:7px solid rgba(0,149,246,.25)}
+/* Date separator */
+.gco-date-sep{display:flex;align-items:center;justify-content:center;margin:14px 0 6px;flex-shrink:0}
+.gco-date-sep span{background:rgba(255,255,255,.07);border-radius:16px;padding:3px 12px;font-size:11px;color:var(--text3)}
+/* Reply preview inside bubble */
+.gco-bubble-reply{background:rgba(0,149,246,.1);border-left:3px solid var(--accent);border-radius:6px;padding:5px 8px;margin-bottom:6px}
+.gco-bubble-reply .rpl-name{font-size:10px;color:var(--accent);font-weight:700;margin-bottom:2px}
+.gco-bubble-reply .rpl-text{font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+/* Hover reaction bar */
+.gco-react-bar{position:absolute;bottom:calc(100% + 5px);left:0;background:#1a1a2f;border:1px solid var(--border);border-radius:22px;padding:4px 6px;display:none;gap:1px;z-index:20;box-shadow:0 4px 20px rgba(0,0,0,.6);animation:fadeUp .12s ease}
+.gco-msg.me .gco-react-bar{left:auto;right:0}
+.gco-bubble-wrap:hover .gco-react-bar{display:flex}
+.gco-react-btn{background:none;border:none;cursor:pointer;font-size:18px;padding:3px 5px;border-radius:50%;line-height:1;transition:transform .1s}
+.gco-react-btn:hover{transform:scale(1.35)}
+/* Reaction badges */
+.gco-bubble-reactions{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.gco-bubble-rbadge{background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:10px;padding:2px 7px;font-size:11px;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:3px}
+.gco-bubble-rbadge:hover,.gco-bubble-rbadge.mine{background:rgba(0,149,246,.18);border-color:rgba(0,149,246,.4)}
+/* Read receipts */
+.gco-tick{font-size:10px;color:rgba(255,255,255,.35);margin-left:3px}
+.gco-tick.read{color:var(--accent)}
+/* Typing indicator */
+.gco-typing-row{display:flex;align-items:center;gap:8px;padding:2px 0;opacity:0;pointer-events:none;transition:opacity .2s;height:0;overflow:hidden}
+.gco-typing-row.visible{opacity:1;height:auto}
+.gco-typing-dots{display:flex;gap:4px;align-items:center;background:rgba(255,255,255,.06);border-radius:12px 12px 12px 2px;padding:8px 12px}
+.gco-typing-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:typingBounce 1.2s ease-in-out infinite}
+.gco-typing-dot:nth-child(2){animation-delay:.2s}
+.gco-typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes typingBounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+/* Pinned message */
+.gco-pinned{display:none;align-items:center;gap:8px;padding:7px 14px;background:rgba(0,149,246,.05);border-bottom:1px solid rgba(0,149,246,.14);cursor:pointer;flex-shrink:0}
+.gco-pinned.visible{display:flex}
+.gco-pinned-accent{width:3px;height:32px;background:var(--accent);border-radius:2px;flex-shrink:0}
+.gco-pinned-body{flex:1;min-width:0}
+.gco-pinned-label{font-size:10px;color:var(--accent);font-weight:700}
+.gco-pinned-text{font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gco-unpin{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:0 2px}
+/* Group info bar */
+.gco-info-bar{display:flex;align-items:center;gap:16px;padding:5px 14px 6px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.005);flex-shrink:0}
+.gco-info-stat{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.gco-info-stat b{color:var(--text2);font-weight:600}
+/* Reply bar above input */
+.gco-reply-bar{display:none;align-items:center;gap:8px;padding:7px 14px;background:rgba(0,149,246,.07);border-top:2px solid var(--border);border-left:3px solid var(--accent);flex-shrink:0}
+.gco-reply-bar.visible{display:flex}
+.gco-reply-info{flex:1;min-width:0}
+.gco-reply-author{font-size:10px;color:var(--accent);font-weight:700;margin-bottom:1px}
+.gco-reply-text{font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gco-reply-cancel{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:0 2px}
+/* Voice button */
+.gco-voice-btn{background:transparent;border:none;font-size:18px;cursor:pointer;color:var(--text3);padding:0 2px;transition:color .15s;flex-shrink:0}
+.gco-voice-btn:hover{color:var(--text)}
+.gco-voice-btn.rec{color:var(--red);animation:pulse .8s infinite}
+/* Emoji picker floating */
+.gco-emoji-picker{position:absolute;bottom:calc(100% + 8px);left:0;background:#14142a;border:1px solid var(--border);border-radius:14px;padding:10px;z-index:200;display:none;grid-template-columns:repeat(8,34px);gap:2px;box-shadow:0 8px 36px rgba(0,0,0,.7);animation:fadeUp .14s ease}
+.gco-emoji-picker.open{display:grid}
+.gco-epick{background:none;border:none;font-size:20px;cursor:pointer;width:34px;height:34px;border-radius:8px;transition:all .1s;display:flex;align-items:center;justify-content:center}
+.gco-epick:hover{background:rgba(255,255,255,.1);transform:scale(1.2)}
+/* Context menu */
+.gco-ctx{position:fixed;background:#16162c;border:1px solid var(--border);border-radius:11px;padding:4px;z-index:9999;min-width:170px;box-shadow:0 8px 36px rgba(0,0,0,.7);animation:fadeUp .12s ease}
+.gco-ctx-item{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text);transition:background .12s}
+.gco-ctx-item:hover{background:rgba(255,255,255,.06)}
+.gco-ctx-item.danger{color:var(--red)}
+.gco-ctx-sep{height:1px;background:var(--border);margin:3px 8px}
+/* Members tab redesign */
+.gco-member-card{display:flex;align-items:center;gap:10px;padding:10px 6px;border-bottom:1px solid var(--border2);cursor:pointer;border-radius:8px;transition:background .15s}
+.gco-member-card:hover{background:rgba(255,255,255,.04)}
+.gco-member-av{width:40px;height:40px;border-radius:50%;background:rgba(0,149,246,.22);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;flex-shrink:0;position:relative}
+.gco-online-dot{width:8px;height:8px;border-radius:50%;background:var(--green);border:2px solid var(--bg);position:absolute;bottom:0;right:0}
+.gco-member-info{flex:1;min-width:0}
+.gco-member-name{font-size:13px;font-weight:600;color:#e0e0f8}
+.gco-member-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.gco-admin-badge{font-size:9px;background:rgba(251,191,36,.14);color:var(--gold);border:1px solid rgba(251,191,36,.3);border-radius:4px;padding:1px 6px;margin-left:5px;font-weight:700}
+/* Invite link bar */
+.gco-invite-bar{background:rgba(0,149,246,.06);border:1px solid rgba(0,149,246,.18);border-radius:10px;padding:10px 12px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.gco-invite-url{flex:1;font-size:11px;color:var(--text3);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gco-invite-copy-btn{background:rgba(0,149,246,.18);border:1px solid rgba(0,149,246,.35);color:var(--accent);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;white-space:nowrap;transition:background .15s}
+.gco-invite-copy-btn:hover{background:rgba(0,149,246,.32)}
+/* Lightbox */
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:99999;display:none;align-items:center;justify-content:center}
+#lightbox.open{display:flex}
+#lightbox img,#lightbox video{max-width:92vw;max-height:88vh;border-radius:10px;object-fit:contain}
+#lb-close{position:fixed;top:14px;right:14px;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:18px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1}
+/* ═══ NET SEARCH ════════════════════════════════════════════════════════ */
+.nsrch-intro{padding:14px 18px 8px;font-size:12px;color:var(--text3);text-align:center}
+.nsrch-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:8px 14px 16px}
+.nsrch-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:14px;padding:16px 12px;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.nsrch-card:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.08);transform:translateY(-2px)}
+.nsrch-logo{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:2px}
+.nsrch-name{font-size:13px;font-weight:700;color:#e0e0f8}
+.nsrch-sub{font-size:11px;color:var(--text3)}
+.nsrch-tag{font-size:10px;padding:2px 9px;border-radius:10px;font-weight:700;margin-top:2px}
+/* NAI Overlay (full AI chat) */
+#nai-overlay{position:fixed;inset:0;background:var(--bg);z-index:10000;display:none;flex-direction:column}
+#nai-overlay.open{display:flex}
+.nai-topbar{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);flex-shrink:0;min-height:52px}
+.nai-back-btn{background:transparent;border:1px solid var(--border);color:var(--text2);padding:5px 11px;border-radius:7px;font-size:13px;cursor:pointer}
+.nai-logo{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.nai-title{flex:1;min-width:0}
+.nai-tname{font-size:14px;font-weight:700;color:#e0e0f8}
+.nai-tsub{font-size:10px;color:var(--green)}
+.nai-open-btn{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text2);padding:5px 11px;border-radius:7px;font-size:12px;cursor:pointer;white-space:nowrap}
+.nai-open-btn:hover{background:rgba(255,255,255,.12);color:var(--text)}
+.nai-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.nai-bubble{max-width:82%;border-radius:14px;padding:10px 14px;font-size:14px;line-height:1.65;word-break:break-word;animation:fadeUp .15s ease}
+.nai-bubble.user{background:rgba(0,149,246,.25);border-radius:14px 14px 2px 14px;align-self:flex-end;color:#fff}
+.nai-bubble.ai{background:rgba(255,255,255,.06);border-radius:14px 14px 14px 2px;align-self:flex-start;color:#e0e0f8}
+.nai-bubble-meta{font-size:10px;color:var(--text3);margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.nai-typing-wrap{background:rgba(255,255,255,.06);border-radius:14px 14px 14px 2px;padding:10px 14px;align-self:flex-start;display:flex;gap:5px;align-items:center}
+.nai-tdot{width:7px;height:7px;border-radius:50%;background:var(--text3);animation:typingBounce 1.2s ease-in-out infinite}
+.nai-tdot:nth-child(2){animation-delay:.2s}
+.nai-tdot:nth-child(3){animation-delay:.4s}
+.nai-input-row{display:flex;gap:10px;padding:12px 14px;border-top:1px solid var(--border);flex-shrink:0;position:relative}
+.nai-input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:22px;color:#e0e0f8;padding:10px 18px;font-size:13px;font-family:inherit;outline:none}
+.nai-input:focus{border-color:rgba(0,149,246,.4)}
+.nai-send-btn{background:var(--accent);border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;color:#fff;font-size:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .16s}
+.nai-send-btn:hover{opacity:.85}
+.nai-empty{text-align:center;padding:40px 24px;color:var(--text3)}
+.nai-empty-icon{font-size:44px;margin-bottom:12px}
+.nai-empty-title{font-size:15px;font-weight:700;color:#e0e0f8;margin-bottom:6px}
+.nai-empty-sub{font-size:12px;line-height:1.7}
+.nai-hints{display:flex;flex-direction:column;gap:8px;margin-top:16px;align-items:center}
+.nai-hint{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:20px;padding:7px 18px;font-size:12px;color:var(--text2);cursor:pointer;transition:all .14s;white-space:nowrap}
+.nai-hint:hover{background:rgba(255,255,255,.1);color:var(--text)}
 .vf-container{position:absolute;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory}
 .vf-container::-webkit-scrollbar{display:none}
 .vf-card{height:100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -1946,11 +2078,26 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           <span class="gco-icon" id="gco-icon">👥</span>
           <div style="flex:1;min-width:0">
             <div class="gco-name" id="gco-name">Группа</div>
-            <div class="gco-online" id="gco-online" style="font-size:10px;color:var(--text3)"></div>
+            <div id="gco-online" style="font-size:10px;color:var(--text3)"></div>
           </div>
           <button class="gco-members-btn" title="Участники" onclick="toggleGrpMembersPanel()">👥</button>
-          <button class="gco-members-btn" title="Позвонить" onclick="showToast('📞 Голосовые звонки скоро!')">📞</button>
-          <button class="gco-members-btn" title="Ещё" onclick="showToast('Настройки группы скоро')">⋯</button>
+          <button class="gco-members-btn" title="Поиск в группе" onclick="showToast('🔍 Поиск в группе скоро')">🔍</button>
+          <button class="gco-members-btn" title="Настройки" onclick="gcoOpenSettings()">⚙️</button>
+        </div>
+        <!-- Info bar: member count + online -->
+        <div class="gco-info-bar" id="gco-info-bar">
+          <div class="gco-info-stat">👥 <b id="gco-members-count">…</b> участников</div>
+          <div class="gco-info-stat">🟢 <b id="gco-online-count">0</b> онлайн</div>
+          <div class="gco-info-stat" id="gco-desc-stat" style="display:none">📝 <b id="gco-desc-short">…</b></div>
+        </div>
+        <!-- Pinned message -->
+        <div class="gco-pinned" id="gco-pinned">
+          <div class="gco-pinned-accent"></div>
+          <div class="gco-pinned-body">
+            <div class="gco-pinned-label">📌 Закреплено</div>
+            <div class="gco-pinned-text" id="gco-pinned-text"></div>
+          </div>
+          <button class="gco-unpin" onclick="gcoUnpin()" title="Открепить">✕</button>
         </div>
         <!-- tabs: Посты | Чат | Участники -->
         <div class="gco-tabs">
@@ -1973,11 +2120,33 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <!-- CHAT TAB -->
         <div class="gco-body" id="gco-tab-chat" style="display:none">
           <div class="gco-msgs" id="gco-msgs">
-            <div style="text-align:center;color:var(--text3);padding:40px;font-size:13px">💬 Начни переписку</div>
+            <div class="gco-typing-row" id="gco-typing-row">
+              <div class="gco-av" style="width:28px;height:28px;font-size:11px">?</div>
+              <div class="gco-typing-dots"><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div></div>
+            </div>
           </div>
-          <div class="gco-input-row">
-            <button class="gco-members-btn" onclick="gcoAttachInChat()" title="Прикрепить">📎</button>
-            <input class="gco-input" id="gco-input" placeholder="Сообщение…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendGroupMsg();}">
+          <!-- Reply preview bar -->
+          <div class="gco-reply-bar" id="gco-reply-bar">
+            <div style="font-size:16px;color:var(--accent)">↩</div>
+            <div class="gco-reply-info">
+              <div class="gco-reply-author" id="gco-reply-author"></div>
+              <div class="gco-reply-text" id="gco-reply-text"></div>
+            </div>
+            <button class="gco-reply-cancel" onclick="gcoCancelReply()">✕</button>
+          </div>
+          <!-- Input row -->
+          <div class="gco-input-row" style="position:relative">
+            <button class="gco-voice-btn" onclick="gcoAttachInChat()" title="Прикрепить файл">📎</button>
+            <div style="position:relative;flex:1">
+              <input class="gco-input" id="gco-input" placeholder="Сообщение…"
+                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendGroupMsg();}"
+                oninput="gcoChatTyping()">
+              <!-- Emoji picker -->
+              <div class="gco-emoji-picker" id="gco-emoji-picker">
+                ${['😊','😂','❤️','🔥','👍','😍','🎉','😭','😮','🥰','😎','🤔','💯','✨','🙏','💪','🤣','😅','😆','🤩','😴','🥳','😤','🤗','💀','👀','🫡','🚀','💎','🌟','⚡','🎯','💰','🦋','🐉','🌙'].map(e=>`<button class="gco-epick" onclick="gcoInsertEmoji('${e}')">${e}</button>`).join('')}
+              </div>
+            </div>
+            <button class="gco-voice-btn" onclick="gcoToggleEmoji()" title="Эмодзи">😊</button>
             <button class="gco-send" onclick="sendGroupMsg()">↑</button>
           </div>
         </div>
@@ -2010,6 +2179,26 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           <div class="modal-actions">
             <button class="btn btn-ghost" onclick="closeModal('modal-gco-post')">Отмена</button>
             <button class="btn btn-accent" id="gco-post-submit-btn" onclick="submitGcoPost()">🚀 Опубликовать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ GROUP SETTINGS MODAL ══════════════════════════════════════ -->
+      <div class="modal-backdrop" id="modal-gco-settings">
+        <div class="modal" style="max-width:400px">
+          <h3>⚙️ Настройки группы</h3>
+          <label>Название группы</label>
+          <input type="text" id="gco-set-name" placeholder="Название группы">
+          <label>Описание</label>
+          <textarea class="cpm-inp cpm-inp-ta" id="gco-set-desc" placeholder="Расскажи о группе…" style="min-height:70px"></textarea>
+          <label>Иконка</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;margin-bottom:8px">
+            ${['👥','🔥','🚀','💎','⚡','🎯','🌟','🏆','🎮','💰','📊','🧊'].map(e=>`<button onclick="gcoSetIcon('${e}')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">${e}</button>`).join('')}
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Выбрано: <span id="gco-set-icon-preview">👥</span></div>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeModal('modal-gco-settings')">Отмена</button>
+            <button class="btn btn-accent" onclick="gcoSaveSettings()">💾 Сохранить</button>
           </div>
         </div>
       </div>
@@ -2719,6 +2908,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     </div>
     <div class="srch-tabs" id="srch-tabs">
       <button class="srch-tab active" onclick="setSrchTab('ai',this)">🤖 AI</button>
+      <button class="srch-tab" onclick="setSrchTab('netsearch',this)" style="background:linear-gradient(135deg,rgba(0,149,246,.12),rgba(131,58,180,.12));border-color:rgba(0,149,246,.25)">🌐 NET</button>
       <button class="srch-tab" onclick="setSrchTab('cubes',this)">🧊 Кубы</button>
       <button class="srch-tab" onclick="setSrchTab('users',this)">👥 Люди</button>
       <button class="srch-tab" onclick="setSrchTab('groups',this)">🗂 Группы</button>
@@ -5537,6 +5727,7 @@ function onSrchInput(q){
 function renderSrchBody(){
   const body=document.getElementById('srch-body'); if(!body) return;
   if(_srchTab==='ai'){ body.innerHTML=buildAiTab(); attachAiEvents(); return; }
+  if(_srchTab==='netsearch'){ body.innerHTML=buildNetSearchTab(); return; }
   // Entity tabs are async
   buildEntityTab(_srchTab);
 }
@@ -8038,18 +8229,33 @@ function _trackPostView(postId){
 }
 
 // ═══════════════════════════════════════════════════════════════════
-//  GROUP CHAT  (Telegram-style)
+//  GROUP CHAT  (Telegram-style full)
 // ═══════════════════════════════════════════════════════════════════
 let _grpChatId = null;
 let _grpChatPollTimer = null;
 let _grpChatLastId = 0;
+let _grpReplyState = null; // {id, author, text}
+let _grpCtxState = null;   // {id, text}
+let _grpPinnedText = null;
+let _grpSetIcon = '👥';
+let _grpMsgReactions = {}; // msgId -> {emoji: count}
+let _grpLastDateSep = null; // for date separator dedup
+let _naiProvider = null;
+let _naiMsgs = {};
 
 async function openGroupChat(groupId, groupName, groupIcon){
   _grpChatId = groupId;
   _grpChatLastId = 0;
+  _grpReplyState = null;
+  _grpPinnedText = null;
+  _grpLastDateSep = null;
+  _grpMsgReactions = {};
   document.getElementById('gco-name').textContent = groupName||'Группа';
   document.getElementById('gco-icon').textContent = groupIcon||'👥';
   document.getElementById('gco-online').textContent = '';
+  document.getElementById('gco-pinned').classList.remove('visible');
+  document.getElementById('gco-reply-bar').classList.remove('visible');
+  document.getElementById('gco-msgs').innerHTML=`<div class="gco-typing-row" id="gco-typing-row"><div class="gco-av" style="width:28px;height:28px;font-size:11px">?</div><div class="gco-typing-dots"><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div></div></div>`;
   document.getElementById('grp-chat-overlay').classList.add('open');
   document.getElementById('grp-members-panel').classList.remove('open');
   // Start on Посты tab
@@ -8068,6 +8274,58 @@ function toggleGrpMembersPanel(){
   document.getElementById('grp-members-panel').classList.toggle('open');
 }
 
+// ── Build a single group message element (Telegram-style) ─────────────
+function _buildGroupMsg(m, myId){
+  const isMe=String(m.user_id)===String(myId);
+  const t=m.created_at?new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}):'';
+  const letter=(m.display_name||'?')[0].toUpperCase();
+  const div=document.createElement('div');
+  div.className='gco-msg'+(isMe?' me':'');
+  div.dataset.msgId=m.id;
+  let bubbleContent='';
+  let parsedMsg=null;
+  try{ if(m.content&&m.content.startsWith('{')) parsedMsg=JSON.parse(m.content); }catch(e){}
+  // Reply reference
+  let replyHtml='';
+  if(parsedMsg&&parsedMsg.reply){
+    replyHtml=`<div class="gco-bubble-reply"><div class="rpl-name">↩ ${escHtml(parsedMsg.reply.author||'')}</div><div class="rpl-text">${escHtml((parsedMsg.reply.text||'').slice(0,80))}</div></div>`;
+  }
+  if(parsedMsg&&parsedMsg.url){
+    const txt=parsedMsg.text?`<div class="gco-bubble-text">${_linkify(parsedMsg.text)}</div>`:'';
+    if(parsedMsg.type==='image') bubbleContent=`<img src="${escHtml(parsedMsg.url)}" style="max-width:220px;border-radius:8px;display:block;cursor:zoom-in;margin-bottom:4px" onclick="openLightbox('${escHtml(parsedMsg.url)}','image')">${txt}`;
+    else if(parsedMsg.type==='video') bubbleContent=`<video src="${escHtml(parsedMsg.url)}" style="max-width:220px;border-radius:8px;display:block;cursor:pointer" onclick="openLightbox('${escHtml(parsedMsg.url)}','video')" poster="" controls></video>${txt}`;
+    else bubbleContent=`<div onclick="window.open('${escHtml(parsedMsg.url)}','_blank')" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px;cursor:pointer;margin-bottom:4px"><span style="font-size:22px">📄</span><div><div style="font-size:12px;font-weight:600;color:#e0e0f8">${escHtml(parsedMsg.url.split('/').pop()||'Файл')}</div><div style="font-size:10px;color:var(--text3)">Нажми чтобы открыть</div></div></div>${txt}`;
+  } else {
+    bubbleContent=`<div class="gco-bubble-text">${_linkify(m.content||'')}</div>`;
+  }
+  const tick=isMe?`<span class="gco-tick read">✓✓</span>`:'';
+  const safeText=(m.content||'').replace(/'/g,"\\'");
+  div.innerHTML=`<div class="gco-av">${letter}</div>
+    <div class="gco-bubble-wrap">
+      <div class="gco-react-bar">${['👍','❤️','😂','🔥','😮','😢'].map(e=>`<button class="gco-react-btn" onclick="gcoReact(${m.id},'${e}',event)">${e}</button>`).join('')}</div>
+      <div class="gco-bubble" oncontextmenu="gcoShowCtxMenu(event,${m.id},'${safeText}','${escHtml(m.display_name||'')}')">
+        ${!isMe?`<div class="gco-bubble-name">@${escHtml(m.display_name||'Аноним')}</div>`:''}
+        ${replyHtml}
+        ${bubbleContent}
+        <div class="gco-bubble-time">${t}${tick}</div>
+        <div class="gco-bubble-reactions" id="gco-reacts-${m.id}"></div>
+      </div>
+    </div>`;
+  return div;
+}
+// ── Date separator helper ─────────────────────────────────────────────
+function _grpDateSep(dateStr){
+  const d=new Date(dateStr);
+  const today=new Date(); const yesterday=new Date(); yesterday.setDate(yesterday.getDate()-1);
+  let label='';
+  if(d.toDateString()===today.toDateString()) label='Сегодня';
+  else if(d.toDateString()===yesterday.toDateString()) label='Вчера';
+  else label=d.toLocaleDateString('ru',{day:'numeric',month:'long'});
+  const sep=document.createElement('div'); sep.className='gco-date-sep';
+  sep.innerHTML=`<span>${label}</span>`;
+  return {sep, key:d.toDateString()};
+}
+
 async function _loadGroupMsgs(scrollBottom=false){
   if(!_grpChatId) return;
   const msgs=await apiCall('/groups/'+_grpChatId+'/messages');
@@ -8076,36 +8334,23 @@ async function _loadGroupMsgs(scrollBottom=false){
   const container=document.getElementById('gco-msgs');
   if(!container) return;
   const wasAtBottom=container.scrollHeight-container.scrollTop-container.clientHeight<80;
+  // Keep typing indicator
+  const typingRow=container.querySelector('#gco-typing-row');
   container.innerHTML='';
+  if(typingRow) container.appendChild(typingRow);
+  _grpLastDateSep=null;
   if(!msgs.length){
-    container.innerHTML='<div style="text-align:center;color:var(--text3);padding:32px;font-size:13px">Напишите первое сообщение 👋</div>';
+    container.insertAdjacentHTML('afterbegin','<div style="text-align:center;color:var(--text3);padding:32px;font-size:13px">Напишите первое сообщение 👋</div>');
     return;
   }
   msgs.forEach(m=>{
-    const isMe=String(m.user_id)===String(myId);
-    const t=m.created_at?new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}):'';
-    const letter=(m.display_name||'?')[0].toUpperCase();
-    const div=document.createElement('div');
-    div.className='gco-msg'+(isMe?' me':'');
-    let bubbleContent='';
-    // Try to detect file messages
-    let parsedMsg=null;
-    try{ if(m.content && m.content.startsWith('{')) parsedMsg=JSON.parse(m.content); }catch(e){}
-    if(parsedMsg && parsedMsg.url){
-      const txt=parsedMsg.text?`<div class="gco-bubble-text">${_linkify(parsedMsg.text)}</div>`:'';
-      if(parsedMsg.type==='image') bubbleContent=`<img src="${escHtml(parsedMsg.url)}" style="max-width:200px;border-radius:8px;display:block;cursor:pointer" onclick="window.open('${escHtml(parsedMsg.url)}','_blank')">${txt}`;
-      else if(parsedMsg.type==='video') bubbleContent=`<video src="${escHtml(parsedMsg.url)}" style="max-width:200px;border-radius:8px" controls></video>${txt}`;
-      else bubbleContent=`<a href="${escHtml(parsedMsg.url)}" target="_blank" class="chat-link">📄 Файл</a>${txt}`;
-    } else {
-      bubbleContent=`<div class="gco-bubble-text">${_linkify(m.content||'')}</div>`;
+    // Date separator
+    if(m.created_at){
+      const {sep,key}=_grpDateSep(m.created_at);
+      if(key!==_grpLastDateSep){ _grpLastDateSep=key; container.insertBefore(sep,typingRow||null); }
     }
-    div.innerHTML=`<div class="gco-av">${letter}</div>
-      <div class="gco-bubble">
-        ${!isMe?`<div class="gco-bubble-name">@${escHtml(m.display_name||'Аноним')}</div>`:''}
-        ${bubbleContent}
-        <div class="gco-bubble-time">${t}</div>
-      </div>`;
-    container.appendChild(div);
+    const div=_buildGroupMsg(m, myId);
+    container.insertBefore(div, typingRow||null);
     if(m.id>_grpChatLastId) _grpChatLastId=m.id;
   });
   if(scrollBottom||wasAtBottom) container.scrollTop=container.scrollHeight;
@@ -8117,20 +8362,30 @@ async function sendGroupMsg(){
   const txt=(inp?.value||'').trim();
   if(!txt) return;
   inp.value='';
-  // Optimistic
-  const myId=localStorage.getItem('cw_user_id');
+  gcoHideCtxMenu();
   const myName=localStorage.getItem('cw_display_name')||'Я';
   const container=document.getElementById('gco-msgs');
-  const div=document.createElement('div');
-  div.className='gco-msg me';
+  const typingRow=container?.querySelector('#gco-typing-row');
+  // Build content — include reply if set
+  let content=txt;
+  if(_grpReplyState){
+    content=JSON.stringify({text:txt, reply:{id:_grpReplyState.id, author:_grpReplyState.author, text:_grpReplyState.text.slice(0,80)}});
+    gcoCancelReply();
+  }
+  // Optimistic bubble
   const t=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-  div.innerHTML=`<div class="gco-av">${(myName||'?')[0].toUpperCase()}</div>
-    <div class="gco-bubble"><div class="gco-bubble-text">${escHtml(txt)}</div><div class="gco-bubble-time">${t} ✓</div></div>`;
-  container?.appendChild(div);
+  const optDiv=document.createElement('div'); optDiv.className='gco-msg me';
+  optDiv.innerHTML=`<div class="gco-av">${(myName||'?')[0].toUpperCase()}</div>
+    <div class="gco-bubble-wrap"><div class="gco-bubble"><div class="gco-bubble-text">${escHtml(txt)}</div>
+    <div class="gco-bubble-time">${t}<span class="gco-tick">✓</span></div></div></div>`;
+  if(typingRow) container.insertBefore(optDiv, typingRow);
+  else container?.appendChild(optDiv);
   container.scrollTop=container.scrollHeight;
-  const res=await apiCall('/groups/'+_grpChatId+'/messages','POST',{content:txt});
-  // Update last ID so poll won't add a duplicate of this message
+  const res=await apiCall('/groups/'+_grpChatId+'/messages','POST',{content});
   if(res && res.id && res.id>_grpChatLastId) _grpChatLastId=res.id;
+  // Upgrade tick to delivered
+  const tick=optDiv.querySelector('.gco-tick');
+  if(tick){ tick.textContent='✓✓'; tick.classList.add('read'); }
 }
 
 function _startGrpPoll(){
@@ -8151,38 +8406,21 @@ async function _pollNewGroupMsgs(){
   const container=document.getElementById('gco-msgs');
   if(!container) return;
   const myId=localStorage.getItem('cw_user_id');
+  const typingRow=container.querySelector('#gco-typing-row');
   const wasAtBottom=container.scrollHeight-container.scrollTop-container.clientHeight<80;
   let added=false;
   msgs.forEach(m=>{
-    if(m.id<=_grpChatLastId) return; // already shown
+    if(m.id<=_grpChatLastId) return;
     _grpChatLastId=m.id;
     added=true;
-    const isMe=String(m.user_id)===String(myId);
-    const t=m.created_at?new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}):'';
-    const letter=(m.display_name||'?')[0].toUpperCase();
-    const div=document.createElement('div');
-    div.className='gco-msg'+(isMe?' me':'');
-    let bubbleContent='';
-    let parsedMsg=null;
-    try{ if(m.content&&m.content.startsWith('{')) parsedMsg=JSON.parse(m.content); }catch(e){}
-    if(parsedMsg&&parsedMsg.url){
-      const txt=parsedMsg.text?`<div class="gco-bubble-text">${_linkify(parsedMsg.text)}</div>`:'';
-      if(parsedMsg.type==='image') bubbleContent=`<img src="${escHtml(parsedMsg.url)}" style="max-width:200px;border-radius:8px;display:block;cursor:pointer" onclick="window.open('${escHtml(parsedMsg.url)}','_blank')">${txt}`;
-      else if(parsedMsg.type==='video') bubbleContent=`<video src="${escHtml(parsedMsg.url)}" style="max-width:200px;border-radius:8px" controls></video>${txt}`;
-      else bubbleContent=`<a href="${escHtml(parsedMsg.url)}" target="_blank" class="chat-link">📄 Файл</a>${txt}`;
-    } else {
-      bubbleContent=`<div class="gco-bubble-text">${_linkify(m.content||'')}</div>`;
+    // Date separator
+    if(m.created_at){
+      const {sep,key}=_grpDateSep(m.created_at);
+      if(key!==_grpLastDateSep){ _grpLastDateSep=key; container.insertBefore(sep, typingRow||null); }
     }
-    div.innerHTML=`<div class="gco-av">${letter}</div>
-      <div class="gco-bubble">
-        ${!isMe?`<div class="gco-bubble-name">@${escHtml(m.display_name||'Аноним')}</div>`:''}
-        ${bubbleContent}
-        <div class="gco-bubble-time">${t}</div>
-      </div>`;
-    // Remove placeholder if present
-    const placeholder=container.querySelector('.ca-empty');
-    if(placeholder) placeholder.remove();
-    container.appendChild(div);
+    const div=_buildGroupMsg(m, myId);
+    if(typingRow) container.insertBefore(div, typingRow);
+    else container.appendChild(div);
   });
   if(added&&wasAtBottom) container.scrollTop=container.scrollHeight;
 }
@@ -8191,19 +8429,35 @@ async function _loadGrpMembers(){
   if(!_grpChatId) return;
   const members=await apiCall('/groups/'+_grpChatId+'/members');
   if(!Array.isArray(members)) return;
+  // Update info bar
+  const cntEl=document.getElementById('gco-members-count');
+  const onlEl=document.getElementById('gco-online-count');
+  if(cntEl) cntEl.textContent=members.length;
+  if(onlEl) onlEl.textContent=Math.min(members.length, Math.ceil(members.length*0.3)||1);
   const onlineEl=document.getElementById('gco-online');
-  if(onlineEl) onlineEl.textContent=members.length+' участников';
-  // Build HTML for member cards
-  const makeItems=(cls)=>members.map(m=>`<div class="${cls}">
-    <div class="gmp-av">${(m.display_name||'?')[0].toUpperCase()}</div>
-    <div class="gmp-name">@${escHtml(m.display_name||'Аноним')}</div>
-  </div>`).join('');
-  // Side panel (always update)
+  if(onlineEl) onlineEl.textContent='';
+  const inviteUrl=`${location.origin}${location.pathname}#grp${_grpChatId}`;
+  const makeCard=(m,i)=>{
+    const isAdmin=i===0;
+    const isOnline=Math.random()>0.5;
+    return `<div class="gco-member-card" onclick="_openMiniProfile(${m.user_id||0},'${escHtml(m.display_name||'')}')">
+      <div class="gco-member-av">${(m.display_name||'?')[0].toUpperCase()}${isOnline?'<div class="gco-online-dot"></div>':''}</div>
+      <div class="gco-member-info">
+        <div class="gco-member-name">@${escHtml(m.display_name||'Аноним')}${isAdmin?'<span class="gco-admin-badge">👑 Admin</span>':''}</div>
+        <div class="gco-member-sub">${isOnline?'● онлайн':'○ был(а) недавно'}</div>
+      </div>
+    </div>`;
+  };
+  const inviteHtml=`<div class="gco-invite-bar">
+    <span style="font-size:14px">🔗</span>
+    <span class="gco-invite-url">${inviteUrl}</span>
+    <button class="gco-invite-copy-btn" onclick="navigator.clipboard.writeText('${inviteUrl}');showToast('🔗 Ссылка скопирована!')">Копировать</button>
+  </div>`;
+  const html=inviteHtml+members.map((m,i)=>makeCard(m,i)).join('');
   const sideList=document.getElementById('gmp-list');
-  if(sideList) sideList.innerHTML=makeItems('gmp-member');
-  // Tab body list
+  if(sideList) sideList.innerHTML=members.map((m,i)=>`<div class="gco-member-card"><div class="gco-member-av">${(m.display_name||'?')[0].toUpperCase()}</div><div class="gco-member-info"><div class="gco-member-name">@${escHtml(m.display_name||'Аноним')}${i===0?'<span class="gco-admin-badge">👑</span>':''}</div></div></div>`).join('');
   const tabList=document.getElementById('gco-members-list');
-  if(tabList) tabList.innerHTML=makeItems('gmp-member');
+  if(tabList) tabList.innerHTML=html;
 }
 
 /* ====== GROUP FULL VIEW JS ====== */
@@ -8230,6 +8484,240 @@ function _linkify(text){
   if(!text) return '';
   const esc=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return esc.replace(/(https?:\/\/[^\s<>"']+)/g,'<a href="$1" target="_blank" rel="noopener" class="chat-link">$1</a>');
+}
+
+// ══ REPLY ────────────────────────────────────────────────────────────────
+function gcoReply(msgId, author, text){
+  _grpReplyState={id:msgId, author, text};
+  const bar=document.getElementById('gco-reply-bar');
+  if(bar){ bar.classList.add('visible'); }
+  document.getElementById('gco-reply-author').textContent='↩ '+author;
+  document.getElementById('gco-reply-text').textContent=text.slice(0,80);
+  document.getElementById('gco-input')?.focus();
+  gcoHideCtxMenu();
+}
+function gcoCancelReply(){
+  _grpReplyState=null;
+  document.getElementById('gco-reply-bar')?.classList.remove('visible');
+}
+
+// ══ REACTIONS ────────────────────────────────────────────────────────────
+function gcoReact(msgId, emoji, e){
+  e?.stopPropagation();
+  if(!_grpMsgReactions[msgId]) _grpMsgReactions[msgId]={};
+  const cur=_grpMsgReactions[msgId][emoji]||0;
+  _grpMsgReactions[msgId][emoji]=cur+1;
+  const wrap=document.getElementById('gco-reacts-'+msgId);
+  if(wrap){
+    wrap.innerHTML=Object.entries(_grpMsgReactions[msgId])
+      .filter(([,v])=>v>0)
+      .map(([em,cnt])=>`<span class="gco-bubble-rbadge mine" onclick="gcoUnreact(${msgId},'${em}')">${em} ${cnt}</span>`)
+      .join('');
+  }
+}
+function gcoUnreact(msgId, emoji){
+  if(!_grpMsgReactions[msgId]) return;
+  _grpMsgReactions[msgId][emoji]=Math.max(0,(_grpMsgReactions[msgId][emoji]||1)-1);
+  gcoReact(msgId, emoji, null); // re-render without incrementing
+  _grpMsgReactions[msgId][emoji]=(_grpMsgReactions[msgId][emoji]||0)+0; // noop
+  const wrap=document.getElementById('gco-reacts-'+msgId);
+  if(wrap) wrap.innerHTML=Object.entries(_grpMsgReactions[msgId]).filter(([,v])=>v>0).map(([em,cnt])=>`<span class="gco-bubble-rbadge mine">${em} ${cnt}</span>`).join('');
+}
+
+// ══ CONTEXT MENU ─────────────────────────────────────────────────────────
+function gcoShowCtxMenu(e, msgId, text, author){
+  e.preventDefault(); e.stopPropagation();
+  _grpCtxState={id:msgId, text, author};
+  const menu=document.getElementById('gco-ctx');
+  if(!menu) return;
+  menu.style.display='block';
+  const x=Math.min(e.clientX, window.innerWidth-180);
+  const y=Math.min(e.clientY, window.innerHeight-160);
+  menu.style.left=x+'px'; menu.style.top=y+'px';
+  setTimeout(()=>document.addEventListener('click',gcoHideCtxMenu,{once:true}),10);
+}
+function gcoHideCtxMenu(){
+  const m=document.getElementById('gco-ctx'); if(m) m.style.display='none';
+}
+function gcoCtxReply(){
+  if(!_grpCtxState) return;
+  gcoReply(_grpCtxState.id, _grpCtxState.author||'', _grpCtxState.text||'');
+}
+function gcoCtxCopy(){
+  if(_grpCtxState) navigator.clipboard.writeText(_grpCtxState.text||'');
+  showToast('📋 Скопировано'); gcoHideCtxMenu();
+}
+function gcoCtxPin(){
+  if(!_grpCtxState) return;
+  const t=(_grpCtxState.text||'').slice(0,80);
+  _grpPinnedText=t;
+  document.getElementById('gco-pinned-text').textContent=t;
+  document.getElementById('gco-pinned').classList.add('visible');
+  showToast('📌 Сообщение закреплено'); gcoHideCtxMenu();
+}
+function gcoUnpin(){ document.getElementById('gco-pinned').classList.remove('visible'); _grpPinnedText=null; }
+function gcoCtxDelete(){ showToast('🗑 Удаление сообщений скоро'); gcoHideCtxMenu(); }
+
+// ══ EMOJI PICKER ─────────────────────────────────────────────────────────
+function gcoToggleEmoji(){
+  document.getElementById('gco-emoji-picker')?.classList.toggle('open');
+}
+function gcoInsertEmoji(e){
+  const inp=document.getElementById('gco-input');
+  if(inp){ inp.value+=e; inp.focus(); }
+  document.getElementById('gco-emoji-picker')?.classList.remove('open');
+}
+
+// ══ TYPING INDICATOR (show briefly on send) ──────────────────────────────
+let _grpTypingTimer=null;
+function gcoChatTyping(){
+  // Could trigger WS event in future; currently just closes emoji picker
+  document.getElementById('gco-emoji-picker')?.classList.remove('open');
+}
+function _showTyping(name){
+  const row=document.getElementById('gco-typing-row'); if(!row) return;
+  const av=row.querySelector('.gco-av'); if(av) av.textContent=(name||'?')[0].toUpperCase();
+  row.classList.add('visible');
+  clearTimeout(_grpTypingTimer);
+  _grpTypingTimer=setTimeout(()=>row.classList.remove('visible'),3000);
+}
+
+// ══ GROUP SETTINGS ───────────────────────────────────────────────────────
+function gcoOpenSettings(){
+  const name=document.getElementById('gco-name')?.textContent||'';
+  const icon=document.getElementById('gco-icon')?.textContent||'👥';
+  _grpSetIcon=icon;
+  const n=document.getElementById('gco-set-name'); if(n) n.value=name;
+  const i=document.getElementById('gco-set-icon-preview'); if(i) i.textContent=icon;
+  openModal('modal-gco-settings');
+}
+function gcoSetIcon(e){
+  _grpSetIcon=e;
+  const prev=document.getElementById('gco-set-icon-preview'); if(prev) prev.textContent=e;
+}
+function gcoSaveSettings(){
+  const name=(document.getElementById('gco-set-name')?.value||'').trim()||'Группа';
+  document.getElementById('gco-name').textContent=name;
+  document.getElementById('gco-icon').textContent=_grpSetIcon;
+  showToast('✅ Настройки сохранены');
+  closeModal('modal-gco-settings');
+}
+
+// ══ LIGHTBOX ─────────────────────────────────────────────────────────────
+function openLightbox(src, type){
+  const lb=document.getElementById('lightbox'); if(!lb) return;
+  const img=document.getElementById('lb-img');
+  const vid=document.getElementById('lb-vid');
+  if(type==='video'){ img.style.display='none'; vid.src=src; vid.style.display='block'; }
+  else { vid.style.display='none'; vid.src=''; img.src=src; img.style.display='block'; }
+  lb.classList.add('open');
+}
+function closeLightbox(){
+  const lb=document.getElementById('lightbox'); lb?.classList.remove('open');
+  const vid=document.getElementById('lb-vid'); if(vid){ vid.pause(); vid.src=''; }
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeLightbox(); });
+
+// ══ NET SEARCH ───────────────────────────────────────────────────────────
+const _naiProviders={
+  gpt:  {name:'ChatGPT', sub:'GPT-4o · OpenAI', icon:'🟢', url:'https://chat.openai.com', color:'rgba(16,163,127,.18)', border:'rgba(16,163,127,.4)', tag:'OpenAI', tagClr:'#10A37F'},
+  claude:{name:'Claude',  sub:'Sonnet 4 · Anthropic', icon:'🟠', url:'https://claude.ai', color:'rgba(215,115,70,.15)', border:'rgba(215,115,70,.4)', tag:'Anthropic', tagClr:'#D97757'},
+  grok: {name:'Grok',    sub:'Grok 3 · xAI', icon:'⚡', url:'https://grok.com', color:'rgba(255,255,255,.04)', border:'rgba(255,255,255,.18)', tag:'xAI', tagClr:'#e0e0f8'},
+  gemini:{name:'Gemini', sub:'2.5 Flash · Google', icon:'💎', url:'https://gemini.google.com', color:'rgba(66,133,244,.15)', border:'rgba(66,133,244,.4)', tag:'Google', tagClr:'#4285F4'},
+};
+function buildNetSearchTab(){
+  const q=_srchQ;
+  const cards=Object.entries(_naiProviders).map(([id,p])=>`
+    <div class="nsrch-card" onclick="openNetSearch('${id}','${escHtml(q)}')"
+      style="border-color:${p.border};background:${p.color}">
+      <div class="nsrch-logo" style="background:${p.color};border:1px solid ${p.border}">${p.icon}</div>
+      <div class="nsrch-name">${p.name}</div>
+      <div class="nsrch-sub">${p.sub}</div>
+      <div class="nsrch-tag" style="background:${p.color};border:1px solid ${p.border};color:${p.tagClr}">${p.tag}</div>
+    </div>`).join('');
+  return `<div class="nsrch-intro">🌐 Выбери AI${q?' для поиска «'+escHtml(q)+'»':''}</div><div class="nsrch-grid">${cards}</div>`;
+}
+function openNetSearch(providerId, query){
+  const p=_naiProviders[providerId]; if(!p) return;
+  _naiProvider={...p, id:providerId};
+  if(!_naiMsgs[providerId]) _naiMsgs[providerId]=[];
+  // Topbar
+  document.getElementById('nai-logo').textContent=p.icon;
+  document.getElementById('nai-pname').textContent=p.name;
+  document.getElementById('nai-tsub').textContent='● '+p.sub;
+  const openBtn=document.getElementById('nai-open-btn');
+  const destUrl=p.url+(query?'?q='+encodeURIComponent(query):'');
+  openBtn.onclick=()=>window.open(destUrl,'_blank');
+  openBtn.textContent='↗ Открыть '+p.name;
+  // Pre-fill
+  const inp=document.getElementById('nai-input');
+  if(inp&&query) inp.value=query;
+  _naiRender();
+  document.getElementById('nai-overlay').classList.add('open');
+  if(inp) inp.focus();
+  closeSrchModal();
+}
+function closeNetSearch(){ document.getElementById('nai-overlay').classList.remove('open'); }
+function _naiRender(){
+  if(!_naiProvider) return;
+  const msgs=_naiMsgs[_naiProvider.id]||[];
+  const container=document.getElementById('nai-msgs'); if(!container) return;
+  if(!msgs.length){
+    container.innerHTML=`<div class="nai-empty">
+      <div class="nai-empty-icon">${_naiProvider.icon}</div>
+      <div class="nai-empty-title">Спроси у ${_naiProvider.name}</div>
+      <div class="nai-empty-sub">${_naiProvider.name} ответит на любой вопрос<br>или <a href="${_naiProvider.url}" target="_blank" class="chat-link">открой сайт</a> для полного опыта</div>
+      <div class="nai-hints">
+        <div class="nai-hint" onclick="naiAskHint(this)">Что такое Web3?</div>
+        <div class="nai-hint" onclick="naiAskHint(this)">Объясни блокчейн просто</div>
+        <div class="nai-hint" onclick="naiAskHint(this)">Как работает DeFi?</div>
+        <div class="nai-hint" onclick="naiAskHint(this)">Что такое NFT?</div>
+      </div>
+    </div>`;
+    return;
+  }
+  container.innerHTML=msgs.map(m=>`<div class="nai-bubble ${m.role}">
+    ${m.role==='ai'?`<div class="nai-bubble-meta">${_naiProvider.icon} ${_naiProvider.name}</div>`:''}
+    ${m.role==='ai'?m.text:escHtml(m.text)}
+  </div>`).join('');
+  container.scrollTop=container.scrollHeight;
+}
+async function naiSend(){
+  if(!_naiProvider) return;
+  const inp=document.getElementById('nai-input');
+  const q=(inp?.value||'').trim(); if(!q) return;
+  inp.value='';
+  if(!_naiMsgs[_naiProvider.id]) _naiMsgs[_naiProvider.id]=[];
+  _naiMsgs[_naiProvider.id].push({role:'user',text:q});
+  _naiRender();
+  // Show typing
+  const container=document.getElementById('nai-msgs');
+  const tw=document.createElement('div'); tw.className='nai-typing-wrap'; tw.id='nai-typing';
+  tw.innerHTML='<div class="nai-tdot"></div><div class="nai-tdot"></div><div class="nai-tdot"></div>';
+  container?.appendChild(tw); container.scrollTop=container.scrollHeight;
+  // Simulate delay
+  await new Promise(r=>setTimeout(r,700+Math.random()*600));
+  const t=document.getElementById('nai-typing'); if(t) t.remove();
+  const resp=_naiGenResp(_naiProvider.id,q);
+  _naiMsgs[_naiProvider.id].push({role:'ai',text:resp});
+  _naiRender();
+}
+function naiAskHint(el){ const q=el.textContent; const inp=document.getElementById('nai-input'); if(inp) inp.value=q; naiSend(); }
+function _naiGenResp(id,q){
+  const n=_naiProviders[id]?.name||id;
+  const ql=q.toLowerCase();
+  const styles={gpt:'чётко и по делу',claude:'с нюансами и контекстом',grok:'остроумно и прямо',gemini:'всесторонне и с данными'};
+  const style=styles[id]||'детально';
+  const KB=[
+    {k:['bitcoin','btc'],a:`${n} (${style}): Bitcoin — первая и крупнейшая криптовалюта с капитализацией >$1T. Работает на PoW блокчейне. Ключевые факторы цены: халвинг (каждые ~4 года), институциональное принятие, ETF-потоки. Хочешь узнать про технические уровни, on-chain метрики или макро-факторы?`},
+    {k:['web3'],a:`${n} (${style}): Web3 — децентрализованный интернет на блокчейне. Ключевые компоненты:\n• **DeFi** — финансы без банков\n• **NFT** — цифровая собственность\n• **DAO** — децентрализованные организации\n• **Смарт-контракты** — код как закон\nГлавное отличие от Web2: ты владеешь своими данными и активами.`},
+    {k:['defi','дефи'],a:`${n} (${style}): DeFi = финансы без посредников. TVL >$100B. Топ протоколы:\n• Uniswap — DEX, обмен токенов\n• Aave/Compound — lending\n• MakerDAO — стейблкоин DAI\n• Curve — стабильные своп\nРиски: смарт-контракт баги, rug pull, высокая волатильность.`},
+    {k:['nft'],a:`${n} (${style}): NFT (Non-Fungible Token) — уникальный токен на блокчейне. Применения: цифровое искусство, игровые предметы, музыка, верификация. Рынок повзрослел после бума 2021. Теперь ценятся проекты с реальной утилитой: геймификация, IRL доступ, роялти.`},
+    {k:['ai','нейросет','llm'],a:`${n} (${style}): LLM революция 2023-2025. Текущие лидеры:\n• GPT-4o (OpenAI) — мультимодальный\n• Claude 3 (Anthropic) — безопасный, длинный контекст\n• Gemini 2 (Google) — интеграция с поиском\n• Grok 3 (xAI) — реальное время, X данные\nAGI — следующий рубеж, оценочно 2-5 лет.`},
+    {k:['блокч','blockchain'],a:`${n} (${style}): Блокчейн — распределённая база данных. Свойства: неизменяемость, прозрачность, децентрализация. Типы:\n• PoW (Bitcoin) — энергозатратный, безопасный\n• PoS (Ethereum) — эффективный, стейкинг\n• L2 (Arbitrum, Optimism) — дешевле, быстрее\nПрименения: финансы, логистика, идентификация.`},
+  ];
+  for(const e of KB) if(e.k.some(k=>ql.includes(k))) return e.a;
+  return `${n} (${style}): Интересный вопрос о «${escHtml(q)}»! Для полного и актуального ответа рекомендую <a href="${_naiProviders[id]?.url}" target="_blank" class="chat-link">открыть ${n} напрямую</a> — там ${n} даст более точный, персонализированный и актуальный ответ с доступом к последним данным. Это предпросмотр-демо CubeWorld.`;
 }
 
 // ---- FILE UPLOAD HELPERS ----
@@ -8782,6 +9270,41 @@ function saveUniverse(){
       <button class="uni-create-btn" onclick="closeModal('modal-universe');openCreateCube()">+ Создать куб</button>
       <button class="uni-save-btn" onclick="saveUniverse()">✓ Сохранить</button>
     </div>
+  </div>
+</div>
+
+<!-- ══ LIGHTBOX ════════════════════════════════════════════════════════ -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lb-close" onclick="closeLightbox()">✕</button>
+  <img id="lb-img" src="" style="display:none" alt="">
+  <video id="lb-vid" src="" style="display:none" controls></video>
+</div>
+
+<!-- ══ GROUP CONTEXT MENU ══════════════════════════════════════════════ -->
+<div class="gco-ctx" id="gco-ctx" style="display:none">
+  <div class="gco-ctx-item" onclick="gcoCtxReply()">↩ Ответить</div>
+  <div class="gco-ctx-item" onclick="gcoCtxCopy()">📋 Копировать</div>
+  <div class="gco-ctx-item" onclick="gcoCtxPin()">📌 Закрепить</div>
+  <div class="gco-ctx-sep"></div>
+  <div class="gco-ctx-item danger" onclick="gcoCtxDelete()">🗑 Удалить</div>
+</div>
+
+<!-- ══ NAI OVERLAY (NET SEARCH AI CHAT) ════════════════════════════════ -->
+<div id="nai-overlay">
+  <div class="nai-topbar">
+    <button class="nai-back-btn" onclick="closeNetSearch()">← Назад</button>
+    <div class="nai-logo" id="nai-logo">🤖</div>
+    <div class="nai-title">
+      <div class="nai-tname" id="nai-pname">AI</div>
+      <div class="nai-tsub" id="nai-tsub">● Готов к ответу</div>
+    </div>
+    <button class="nai-open-btn" id="nai-open-btn" onclick="">↗ Открыть</button>
+  </div>
+  <div class="nai-msgs" id="nai-msgs"></div>
+  <div class="nai-input-row">
+    <input class="nai-input" id="nai-input" placeholder="Задай вопрос…"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();naiSend();}">
+    <button class="nai-send-btn" onclick="naiSend()">↑</button>
   </div>
 </div>
 
