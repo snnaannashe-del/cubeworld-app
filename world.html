@@ -583,7 +583,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vfi-name{font-size:14px;font-weight:700;color:#fff;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,.6)}
 .vfi-follow-btn{padding:3px 13px;border-radius:4px;font-size:12px;font-weight:700;border:1.5px solid #fff;background:transparent;color:#fff;cursor:pointer;margin-left:6px;transition:all .2s;white-space:nowrap}
 .vfi-follow-btn.following{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5)}
+.vfi-title{font-size:15px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:4px;text-shadow:0 1px 6px rgba(0,0,0,.8)}
 .vfi-desc{font-size:13px;color:#fff;line-height:1.5;margin-bottom:6px;text-shadow:0 1px 5px rgba(0,0,0,.7);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vfi-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.vfi-tag{font-size:11px;color:var(--accent);background:rgba(0,149,246,.12);border-radius:8px;padding:2px 7px;cursor:pointer}
 .vfi-music{font-size:12px;color:rgba(255,255,255,.9);display:flex;align-items:center;gap:5px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
 .vfi-disc{display:inline-block;animation:vfSpin 4s linear infinite}
 @keyframes vfSpin{to{transform:rotate(360deg)}}
@@ -2173,11 +2176,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
               <div class="cpm-type-desc">Видео · TikTok-стиль</div>
             </div>
             <div class="cpm-type" id="cpm-ball" onclick="cpmSelectType('ball')">
-              <div class="cpm-type-icon">🟡</div>
-              <div class="cpm-type-name">BALL</div>
-              <div class="cpm-type-desc">Фото · Текст · Файл</div>
+              <div class="cpm-type-icon">📝</div>
+              <div class="cpm-type-name">POST</div>
+              <div class="cpm-type-desc">Фото · Файл · Текст</div>
             </div>
           </div>
+          <!-- SHORT fields -->
           <div class="cpm-fields" id="cpm-short-fields">
             <div class="file-drop-zone" id="cpm-video-drop" onclick="document.getElementById('cpm-video-file').click()">
               <input type="file" id="cpm-video-file" accept="video/*,video/mp4" style="display:none" onchange="cpmHandleVideoFile(this)">
@@ -2186,18 +2190,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
               <div class="upload-progress" id="cpm-video-progress"><div class="upload-progress-bar" id="cpm-video-bar"></div></div>
             </div>
             <input class="cpm-inp" id="cpm-video-url" placeholder="или вставь ссылку YouTube / .mp4" style="margin-top:6px">
+            <input class="cpm-inp" id="cpm-title-short" placeholder="📌 Заголовок (необязательно)">
             <input class="cpm-inp" id="cpm-music" placeholder="🎵 Музыка (необязательно)">
-            <textarea class="cpm-inp cpm-inp-ta" id="cpm-desc-short" placeholder="Описание #хэштег"></textarea>
+            <textarea class="cpm-inp cpm-inp-ta" id="cpm-desc-short" placeholder="Описание…"></textarea>
+            <input class="cpm-inp" id="cpm-tags-short" placeholder="#хэштег1 #хэштег2 …">
           </div>
+          <!-- POST fields -->
           <div class="cpm-fields" id="cpm-ball-fields" style="display:none">
             <div class="file-drop-zone" id="cpm-image-drop" onclick="document.getElementById('cpm-image-file').click()">
-              <input type="file" id="cpm-image-file" accept="image/*" style="display:none" onchange="cpmHandleImageFile(this)">
-              <div id="cpm-image-drop-label">🖼️ Нажми чтобы загрузить фото<br><span style="font-size:11px;color:var(--text3)">JPG, PNG, GIF, WebP · до 10 МБ</span></div>
+              <input type="file" id="cpm-image-file" accept="*/*" style="display:none" onchange="cpmHandleImageFile(this)">
+              <div id="cpm-image-drop-label">📎 Прикрепи файл или фото<br><span style="font-size:11px;color:var(--text3)">Изображение, PDF, документ · до 20 МБ</span></div>
               <div class="file-preview" id="cpm-image-preview" style="display:none"></div>
               <div class="upload-progress" id="cpm-image-progress"><div class="upload-progress-bar" id="cpm-image-bar"></div></div>
             </div>
-            <input class="cpm-inp" id="cpm-image-url" placeholder="или вставь ссылку на фото" style="margin-top:6px">
-            <textarea class="cpm-inp cpm-inp-ta" id="cpm-desc-ball" placeholder="Что на уме? Текст, мысль, новость…" style="min-height:100px"></textarea>
+            <input class="cpm-inp" id="cpm-image-url" placeholder="или вставь ссылку на фото/файл" style="margin-top:6px">
+            <input class="cpm-inp" id="cpm-title-ball" placeholder="📌 Заголовок поста">
+            <textarea class="cpm-inp cpm-inp-ta" id="cpm-desc-ball" placeholder="Что на уме? Текст, мысль, новость…" style="min-height:90px"></textarea>
+            <input class="cpm-inp" id="cpm-tags-ball" placeholder="#хэштег1 #хэштег2 …">
           </div>
           <div id="cpm-err" style="font-size:11px;color:var(--red);min-height:14px;margin-top:4px"></div>
           <div class="modal-actions">
@@ -8105,13 +8114,29 @@ function renderFeed(){
 
     let mediaHtml = '';
     if(isBall){
-      // BALL: photo or text
-      if(post.image_url){
-        mediaHtml=`<div class="vf-ball-card"><img class="vf-ball-image" src="${escHtml(post.image_url)}" onerror="this.style.display='none'" loading="lazy"><div class="vf-ball-text">${escHtml(post.description||post.content||'')}</div></div>`;
+      // POST: photo, file, or text
+      const fileUrl=post.image_url||post.file_url||'';
+      const isImg=fileUrl&&/\.(jpe?g|png|gif|webp|svg|bmp|avif)(\?|$)/i.test(fileUrl);
+      if(fileUrl&&isImg){
+        mediaHtml=`<div class="vf-ball-card"><img class="vf-ball-image" src="${escHtml(fileUrl)}" onerror="this.style.display='none'" loading="lazy"><div class="vf-ball-text">${escHtml(post.title||post.description||post.content||'')}</div></div>`;
+      } else if(fileUrl){
+        // Non-image file attachment
+        const fname=fileUrl.split('/').pop().split('?')[0];
+        const ext=(fname.split('.').pop()||'file').toUpperCase();
+        const bg=['#0a0a22','#0d1a2e','#0a1e0a','#1e0a14','#1a1420'];
+        const bi=Math.abs((String(post.id||'')).split('').reduce((a,c)=>a+c.charCodeAt(0),0))%bg.length;
+        mediaHtml=`<div class="vf-ball-card" style="background:${bg[bi]};justify-content:center;align-items:center;gap:12px;flex-direction:column">
+          <a href="${escHtml(fileUrl)}" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none">
+            <div style="font-size:48px">📄</div>
+            <div style="font-size:12px;color:var(--accent);background:rgba(0,149,246,.15);border-radius:6px;padding:3px 10px">${ext}</div>
+            <div style="font-size:12px;color:var(--text2);max-width:200px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap">${escHtml(fname)}</div>
+          </a>
+          <div class="vf-ball-text" style="font-size:clamp(13px,2.5vw,17px)">${escHtml(post.description||post.content||'')}</div>
+        </div>`;
       } else {
         const bg=['#0a0a22','#0d1a2e','#0a1e0a','#1e0a14','#1a1420'];
         const bi=Math.abs((String(post.id||'')).split('').reduce((a,c)=>a+c.charCodeAt(0),0))%bg.length;
-        mediaHtml=`<div class="vf-ball-card" style="background:${bg[bi]}"><div class="vf-ball-text" style="font-size:clamp(14px,3vw,20px)">${escHtml(post.description||post.content||'')}</div></div>`;
+        mediaHtml=`<div class="vf-ball-card" style="background:${bg[bi]}">${post.title?`<div style="font-size:clamp(15px,3.5vw,22px);font-weight:700;color:#fff;margin-bottom:10px;text-shadow:0 2px 8px rgba(0,0,0,.7)">${escHtml(post.title)}</div>`:''}<div class="vf-ball-text" style="font-size:clamp(13px,2.5vw,18px)">${escHtml(post.description||post.content||'')}</div></div>`;
       }
     } else {
       // SHORT: video
@@ -8135,7 +8160,7 @@ function renderFeed(){
     const letter = (post.display_name||'?')[0].toUpperCase();
     const isMine = String(post.user_id)===String(myId);
     const typeBadge = isBall
-      ? `<span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(251,191,36,.15);color:var(--gold);font-weight:700;margin-left:5px">BALL</span>`
+      ? `<span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(99,220,120,.15);color:#63dc78;font-weight:700;margin-left:5px">POST</span>`
       : `<span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(0,149,246,.15);color:var(--accent);font-weight:700;margin-left:5px">SHORT</span>`;
 
     const hasVideo = !isBall && (post.video_url||'').length > 0 && !(post.video_url||'').includes('youtube');
@@ -8153,6 +8178,14 @@ function renderFeed(){
         <button class="vfa" onclick="vfLike('${post.id}',this)">
           <div class="vfa-icon${isLiked?' liked':''}" id="vfa-heart-${post.id}">❤️</div>
           <span class="vfa-count" id="vfa-lc-${post.id}">${_fmtN(post.likes||0)}</span>
+        </button>
+        <button class="vfa" onclick="vfDislike('${post.id}',this)">
+          <div class="vfa-icon" id="vfa-dislike-${post.id}">👎</div>
+          <span class="vfa-count" id="vfa-dc-${post.id}">${_fmtN(post.dislikes||0)}</span>
+        </button>
+        <button class="vfa" onclick="vfFire('${post.id}',this)">
+          <div class="vfa-icon" id="vfa-fire-${post.id}">🔥</div>
+          <span class="vfa-count" id="vfa-fc-${post.id}">${_fmtN(post.fires||0)}</span>
         </button>
         <button class="vfa" onclick="openVfComments('${post.id}')">
           <div class="vfa-icon">💬</div>
@@ -8177,8 +8210,10 @@ function renderFeed(){
           <span class="vfi-name" style="cursor:pointer" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">@${escHtml(post.display_name||'Аноним')}</span>${typeBadge}
           ${!isMine?`<button class="vfi-follow-btn${isFollowing?' following':''}" id="vfi-fb-${post.user_id}" onclick="vfFollow('${post.user_id}')">${isFollowing?'Подписаться':'Отписаться'}</button>`:''}
         </div>
+        ${post.title?`<div class="vfi-title">${escHtml(post.title)}</div>`:''}
         <div class="vfi-desc">${escHtml(post.description||post.content||'')}</div>
         ${post.music?`<div class="vfi-music"><span class="vfi-disc">💿</span>${escHtml(post.music)}</div>`:''}
+        ${(post.tags&&(Array.isArray(post.tags)?post.tags.length:post.tags))?`<div class="vfi-tags">${(Array.isArray(post.tags)?post.tags:String(post.tags).split(',').filter(Boolean)).map(t=>`<span class="vfi-tag">${escHtml(String(t).trim())}</span>`).join('')}</div>`:''}
       </div>`;
 
     container.appendChild(card);
@@ -8360,11 +8395,15 @@ function openCreatePost(){
   document.getElementById('cpm-image-url').value='';
   document.getElementById('cpm-desc-ball').value='';
   document.getElementById('cpm-err').textContent='';
+  const ts=document.getElementById('cpm-title-short'); if(ts) ts.value='';
+  const tb=document.getElementById('cpm-title-ball'); if(tb) tb.value='';
+  const tgs=document.getElementById('cpm-tags-short'); if(tgs) tgs.value='';
+  const tgb=document.getElementById('cpm-tags-ball'); if(tgb) tgb.value='';
   // Reset file previews
   const vp=document.getElementById('cpm-video-preview'); if(vp){vp.style.display='none';vp.innerHTML='';}
   const vl=document.getElementById('cpm-video-drop-label'); if(vl){vl.style.display='';vl.innerHTML='🎬 Нажми чтобы загрузить видео<br><span style="font-size:11px;color:var(--text3)">MP4, WebM, MOV · до 50 МБ</span>';}
   const ip=document.getElementById('cpm-image-preview'); if(ip){ip.style.display='none';ip.innerHTML='';}
-  const il=document.getElementById('cpm-image-drop-label'); if(il){il.style.display='';il.innerHTML='🖼️ Нажми чтобы загрузить фото<br><span style="font-size:11px;color:var(--text3)">JPG, PNG, GIF, WebP · до 10 МБ</span>';}
+  const il=document.getElementById('cpm-image-drop-label'); if(il){il.style.display='';il.innerHTML='📎 Прикрепи файл или фото<br><span style="font-size:11px;color:var(--text3)">Изображение, PDF, документ · до 20 МБ</span>';}
   const vf=document.getElementById('cpm-video-file'); if(vf) vf.value='';
   const imf=document.getElementById('cpm-image-file'); if(imf) imf.value='';
   openModal('modal-create-post');
@@ -8381,14 +8420,19 @@ async function submitCreatePost(){
   errEl.textContent='';
   let payload={post_type:_cpmType,cube_id:app.currentCubeId||1};
   if(_cpmType==='short'){
-    payload.video_url=(document.getElementById('cpm-video-url')?.value||'').trim();
+    payload.video_url=(document.getElementById('cpm-video-url')?.value||_cpmVideoUrl||'').trim();
     payload.music=(document.getElementById('cpm-music')?.value||'').trim();
+    payload.title=(document.getElementById('cpm-title-short')?.value||'').trim();
     payload.description=(document.getElementById('cpm-desc-short')?.value||'').trim();
-    if(!payload.description){errEl.textContent='Добавь описание';return;}
+    payload.tags=_parseTags(document.getElementById('cpm-tags-short')?.value||'');
+    if(!payload.video_url&&!payload.description){errEl.textContent='Добавь видео или описание';return;}
   } else {
-    payload.image_url=(document.getElementById('cpm-image-url')?.value||'').trim();
+    payload.image_url=(document.getElementById('cpm-image-url')?.value||_cpmImageUrl||'').trim();
+    payload.file_url=payload.image_url; // store as file_url too for non-image files
+    payload.title=(document.getElementById('cpm-title-ball')?.value||'').trim();
     payload.description=(document.getElementById('cpm-desc-ball')?.value||'').trim();
-    if(!payload.description){errEl.textContent='Напиши что-нибудь';return;}
+    payload.tags=_parseTags(document.getElementById('cpm-tags-ball')?.value||'');
+    if(!payload.title&&!payload.description&&!payload.image_url){errEl.textContent='Добавь заголовок или текст';return;}
     payload.video_url='';
   }
   const btn=document.getElementById('cpm-submit-btn');
@@ -8397,10 +8441,40 @@ async function submitCreatePost(){
   if(btn){btn.disabled=false;btn.textContent='🚀 Опубликовать';}
   if(!data){errEl.textContent='Ошибка публикации, попробуй ещё';return;}
   closeModal('modal-create-post');
-  showToast(_cpmType==='short'?'Видео опубликовано! 🎬':'Пост опубликован! 🟡');
+  showToast(_cpmType==='short'?'SHORT опубликован! 🎬':'POST опубликован! 📝');
   earnCube(5,'Новый пост','📝');
   _vfPosts.unshift(data);
   renderFeed();
+}
+
+// ═══ TAG PARSER ═══════════════════════════════════════════════════
+function _parseTags(str){
+  if(!str) return [];
+  return str.match(/#[\wа-яёА-ЯЁ]+/gi)||[];
+}
+
+// ═══ DISLIKE / FIRE REACTIONS ═════════════════════════════════════
+const _vfDislikes = {}; // postId → bool
+const _vfFires = {}; // postId → bool
+
+function vfDislike(postId, btn){
+  const already = _vfDislikes[postId];
+  _vfDislikes[postId] = !already;
+  const icon=document.getElementById('vfa-dislike-'+postId);
+  const cnt=document.getElementById('vfa-dc-'+postId);
+  if(icon) icon.classList.toggle('liked', !already);
+  if(cnt){const n=parseInt(cnt.textContent||'0');cnt.textContent=!already?n+1:Math.max(0,n-1);}
+  apiCall('/feed/'+postId+'/dislike','POST').catch(()=>{});
+}
+
+function vfFire(postId, btn){
+  const already = _vfFires[postId];
+  _vfFires[postId] = !already;
+  const icon=document.getElementById('vfa-fire-'+postId);
+  const cnt=document.getElementById('vfa-fc-'+postId);
+  if(icon) icon.classList.toggle('liked', !already);
+  if(cnt){const n=parseInt(cnt.textContent||'0');cnt.textContent=!already?n+1:Math.max(0,n-1);}
+  apiCall('/feed/'+postId+'/fire','POST').catch(()=>{});
 }
 
 // ═══ FEED TYPE FILTER ════════════════════════════════════════════
@@ -8968,11 +9042,20 @@ async function cpmHandleImageFile(input){
   if(url){
     _cpmImageUrl=url;
     document.getElementById('cpm-image-url').value=url;
-    if(preview){ preview.style.display='block'; preview.innerHTML=`<img src="${url}" style="max-width:100%;max-height:140px;border-radius:8px;object-fit:cover">`; }
+    const isImage=file.type.startsWith('image/');
+    if(preview){
+      preview.style.display='block';
+      if(isImage){
+        preview.innerHTML=`<img src="${url}" style="max-width:100%;max-height:140px;border-radius:8px;object-fit:cover">`;
+      } else {
+        const ext=file.name.split('.').pop().toUpperCase();
+        preview.innerHTML=`<div style="padding:10px 14px;background:var(--bg2);border-radius:8px;font-size:13px;display:flex;align-items:center;gap:8px">📄 <span>${escHtml(file.name)}</span><span style="font-size:10px;color:var(--text3)">${ext}</span></div>`;
+      }
+    }
     if(label) label.style.display='none';
   } else {
     if(label) label.textContent='❌ Ошибка загрузки, попробуй снова';
-    showToast('Ошибка загрузки фото');
+    showToast('Ошибка загрузки файла');
   }
 }
 
