@@ -1948,7 +1948,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <span class="itb-name" id="itb-name"></span>
     <span class="itb-enc">🔐 E2E</span>
     <span class="itb-anon">👻 Ghost</span>
-    <button onclick="copyInviteLink()" style="font-size:11px;padding:3px 9px;background:rgba(0,149,246,.18);border:1px solid rgba(0,149,246,.3);border-radius:14px;color:#c4b5fd;cursor:pointer;white-space:nowrap">🔗 Пригласить</button>
     <button class="search-btn" onclick="openSrchModal()" style="margin:0 10px">
       <span class="search-btn-icon">🔍</span>
       <span>Поиск или спроси AI…</span>
@@ -1962,7 +1961,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <button id="members-toggle-btn" onclick="toggleMembersPanel()">👥</button>
     <button id="itb-cube-key-btn" onclick="showCubeKeyPanel()" title="Ключ куба (Key 2)" style="display:none;font-size:14px;padding:4px 10px;border-radius:14px;background:rgba(0,149,246,.15);border:1px solid rgba(0,149,246,.35);color:var(--accent);cursor:pointer">🔑 Key 2</button>
     <div id="notif-bell" onclick="toggleNotifications()">🔔<div class="notif-badge" id="notif-count" style="display:none">0</div>
-      <div class="notif-dropdown" id="notif-dropdown"></div>
+      <div class="notif-dropdown" id="notif-dropdown" onclick="event.stopPropagation()"></div>
     </div>
     <span class="itb-timer" id="itb-timer">23:59:59</span>
   </div>
@@ -5829,6 +5828,9 @@ document.addEventListener('keydown', e=>{
 });
 function setSrchTab(tab, el){
   _srchTab=tab;
+  // Sync input value so tab results use whatever is typed
+  const inp=document.getElementById('srch-main-input');
+  if(inp) _srchQ=inp.value.trim();
   document.querySelectorAll('.srch-tab').forEach(t=>t.classList.remove('active'));
   if(el) el.classList.add('active');
   renderSrchBody();
@@ -6107,22 +6109,19 @@ async function buildEntityTab(type){
   }
 
   if(type==='groups'){
-    if(!q){
+    body.innerHTML=`<div class="srch-empty" style="padding:20px"><span class="srch-ai-typing"><span></span><span></span><span></span></span></div>`;
+    // Load groups — search if query, else load all public groups
+    const endpoint = q ? '/groups/search?q='+encodeURIComponent(q) : '/groups?limit=40';
+    const res = await apiCall(endpoint);
+    const groups = Array.isArray(res) ? res : (res?.items||res?.groups||[]);
+    if(!groups.length){
       body.innerHTML=`<div class="srch-empty">
         <span class="srch-empty-icon">👥</span>
-        <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Поиск групп</div>
-        <div style="font-size:12px;color:var(--text3);line-height:1.8">
-          <b style="color:var(--accent)">@handle</b> — по хэндлу<br>
-          <b style="color:var(--accent)">#G42</b> — по ID группы<br>
-          <b style="color:var(--accent)">название</b> — по тексту
-        </div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:8px">${q?'Группы не найдены':'Нет публичных групп'}</div>
+        <button class="srch-hint" onclick="closeSrchModal();openCreateGroup()" style="margin-top:4px">+ Создать группу</button>
       </div>`; return;
     }
-    const res = await apiCall('/groups/search?q='+encodeURIComponent(q));
-    if(!res||!res.length){
-      body.innerHTML=`<div class="srch-empty"><span class="srch-empty-icon">👥</span>Группы не найдены</div>`; return;
-    }
-    body.innerHTML=`<div class="srch-entity-list">${res.map(g=>`
+    const renderG=g=>`
       <div class="srch-entity-item" onclick="closeSrchModal();setTimeout(()=>openGroupChat(${g.id},'${escHtml(g.name)}','${escHtml(g.icon||'👥')}'),100)">
         <div class="sei-icon">${escHtml(g.icon||'👥')}</div>
         <div class="sei-info">
@@ -6130,7 +6129,13 @@ async function buildEntityTab(type){
           <div class="sei-sub">${g.handle?'@'+escHtml(g.handle)+' · ':''}<span style="color:var(--text3)">#G${g.id} · ${(g.member_count||0)} чел.</span></div>
         </div>
         <span class="sei-badge ${g.type==='public'?'pub':'priv'}">${g.type==='public'?'PUBLIC':'PRIVATE'}</span>
-      </div>`).join('')}</div>`;
+      </div>`;
+    body.innerHTML=`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px 2px">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">${q?'Результаты':'Все группы'} · ${groups.length}</div>
+        <button class="srch-hint" onclick="closeSrchModal();openCreateGroup()" style="font-size:11px;padding:3px 10px">+ Создать</button>
+      </div>
+      <div class="srch-entity-list">${groups.map(renderG).join('')}</div>`;
     return;
   }
 
@@ -8766,13 +8771,18 @@ function openNetSearch(providerId, query){
   const destUrl=p.url+(query?'?q='+encodeURIComponent(query):'');
   openBtn.onclick=()=>window.open(destUrl,'_blank');
   openBtn.textContent='↗ Открыть '+p.name;
-  // Pre-fill
+  // Pre-fill input
   const inp=document.getElementById('nai-input');
-  if(inp&&query) inp.value=query;
+  if(inp) inp.value=query||'';
   _naiRender();
   document.getElementById('nai-overlay').classList.add('open');
-  if(inp) inp.focus();
   closeSrchModal();
+  // Auto-send query if provided
+  if(query && query.trim()){
+    setTimeout(()=>naiSend(), 120);
+  } else if(inp){
+    inp.focus();
+  }
 }
 function closeNetSearch(){ document.getElementById('nai-overlay').classList.remove('open'); }
 function _naiRender(){
