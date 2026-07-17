@@ -197,9 +197,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vf-tab.active{color:#fff;border-bottom-color:#fff}
 .vf-upload-btn{margin-left:auto;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;color:#fff;border:1.5px solid rgba(255,255,255,.6);background:transparent;transition:all .2s;flex-shrink:0}
 .vf-upload-btn:hover{background:rgba(255,255,255,.15)}
-.vf-type-pills{display:flex;gap:5px;align-items:center}
-.vf-pill{padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);transition:all .18s;white-space:nowrap}
+.vf-type-pills{display:flex;gap:5px;align-items:center;max-width:0;overflow:hidden;opacity:0;transition:max-width .3s ease,opacity .25s ease;white-space:nowrap}
+.vf-header:hover .vf-type-pills,.vf-type-pills.expanded{max-width:280px;opacity:1}
+.vf-pill{padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);transition:all .18s;white-space:nowrap;flex-shrink:0}
 .vf-pill.active{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.5)}
+/* toggle btn to reveal pills on mobile */
+.vf-filter-toggle{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:16px;color:rgba(255,255,255,.7);font-size:11px;font-weight:700;padding:4px 9px;cursor:pointer;flex-shrink:0;transition:all .18s}
+.vf-filter-toggle.active{background:rgba(0,149,246,.25);border-color:rgba(0,149,246,.5);color:#fff}
 /* BALL post card */
 .vf-ball-card{padding:50px 24px 130px;background:var(--bg2);width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:16px;overflow-y:auto}
 .vf-ball-image{width:100%;max-height:55vh;object-fit:cover;border-radius:12px;display:block}
@@ -547,10 +551,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 /* ═══ SWIPE FEEDBACK ════════════════════════════════════════════════════ */
 .swipe-indicator{position:fixed;left:0;top:50%;transform:translateY(-50%);width:4px;height:60px;background:var(--accent);border-radius:0 4px 4px 0;opacity:0;transition:opacity .2s;pointer-events:none;z-index:601}
 .swipe-indicator.show{opacity:1}
-.vf-container{position:absolute;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory}
+.vf-container{position:absolute;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch}
 .vf-container::-webkit-scrollbar{display:none}
-.vf-card{height:100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.vf-video{width:100%;height:100%;object-fit:contain;max-height:100%;cursor:pointer}
+.vf-card{height:100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.vf-video{width:100%;height:100%;object-fit:cover;cursor:pointer}
+/* TikTok progress bar */
+.vf-progress{position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(255,255,255,.15);z-index:15;pointer-events:none}
+.vf-progress-fill{height:100%;background:#fff;width:0;transition:width .25s linear}
+/* mute button */
+.vf-mute-btn{position:absolute;top:14px;right:14px;z-index:15;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.vf-mute-btn:hover{background:rgba(0,0,0,.65)}
 .vf-iframe-wrap{width:100%;height:100%}
 .vf-iframe-wrap iframe{width:100%;height:100%;border:none}
 .vf-text-post{display:flex;align-items:center;justify-content:center;padding:60px 32px 120px;text-align:center;color:#fff;font-size:20px;line-height:1.7;width:100%;background:linear-gradient(135deg,rgba(0,60,160,.5),rgba(120,0,80,.4))}
@@ -1209,7 +1219,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #notif-bell{position:relative;cursor:pointer;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:background .15s;flex-shrink:0;font-size:17px}
 #notif-bell:hover{background:rgba(255,255,255,.07)}
 .notif-badge{position:absolute;top:3px;right:3px;min-width:15px;height:15px;border-radius:8px;background:var(--red);color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 3px}
-.notif-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:310px;background:#0c0c22;border:1px solid rgba(0,149,246,.3);border-radius:12px;z-index:3000;box-shadow:0 16px 48px rgba(0,0,0,.75);max-height:380px;overflow:hidden;display:none;flex-direction:column}
+.notif-dropdown{position:fixed;top:52px;right:12px;width:310px;background:#0c0c22;border:1px solid rgba(0,149,246,.3);border-radius:12px;z-index:9999;box-shadow:0 16px 48px rgba(0,0,0,.75);max-height:380px;overflow:hidden;display:none;flex-direction:column}
 .notif-dropdown.open{display:flex}
 .notif-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
 .notif-head h4{font-size:13px;font-weight:700;color:#e0e0f8}
@@ -2044,6 +2054,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <span class="mnb-icon">👥</span><span class="mnb-label">Группы</span>
         <div class="mnb-dot"></div>
       </button>
+      <button class="mnb" id="mnb-key" onclick="openModal('modal-keyshop')">
+        <span class="mnb-icon">🔑</span><span class="mnb-label">Key</span>
+        <div class="mnb-dot"></div>
+      </button>
       <button class="mnb" id="mnb-more" onclick="openMobMore()">
         <span class="mnb-icon">⚡</span><span class="mnb-label">Ещё</span>
         <div class="mnb-dot"></div>
@@ -2099,16 +2113,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
       <!-- FEED — TikTok Video -->
       <div class="int-section active" id="sec-feed">
-        <div class="vf-header">
+        <div class="vf-header" id="vf-header">
           <div class="vf-tabs">
             <button class="vf-tab active" onclick="vfSwitchTab('foryou',this)">Для тебя</button>
             <button class="vf-tab" onclick="vfSwitchTab('following',this)">Подписки</button>
             <button class="vf-tab" onclick="vfSwitchTab('top',this)">🔥 Топ</button>
           </div>
+          <button class="vf-filter-toggle" id="vf-filter-toggle" onclick="vfToggleFilters(this)" title="Фильтры">⚙️</button>
           <div class="vf-type-pills" id="vf-type-pills">
             <button class="vf-pill active" id="vfp-all" onclick="vfFilterType('all',this)">Все</button>
             <button class="vf-pill" id="vfp-short" onclick="vfFilterType('short',this)">▶ SHORT</button>
-            <button class="vf-pill" id="vfp-ball" onclick="vfFilterType('ball',this)">🟡 BALL</button>
+            <button class="vf-pill" id="vfp-post" onclick="vfFilterType('ball',this)">📝 POST</button>
           </div>
           <button class="vf-upload-btn" onclick="openCreatePost()">+ Пост</button>
         </div>
@@ -6830,11 +6845,23 @@ const app_notifications = [
 ];
 function toggleNotifications(){
   const dd=document.getElementById('notif-dropdown');
+  const bell=document.getElementById('notif-bell');
   if(!dd) return;
   if(dd.classList.contains('open')){ dd.classList.remove('open'); return; }
+  // Position fixed relative to bell's actual screen position
+  if(bell){
+    const r=bell.getBoundingClientRect();
+    dd.style.top=(r.bottom+6)+'px';
+    const right=window.innerWidth-r.right;
+    dd.style.right=Math.max(4,right)+'px';
+    dd.style.left='auto';
+    // Prevent going off-screen left
+    const ddW=310;
+    if(r.right-ddW<8) { dd.style.right='auto'; dd.style.left='8px'; }
+  }
   renderNotifications();
   dd.classList.add('open');
-  setTimeout(()=>{ document.addEventListener('click',closeNotifOutside,{once:true}); },10);
+  setTimeout(()=>{ document.addEventListener('click',closeNotifOutside,{once:true}); },50);
 }
 function closeNotifOutside(e){
   const bell=document.getElementById('notif-bell');
@@ -8039,8 +8066,15 @@ function vfSwitchTab(tab, el){
   _vfTab = tab;
   document.querySelectorAll('.vf-tab').forEach(t=>t.classList.remove('active'));
   if(el) el.classList.add('active');
-  if(tab==='top'){ renderFeed(); return; }  // sort locally, no new fetch needed
+  if(tab==='top'){ renderFeed(); return; }
   loadVideoFeed();
+}
+
+function vfToggleFilters(btn){
+  const pills=document.getElementById('vf-type-pills');
+  if(!pills) return;
+  const expanded=pills.classList.toggle('expanded');
+  btn.classList.toggle('active', expanded);
 }
 
 function renderFeed(){
@@ -8105,9 +8139,18 @@ function renderFeed(){
       ? `<span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(251,191,36,.15);color:var(--gold);font-weight:700;margin-left:5px">BALL</span>`
       : `<span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(0,149,246,.15);color:var(--accent);font-weight:700;margin-left:5px">SHORT</span>`;
 
+    const hasVideo = !isBall && (post.video_url||'').length > 0 && !(post.video_url||'').includes('youtube');
     card.innerHTML=`${mediaHtml}
       <div class="vf-card-gradient"></div>
+      ${hasVideo?`<button class="vf-mute-btn" id="vf-mute-${post.id}" onclick="vfToggleMute('${post.id}',this)" title="Звук">🔇</button>`:''}
+      ${hasVideo?`<div class="vf-progress"><div class="vf-progress-fill" id="vf-prog-${post.id}"></div></div>`:''}
       <div class="vf-actions">
+        ${!isMine?`<div class="vfa-author-wrap">
+          <div class="vfa-author-av" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">
+            ${letter}
+            <div class="vfa-follow-dot${isFollowing?' following':''}" id="vfa-fd-${post.user_id}" onclick="event.stopPropagation();vfFollow('${post.user_id}')">${isFollowing?'✓':'+'}</div>
+          </div>
+        </div>`:''}
         <button class="vfa" onclick="vfLike('${post.id}',this)">
           <div class="vfa-icon${isLiked?' liked':''}" id="vfa-heart-${post.id}">❤️</div>
           <span class="vfa-count" id="vfa-lc-${post.id}">${_fmtN(post.likes||0)}</span>
@@ -8116,30 +8159,24 @@ function renderFeed(){
           <div class="vfa-icon">💬</div>
           <span class="vfa-count" id="vfa-cc-${post.id}">${_fmtN(post.comment_count||0)}</span>
         </button>
+        <button class="vfa" onclick="vfShare('${post.id}')">
+          <div class="vfa-icon">↗️</div>
+          <span class="vfa-count">${_fmtN(post.share_count||0)||'Шер'}</span>
+        </button>
         <div class="vfa" style="cursor:default">
           <div class="vfa-icon">👁️</div>
           <span class="vfa-count" id="vfa-vc-${post.id}">${_fmtN(post.view_count||0)}</span>
         </div>
-        <button class="vfa" onclick="vfShare('${post.id}')">
-          <div class="vfa-icon">↗️</div>
-          <span class="vfa-count">Шер</span>
-        </button>
         <button class="vfa" onclick="openTip('${escHtml(post.display_name||'')}','${post.id}')">
           <div class="vfa-icon">💎</div>
           <span class="vfa-count">CUBE</span>
         </button>
-        ${!isMine?`<div class="vfa-author-wrap">
-          <div class="vfa-author-av" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">
-            ${letter}
-            <div class="vfa-follow-dot${isFollowing?' following':''}" id="vfa-fd-${post.user_id}" onclick="event.stopPropagation();vfFollow('${post.user_id}')">${isFollowing?'✓':'+'}</div>
-          </div>
-        </div>`:''}
       </div>
       <div class="vf-info">
         <div class="vfi-author-row">
           <div class="vfi-avatar" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">${letter}</div>
           <span class="vfi-name" style="cursor:pointer" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">@${escHtml(post.display_name||'Аноним')}</span>${typeBadge}
-          ${!isMine?`<button class="vfi-follow-btn${isFollowing?' following':''}" id="vfi-fb-${post.user_id}" onclick="vfFollow('${post.user_id}')">${isFollowing?'Отписаться':'Подписаться'}</button>`:''}
+          ${!isMine?`<button class="vfi-follow-btn${isFollowing?' following':''}" id="vfi-fb-${post.user_id}" onclick="vfFollow('${post.user_id}')">${isFollowing?'Подписаться':'Отписаться'}</button>`:''}
         </div>
         <div class="vfi-desc">${escHtml(post.description||post.content||'')}</div>
         ${post.music?`<div class="vfi-music"><span class="vfi-disc">💿</span>${escHtml(post.music)}</div>`:''}
@@ -8154,22 +8191,47 @@ function renderFeed(){
       const postId=entry.target.dataset.postId;
       if(entry.isIntersecting){
         const vid=entry.target.querySelector('video.vf-video');
-        if(vid) vid.play().catch(()=>{});
+        if(vid){ vid.muted=_vfMuted; vid.play().catch(()=>{}); _vfStartProgress(entry.target,postId); }
         if(postId) _trackPostView(postId);
       } else {
         const vid=entry.target.querySelector('video.vf-video');
-        if(vid) vid.pause();
+        if(vid){ vid.pause(); vid.currentTime=0; }
+        const bar=postId?document.getElementById('vf-prog-'+postId):null;
+        if(bar) bar.style.width='0';
       }
     });
   },{root:container,threshold:0.65});
   container.querySelectorAll('.vf-card').forEach(c=>_vfObserver.observe(c));
 }
 
+let _vfMuted = true; // start muted like TikTok
+
 function _vfTogglePlay(vid){
   const card=vid.closest('.vf-card');
   const pi=card?.querySelector('.vf-pause-indicator');
   if(vid.paused){ vid.play(); if(pi){pi.classList.add('show');setTimeout(()=>pi.classList.remove('show'),600);} }
   else { vid.pause(); if(pi){pi.style.setProperty('--icon','\'⏸\'');pi.classList.add('show');setTimeout(()=>pi.classList.remove('show'),600);} }
+}
+
+function vfToggleMute(postId, btn){
+  _vfMuted=!_vfMuted;
+  document.querySelectorAll('.vf-video').forEach(v=>{ v.muted=_vfMuted; });
+  if(btn) btn.textContent=_vfMuted?'🔇':'🔊';
+}
+
+function _vfStartProgress(card, postId){
+  const vid=card.querySelector('video.vf-video');
+  const bar=document.getElementById('vf-prog-'+postId);
+  if(!vid||!bar) return;
+  vid.muted=_vfMuted;
+  const muteBtn=document.getElementById('vf-mute-'+postId);
+  if(muteBtn) muteBtn.textContent=_vfMuted?'🔇':'🔊';
+  function tick(){
+    if(!vid.duration||vid.paused) return;
+    bar.style.width=(vid.currentTime/vid.duration*100)+'%';
+    requestAnimationFrame(tick);
+  }
+  vid.addEventListener('play',tick,{once:true});
 }
 
 function _fmtN(n){
