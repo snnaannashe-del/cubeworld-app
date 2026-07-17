@@ -2218,12 +2218,46 @@ const CUBE_WS  = 'wss://cubeworld-backend.onrender.com';
 const API_BASE = 'https://cubeworld-backend.onrender.com';
 
 // ── Backend API helper ────────────────────────────────────────────────────
+let _refreshing = false;
+async function _tryRefreshToken(){
+  if(_refreshing) return false;
+  const rt = localStorage.getItem('cw_refresh_token');
+  if(!rt) return false;
+  _refreshing = true;
+  try{
+    const r = await fetch(API_BASE+'/auth/refresh', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({refresh_token: rt})
+    });
+    if(!r.ok){ _refreshing=false; return false; }
+    const d = await r.json();
+    if(d.access_token){
+      localStorage.setItem('cw_access_token', d.access_token);
+      if(d.refresh_token) localStorage.setItem('cw_refresh_token', d.refresh_token);
+      _refreshing = false;
+      return true;
+    }
+    _refreshing = false; return false;
+  }catch(e){ _refreshing=false; return false; }
+}
+
 async function apiCall(path, opts={}){
   const token = localStorage.getItem('cw_access_token');
   const headers = {'Content-Type':'application/json'};
   if(token) headers['Authorization'] = 'Bearer '+token;
   try{
     const r = await fetch(API_BASE+path, {...opts, headers:{...headers,...(opts.headers||{})}});
+    if(r.status === 401){
+      // Token expired — try refresh once
+      const ok = await _tryRefreshToken();
+      if(ok){
+        const newToken = localStorage.getItem('cw_access_token');
+        const r2 = await fetch(API_BASE+path, {...opts, headers:{...headers, 'Authorization':'Bearer '+newToken}});
+        if(!r2.ok) return null;
+        return await r2.json();
+      }
+      return null;
+    }
     if(!r.ok) return null;
     return await r.json();
   }catch(e){ return null; }
@@ -2249,6 +2283,12 @@ async function syncFromBackend(){
       if(dn) dn.textContent = me.display_name;
     }
     if(me.id) localStorage.setItem('cw_user_id', me.id);
+    // Restore account_type from DB (survives browser clear)
+    if(me.account_type){
+      app.myProfile.accountType = me.account_type;
+      app.myProfile.isHidden = me.account_type === 'hidden';
+      applyPrivacyMode();
+    }
   }
   // 3. Stats (online count)
   const st = await apiCall('/stats');
@@ -2294,6 +2334,30 @@ async function apiFetch(path, opts){
 
 // Active WebSocket per room
 let _ws = null, _wsRoom = null;
+let _globalWs = null; // always-on WS for DM delivery even outside cubes
+
+function connectGlobalWS(){
+  const token = localStorage.getItem('cw_access_token');
+  if(!token || _globalWs) return;
+  _globalWs = new WebSocket(`${CUBE_WS}/ws/${encodeURIComponent(token)}`);
+  _globalWs.onmessage = e => {
+    try{
+      const msg = JSON.parse(e.data);
+      const myUserId = localStorage.getItem('cw_user_id');
+      if(msg.type==='dm') handleIncomingDm(msg, myUserId);
+      else if(msg.type==='balance_update'){
+        const prev=app.wallet.balance, next=msg.balance||prev;
+        if(next>prev){ app.wallet.balance=next; syncWalletUI(); showToast('💰 +'+(next-prev).toLocaleString('ru')+' CUBE!'); }
+      }
+    }catch(e){}
+  };
+  _globalWs.onclose = ()=>{
+    _globalWs = null;
+    // Reconnect after 4s (stagger vs cube WS at 3s)
+    setTimeout(connectGlobalWS, 4000);
+  };
+  _globalWs.onerror = ()=>{ _globalWs=null; };
+}
 
 function openRoomWS(roomId){
   if(!app.userKey) return;
@@ -2389,7 +2453,14 @@ function openRoomWS(roomId){
     loadChatHistory(roomId);
   };
   _ws.onerror = ()=>{ _ws=null; };
-  _ws.onclose = ()=>{ if(_wsRoom===roomId) _ws=null; };
+  _ws.onclose = ()=>{
+    if(_wsRoom!==roomId) return;
+    _ws=null;
+    // Auto-reconnect after 3s if user is still in same room
+    setTimeout(()=>{
+      if(_wsRoom===roomId && !_ws) openRoomWS(roomId);
+    }, 3000);
+  };
 }
 
 // Load message history from backend
@@ -2786,6 +2857,8 @@ function enterWorld(){
   if(!window._statInterval) window._statInterval = setInterval(syncFromBackend, 60000);
   // Keep-alive: ping Render free tier every 4 min to prevent sleep
   if(!window._keepAlive) window._keepAlive = setInterval(()=>fetch(CUBE_API+'/health').catch(()=>{}), 4*60*1000);
+  // Global WS for DM delivery even when not in a cube
+  connectGlobalWS();
   // Activity ping: track online time every 60s for reward system
   if(!window._actPing) window._actPing = setInterval(()=>{
     const tok=localStorage.getItem('cw_access_token');
@@ -4131,11 +4204,6 @@ function _renderOneSig(s){
     </div>
   </div>`;
 }
-function renderSignals(){
-  const el = document.getElementById('signals-grid');
-  if(!el) return;
-  el.innerHTML = app.signals.map(_renderOneSig).join('');
-}
 
 // Load real signals from backend
 async function loadRealSignals(){
@@ -4577,32 +4645,6 @@ function renderChannels(){ renderApiHub(); }
 //  ENHANCED FEED (with tip button)
 // ════════════════════════════════════════════════
 const _origRenderFeed = renderFeed;
-function renderFeed(){
-  const el=document.getElementById('feed-scroll'); if(!el) return;
-  el.innerHTML=`<div class="new-post-btn" onclick="openNewPost()">
-    <div class="npb-avatar">✍️</div>
-    <span class="npb-text">Что думаешь? Пост анонимен · без ID</span>
-  </div>`;
-  app.feedPosts.forEach(p=>{
-    const card=document.createElement('div'); card.className='post-card';
-    let content='';
-    if(p.type==='signal') content=`<div class="pc-signal">📊 СИГНАЛ<br>${escHtml(p.text)}</div>`;
-    else if(p.type==='media') content=`<div class="pc-img">🖼️</div><div class="pc-text">${escHtml(p.text)}</div>`;
-    else content=`<div class="pc-text">${escHtml(p.text)}</div>`;
-    const badge=p.type==='signal'?`<span class="pc-type-badge pc-type-signal">СИГНАЛ</span>`:p.type==='media'?`<span class="pc-type-badge pc-type-media">МЕДИА</span>`:'';
-    const reacs=Object.entries(p.reactions).map(([k,v])=>`<button class="pc-react" onclick="reactPost('${p.id}','${k}',this)"><span>${reactionEmoji(k)}</span> ${v}</button>`).join('');
-    card.innerHTML=`<div class="pc-header">
-      <div class="pc-avatar">${p.avatar}</div>
-      <div class="pc-meta"><div class="pc-author">${p.author}</div><div class="pc-time">${p.time} назад</div></div>
-      ${badge}
-    </div>${content}
-    <div class="pc-actions">${reacs}
-      <button class="pc-react" onclick="openTip('${p.author}','${p.id}')" style="color:var(--gold);margin-left:4px"><span>💰</span> Чаевые</button>
-      <button class="pc-share">↗</button>
-    </div>`;
-    el.appendChild(card);
-  });
-}
 
 // After-enter hook — called at end of enterInterior
 function onEnterInterior(){
@@ -5752,23 +5794,6 @@ const MARKET_ITEMS=[
 ];
 const CAT_LABELS={nft:'NFT',signal:'Сигнал',access:'Доступ',data:'Данные'};
 let marketFilter='all';
-function renderMarket(){
-  const el=document.getElementById('market-grid'); if(!el) return;
-  const items=marketFilter==='all'?MARKET_ITEMS:MARKET_ITEMS.filter(i=>i.cat===marketFilter);
-  el.innerHTML=items.map(item=>`
-    <div class="market-card">
-      <div class="mc-preview" style="background:${item.bg}">${item.emoji}</div>
-      <div class="mc-body">
-        <div class="mc-category mc-cat-${item.cat}">${CAT_LABELS[item.cat]}</div>
-        <div class="mc-name">${item.name}</div>
-        <div class="mc-seller">${item.seller}</div>
-        <div class="mc-footer">
-          <div class="mc-price">${item.price} CUBE</div>
-          <button class="mc-buy" onclick="buyMarketItem('${item.id}')">Купить</button>
-        </div>
-      </div>
-    </div>`).join('');
-}
 function filterMarket(cat, el){
   marketFilter=cat;
   document.querySelectorAll('.mf-btn').forEach(b=>b.classList.remove('active'));
@@ -6016,36 +6041,6 @@ function initPostComments(){
 }
 
 // Override renderFeed to include comments button and section
-function renderFeed(){
-  const el=document.getElementById('feed-scroll'); if(!el) return;
-  initPostComments();
-  el.innerHTML=`<div class="new-post-btn" onclick="openNewPost()">
-    <div class="npb-avatar">✍️</div>
-    <span class="npb-text">Что думаешь? Пост анонимен · без ID</span>
-  </div>`;
-  app.feedPosts.forEach(p=>{
-    const card=document.createElement('div'); card.className='post-card'; card.id='post-'+p.id;
-    let content='';
-    if(p.type==='signal') content=`<div class="pc-signal">📊 СИГНАЛ<br>${escHtml(p.text)}</div>`;
-    else if(p.type==='media') content=`<div class="pc-img">🖼️</div><div class="pc-text">${escHtml(p.text)}</div>`;
-    else content=`<div class="pc-text">${escHtml(p.text)}</div>`;
-    const badge=p.type==='signal'?`<span class="pc-type-badge pc-type-signal">СИГНАЛ</span>`:p.type==='media'?`<span class="pc-type-badge pc-type-media">МЕДИА</span>`:'';
-    const reacs=Object.entries(p.reactions).map(([k,v])=>`<button class="pc-react" onclick="reactPost('${p.id}','${k}',this)"><span>${reactionEmoji(k)}</span> ${v}</button>`).join('');
-    const commentCount=p.commentCount+(p.comments?p.comments.length:0);
-    card.innerHTML=`<div class="pc-header">
-      <div class="pc-avatar" style="cursor:pointer" onclick="clickAuthor('${p.author}','${p.avatar}')">${p.avatar}</div>
-      <div class="pc-meta"><div class="pc-author" style="cursor:pointer" onclick="clickAuthor('${p.author}','${p.avatar}')">${p.author}</div><div class="pc-time">${p.time} назад</div></div>
-      ${badge}
-    </div>${content}
-    <div class="pc-actions">${reacs}
-      <button class="pc-comment-toggle" id="ctog-${p.id}" onclick="toggleComments('${p.id}')">💬 ${commentCount}</button>
-      <button class="pc-react" onclick="openTip('${p.author}','${p.id}')" style="color:var(--gold)"><span>💰</span> Чаевые</button>
-      <button class="pc-share" onclick="sharePost('${p.id}')">↗</button>
-    </div>
-    <div class="pc-comments-wrap" id="comments-${p.id}" style="display:none"></div>`;
-    el.appendChild(card);
-  });
-}
 
 function toggleComments(postId){
   const wrap=document.getElementById('comments-'+postId); if(!wrap) return;
@@ -6331,10 +6326,11 @@ async function saveMyProfile(){
     if(uRes?.ok){ app._myUsername=newUsername; }
     else { showToast('❌ @'+newUsername+' уже занят или недопустим'); }
   }
-  // Patch backend
+  // Patch backend (include account_type)
   const res=await apiCall('/me',{method:'PATCH',body:JSON.stringify({
     display_name: newName||undefined,
-    avatar_url: app.myProfile.avatar||undefined
+    avatar_url: app.myProfile.avatar||undefined,
+    account_type: app.myProfile.accountType||'public'
   })});
   // Update visible name badge
   const dn=document.getElementById('wb-key-badge');
@@ -6477,37 +6473,6 @@ const SIG_STATS={
   'BNB/USDT':{wr:59,subs:67,pnl:'+44%'},
   'default': {wr:62,subs:rnd(20,150),pnl:'+'+rnd(20,180)+'%'},
 };
-function renderSignals(){
-  const el=document.getElementById('signals-grid'); if(!el) return;
-  el.innerHTML='';
-  (app.signals||[]).forEach(s=>{
-    const stats=SIG_STATS[s.pair]||SIG_STATS['default'];
-    const card=document.createElement('div'); card.className='sig-card';
-    card.innerHTML=`<div class="sig-header">
-      <span class="sig-dir ${s.dir}">${s.dir.toUpperCase()}</span>
-      <span class="sig-pair">${s.pair}</span>
-      <span class="sig-author">${s.author}</span>
-    </div>
-    <div class="sig-pills">
-      <span class="sig-pill win">✅ ${stats.wr}% WinRate</span>
-      <span class="sig-pill sub">👥 ${typeof stats.subs==='number'?stats.subs:rnd(20,150)} подп.</span>
-      <span class="sig-pill pnl-pos">📈 ${typeof stats.pnl==='string'?stats.pnl:'+'+rnd(20,180)+'%'} PnL</span>
-      <button class="sig-copy-trade" onclick="copyTrade('${s.pair}','${s.dir}',this)">📋 Копитрейд</button>
-    </div>
-    <div class="sig-body">
-      <div class="sig-field"><div class="sig-field-lbl">Вход</div><div class="sig-field-val entry">$${s.entry}</div></div>
-      <div class="sig-field"><div class="sig-field-lbl">TP</div><div class="sig-field-val tp">$${s.tp}</div></div>
-      <div class="sig-field"><div class="sig-field-lbl">SL</div><div class="sig-field-val sl">$${s.sl}</div></div>
-    </div>
-    <div class="sig-footer">
-      <button class="sig-react" onclick="reactSignal('${s.id}','fire',this)">🔥 ${s.reactions?.fire||rnd(2,24)}</button>
-      <button class="sig-react" onclick="reactSignal('${s.id}','rocket',this)">🚀 ${s.reactions?.rocket||rnd(1,12)}</button>
-      <button class="sig-react" onclick="openTip('${s.author}','${s.id}')">💰 Чаевые</button>
-      <span class="sig-time">${s.time}</span>
-    </div>`;
-    el.appendChild(card);
-  });
-}
 
 function copyTrade(pair, dir, btn){
   btn.textContent='✅ Включён';
