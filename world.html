@@ -1772,8 +1772,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .po-stat{flex:1;text-align:center;padding:14px 6px}
 .po-stat-val{font-size:18px;font-weight:900;color:#e0e0f8;font-family:'Courier New',monospace}
 .po-stat-lbl{font-size:10px;color:var(--text3);margin-top:2px}
-.po-bio{padding:14px 20px;font-size:13.5px;color:var(--text2);line-height:1.65;white-space:pre-wrap;word-break:break-word;text-align:center}
+.po-bio{font-size:13.5px;color:var(--text2);line-height:1.65;white-space:pre-wrap;word-break:break-word;text-align:center;margin-bottom:8px}
 .po-bio a{color:var(--accent);text-decoration:none}
+.po-tab.active{color:#e0e0f8!important;border-bottom-color:var(--accent)!important}
+.po-tab:hover{color:#e0e0f8!important}
 .po-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px}
 .po-cell{aspect-ratio:1;background:rgba(255,255,255,.05);position:relative;overflow:hidden;cursor:pointer}
 .po-cell-thumb{width:100%;height:100%;object-fit:cover;display:block}
@@ -3533,16 +3535,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
     <!-- Row 11b: Business fields — shown only when Бизнес -->
     <div class="pe-field-group pe-hidden" id="pe-fg-biz">
-      <!-- Business bio (1500 chars, hashtag preview) -->
+      <!-- Business bio (1500 chars) -->
       <label class="pe-field-label" style="display:flex;align-items:center;justify-content:space-between">
-        <span>Описание <span style="color:var(--gold);font-size:9px;font-weight:800;padding:1px 6px;border-radius:10px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.25);margin-left:5px">БИЗНЕС</span></span>
+        <span>Описание</span>
         <span style="color:var(--text3);font-weight:400;font-size:10px"><span id="mpe-biz-bio-count">0</span>/1500</span>
       </label>
       <textarea id="mpe-biz-bio" class="pe-bio-area" maxlength="1500" style="max-height:54px"
-        placeholder="Опишите ваш бизнес… #хештеги подсветятся"
+        placeholder="Опишите ваш бизнес"
         oninput="peBizBioInput(this)"></textarea>
-      <!-- Live hashtag preview -->
-      <div id="pe-biz-bio-preview" class="pe-bio-preview" style="display:none;margin-top:6px"></div>
 
       <!-- Links (up to 5) -->
       <label class="pe-field-label" style="margin-top:14px;display:flex;align-items:center;gap:6px">
@@ -3587,7 +3587,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div class="po-stat"><div class="po-stat-val" id="po-followers">0</div><div class="po-stat-lbl">Подписчиков</div></div>
       <div class="po-stat"><div class="po-stat-val" id="po-likes">0</div><div class="po-stat-lbl">Лайки</div></div>
     </div>
-    <div class="po-bio" id="po-bio"></div>
+    <!-- Bio + address + links (centered block) -->
+    <div id="po-info-block" style="text-align:center;padding:14px 24px 6px">
+      <div class="po-bio" id="po-bio" style="padding:0;text-align:center"></div>
+      <div id="po-extra"></div>
+    </div>
+    <!-- Grid tabs -->
+    <div style="display:flex;border-bottom:1px solid var(--border2);margin-top:8px">
+      <button class="po-tab active" id="po-tab-short" onclick="poSetTab('short',this)" style="flex:1;padding:12px 0;background:none;border:none;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;display:flex;align-items:center;justify-content:center;gap:6px;transition:color .15s,border-color .15s">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><polygon points="5.5,4 10,7 5.5,10" fill="currentColor"/></svg>
+        Shorts
+      </button>
+      <button class="po-tab" id="po-tab-post" onclick="poSetTab('post',this)" style="flex:1;padding:12px 0;background:none;border:none;color:var(--text3);font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;display:flex;align-items:center;justify-content:center;gap:6px;transition:color .15s,border-color .15s">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="7.5" y="1" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="1" y="7.5" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.4"/></svg>
+        Посты
+      </button>
+    </div>
     <div class="po-grid" id="po-grid"></div>
   </div>
 </div>
@@ -8478,11 +8493,12 @@ function openPortfolio(){
     // Business extra: address + links
     let extra='';
     if(isBiz){
-      if(p.address) extra+=`<div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:12.5px;color:var(--text2)"><i class="ti ti-map-pin" style="color:var(--accent)"></i>${escHtml(p.address)}</div>`;
+      if(p.address) extra+=`<div style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--text2);margin-top:8px"><i class="ti ti-map-pin" style="color:var(--accent)"></i>${escHtml(p.address)}</div>`;
       const links=(p.links||[]).filter(l=>l.trim());
-      if(links.length) extra+=`<div style="display:flex;flex-direction:column;gap:5px;margin-top:10px">${links.map(l=>`<a href="${escHtml(l)}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--accent);text-decoration:none"><i class="ti ti-link" style="font-size:12px;flex-shrink:0"></i>${escHtml(l.replace(/^https?:\/\/(www\.)?/,''))}</a>`).join('')}</div>`;
+      if(links.length) extra+=`<div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:10px">${links.map(l=>`<a href="${escHtml(l)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--accent);text-decoration:none"><i class="ti ti-link" style="font-size:11px"></i>${escHtml(l.replace(/^https?:\/\/(www\.)?/,''))}</a>`).join('')}</div>`;
     }
-    if(extra){ let ex=document.getElementById('po-extra'); if(!ex){ ex=document.createElement('div'); ex.id='po-extra'; ex.style.padding='0 20px 14px'; bioEl.parentNode.insertBefore(ex, bioEl.nextSibling); } ex.innerHTML=extra; }
+    const ex=document.getElementById('po-extra');
+    if(ex) ex.innerHTML=extra;
   }
   // Stats (placeholder — real follows/likes would come from backend)
   apiCall('/activity/stats').then(stats=>{
@@ -8500,25 +8516,35 @@ function openPortfolio(){
 function closePortfolio(){
   document.getElementById('portfolio-overlay').classList.remove('open');
 }
+let _poTab='short';
+function poSetTab(tab, btn){
+  _poTab=tab;
+  document.querySelectorAll('.po-tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  _renderPortfolioGrid();
+}
 function _renderPortfolioGrid(){
   const grid=document.getElementById('po-grid');
   if(!grid) return;
   const myId=String(localStorage.getItem('cw_user_id')||'0');
-  const myPosts=(app.feed||[]).filter(p=>String(p.user_id||p.author_id)===myId||p._mine);
+  const all=(app.feed||[]).filter(p=>String(p.user_id||p.author_id)===myId||p._mine);
+  const isVideoPost=p=>p.type==='short'||p.type==='video';
+  const myPosts=all.filter(p=>_poTab==='short'?isVideoPost(p):!isVideoPost(p));
   if(!myPosts.length){
-    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--text3);font-size:13px">Постов пока нет</div>';
+    const label=_poTab==='short'?'Коротких видео пока нет':'Постов пока нет';
+    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:48px 20px;color:var(--text3);font-size:13px">${label}</div>`;
     return;
   }
   grid.innerHTML=myPosts.slice(0,30).map(p=>{
     const views=p.views||p.view_count||0;
-    const isVideo=p.type==='short'||p.type==='video';
+    const isVideo=isVideoPost(p);
     const thumb=p.thumbnail||p.media_url||'';
     const bg=thumb?`background:url('${thumb}') center/cover no-repeat`:`background:rgba(255,255,255,.05)`;
     const inner=thumb?`<img class="po-cell-thumb" src="${thumb}" alt="">`:
-      `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:28px">${p.emoji||'📝'}</div>`;
+      `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:28px">${isVideo?'🎬':'📝'}</div>`;
     const typeChip=isVideo
-      ? `<div class="po-type-chip short"><svg width="8" height="8" viewBox="0 0 8 8" fill="none" style="display:inline;vertical-align:middle;margin-right:2px"><polygon points="2,1 7,4 2,7" fill="white"/></svg>SHORT</div>`
-      : `<div class="po-type-chip post">📝 POST</div>`;
+      ? `<div class="po-type-chip short"><svg width="7" height="7" viewBox="0 0 8 8" fill="none" style="display:inline;vertical-align:middle;margin-right:2px"><polygon points="2,1 7,4 2,7" fill="white"/></svg>SHORT</div>`
+      : `<div class="po-type-chip post">POST</div>`;
     return `<div class="po-cell" style="${bg}">
       ${inner}
       ${typeChip}
