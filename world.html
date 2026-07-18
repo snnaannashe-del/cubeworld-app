@@ -6616,25 +6616,43 @@ function onEnterInterior(){
 // ════════════════════════════════════════════════
 //  CUBE SWITCHER
 // ════════════════════════════════════════════════
-// Restore visited cubes from localStorage
+// Restore visited cubes from localStorage (full objects saved, not just IDs)
 app.visitedCubes = (function(){
   try{
-    const ids = JSON.parse(localStorage.getItem('cw_visited_cubes')||'[]');
-    return ids.map(id=>app.cubes.find(c=>c.id===id)).filter(Boolean);
+    const saved = JSON.parse(localStorage.getItem('cw_visited_cubes_v2')||'[]');
+    if(!Array.isArray(saved)) return [];
+    return saved.map(s=>{
+      const live = app.cubes.find(c=>c.id===s.id);
+      if(live) return {...s,...live};
+      // Backend cube not in app.cubes yet — inject it so switchCube works
+      app.cubes.push({...s, life:s.life||3600});
+      return s;
+    });
   }catch(e){ return []; }
 })();
 // Render switcher immediately if cubes already known (page reload)
 if(app.visitedCubes.length) setTimeout(renderCubeSwitcher, 0);
 
 function addCubeToSwitcher(cubeId){
-  if(app.visitedCubes.find(c=>c.id===cubeId)) return;
+  if(app.visitedCubes.find(c=>c.id===cubeId)){
+    renderCubeSwitcher(); // refresh active state
+    return;
+  }
   const cube = app.cubes.find(c=>c.id===cubeId); if(!cube) return;
   app.visitedCubes.push(cube);
   _saveVisitedCubes();
   renderCubeSwitcher();
 }
 function _saveVisitedCubes(){
-  try{ localStorage.setItem('cw_visited_cubes', JSON.stringify(app.visitedCubes.map(c=>c.id))); }catch(e){}
+  try{
+    // Save full cube objects so backend cubes survive reload
+    const toSave = app.visitedCubes.map(c=>({
+      id:c.id, name:c.name, icon:c.icon||'🔷',
+      colorCss:c.colorCss||'#4ade80', life:c.life||0,
+      type:c.type||'public'
+    }));
+    localStorage.setItem('cw_visited_cubes_v2', JSON.stringify(toSave));
+  }catch(e){}
 }
 function renderCubeSwitcher(){
   const wrap = document.getElementById('cube-tabs-wrap'); if(!wrap) return;
