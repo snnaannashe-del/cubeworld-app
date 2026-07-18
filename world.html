@@ -10929,21 +10929,9 @@ function saveUniverse(){
       const _lastCube = localStorage.getItem('cw_last_cube');
       // Always init services via enterWorld first (sets up WS, intervals, sync)
       enterWorld();
-      // Restore: if user was inside a cube, go straight back — same sync tick = no flash
+      // Restore: enter interior immediately — same JS tick = no flash, no delay
       if(_lastView === 'interior' && _lastCube){
-        const cube = app.cubes.find(c=>c.id===_lastCube);
-        if(cube && cube.life > 0){
-          // Synchronous: browser only paints the final interior state
-          enterInterior(_lastCube);
-        } else {
-          // Backend cube not in SEED_CUBES yet — wait for syncFromBackend
-          const _waitCube = (n) => {
-            const c2 = app.cubes.find(c=>c.id===_lastCube);
-            if(c2 && c2.life > 0){ enterInterior(_lastCube); }
-            else if(n < 10){ setTimeout(()=>_waitCube(n+1), 400); }
-          };
-          setTimeout(()=>_waitCube(0), 500);
-        }
+        enterInterior(_lastCube);
       }
     }, 0);
     // Show onboarding for first-time users
