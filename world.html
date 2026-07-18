@@ -2386,9 +2386,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #sec-feed .vf-fab-wrap,.vf-feed-col .vf-fab-wrap{bottom:80px}
   #sec-feed .vf-actions{bottom:74px}
   #sec-feed .vf-info{padding-bottom:74px}
-  /* cube-switcher auto-hide transition */
+  /* cube-switcher + topbar auto-hide transition (feed scroll on mobile) */
   #cube-switcher{transition:max-height .3s ease,opacity .3s ease,padding .3s ease;max-height:50px;overflow:hidden}
   #cube-switcher.cs-hidden{max-height:0!important;opacity:0!important;padding-top:0!important;padding-bottom:0!important;border-bottom:none!important}
+  #int-topbar{transition:max-height .3s ease,opacity .3s ease,padding .3s ease,min-height .3s ease;overflow:hidden}
+  #int-topbar.tb-hidden{max-height:0!important;min-height:0!important;opacity:0!important;padding-top:0!important;padding-bottom:0!important;border-bottom:none!important;pointer-events:none}
 
   /* ── chat layout on mobile: list on top, area below ── */
   #sec-chat{flex-direction:column!important;overflow:hidden}
@@ -6709,20 +6711,19 @@ function openCubeCtx(e, cubeId){
   // Show switch button only if not current cube
   const swBtn = menu.querySelector('button:first-of-type');
   if(swBtn) swBtn.style.display = cubeId===app.currentCubeId ? 'none' : 'flex';
-  // Position — show first, then measure to avoid clipping
+  // Position: render off-screen first, measure, then snap to correct position
   const x = e.clientX||e.pageX||window.innerWidth/2;
   const y = e.clientY||e.pageY||100;
-  menu.style.visibility='hidden';
-  menu.style.display='block';
-  requestAnimationFrame(()=>{
-    const mw=menu.offsetWidth||180, mh=menu.offsetHeight||100;
-    const left = Math.min(x, window.innerWidth-mw-8);
-    // Show above cursor if not enough space below
-    const top = (y+6+mh > window.innerHeight-8) ? Math.max(8, y-mh-6) : y+6;
-    menu.style.left = left+'px';
-    menu.style.top  = top+'px';
+  menu.style.left='-9999px'; menu.style.top='-9999px';
+  menu.style.visibility='hidden'; menu.style.display='block';
+  // Double-rAF so browser has fully laid out the menu
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const mw=menu.offsetWidth||180, mh=menu.offsetHeight||110;
+    const left=Math.min(x, window.innerWidth-mw-8);
+    const top=(y+6+mh > window.innerHeight-8) ? Math.max(8, y-mh-6) : y+6;
+    menu.style.left=left+'px'; menu.style.top=top+'px';
     menu.style.visibility='visible';
-  });
+  }));
   setTimeout(()=>document.addEventListener('click',closeCubeCtx,{once:true}),10);
 }
 function closeCubeCtx(){ document.getElementById('cube-ctx-menu').style.display='none'; _cubeCtxId=null; }
@@ -9497,37 +9498,30 @@ function toggleVfTabsDrawer(){
   }
 }
 
-// FAB speed-dial toggle — renders into a fixed overlay so overflow:hidden parents can't clip it
-let _vfFabOpen = null;
-let _vfFabCloseTimer = null;
+// FAB speed-dial toggle — fixed overlay, persists across video swipes
+let _vfFabOpen = null; // postId or null
+
 function closeVfFab(){
   const ov=document.getElementById('vf-fab-overlay');
   if(ov){ ov.style.display='none'; ov.innerHTML=''; }
   _vfFabOpen=null;
-  clearTimeout(_vfFabCloseTimer);
 }
-function toggleVfFab(postId){
-  // If same post — close
-  if(_vfFabOpen===postId){ closeVfFab(); return; }
-  closeVfFab();
 
-  const trigger=document.querySelector(`#vf-fab-${postId} .vf-fab-trigger`);
-  if(!trigger) return;
-  const rect=trigger.getBoundingClientRect();
-
-  // Find post data
+function _openVfFabContent(postId){
   const post=_vfPosts.find(p=>String(p.id)===String(postId));
   if(!post) return;
+  const trigger=document.querySelector(`#vf-fab-${postId} .vf-fab-trigger`);
+  const ov=document.getElementById('vf-fab-overlay');
+  if(!ov) return;
 
   const isLiked=!!(app.vfLiked||{})[postId];
   const isFollowing=!!(app.vfFollowing||{})[post.user_id];
   const isMine=String(post.user_id)===String(app.userId||'');
   const letter=(post.display_name||'?')[0].toUpperCase();
 
-  const ov=document.getElementById('vf-fab-overlay');
   ov.innerHTML=`
     ${!isMine?`<div class="vf-fab-author" style="margin-bottom:4px">
-      <div class="vfa-author-av" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}');closeVfFab()">
+      <div class="vfa-author-av" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">
         ${letter}
         <div class="vfa-follow-dot${isFollowing?' following':''}" id="vfa-fd2-${post.user_id}" onclick="event.stopPropagation();vfFollow('${post.user_id}')">${isFollowing?'✓':'+'}</div>
       </div>
@@ -9536,11 +9530,11 @@ function toggleVfFab(postId){
       <div class="vfa-icon${isLiked?' liked':''}" id="vfa-heart-${post.id}"><i class="ti ti-heart${isLiked?'-filled':''}"></i></div>
       <span class="vfa-count" id="vfa-lc-${post.id}">${_fmtN(post.likes||0)}</span>
     </button>
-    <button class="vf-fab-item" onclick="openVfComments('${post.id}');closeVfFab()">
+    <button class="vf-fab-item" onclick="openVfComments('${post.id}')">
       <div class="vfa-icon"><i class="ti ti-message-circle"></i></div>
       <span class="vfa-count" id="vfa-cc2-${post.id}">${_fmtN(post.comment_count||0)}</span>
     </button>
-    <button class="vf-fab-item" onclick="vfShare('${post.id}');closeVfFab()">
+    <button class="vf-fab-item" onclick="vfShare('${post.id}')">
       <div class="vfa-icon"><i class="ti ti-share-3"></i></div>
       <span class="vfa-count">${_fmtN(post.share_count||0)||''}</span>
     </button>
@@ -9549,63 +9543,72 @@ function toggleVfFab(postId){
       <span class="vfa-count">${_fmtN(post.view_count||0)}</span>
     </div>`;
 
-  // Position: right-aligned, bottom of overlay = top of trigger
-  ov.style.display='flex';
-  const ovH=ov.scrollHeight||300;
-  const top=Math.max(8, rect.top - ovH - 8);
-  ov.style.right=(window.innerWidth - rect.right - 2)+'px';
-  ov.style.left='auto';
-  ov.style.top=top+'px';
-
   _vfFabOpen=postId;
-  // Auto-close after 5s
-  _vfFabCloseTimer=setTimeout(closeVfFab, 5000);
-  // Close on outside tap
-  setTimeout(()=>document.addEventListener('click',_vfFabOutside,{once:true}),50);
+  ov.style.display='flex';
+  // Position: anchored to trigger if available, otherwise right:14px bottom:130px
+  requestAnimationFrame(()=>{
+    const ovH=ov.offsetHeight||300;
+    if(trigger){
+      const rect=trigger.getBoundingClientRect();
+      ov.style.right=(window.innerWidth-rect.right+2)+'px';
+      ov.style.top=Math.max(8, rect.top-ovH-10)+'px';
+    } else {
+      ov.style.right='14px';
+      ov.style.top=Math.max(8, window.innerHeight-ovH-130)+'px';
+    }
+    ov.style.left='auto';
+  });
 }
-function _vfFabOutside(e){
-  const ov=document.getElementById('vf-fab-overlay');
-  if(ov && !ov.contains(e.target)) closeVfFab();
+
+function toggleVfFab(postId){
+  if(_vfFabOpen===postId){ closeVfFab(); return; }
+  _openVfFabContent(postId);
 }
 
 // Cube-switcher auto-hide on mobile scroll (hide after 3rd scroll, show on bird-btn)
-function showCubeSwitcher(){
-  const cs = document.getElementById('cube-switcher');
-  const bird = document.getElementById('cs-bird-btn');
-  if(cs){ cs.classList.remove('cs-hidden'); _csScrollCount=0; _csHidden=false; }
-  if(bird) bird.classList.remove('show');
-}
+function showCubeSwitcher(){ showTopBars(); }
 let _csScrollCount=0, _csHidden=false, _csLastY=0;
+let _tbHidden=false;
+function showTopBars(){
+  const cs=document.getElementById('cube-switcher');
+  const tb=document.getElementById('int-topbar');
+  if(cs){ cs.classList.remove('cs-hidden'); }
+  if(tb){ tb.classList.remove('tb-hidden'); }
+  _csHidden=false; _tbHidden=false; _csScrollCount=0;
+}
 (function initCubeScrollHide(){
   function setup(){
     const cs = document.getElementById('cube-switcher');
     if(!cs) return;
     function onScroll(e){
       if(window.innerWidth > 768) return;
-      const bird = document.getElementById('cs-bird-btn');
+      const tb = document.getElementById('int-topbar');
+      const inFeed = _curSection==='feed';
       const tgt = e.target === document ? document.documentElement : e.target;
       const currentY = (tgt.scrollTop !== undefined ? tgt.scrollTop : 0) || window.scrollY || 0;
       const delta = currentY - _csLastY;
       _csLastY = currentY;
-      if(delta > 8){
+      if(Math.abs(delta) < 5) return;
+      if(delta > 0){
+        // scrolling DOWN → hide
         _csScrollCount++;
-        if(_csScrollCount >= 3 && !_csHidden){
-          _csHidden=true;
-          cs.classList.add('cs-hidden');
-          if(bird) bird.classList.add('show');
+        if(_csScrollCount >= 2){
+          if(!_csHidden){ _csHidden=true; cs.classList.add('cs-hidden'); }
+          if(inFeed && !_tbHidden && tb){ _tbHidden=true; tb.classList.add('tb-hidden'); }
         }
-      } else if(delta < -8){
-        if(_csHidden){ showCubeSwitcher(); }
-        else { _csScrollCount = Math.max(0, _csScrollCount-1); }
+      } else {
+        // scrolling UP → show everything
+        if(_csHidden||_tbHidden){ showTopBars(); }
+        else { _csScrollCount=Math.max(0,_csScrollCount-1); }
       }
     }
     // Attach to all scrollable containers inside int-main
     const intMain = document.getElementById('int-main');
     if(intMain) intMain.addEventListener('scroll', onScroll, {passive:true, capture:true});
     document.addEventListener('scroll', onScroll, {passive:true, capture:true});
-    // Re-reset on section switch
+    // Re-show on section switch
     document.querySelectorAll('.sn-item,.mnb').forEach(btn=>{
-      btn.addEventListener('click', ()=>{ _csScrollCount=0; if(!_csHidden) return; showCubeSwitcher(); });
+      btn.addEventListener('click', ()=>showTopBars());
     });
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', setup);
@@ -9741,7 +9744,7 @@ function renderFeed(){
     container.appendChild(card);
   });
 
-  // IntersectionObserver: autoplay video + track views
+  // IntersectionObserver: autoplay video + track views + update FAB overlay if open
   _vfObserver = new IntersectionObserver(entries=>{
     entries.forEach(entry=>{
       const postId=entry.target.dataset.postId;
@@ -9749,6 +9752,8 @@ function renderFeed(){
         const vid=entry.target.querySelector('video.vf-video');
         if(vid){ vid.muted=_vfMuted; vid.play().catch(()=>{}); _vfStartProgress(entry.target,postId); }
         if(postId) _trackPostView(postId);
+        // If FAB overlay is open, update it for the new visible card
+        if(_vfFabOpen && postId && _vfFabOpen!==postId) _openVfFabContent(postId);
       } else {
         const vid=entry.target.querySelector('video.vf-video');
         if(vid){ vid.pause(); vid.currentTime=0; }
