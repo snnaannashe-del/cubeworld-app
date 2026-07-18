@@ -2413,7 +2413,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     </div>
     <div class="kg-warn">⚠️ <span>Никто не знает, кто ты. Ключ не привязан к личности, почте или телефону. Потеря ключа = потеря доступа.</span></div>
     <div class="kg-features" id="kg-features"></div>
-    <button class="btn btn-accent" style="width:100%;padding:14px;font-size:15px" onclick="enterWorld()">Войти в CubeWorld →</button>
+    <button class="btn btn-accent" style="width:100%;padding:14px;font-size:15px" onclick="localStorage.removeItem('cw_last_view');localStorage.removeItem('cw_last_cube');enterWorld()">Войти в CubeWorld →</button>
   </div>
 </section>
 
@@ -4313,6 +4313,9 @@ async function startKeygen(type){
     localStorage.setItem('cw_access_token',data.access_token);
     localStorage.setItem('cw_refresh_token',data.refresh_token);
     localStorage.setItem('cw_key_type',data.key_type);
+    // New key = fresh start: clear any previous session restore state
+    localStorage.removeItem('cw_last_view');
+    localStorage.removeItem('cw_last_cube');
     app.userKey=data.key; app.keyType=data.key_type||'free';
     // Show key
     document.getElementById('kg-title').textContent='Ключ сгенерирован';
@@ -10924,19 +10927,23 @@ function saveUniverse(){
       // Read restore state BEFORE enterWorld() overwrites cw_last_view
       const _lastView = localStorage.getItem('cw_last_view');
       const _lastCube = localStorage.getItem('cw_last_cube');
-      const _lastSec  = localStorage.getItem('cw_last_section') || 'feed';
+      // Always init services via enterWorld first (sets up WS, intervals, sync)
       enterWorld();
-      // Restore: if user was inside a cube, go straight back there
+      // Restore: if user was inside a cube, go straight back — same sync tick = no flash
       if(_lastView === 'interior' && _lastCube){
-        const _tryRestore = (attempt) => {
-          const cube = app.cubes.find(c=>c.id===_lastCube);
-          if(cube && cube.life > 0){
-            enterInterior(_lastCube);
-          } else if(attempt < 12){
-            setTimeout(()=>_tryRestore(attempt+1), 300);
-          }
-        };
-        setTimeout(()=>_tryRestore(0), 200);
+        const cube = app.cubes.find(c=>c.id===_lastCube);
+        if(cube && cube.life > 0){
+          // Synchronous: browser only paints the final interior state
+          enterInterior(_lastCube);
+        } else {
+          // Backend cube not in SEED_CUBES yet — wait for syncFromBackend
+          const _waitCube = (n) => {
+            const c2 = app.cubes.find(c=>c.id===_lastCube);
+            if(c2 && c2.life > 0){ enterInterior(_lastCube); }
+            else if(n < 10){ setTimeout(()=>_waitCube(n+1), 400); }
+          };
+          setTimeout(()=>_waitCube(0), 500);
+        }
       }
     }, 0);
     // Show onboarding for first-time users
