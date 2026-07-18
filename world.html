@@ -424,10 +424,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-msg{display:flex;align-items:flex-start;gap:8px;padding:2px 0;animation:fadeUp .15s ease}
 .gco-msg.me{flex-direction:row-reverse}
 .gco-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(0,149,246,.5),rgba(131,58,180,.4));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
-.gco-bubble{max-width:72%;background:rgba(255,255,255,.07);border-radius:14px 14px 14px 3px;padding:8px 12px;border:1px solid rgba(255,255,255,.06)}
+/* gco-bubble primary styles now in telegram-style section below */
 .gco-msg.me .gco-bubble{background:linear-gradient(135deg,rgba(0,149,246,.28),rgba(0,100,220,.2));border:1px solid rgba(0,149,246,.25);border-radius:14px 14px 3px 14px}
 .gco-bubble-name{font-size:10px;color:var(--accent);font-weight:700;margin-bottom:3px}
-.gco-bubble-text{font-size:13px;color:#e0e0f8;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.gco-bubble-text{font-size:13px;color:#e0e0f8;line-height:1.5;white-space:pre-wrap;word-break:break-word;user-select:text;-webkit-user-select:text}
 .gco-bubble-time{font-size:10px;color:var(--text3);margin-top:4px;text-align:right}
 .gco-input-row{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:rgba(5,5,20,.95);backdrop-filter:var(--blur);flex-shrink:0}
 .gco-input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:20px;color:#e0e0f8;padding:9px 16px;font-size:13px;font-family:inherit;outline:none;transition:border-color var(--transition),background var(--transition)}
@@ -507,9 +507,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 /* ═══ TELEGRAM-STYLE GROUP ENHANCEMENTS ════════════════════════════════ */
 /* Bubble wrap + tail */
-.gco-bubble-wrap{position:relative;max-width:72%}
+.gco-bubble-wrap{position:relative;max-width:78%;min-width:0}
 .gco-msg.me .gco-bubble-wrap{margin-left:auto}
-.gco-bubble{position:relative;border-radius:14px 14px 14px 2px;padding:8px 12px;background:rgba(255,255,255,.07)}
+.gco-bubble{position:relative;border-radius:14px 14px 14px 2px;padding:9px 13px;background:rgba(255,255,255,.07);word-break:break-word;overflow-wrap:break-word;min-width:60px}
 .gco-bubble::before{content:'';position:absolute;bottom:0;left:-7px;width:0;height:0;border-top:8px solid transparent;border-right:7px solid rgba(255,255,255,.07)}
 .gco-msg.me .gco-bubble{background:rgba(0,149,246,.25);border-radius:14px 14px 2px 14px}
 .gco-msg.me .gco-bubble::before{display:none}
@@ -554,6 +554,27 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-info-bar{display:flex;align-items:center;gap:16px;padding:5px 14px 6px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.005);flex-shrink:0}
 .gco-info-stat{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
 .gco-info-stat b{color:var(--text2);font-weight:600}
+/* ═══ FORMAT BAR (appears above input when text selected) ═══ */
+.fmt-bar{display:none;align-items:center;gap:2px;padding:6px 10px;background:#111128;border-top:1px solid rgba(255,255,255,.09);flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.fmt-bar::-webkit-scrollbar{display:none}
+.fmt-bar.show{display:flex}
+.fmt-bar-btn{background:none;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#c8c8f0;font-size:12px;cursor:pointer;padding:5px 8px;min-width:32px;height:30px;display:flex;align-items:center;justify-content:center;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.fmt-bar-btn:hover,.fmt-bar-btn:active{background:rgba(0,149,246,.2);border-color:rgba(0,149,246,.5);color:#fff}
+.fmt-bar-sep{width:1px;height:20px;background:rgba(255,255,255,.1);margin:0 2px;flex-shrink:0}
+.fmt-bar-close{background:none;border:none;color:rgba(255,255,255,.35);font-size:14px;cursor:pointer;padding:4px 6px;margin-left:4px;flex-shrink:0}
+/* ═══ BUBBLE TEXT SELECTION POPUP ═══ */
+#bub-sel-popup{position:fixed;z-index:9950;background:#1e1e38;border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:5px;box-shadow:0 6px 28px rgba(0,0,0,.8);display:none;flex-direction:column;min-width:180px;backdrop-filter:blur(14px)}
+.bsp-item{display:flex;align-items:center;gap:8px;padding:10px 13px;border-radius:8px;cursor:pointer;font-size:13px;color:#e0e0f8;transition:background .12s}
+.bsp-item:hover,.bsp-item:active{background:rgba(255,255,255,.08)}
+.bsp-item i{font-size:16px;width:18px;text-align:center;color:rgba(255,255,255,.5)}
+.bsp-sep{height:1px;background:rgba(255,255,255,.07);margin:3px 0}
+/* Format submenu (list style) inside bub-sel-popup */
+#bsp-fmt-sub{display:none;flex-direction:column}
+.bsp-fmt-item{display:flex;align-items:center;gap:8px;padding:9px 13px;border-radius:8px;cursor:pointer;font-size:13px;color:#e0e0f8;transition:background .12s}
+.bsp-fmt-item:hover,.bsp-fmt-item:active{background:rgba(0,149,246,.12)}
+.bsp-fmt-icon{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+/* Make DM bubbles selectable too */
+.cm-bubble{user-select:text;-webkit-user-select:text}
 /* Reply bar above input */
 .gco-reply-bar{display:none;align-items:center;gap:8px;padding:7px 14px;background:rgba(0,149,246,.07);border-top:2px solid var(--border);border-left:3px solid var(--accent);flex-shrink:0}
 .gco-reply-bar.visible{display:flex}
@@ -579,6 +600,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 /* Format popup buttons */
 .mfp-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e0e0f8;font-size:14px;cursor:pointer;padding:6px 10px;transition:background .12s;min-width:36px;text-align:center}
 .mfp-btn:hover,.mfp-btn:active{background:rgba(0,149,246,.2);border-color:rgba(0,149,246,.4);color:#0095F6}
+/* Bottom sheet action items */
+.mas-item{display:flex;align-items:center;gap:12px;padding:12px 20px;font-size:14px;color:#e0e0f8;cursor:pointer;transition:background .12s}
+.mas-item:hover,.mas-item:active{background:rgba(255,255,255,.06)}
+.mas-item i{font-size:17px;width:20px;text-align:center;color:var(--text2);flex-shrink:0}
+/* Format popup v2 */
+.mfp-btn2{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:9px;color:#e0e0f8;font-size:15px;cursor:pointer;padding:7px 4px 4px;transition:background .12s;display:flex;flex-direction:column;align-items:center;gap:2px}
+.mfp-btn2 span{font-size:9px;color:var(--text3);font-family:var(--font-base);font-style:normal;font-weight:400}
+.mfp-btn2:hover,.mfp-btn2:active{background:rgba(0,149,246,.2);border-color:rgba(0,149,246,.4);color:#0095F6}
+.mfp-btn2:active .ti{color:#0095F6}
 /* Multi-select checkbox on messages */
 .gco-msg.select-mode{padding-left:36px;position:relative;cursor:pointer}
 .gco-msg.select-mode .gco-msg-cb{position:absolute;left:4px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.3);background:transparent;display:flex;align-items:center;justify-content:center;transition:all .15s}
@@ -2853,6 +2883,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           </div>
           <button class="gco-reply-cancel" onclick="gcoCancelReply()">✕</button>
         </div>
+        <!-- Format bar (shows above keyboard when input focused) -->
+        <div class="fmt-bar" id="gco-fmt-bar">
+          <button class="fmt-bar-btn" onclick="fmtApply('bold')" title="Жирный"><b>B</b></button>
+          <button class="fmt-bar-btn" onclick="fmtApply('italic')" title="Курсив"><i>I</i></button>
+          <button class="fmt-bar-btn" onclick="fmtApply('strike')" title="Зачёрк."><s>S</s></button>
+          <button class="fmt-bar-btn" onclick="fmtApply('under')" title="Подчёрк."><u>U</u></button>
+          <button class="fmt-bar-btn" onclick="fmtApply('mono')" title="Моно" style="font-family:monospace">M</button>
+          <button class="fmt-bar-btn" onclick="fmtApply('quote')" title="Цитата">❝</button>
+          <button class="fmt-bar-btn" onclick="fmtApply('spoiler')" title="Скрытый">||x||</button>
+          <button class="fmt-bar-btn" onclick="fmtApply('link')" title="Ссылка">🔗</button>
+          <div class="fmt-bar-sep"></div>
+          <button class="fmt-bar-btn" onclick="fmtApply('date')" title="Дата">📅</button>
+          <div style="flex:1"></div>
+          <button class="fmt-bar-close" onclick="hideFmtBar()">✕</button>
+        </div>
         <!-- Telegram-style input bar -->
         <div class="gco-input-row" id="gco-input-row" style="position:relative;gap:6px">
           <button class="gco-icon-btn" onclick="gcoAttachInChat()" title="Прикрепить" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-paperclip" style="font-size:16px"></i></button>
@@ -2906,16 +2951,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           </div>
         </div>
         <!-- Context menu -->
-        <div class="gco-ctx" id="gco-ctx" style="display:none">
-          <div class="gco-ctx-item" onclick="gcoCtxReply()"><i class="ti ti-arrow-back-up" style="font-size:14px;color:#0095F6"></i> Ответить</div>
-          <div class="gco-ctx-item" onclick="gcoCtxCopy()"><i class="ti ti-copy" style="font-size:14px;color:var(--text2)"></i> Скопировать</div>
-          <div class="gco-ctx-item" id="gco-ctx-edit" onclick="gcoCtxEdit()" style="display:none"><i class="ti ti-pencil" style="font-size:14px;color:var(--text2)"></i> Изменить</div>
-          <div class="gco-ctx-item" onclick="gcoCtxPin()"><i class="ti ti-pin" style="font-size:14px;color:var(--text2)"></i> Закрепить</div>
-          <div class="gco-ctx-item" onclick="gcoCtxForward()"><i class="ti ti-arrow-forward-up" style="font-size:14px;color:var(--text2)"></i> Переслать</div>
-          <div class="gco-ctx-sep"></div>
-          <div class="gco-ctx-item" onclick="gcoCtxSelect()"><i class="ti ti-checkbox" style="font-size:14px;color:var(--text2)"></i> Выбрать</div>
-          <div class="gco-ctx-item danger" onclick="gcoCtxDelete()"><i class="ti ti-trash" style="font-size:14px"></i> Удалить</div>
-        </div>
+        <!-- Bottom sheet context menu (replaces old popup) -->
+        <div id="gco-ctx" style="display:none"></div>
         <!-- hidden file inputs -->
         <input type="file" id="gco-file-image" accept="image/*" style="display:none" onchange="gcoHandleFile(this,'image')">
         <input type="file" id="gco-file-video" accept="video/*" style="display:none" onchange="gcoHandleFile(this,'video')">
@@ -3026,6 +3063,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
                 <option value="86400">⏱ 24 ч</option>
                 <option value="604800">⏱ 7 дней</option>
               </select>
+            </div>
+            <!-- Format bar for DM -->
+            <div class="fmt-bar" id="ca-fmt-bar">
+              <button class="fmt-bar-btn" onclick="fmtApply('bold')" title="Жирный"><b>B</b></button>
+              <button class="fmt-bar-btn" onclick="fmtApply('italic')" title="Курсив"><i>I</i></button>
+              <button class="fmt-bar-btn" onclick="fmtApply('strike')" title="Зачёрк."><s>S</s></button>
+              <button class="fmt-bar-btn" onclick="fmtApply('under')" title="Подчёрк."><u>U</u></button>
+              <button class="fmt-bar-btn" onclick="fmtApply('mono')" title="Моно" style="font-family:monospace">M</button>
+              <button class="fmt-bar-btn" onclick="fmtApply('quote')" title="Цитата">❝</button>
+              <button class="fmt-bar-btn" onclick="fmtApply('spoiler')" title="Скрытый">||x||</button>
+              <button class="fmt-bar-btn" onclick="fmtApply('link')" title="Ссылка">🔗</button>
+              <div class="fmt-bar-sep"></div>
+              <button class="fmt-bar-btn" onclick="fmtApply('date')" title="Дата">📅</button>
+              <div style="flex:1"></div>
+              <button class="fmt-bar-close" onclick="hideFmtBar()">✕</button>
             </div>
             <div class="ca-input-row">
               <button id="ca-mic-btn" title="Голосовое (держи)"
@@ -10257,7 +10309,7 @@ function _buildGroupMsg(m, myId){
   // Avatar: show for others, hide consecutive from same user
   const avHtml=isMe?'':`<div class="gco-av" style="${avStyle};font-size:13px;font-weight:700">${letter}</div>`;
   div.innerHTML=`${avHtml}
-    <div class="gco-bubble-wrap">
+    <div class="gco-bubble-wrap" data-msgid="${m.id}">
       <div class="gco-react-bar">${['👍','❤️','😂','🔥','😮','😢'].map(e=>`<button class="gco-react-btn" onclick="gcoReact(${m.id},'${e}',event)">${e}</button>`).join('')}</div>
       <div class="gco-bubble" oncontextmenu="gcoShowCtxMenu(event,${m.id},'${safeText}','${safeName}',${isMe})" id="gcob-${m.id}">
         ${!isMe?`<div class="gco-bubble-name" style="color:${nameColor};font-size:11px;font-weight:700;margin-bottom:4px">${escHtml(m.display_name||'Аноним')}</div>`:''}
@@ -10267,11 +10319,18 @@ function _buildGroupMsg(m, myId){
         <div class="gco-bubble-reactions" id="gco-reacts-${m.id}"></div>
       </div>
     </div>`;
-  // Long-press for mobile context menu
+  // Long-press for mobile context menu (only when no text selected)
   const bubble=div.querySelector('.gco-bubble');
   if(bubble){
     let _lp=null;
-    bubble.addEventListener('touchstart',e=>{ _lp=setTimeout(()=>gcoShowCtxMenu(e.touches[0],m.id,safeText,safeName,isMe),550); },{passive:true});
+    bubble.addEventListener('touchstart',e=>{
+      _lp=setTimeout(()=>{
+        // If user has selected text, don't show context menu — let selection popup handle it
+        const sel=window.getSelection();
+        if(sel&&!sel.isCollapsed&&sel.toString().trim()) return;
+        gcoShowCtxMenu(e.touches[0],m.id,safeText,safeName,isMe);
+      },550);
+    },{passive:true});
     bubble.addEventListener('touchend',()=>clearTimeout(_lp),{passive:true});
     bubble.addEventListener('touchmove',()=>clearTimeout(_lp),{passive:true});
   }
@@ -10511,21 +10570,29 @@ function gcoUnreact(msgId, emoji){
 
 // ══ CONTEXT MENU ─────────────────────────────────────────────────────────
 function gcoShowCtxMenu(e, msgId, text, author, isMe){
-  e.preventDefault(); e.stopPropagation();
+  if(e&&e.preventDefault) e.preventDefault();
+  if(e&&e.stopPropagation) e.stopPropagation();
   _grpCtxState={id:msgId, text, author, isMe};
-  const menu=document.getElementById('gco-ctx');
-  if(!menu) return;
-  // Show/hide edit based on ownership
-  const editItem=document.getElementById('gco-ctx-edit');
-  if(editItem) editItem.style.display=isMe?'flex':'none';
-  menu.style.display='block';
-  const x=Math.min(e.clientX, window.innerWidth-190);
-  const y=Math.min(e.clientY, window.innerHeight-220);
-  menu.style.left=x+'px'; menu.style.top=y+'px';
-  setTimeout(()=>document.addEventListener('click',gcoHideCtxMenu,{once:true}),10);
+  // Use bottom sheet
+  const sheet=document.getElementById('msg-action-sheet');
+  const sheetEl=document.getElementById('mas-sheet');
+  const authEl=document.getElementById('mas-author');
+  const textEl=document.getElementById('mas-text');
+  const editEl=document.getElementById('mas-edit');
+  const delEl=document.getElementById('mas-delete');
+  if(!sheet||!sheetEl) return;
+  if(authEl) authEl.textContent=author||'';
+  if(textEl) textEl.textContent=(text||'').slice(0,200);
+  if(editEl) editEl.style.display=isMe?'flex':'none';
+  if(delEl) delEl.style.display=isMe?'flex':'none';
+  sheet.style.display='flex';
+  requestAnimationFrame(()=>{ sheetEl.style.transform='translateY(0)'; });
 }
 function gcoHideCtxMenu(){
-  const m=document.getElementById('gco-ctx'); if(m) m.style.display='none';
+  const sheet=document.getElementById('msg-action-sheet');
+  const sheetEl=document.getElementById('mas-sheet');
+  if(sheetEl) sheetEl.style.transform='translateY(100%)';
+  setTimeout(()=>{ if(sheet) sheet.style.display='none'; },260);
 }
 function gcoCtxReply(){
   if(!_grpCtxState) return;
@@ -10676,64 +10743,221 @@ async function gcoSelectAction(action){
   gcoExitSelect();
 }
 
-// ── TEXT FORMAT POPUP ──────────────────────────────────────────────────
-let _mfpTarget=null;
-function _setupFormatPopup(inputEl){
-  if(!inputEl) return;
-  inputEl.addEventListener('mouseup',_showFmtPopup);
-  inputEl.addEventListener('touchend',_showFmtPopup);
-  inputEl.addEventListener('keyup',e=>{ if(!inputEl.selectionStart||inputEl.selectionStart===inputEl.selectionEnd) closeFmtPopup(); });
+// ══ FORMAT BAR + BUBBLE SELECTION (unified for Groups + DM) ══════════
+let _fmtActiveInput=null;  // which textarea is currently targeted
+let _bspBubbleEl=null;     // which bubble element has selection
+let _bspSelText='';        // cached selected text from bubble
+
+/* ── Format bar helpers ─────────────────────────────────────────────── */
+function _fmtWrap(type, sel){
+  if(!sel) return sel;
+  switch(type){
+    case 'bold':    return '**'+sel+'**';
+    case 'italic':  return '_'+sel+'_';
+    case 'strike':  return '~~'+sel+'~~';
+    case 'under':   return '__'+sel+'__';
+    case 'mono':    return '`'+sel+'`';
+    case 'quote':   return '> '+sel.split('\n').join('\n> ');
+    case 'spoiler': return '||'+sel+'||';
+    case 'date':    return '['+sel+'](t:'+(Math.floor(Date.now()/1000))+')';
+    case 'link':{
+      const url=prompt('Введи URL:','https://');
+      return url ? '['+sel+']('+url+')' : sel;
+    }
+    default: return sel;
+  }
 }
-function _showFmtPopup(e){
-  const el=e.currentTarget;
-  const start=el.selectionStart, end=el.selectionEnd;
-  if(start===end){ closeFmtPopup(); return; }
-  _mfpTarget=el;
-  const popup=document.getElementById('msg-fmt-popup');
-  if(!popup) return;
-  popup.style.display='block';
-  requestAnimationFrame(()=>{
-    const rect=el.getBoundingClientRect();
-    const pw=popup.offsetWidth||200;
-    const x=Math.min(rect.left+rect.width/2-pw/2, window.innerWidth-pw-8);
-    popup.style.left=Math.max(4,x)+'px';
-    popup.style.top=Math.max(4,rect.top-popup.offsetHeight-8)+'px';
-  });
+
+function showFmtBar(inputEl){
+  _fmtActiveInput=inputEl;
+  // Show the bar that belongs to the parent container of inputEl
+  const gcoBar=document.getElementById('gco-fmt-bar');
+  const caBar=document.getElementById('ca-fmt-bar');
+  if(inputEl && inputEl.id==='gco-input'){
+    if(gcoBar) gcoBar.classList.add('show');
+    if(caBar) caBar.classList.remove('show');
+  } else if(inputEl && inputEl.id==='ca-text-input'){
+    if(caBar) caBar.classList.add('show');
+    if(gcoBar) gcoBar.classList.remove('show');
+  }
 }
-function closeFmtPopup(){ document.getElementById('msg-fmt-popup').style.display='none'; _mfpTarget=null; }
-function mfpApply(type){
-  if(!_mfpTarget) return;
-  const el=_mfpTarget;
-  const start=el.selectionStart, end=el.selectionEnd;
-  if(start===end){ closeFmtPopup(); return; }
+function hideFmtBar(){
+  document.getElementById('gco-fmt-bar')?.classList.remove('show');
+  document.getElementById('ca-fmt-bar')?.classList.remove('show');
+  _fmtActiveInput=null;
+}
+
+/* Called by format bar buttons */
+function fmtApply(type){
+  const el=_fmtActiveInput;
+  if(!el) return;
+  const start=el.selectionStart||0, end=el.selectionEnd||0;
+  if(start===end) return;
   const sel=el.value.substring(start,end);
   const before=el.value.substring(0,start), after=el.value.substring(end);
-  let wrapped=sel;
-  if(type==='bold') wrapped='**'+sel+'**';
-  else if(type==='italic') wrapped='_'+sel+'_';
-  else if(type==='strike') wrapped='~~'+sel+'~~';
-  else if(type==='under') wrapped='__'+sel+'__';
-  else if(type==='mono') wrapped='`'+sel+'`';
-  else if(type==='quote') wrapped='\n> '+sel.split('\n').join('\n> ')+'\n';
-  else if(type==='spoiler') wrapped='||'+sel+'||';
-  else if(type==='link'){
-    const url=prompt('Введи URL:','https://');
-    if(!url){ closeFmtPopup(); return; }
-    wrapped='['+sel+']('+url+')';
-  }
-  el.value=before+wrapped+after;
-  el.setSelectionRange(before.length, before.length+wrapped.length);
+  const w=_fmtWrap(type, sel);
+  if(!w||w===sel) return;
+  el.value=before+w+after;
+  el.setSelectionRange(before.length, before.length+w.length);
   el.focus();
-  closeFmtPopup();
+  // Keep bar visible (don't hide after apply)
 }
-// Auto-init format popup on gco-input
+
+/* Setup listeners on an input */
+function _setupFmtBar(inputEl){
+  if(!inputEl||inputEl._fmtBarHooked) return;
+  inputEl._fmtBarHooked=true;
+  const check=()=>{
+    const s=inputEl.selectionStart, e2=inputEl.selectionEnd;
+    if(s!==e2){ showFmtBar(inputEl); }
+    // Don't auto-hide: user dismisses with ✕
+  };
+  inputEl.addEventListener('focus',()=>{ _fmtActiveInput=inputEl; });
+  inputEl.addEventListener('mouseup',check);
+  inputEl.addEventListener('touchend',()=>setTimeout(check,80));
+  inputEl.addEventListener('keyup',()=>{
+    const s=inputEl.selectionStart,e2=inputEl.selectionEnd;
+    if(s!==e2) showFmtBar(inputEl);
+  });
+}
+
+/* ── Bubble text selection popup ────────────────────────────────────── */
+let _bspTimer=null;
+
+function _positionBubblePopup(popup){
+  const sel=window.getSelection();
+  if(!sel||sel.rangeCount===0){ popup.style.display='none'; return; }
+  const range=sel.getRangeAt(0);
+  const rect=range.getBoundingClientRect();
+  popup.style.display='flex';
+  popup.style.flexDirection='column';
+  requestAnimationFrame(()=>{
+    const pw=popup.offsetWidth||210, ph=popup.offsetHeight||180;
+    let x=rect.left+(rect.width/2)-(pw/2);
+    let y=rect.top-ph-10;
+    if(y<8) y=rect.bottom+10;
+    x=Math.max(8, Math.min(x, window.innerWidth-pw-8));
+    popup.style.left=x+'px';
+    popup.style.top=y+'px';
+  });
+}
+
+function _onBubbleSelChange(){
+  clearTimeout(_bspTimer);
+  _bspTimer=setTimeout(()=>{
+    const sel=window.getSelection();
+    const popup=document.getElementById('bub-sel-popup');
+    if(!popup) return;
+    if(!sel||sel.isCollapsed||sel.toString().trim()===''){
+      // Only hide if click was not inside popup
+      return;
+    }
+    // Check selection is inside a message bubble
+    const anchorNode=sel.anchorNode;
+    const bubble=anchorNode?.parentElement?.closest('.gco-bubble-text,.cm-bubble');
+    if(!bubble){ return; }
+    _bspBubbleEl=bubble;
+    _bspSelText=sel.toString();
+    // Reset to main view
+    document.getElementById('bsp-main').style.display='block';
+    document.getElementById('bsp-fmt-sub').style.display='none';
+    _positionBubblePopup(popup);
+  }, 120);
+}
+
+function _closeBubblePopup(){
+  const popup=document.getElementById('bub-sel-popup');
+  if(popup) popup.style.display='none';
+  _bspBubbleEl=null; _bspSelText='';
+}
+
+function bspCopy(){
+  const t=window.getSelection()?.toString()||_bspSelText;
+  if(t) navigator.clipboard.writeText(t).catch(()=>{});
+  showToast('📋 Скопировано');
+  _closeBubblePopup();
+  window.getSelection()?.removeAllRanges();
+}
+function bspReply(){
+  // Try to get msg id from parent bubble (.gco-bubble-wrap has data-msgid)
+  const wrap=_bspBubbleEl?.closest('[data-msgid]');
+  const msgId=wrap?.dataset?.msgid;
+  const msgEl=msgId?document.getElementById('gcob-'+msgId):null;
+  const author=wrap?.closest('.gco-msg')?.dataset?.userName||'';
+  const text=msgEl?.querySelector('.gco-bubble-text')?.textContent||_bspSelText||'';
+  _closeBubblePopup();
+  window.getSelection()?.removeAllRanges();
+  if(msgId) gcoReply(msgId, author, text);
+}
+function bspForward(){
+  const t=window.getSelection()?.toString()||_bspSelText;
+  _closeBubblePopup();
+  window.getSelection()?.removeAllRanges();
+  if(t){ _grpCtxState={text:t,author:'',isMe:true}; gcoCtxForward(); }
+}
+function bspShowFmt(){
+  document.getElementById('bsp-main').style.display='none';
+  document.getElementById('bsp-fmt-sub').style.display='flex';
+}
+function bspHideFmt(){
+  document.getElementById('bsp-main').style.display='block';
+  document.getElementById('bsp-fmt-sub').style.display='none';
+}
+function bspFmtBubble(type){
+  // Copy with formatting applied — put result in clipboard and paste to active input
+  const t=window.getSelection()?.toString()||_bspSelText;
+  if(!t){ _closeBubblePopup(); return; }
+  const w=_fmtWrap(type,t);
+  navigator.clipboard.writeText(w).catch(()=>{});
+  showToast('📋 Форматирование скопировано');
+  _closeBubblePopup();
+  window.getSelection()?.removeAllRanges();
+}
+
+/* Init */
 document.addEventListener('DOMContentLoaded',()=>{
-  _setupFormatPopup(document.getElementById('gco-input'));
+  _setupFmtBar(document.getElementById('gco-input'));
+  _setupFmtBar(document.getElementById('ca-text-input'));
+  // Bubble selection
+  document.addEventListener('selectionchange', _onBubbleSelChange);
+  // Close bubble popup on outside tap
+  document.addEventListener('mousedown',e=>{
+    const popup=document.getElementById('bub-sel-popup');
+    if(popup&&popup.style.display!=='none'&&!popup.contains(e.target)){
+      _closeBubblePopup();
+    }
+  });
+  document.addEventListener('touchstart',e=>{
+    const popup=document.getElementById('bub-sel-popup');
+    if(popup&&popup.style.display!=='none'&&!popup.contains(e.target)){
+      const t=e.touches[0];
+      const el=document.elementFromPoint(t.clientX,t.clientY);
+      if(!el||!el.closest('#bub-sel-popup')) _closeBubblePopup();
+    }
+  },{passive:true});
 });
-document.addEventListener('click',e=>{
-  const p=document.getElementById('msg-fmt-popup');
-  if(p&&p.style.display!=='none'&&!p.contains(e.target)) closeFmtPopup();
-});
+
+/* Legacy aliases so old onclick handlers still work */
+function closeFmtPopup(){ hideFmtBar(); }
+function mfpApply2(t){ fmtApply(t); }
+function mfpApply(t){ fmtApply(t); }
+let _mfpTarget=null; // legacy compat
+function _setupFormatPopup(el){ _setupFmtBar(el); } // legacy compat
+function mfpCopySelection(){
+  const el=_fmtActiveInput||_mfpTarget;
+  if(!el) return;
+  const sel=el.value.substring(el.selectionStart||0,el.selectionEnd||0);
+  if(sel) navigator.clipboard.writeText(sel).catch(()=>{});
+  showToast('📋 Скопировано');
+}
+function mfpCtxForward(){
+  const el=_fmtActiveInput||_mfpTarget;
+  if(!el) return;
+  const sel=el.value.substring(el.selectionStart||0,el.selectionEnd||0);
+  if(sel){ _grpCtxState={text:sel,author:'',isMe:true}; gcoCtxForward(); }
+  hideFmtBar();
+}
+function mfpCtxSelect(){ hideFmtBar(); if(_grpCtxState) gcoEnterSelect(_grpCtxState.id); }
 
 // ══ EMOJI PICKER ─────────────────────────────────────────────────────────
 function gcoToggleEmoji(){
@@ -12122,6 +12346,62 @@ const _grpOvId='grp-chat-overlay';
 
 <!-- ══ FAB FIXED OVERLAY (outside all overflow:hidden parents) ══════════ -->
 <div id="vf-fab-overlay" style="display:none;position:fixed;z-index:500;right:14px;flex-direction:column;align-items:center;gap:10px;padding-bottom:12px"></div>
+
+<!-- ══ MSG ACTION BOTTOM SHEET ══════════════════════════════════════════ -->
+<div id="msg-action-sheet" style="display:none;position:fixed;inset:0;z-index:9800">
+  <div id="mas-backdrop" onclick="gcoHideCtxMenu()" style="position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px)"></div>
+  <div id="mas-sheet" style="position:absolute;bottom:0;left:0;right:0;background:#14142a;border-radius:20px 20px 0 0;overflow:hidden;transform:translateY(100%);transition:transform .25s cubic-bezier(.32,0,.18,1)">
+    <!-- Message preview -->
+    <div id="mas-preview" style="padding:14px 18px 12px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;gap:10px;align-items:flex-start">
+      <div style="width:3px;min-height:36px;border-radius:2px;background:var(--accent);flex-shrink:0"></div>
+      <div style="min-width:0;flex:1">
+        <div id="mas-author" style="font-size:11px;color:var(--accent);font-weight:700;margin-bottom:4px"></div>
+        <div id="mas-text" style="font-size:13px;color:var(--text2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical"></div>
+      </div>
+    </div>
+    <!-- Actions -->
+    <div style="padding:6px 0 8px">
+      <div class="mas-item" onclick="gcoCtxReply()"><i class="ti ti-arrow-back-up" style="color:#0095F6"></i> Ответить</div>
+      <div class="mas-item" onclick="gcoCtxCopy()"><i class="ti ti-copy"></i> Скопировать</div>
+      <div class="mas-item" id="mas-edit" onclick="gcoCtxEdit()" style="display:none"><i class="ti ti-pencil"></i> Изменить</div>
+      <div class="mas-item" onclick="gcoCtxPin()"><i class="ti ti-pin"></i> Закрепить</div>
+      <div class="mas-item" onclick="gcoCtxForward()"><i class="ti ti-arrow-forward-up"></i> Переслать</div>
+      <div style="height:1px;background:rgba(255,255,255,.07);margin:4px 14px"></div>
+      <div class="mas-item" onclick="gcoCtxSelect()"><i class="ti ti-checkbox"></i> Выбрать</div>
+      <div class="mas-item" id="mas-delete" onclick="gcoCtxDelete()" style="color:#f87171"><i class="ti ti-trash" style="color:#f87171"></i> Удалить</div>
+    </div>
+    <div style="height:env(safe-area-inset-bottom,0px)"></div>
+  </div>
+</div>
+
+<!-- ══ BUBBLE TEXT SELECTION POPUP ════════════════════════════════════ -->
+<div id="bub-sel-popup" style="display:none;position:fixed;z-index:9950;background:#1e1e38;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:5px;box-shadow:0 8px 32px rgba(0,0,0,.85);backdrop-filter:blur(16px);min-width:200px">
+  <!-- Main actions (shown first) -->
+  <div id="bsp-main">
+    <div class="bsp-item" onclick="bspCopy()"><i class="ti ti-copy"></i> Скопировать</div>
+    <div class="bsp-item" onclick="bspReply()"><i class="ti ti-arrow-back-up" style="color:#0095F6"></i> Ответить</div>
+    <div class="bsp-item" onclick="bspForward()"><i class="ti ti-arrow-forward-up"></i> Переслать</div>
+    <div class="bsp-sep"></div>
+    <div class="bsp-item" onclick="bspShowFmt()"><i class="ti ti-text-size"></i> Форматировать <i class="ti ti-chevron-right" style="margin-left:auto;color:rgba(255,255,255,.3);font-size:12px"></i></div>
+  </div>
+  <!-- Format submenu -->
+  <div id="bsp-fmt-sub" style="display:none;flex-direction:column">
+    <div class="bsp-item" style="color:rgba(255,255,255,.5);font-size:11px;padding:6px 13px 2px" onclick="bspHideFmt()"><i class="ti ti-arrow-left"></i> Назад</div>
+    <div class="bsp-sep"></div>
+    <div class="bsp-fmt-item" onclick="bspFmtBubble('quote')"><div class="bsp-fmt-icon">❝</div> Цитата</div>
+    <div class="bsp-fmt-item" onclick="bspFmtBubble('spoiler')"><div class="bsp-fmt-icon">👁</div> Скрытый</div>
+    <div class="bsp-fmt-item" onclick="bspFmtBubble('bold')"><div class="bsp-fmt-icon"><b>B</b></div> Жирный</div>
+    <div class="bsp-fmt-item" onclick="bspFmtBubble('italic')"><div class="bsp-fmt-icon"><i>I</i></div> Курсив</div>
+    <div class="bsp-fmt-item" onclick="bspFmtBubble('mono')"><div class="bsp-fmt-icon" style="font-family:monospace">M</div> Моноширинный</div>
+    <div class="bsp-fmt-item" onclick="bspFmtBubble('link')"><div class="bsp-fmt-icon">🔗</div> Ссылка</div>
+    <div class="bsp-fmt-item" onclick="bspFmtBubble('date')"><div class="bsp-fmt-icon">📅</div> Дата</div>
+    <div class="bsp-fmt-item" onclick="bspFmtBubble('strike')"><div class="bsp-fmt-icon"><s>S</s></div> Зачёркнутый</div>
+    <div class="bsp-fmt-item" onclick="bspFmtBubble('under')"><div class="bsp-fmt-icon"><u>U</u></div> Подчёркнутый</div>
+  </div>
+</div>
+
+<!-- ══ FORMAT POPUP (legacy, kept for compat) ═══════════════════════════ -->
+<div id="msg-fmt-popup2" style="display:none;position:fixed;z-index:9900"></div>
 
 <!-- ══ FILE VIEWER OVERLAY ══════════════════════════════════════════════ -->
 <div id="fv-overlay" style="display:none;position:fixed;inset:0;z-index:9500;background:#0a0a1a;flex-direction:column">
