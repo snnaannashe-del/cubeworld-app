@@ -427,10 +427,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 /* gco-bubble primary styles now in telegram-style section below */
 .gco-msg.me .gco-bubble{background:linear-gradient(135deg,rgba(0,149,246,.28),rgba(0,100,220,.2));border:1px solid rgba(0,149,246,.25);border-radius:14px 14px 3px 14px}
 .gco-bubble-name{font-size:10px;color:var(--accent);font-weight:700;margin-bottom:3px}
-.gco-bubble-text{font-size:13px;color:#e0e0f8;line-height:1.5;white-space:pre-wrap;word-break:break-word;user-select:text;-webkit-user-select:text}
-.gco-bubble-time{font-size:10px;color:var(--text3);margin-top:4px;text-align:right}
+.gco-bubble-text{font-size:13px;color:#e0e0f8;line-height:1.5;white-space:pre-wrap;word-break:break-word;user-select:none;-webkit-user-select:none}
+.gco-bubble-text.selectable{user-select:text;-webkit-user-select:text}
+.gco-bubble-time{font-size:10px;color:var(--text3);margin-top:4px;text-align:right;user-select:none;-webkit-user-select:none}
 .gco-input-row{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:rgba(5,5,20,.95);backdrop-filter:var(--blur);flex-shrink:0}
-.gco-input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:20px;color:#e0e0f8;padding:9px 16px;font-size:13px;font-family:inherit;outline:none;transition:border-color var(--transition),background var(--transition)}
+.gco-input{flex:1;min-width:0;width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:20px;color:#e0e0f8;padding:9px 14px;font-size:13px;font-family:inherit;outline:none;transition:border-color var(--transition),background var(--transition)}
 .gco-input:focus{border-color:rgba(0,149,246,.4);background:rgba(255,255,255,.08)}
 .gco-send{background:linear-gradient(135deg,rgba(0,149,246,.8),rgba(0,100,220,.7));border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all var(--transition);box-shadow:0 2px 10px rgba(0,149,246,.25)}
 .gco-send:hover{transform:scale(1.1);box-shadow:0 4px 16px rgba(0,149,246,.4)}
@@ -573,8 +574,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .bsp-fmt-item{display:flex;align-items:center;gap:8px;padding:9px 13px;border-radius:8px;cursor:pointer;font-size:13px;color:#e0e0f8;transition:background .12s}
 .bsp-fmt-item:hover,.bsp-fmt-item:active{background:rgba(0,149,246,.12)}
 .bsp-fmt-icon{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
-/* Make DM bubbles selectable too */
-.cm-bubble{user-select:text;-webkit-user-select:text}
+/* DM bubbles: selectable only when in text-select mode */
+.cm-bubble{user-select:none;-webkit-user-select:none}
+.cm-bubble.selectable{user-select:text;-webkit-user-select:text}
+/* Time/meta: never selectable */
+.cm-meta,.gco-bubble-time,.gco-tick{user-select:none;-webkit-user-select:none}
 /* Reply bar above input */
 .gco-reply-bar{display:none;align-items:center;gap:8px;padding:7px 14px;background:rgba(0,149,246,.07);border-top:2px solid var(--border);border-left:3px solid var(--accent);flex-shrink:0}
 .gco-reply-bar.visible{display:flex}
@@ -10267,20 +10271,20 @@ function _buildGroupMsg(m, myId){
     const fname=rawUrl.split('/').pop()||'Файл';
     const txt=parsedMsg.text?`<div class="gco-bubble-text" style="margin-top:6px">${_linkify(parsedMsg.text)}</div>`:'';
     if(parsedMsg.type==='image'){
-      bubbleContent=`<div style="position:relative;max-width:240px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.05);min-height:80px;cursor:zoom-in" onclick="openLightbox('${safeUrl}','image')">
-        <img src="${safeUrl}" style="max-width:240px;width:100%;border-radius:10px;display:block"
+      bubbleContent=`<div style="max-width:280px;border-radius:12px;overflow:hidden;cursor:zoom-in;margin:-4px -4px 0" onclick="openLightbox('${safeUrl}','image')">
+        <img src="${safeUrl}" style="max-width:280px;width:100%;height:auto;display:block;border-radius:12px"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
           onload="this.style.display='block';this.nextElementSibling.style.display='none'">
-        <div style="display:none;align-items:center;justify-content:center;height:80px;font-size:28px;color:var(--text3)">🖼</div>
-      </div>${txt}`;
+        <div style="display:none;align-items:center;justify-content:center;height:120px;font-size:36px;color:var(--text3);background:rgba(255,255,255,.04);border-radius:12px">🖼</div>
+      </div>${txt?`<div style="margin-top:6px">${txt}</div>`:''}`;
     } else if(parsedMsg.type==='video'){
-      bubbleContent=`<div style="max-width:240px;border-radius:10px;overflow:hidden;background:#000;position:relative">
-        <video src="${safeUrl}" style="max-width:240px;width:100%;border-radius:10px;display:block;max-height:300px"
+      bubbleContent=`<div style="max-width:280px;border-radius:12px;overflow:hidden;margin:-4px -4px 0">
+        <video src="${safeUrl}" style="max-width:280px;width:100%;height:auto;display:block;border-radius:12px;max-height:360px"
           controls playsinline preload="metadata"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         </video>
-        <div style="display:none;align-items:center;justify-content:center;height:80px;font-size:28px;color:var(--text3)">🎥</div>
-      </div>${txt}`;
+        <div style="display:none;align-items:center;justify-content:center;height:120px;font-size:36px;color:var(--text3)">🎥</div>
+      </div>${txt?`<div style="margin-top:6px">${txt}</div>`:''}`;
     } else {
       // File — detect type and show in-app viewer
       const ext=(fname.split('.').pop()||'').toLowerCase();
@@ -10292,10 +10296,10 @@ function _buildGroupMsg(m, myId){
         ? `openFv('${safeUrl}','${escHtml(fname)}','${ext}')`
         : `window.open('${safeUrl}','_blank')`;
       const actionLabel=isPdf||isTxt||isImg?'Открыть':'Скачать';
-      bubbleContent=`<div onclick="${onclickAttr}" style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:10px;padding:10px 12px;cursor:pointer;margin-bottom:4px;border:1px solid rgba(255,255,255,.08);max-width:240px">
+      bubbleContent=`<div onclick="${onclickAttr}" style="display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;margin-bottom:4px;max-width:260px">
         <span style="font-size:28px;flex-shrink:0">${icon}</span>
         <div style="min-width:0">
-          <div style="font-size:12px;font-weight:600;color:#e0e0f8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px">${escHtml(fname)}</div>
+          <div style="font-size:12px;font-weight:600;color:#e0e0f8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">${escHtml(fname)}</div>
           <div style="font-size:10px;color:var(--accent);margin-top:2px">${actionLabel}</div>
         </div>
       </div>${txt}`;
@@ -10569,6 +10573,21 @@ function gcoUnreact(msgId, emoji){
 }
 
 // ══ CONTEXT MENU ─────────────────────────────────────────────────────────
+// Parse raw message content (may be JSON) into human-readable preview
+function _parseMsgPreview(rawText){
+  if(!rawText) return '';
+  if(rawText.startsWith('{')){
+    try{
+      const p=JSON.parse(rawText);
+      if(p.text) return p.text;
+      if(p.type==='image') return '🖼 Изображение';
+      if(p.type==='video') return '🎥 Видео';
+      if(p.url){ const fname=p.url.split('/').pop(); return '📎 '+fname; }
+    }catch(e){}
+  }
+  return rawText;
+}
+
 function gcoShowCtxMenu(e, msgId, text, author, isMe){
   if(e&&e.preventDefault) e.preventDefault();
   if(e&&e.stopPropagation) e.stopPropagation();
@@ -10582,7 +10601,7 @@ function gcoShowCtxMenu(e, msgId, text, author, isMe){
   const delEl=document.getElementById('mas-delete');
   if(!sheet||!sheetEl) return;
   if(authEl) authEl.textContent=author||'';
-  if(textEl) textEl.textContent=(text||'').slice(0,200);
+  if(textEl) textEl.textContent=_parseMsgPreview(text||'').slice(0,200);
   if(editEl) editEl.style.display=isMe?'flex':'none';
   if(delEl) delEl.style.display=isMe?'flex':'none';
   sheet.style.display='flex';
@@ -10640,6 +10659,22 @@ function gcoCtxEdit(){
     gcoUpdateSendBtn();
   }
   showToast('✏️ Редактируй и отправь заново');
+}
+function gcoCtxSelectText(){
+  gcoHideCtxMenu();
+  if(!_grpCtxState) return;
+  // Enable text selection on the target bubble
+  const bubbleEl=document.getElementById('gcob-'+_grpCtxState.id);
+  if(!bubbleEl) return;
+  // Remove selectable from all bubbles first
+  document.querySelectorAll('.gco-bubble-text.selectable,.cm-bubble.selectable').forEach(el=>el.classList.remove('selectable'));
+  const textEl=bubbleEl.querySelector('.gco-bubble-text');
+  if(textEl){
+    textEl.classList.add('selectable');
+    showToast('Выдели нужный текст');
+    // Auto-remove selectable mode after 30s
+    setTimeout(()=>textEl.classList.remove('selectable'),30000);
+  }
 }
 function gcoCtxSelect(){
   gcoHideCtxMenu();
@@ -11127,20 +11162,68 @@ function _naiGenResp(id,q){
 }
 
 // ---- FILE UPLOAD HELPERS ----
+// ── Cloudinary unsigned upload (permanent cloud storage) ──────────────
+// Настройка: нажми на свой профиль → "Хранилище файлов"
+// Или запусти setupCloudinary() в консоли
+function _cldCloud(){ return localStorage.getItem('cw_cld_cloud')||''; }
+function _cldPreset(){ return localStorage.getItem('cw_cld_preset')||''; }
+
+function setupCloudinary(){
+  const cloud=prompt('Cloudinary Cloud Name (из cloudinary.com → Dashboard):',_cldCloud());
+  if(cloud===null) return;
+  const preset=prompt('Upload Preset (Unsigned, из Settings → Upload):',_cldPreset());
+  if(preset===null) return;
+  localStorage.setItem('cw_cld_cloud', cloud.trim());
+  localStorage.setItem('cw_cld_preset', preset.trim());
+  showToast(cloud.trim()&&preset.trim() ? '✅ Cloudinary подключён! Файлы теперь сохраняются навсегда.' : '⚠️ Cloudinary отключён, временное хранилище.');
+}
+
+async function _uploadToCloudinary(file, onProgress){
+  const cloud=_cldCloud(), preset=_cldPreset();
+  if(!cloud || !preset) return null;
+  const fd=new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', preset);
+  return new Promise((resolve)=>{
+    const xhr=new XMLHttpRequest();
+    xhr.open('POST',`https://api.cloudinary.com/v1_1/${cloud}/auto/upload`);
+    xhr.upload.onprogress=e=>{ if(onProgress&&e.lengthComputable) onProgress(Math.round(e.loaded/e.total*90)); };
+    xhr.onload=()=>{
+      try{ const j=JSON.parse(xhr.responseText); resolve(j.secure_url||null); }
+      catch(e){ resolve(null); }
+    };
+    xhr.onerror=()=>resolve(null);
+    xhr.send(fd);
+  });
+}
+
 async function _uploadFile(file, progressBarId){
   const bar=progressBarId ? document.getElementById(progressBarId) : null;
   if(bar){ bar.parentElement.style.display='block'; bar.style.width='10%'; }
+  const setBar=(v)=>{ if(bar) bar.style.width=v+'%'; };
+
+  // Try Cloudinary first (permanent storage)
+  if(_cldCloud() && _cldPreset()){
+    try{
+      const url=await _uploadToCloudinary(file, pct=>setBar(pct));
+      if(url){
+        if(bar){ setBar(100); setTimeout(()=>{ bar.parentElement.style.display='none'; setBar(0); },600); }
+        return url;
+      }
+    }catch(e){}
+  }
+
+  // Fallback: backend upload
+  let pct=10; setBar(10);
+  const ticker=setInterval(()=>{ pct=Math.min(pct+10,85); setBar(pct); },200);
   const fd=new FormData();
   fd.append('file', file);
-  let pct=10;
-  const ticker=setInterval(()=>{ pct=Math.min(pct+10,85); if(bar) bar.style.width=pct+'%'; },200);
   try{
     const res=await fetch(CUBE_API+'/upload',{method:'POST',headers:{'Authorization':'Bearer '+localStorage.getItem('cw_access_token')},body:fd});
     clearInterval(ticker);
     const j=await res.json();
-    if(bar){ bar.style.width='100%'; setTimeout(()=>{ bar.parentElement.style.display='none'; bar.style.width='0'; },600); }
+    if(bar){ setBar(100); setTimeout(()=>{ bar.parentElement.style.display='none'; setBar(0); },600); }
     if(!j.ok) return null;
-    // Make absolute URL if backend returns relative path like /uploads/...
     const url = j.url;
     return (url && url.startsWith('/')) ? CUBE_API + url : url;
   }catch(e){ clearInterval(ticker); if(bar) bar.parentElement.style.display='none'; return null; }
@@ -12367,6 +12450,7 @@ const _grpOvId='grp-chat-overlay';
       <div class="mas-item" onclick="gcoCtxPin()"><i class="ti ti-pin"></i> Закрепить</div>
       <div class="mas-item" onclick="gcoCtxForward()"><i class="ti ti-arrow-forward-up"></i> Переслать</div>
       <div style="height:1px;background:rgba(255,255,255,.07);margin:4px 14px"></div>
+      <div class="mas-item" onclick="gcoCtxSelectText()"><i class="ti ti-text-size"></i> Выбрать текст</div>
       <div class="mas-item" onclick="gcoCtxSelect()"><i class="ti ti-checkbox"></i> Выбрать</div>
       <div class="mas-item" id="mas-delete" onclick="gcoCtxDelete()" style="color:#f87171"><i class="ti ti-trash" style="color:#f87171"></i> Удалить</div>
     </div>
