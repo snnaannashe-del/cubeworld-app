@@ -1329,9 +1329,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .live-indicator::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);display:block;animation:pulse 1.5s infinite}
 
 /* ══ CUBE SWITCHER ══════════════════════ */
-#cube-switcher{display:flex;align-items:center;gap:6px;padding:6px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.2);flex-shrink:0;overflow:hidden}
+#cube-switcher{display:flex;align-items:center;gap:8px;padding:6px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.2);flex-shrink:0;width:100%;box-sizing:border-box}
 #cube-switcher::-webkit-scrollbar{height:2px}
-.cube-tab{display:flex;align-items:center;gap:6px;padding:5px 18px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.03);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;font-size:12px;color:var(--text2);min-width:160px;justify-content:center}
+.cube-tab{display:flex;align-items:center;gap:6px;padding:5px 18px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.03);cursor:pointer;transition:all .15s;white-space:nowrap;font-size:12px;color:var(--text2);justify-content:center;flex:1;min-width:120px;max-width:320px}
 .cube-tab:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.15);color:var(--text)}
 .cube-tab.active{background:rgba(0,149,246,.18);border-color:rgba(0,149,246,.4);color:#e0e0f8}
 .cube-tab .ct-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
@@ -1904,6 +1904,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #pe-overlay{align-items:center}
   #pe-overlay .pe-header,#pe-overlay .pe-body{max-width:620px}
   /* Feed stays full-width (TikTok style has own desktop layout) */
+  /* Cube switcher — same width as layout frame */
+  #cube-switcher{max-width:1020px;align-self:center}
 }
 /* keep old mpe classes so existing refs don't break */
 .mpe-avatar-grid{display:none}.mpe-status-row{display:none}.mpe-s-opt{display:none}.mpe-av-opt{display:none}
