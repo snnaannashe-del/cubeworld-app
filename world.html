@@ -178,14 +178,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 /* ══ INTERIOR — SOCIAL NETWORK ══════════ */
 #v-int{background:var(--bg);flex-direction:column}
 #int-topbar{
-  display:flex;align-items:center;gap:10px;padding:9px 16px;
+  display:flex;align-items:center;gap:8px;padding:8px 14px;
   border-bottom:1px solid var(--border);
-  background:rgba(2,2,17,.92);backdrop-filter:var(--blur);
-  flex-shrink:0;z-index:50;overflow-x:auto;
-  -webkit-overflow-scrolling:touch;scrollbar-width:none;
-  min-height:50px
+  background:rgba(2,2,17,.95);backdrop-filter:var(--blur);
+  flex-shrink:0;z-index:50;min-height:50px
 }
-#int-topbar::-webkit-scrollbar{display:none}
+/* Profile avatar button (topbar left) */
+.itb-profile-btn{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.06);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:18px;flex-shrink:0;overflow:hidden;
+  transition:border-color .15s;padding:0
+}
+.itb-profile-btn:hover{border-color:var(--accent)}
+.itb-profile-btn img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+/* Back / Мир button */
 .itb-back{
   background:rgba(255,255,255,.05);border:1px solid var(--border);
   color:var(--text2);padding:5px 12px;border-radius:8px;font-size:12px;
@@ -193,13 +201,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   display:flex;align-items:center;gap:5px
 }
 .itb-back:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:var(--text)}
-.itb-cube-icon{font-size:18px;flex-shrink:0}
-.itb-name{font-size:14px;font-weight:700;color:#e8e8ff;flex-shrink:0;letter-spacing:-.01em}
+/* E2E badge */
 .itb-enc{font-size:10px;color:var(--green);border:1px solid rgba(74,222,128,.25);padding:2px 8px;border-radius:20px;background:rgba(74,222,128,.08);flex-shrink:0;display:flex;align-items:center;gap:4px}
 .itb-anon{font-size:10px;color:var(--cyan);border:1px solid rgba(34,211,238,.22);padding:2px 8px;border-radius:20px;background:rgba(34,211,238,.07);flex-shrink:0;display:flex;align-items:center;gap:4px}
-.itb-timer{font-family:'Courier New',monospace;font-size:12px;font-weight:700;flex-shrink:0;margin-left:auto;color:var(--cyan);letter-spacing:.06em}
+/* Timer */
+.itb-timer{font-family:'Courier New',monospace;font-size:13px;font-weight:700;flex-shrink:0;color:var(--cyan);letter-spacing:.06em}
 .itb-timer.urgent{color:var(--red);animation:pulse .9s infinite}
 .itb-mykey{font-size:10px;color:var(--text2);padding:3px 9px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;font-family:'Courier New',monospace;flex-shrink:0}
+/* CUBE wallet pill in topbar */
+.itb-wallet-pill{display:flex;align-items:center;gap:5px;cursor:pointer;padding:4px 11px;background:rgba(251,191,36,.09);border:1px solid rgba(251,191,36,.28);border-radius:20px;flex-shrink:0;transition:background .12s}
+.itb-wallet-pill:hover{background:rgba(251,191,36,.16)}
 
 #int-layout{display:flex;flex:1;overflow:hidden}
 
@@ -2031,15 +2042,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #int-topbar{padding:6px 10px;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   #int-topbar::-webkit-scrollbar{display:none}
   .itb-back{padding:4px 9px;font-size:11px;flex-shrink:0}
-  .itb-enc,.itb-anon,.itb-mykey,#itb-cube-key-btn{display:none!important}
-  .itb-name{font-size:13px}
-  .itb-timer{font-size:11px;margin-left:0}
+  .itb-enc,.itb-anon,.itb-mykey{display:none!important}
+  .itb-timer{font-size:11px}
+  /* Profile avatar — smaller on mobile */
+  .itb-profile-btn{width:30px;height:30px;font-size:16px}
   /* Search bar compact on mobile */
-  .search-btn{min-width:0!important;max-width:38px!important;flex:0 0 38px!important;padding:6px 10px!important;border-radius:50%!important}
+  .search-btn{min-width:0!important;max-width:36px!important;flex:0 0 36px!important;padding:6px 10px!important;border-radius:50%!important}
   .search-btn span:not(.search-btn-icon){display:none!important}
   .search-btn-shortcut{display:none!important}
   /* Wallet CUBE badge compact */
-  #itb-wallet{padding:3px 8px!important}
+  .itb-wallet-pill{padding:3px 8px!important}
   /* Cube switcher strip — visible on mobile, compact */
   #cube-switcher{
     display:flex!important;
@@ -2393,33 +2405,48 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 <!-- ══════════ INTERIOR (Social Network) ══════════ -->
 <section class="view" id="v-int">
   <div id="int-topbar">
-    <button class="itb-back" onclick="exitInterior()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:middle"></i> Мир</button>
-    <span class="itb-cube-icon" id="itb-icon"></span>
-    <span class="itb-name" id="itb-name"></span>
-    <span class="itb-enc"><i class="ti ti-lock"></i> E2E</span>
-    <span class="itb-anon"><i class="ti ti-ghost"></i> Ghost</span>
-    <button class="search-btn" onclick="openSrchModal()" style="margin:0 10px">
+    <!-- 1. Profile avatar -->
+    <button class="itb-profile-btn" id="itb-profile-btn" onclick="openMyProfile()" title="Мой профиль">
+      <span id="itb-av-inner" style="font-size:18px;line-height:1">👤</span>
+    </button>
+
+    <!-- 2. Search (flex:1 fills middle) -->
+    <button class="search-btn" onclick="openSrchModal()" style="flex:1;margin:0;min-width:0">
       <span class="search-btn-icon"><i class="ti ti-search"></i></span>
-      <span>Поиск или спроси AI…</span>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Поиск или спроси AI…</span>
       <span class="search-btn-shortcut">⌘K</span>
     </button>
-    <div style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:3px 10px;background:rgba(251,191,36,.09);border:1px solid rgba(251,191,36,.28);border-radius:20px" onclick="switchSection('wallet',null)" id="itb-wallet">
+
+    <!-- 3. CUBE balance -->
+    <div class="itb-wallet-pill" onclick="switchSection('wallet',null)" id="itb-wallet">
       <span class="cube-coin-svg"><svg width="14" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#fbbf24"/><path d="M8 3.5L12 6v4L8 12.5 4 10V6L8 3.5z" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="1" stroke-linejoin="round"/><path d="M4 6l4 2.5L12 6" stroke="rgba(0,0,0,0.3)" stroke-width=".8" fill="none"/><path d="M8 8.5v4" stroke="rgba(0,0,0,0.3)" stroke-width=".8"/></svg></span>
-      <span style="font-size:12px;font-weight:800;color:var(--gold);font-family:'Courier New',monospace" id="itb-cube-bal">250</span>
+      <span style="font-size:12px;font-weight:800;color:var(--gold);font-family:'Courier New',monospace" id="itb-cube-bal">100</span>
       <span style="font-size:10px;color:var(--text3)">CUBE</span>
     </div>
-    <button id="members-toggle-btn" onclick="toggleMembersPanel()"><i class="ti ti-users"></i></button>
-    <button id="itb-cube-key-btn" onclick="showCubeKeyPanel()" title="Ключ куба (Key 2)" style="display:none;font-size:14px;padding:4px 10px;border-radius:14px;background:rgba(0,149,246,.15);border:1px solid rgba(0,149,246,.35);color:var(--accent);cursor:pointer">🔑 Key 2</button>
-    <div id="notif-bell" onclick="toggleNotifications()"><i class="ti ti-bell"></i><div class="notif-badge" id="notif-count" style="display:none">0</div>
+
+    <!-- 4. Notification bell -->
+    <div id="notif-bell" onclick="toggleNotifications()" style="position:relative;cursor:pointer;padding:4px;display:flex;align-items:center">
+      <i class="ti ti-bell" style="font-size:18px;color:var(--text2)"></i>
+      <div class="notif-badge" id="notif-count" style="display:none">0</div>
       <div class="notif-dropdown" id="notif-dropdown" onclick="event.stopPropagation()"></div>
     </div>
+
+    <!-- 5. E2E badge -->
+    <span class="itb-enc"><i class="ti ti-lock"></i> E2E</span>
+
+    <!-- 6. ← Мир -->
+    <button class="itb-back" onclick="exitInterior()">
+      <i class="ti ti-arrow-left" style="font-size:13px"></i> Мир
+    </button>
+
+    <!-- 7. Timer -->
     <span class="itb-timer" id="itb-timer">23:59:59</span>
   </div>
   <!-- Cube switcher strip -->
   <div id="cube-switcher">
     <span style="font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;flex-shrink:0">Кубы:</span>
-    <div id="cube-tabs-wrap" style="display:flex;gap:6px;flex:1;overflow-x:auto"></div>
-    <button id="cs-key2-btn" onclick="showCubeKeyPanel()" style="display:none;flex-shrink:0;font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(0,149,246,.15);border:1px solid rgba(0,149,246,.35);color:var(--accent);cursor:pointer;white-space:nowrap">🔑 Key 2</button>
+    <div id="cube-tabs-wrap" style="display:flex;gap:6px;flex:1;overflow-x:auto;scrollbar-width:none"></div>
+    <button id="cs-key2-btn" onclick="showCubeKeyPanel()" style="display:none;flex-shrink:0;font-size:12px;font-weight:700;padding:4px 13px;border-radius:16px;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.4);color:var(--gold);cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px">🔑 Key 2</button>
     <button class="cs-add" onclick="exitInterior()" title="Открыть другой куб">+</button>
   </div>
   <!-- Bird button for cube-switcher (mobile only, shows when cs is scrolled away) -->
@@ -8197,7 +8224,22 @@ const STATUS_OPTS=[{v:'online',l:'В сети',c:'#00b894'},{v:'busy',l:'Зан�
   }catch(e){
     if(!app.myProfile) app.myProfile={avatar:'👤',status:'online',bio:'',displayName:'',privacy:'public',photoUrl:null,links:[],address:''};
   }
+  // Sync topbar avatar after restore
+  setTimeout(_syncTopbarAvatar, 0);
 })();
+
+// Sync profile avatar → topbar avatar button
+function _syncTopbarAvatar(){
+  const inner=document.getElementById('itb-av-inner');
+  if(!inner) return;
+  const p=app.myProfile||{};
+  if(p.photoUrl){
+    inner.innerHTML=`<img src="${p.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  } else {
+    inner.innerHTML='';
+    inner.textContent=p.avatar||'👤';
+  }
+}
 let _peUidVisible=false;
 let _peStatusDropOpen=false;
 let _peEmojiOpen=false;
@@ -8392,6 +8434,8 @@ async function saveMyProfile(){
   })});
   const dn=document.getElementById('wb-key-badge');
   if(dn&&newName) dn.textContent=getDisplayName();
+  // Sync topbar avatar
+  _syncTopbarAvatar();
   // Persist to localStorage so avatar/bio survive refresh
   try{ localStorage.setItem('cw_my_profile', JSON.stringify(app.myProfile)); }catch(e){}
   applyPrivacyMode();
