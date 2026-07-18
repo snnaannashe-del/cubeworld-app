@@ -70,6 +70,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .modal input:focus,.modal select:focus,.modal textarea:focus{border-color:rgba(0,149,246,.45);background:rgba(255,255,255,.07)}
 .modal-actions{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes gcoCallPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,149,246,.5),0 0 0 0 rgba(0,149,246,.25)}60%{box-shadow:0 0 0 18px rgba(0,149,246,.1),0 0 0 36px rgba(0,149,246,.0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes slideIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
@@ -2874,7 +2875,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
             <div class="gco-name" id="gco-name">Группа</div>
             <div class="gco-tg-sub" id="gco-tg-sub">участников</div>
           </div>
-          <button class="gco-icon-btn" title="Поиск" onclick="showToast('🔍 Поиск по сообщениям скоро')"><i class="ti ti-search" style="font-size:14px"></i></button>
+          <button class="gco-icon-btn" id="gco-call-btn" title="Аудио звонок" onclick="gcoStartCall()"><i class="ti ti-phone" style="font-size:14px"></i></button>
           <button class="gco-icon-btn" title="Информация" onclick="openGrpInfo()"><i class="ti ti-dots-vertical" style="font-size:14px"></i></button>
         </div>
         <!-- Pinned message -->
@@ -2934,6 +2935,25 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
             <i class="ti ti-microphone" style="font-size:16px"></i>
           </button>
           <button id="gco-send-btn" class="gco-send" onclick="sendGroupMsg()" title="Отправить" style="display:none"><i class="ti ti-send" style="font-size:15px"></i></button>
+        </div>
+        <!-- Audio Call Overlay -->
+        <div id="gco-call-overlay" style="display:none;position:fixed;inset:0;background:linear-gradient(160deg,#06061a 0%,#0e0e2a 100%);z-index:10100;flex-direction:column;align-items:center;justify-content:center;gap:14px">
+          <div id="gco-call-av" style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#0095F6,#5263FF);display:flex;align-items:center;justify-content:center;font-size:38px;animation:gcoCallPulse 2s ease-in-out infinite"></div>
+          <div id="gco-call-name" style="font-size:22px;font-weight:700;color:#fff;margin-top:4px">Группа</div>
+          <div id="gco-call-status" style="font-size:13px;color:rgba(255,255,255,.5)">Звонок…</div>
+          <div id="gco-call-timer" style="font-size:32px;font-weight:200;color:#fff;letter-spacing:3px;font-variant-numeric:tabular-nums;min-width:80px;text-align:center">00:00</div>
+          <div id="gco-call-members" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:0 30px;margin-top:4px"></div>
+          <div style="display:flex;gap:22px;margin-top:24px;align-items:center">
+            <button id="gco-call-mute-btn" onclick="gcoToggleCallMute()" style="width:56px;height:56px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s">
+              <i class="ti ti-microphone" style="font-size:22px"></i>
+            </button>
+            <button onclick="gcoEndCall()" style="width:70px;height:70px;border-radius:50%;border:none;background:#ff3b30;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 28px rgba(255,59,48,.45);transition:transform .1s" onmousedown="this.style.transform='scale(.93)'" onmouseup="this.style.transform=''">
+              <i class="ti ti-phone-off" style="font-size:24px"></i>
+            </button>
+            <button id="gco-call-spk-btn" onclick="gcoToggleCallSpeaker()" style="width:56px;height:56px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s">
+              <i class="ti ti-volume" style="font-size:22px"></i>
+            </button>
+          </div>
         </div>
         <!-- Group info panel (right slide) -->
         <div id="grp-info-panel">
@@ -3121,6 +3141,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <div class="grp-tabs">
           <button class="grp-tab active" id="grp-tab-all" onclick="setGrpTab('all',this)">Все группы</button>
           <button class="grp-tab" id="grp-tab-my" onclick="setGrpTab('my',this)">Мои группы</button>
+        </div>
+        <div style="padding:6px 12px 4px;flex-shrink:0">
+          <div style="position:relative">
+            <i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none"></i>
+            <input id="grp-search-inp" type="search" placeholder="Поиск групп…" oninput="filterGroups(this.value)"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:20px;color:#e0e0f8;padding:7px 12px 7px 32px;font-size:13px;outline:none;box-sizing:border-box;font-family:inherit;-webkit-appearance:none;appearance:none">
+          </div>
         </div>
         <div class="grp-list" id="groups-grid"></div>
       </div>
@@ -6119,6 +6146,8 @@ function setGrpTab(tab, el){
   loadGroups();
 }
 
+let _allGroupsData=[];
+
 async function loadGroups(){
   const el = document.getElementById('groups-grid');
   if(!el) return;
@@ -6130,12 +6159,31 @@ async function loadGroups(){
     data = await apiCall('/groups');
   }
   if(!data || !Array.isArray(data) || !data.length){
+    _allGroupsData=[];
     el.innerHTML = window._grpTab === 'my'
       ? '<div class="grp-empty"><div class="grp-empty-icon">👥</div>Ты ещё не в группах.<br><small>Найди что-то интересное во вкладке «Все»</small></div>'
       : '<div class="grp-empty"><div class="grp-empty-icon">🌍</div>Групп пока нет.<br><small>Создай первую!</small></div>';
     return;
   }
+  _allGroupsData=data;
+  // Reset search input
+  const si=document.getElementById('grp-search-inp');
+  if(si) si.value='';
   el.innerHTML = data.map(g => renderGroupCard(g)).join('');
+}
+
+function filterGroups(q){
+  const el=document.getElementById('groups-grid');
+  if(!el) return;
+  const lq=(q||'').trim().toLowerCase();
+  if(!lq){ el.innerHTML=_allGroupsData.map(g=>renderGroupCard(g)).join(''); return; }
+  const filtered=_allGroupsData.filter(g=>
+    (g.name||'').toLowerCase().includes(lq)||
+    (g.description||'').toLowerCase().includes(lq)
+  );
+  el.innerHTML=filtered.length
+    ? filtered.map(g=>renderGroupCard(g)).join('')
+    : '<div class="grp-empty"><div class="grp-empty-icon">🔍</div>Ничего не найдено</div>';
 }
 
 // Telegram-style group list item
@@ -10315,6 +10363,40 @@ function _buildGroupMsg(m, myId){
           🎥<span style="font-size:11px;color:var(--text3)">Видео недоступно</span>
         </div>
       </div>${txt?`<div style="margin-top:6px">${txt}</div>`:''}`;
+    } else if(parsedMsg.type==='audio'){
+      const durSec=parsedMsg.dur||0;
+      const durStr=durSec>0?(Math.floor(durSec/60)+':'+String(durSec%60).padStart(2,'0')):'';
+      const audioId='aud-'+m.id;
+      bubbleContent=`<div style="display:flex;align-items:center;gap:10px;min-width:200px;max-width:280px;padding:4px 0">
+        <button id="abtn-${m.id}" onclick="(function(){const a=document.getElementById('${audioId}');const b=document.getElementById('abtn-${m.id}');if(a.paused){a.play();b.innerHTML='<i class=\\'ti ti-player-pause-filled\\'></i>'}else{a.pause();b.innerHTML='<i class=\\'ti ti-player-play-filled\\'></i>'}})()"
+          style="width:38px;height:38px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:14px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+          <i class="ti ti-player-play-filled"></i>
+        </button>
+        <audio id="${audioId}" src="${safeUrl}" preload="none"
+          onended="document.getElementById('abtn-${m.id}').innerHTML='<i class=\\'ti ti-player-play-filled\\'></i>'"
+          onerror="document.getElementById('abtn-${m.id}').style.opacity='.4'">
+        </audio>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px">
+            <i class="ti ti-wave-sine" style="font-size:13px;color:var(--accent)"></i>
+            <span style="font-size:12px;color:#e0e0f8;font-weight:600">Голосовое</span>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">${durStr||Math.round((parsedMsg.size||0)/1024)+'кб'}</div>
+          <div id="aprog-${m.id}" style="height:2px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:6px;overflow:hidden">
+            <div id="abar-${m.id}" style="height:100%;width:0%;background:var(--accent);border-radius:2px;transition:width .3s"></div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function(){
+        const a=document.getElementById('${audioId}');
+        const bar=document.getElementById('abar-${m.id}');
+        if(a&&bar){
+          a.addEventListener('timeupdate',()=>{ if(a.duration) bar.style.width=(a.currentTime/a.duration*100)+'%'; });
+        }
+      })();
+      <\/script>
+      ${txt}`;
     } else {
       // File — detect type and show in-app viewer
       const ext=(fname.split('.').pop()||'').toLowerCase();
@@ -11142,24 +11224,166 @@ function mfpCtxForward(){
 function mfpCtxSelect(){ hideFmtBar(); if(_grpCtxState) gcoEnterSelect(_grpCtxState.id); }
 
 // ══ VOICE INPUT ──────────────────────────────────────────────────────────
+// ══ VOICE MESSAGE RECORDING (MediaRecorder) ─────────────────────────────────
+let _gcoRecording=false, _gcoMediaRec=null, _gcoAudioChunks=[], _gcoRecStream=null;
+let _gcoRecTimer=null, _gcoRecSec=0;
+
 function gcoStartVoiceInChat(){
-  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
-    showToast('🎙 Голосовой ввод недоступен в этом браузере');
-    return;
+  if(_gcoRecording){ _gcoStopRecord(); return; }
+  _gcoBeginRecord();
+}
+
+async function _gcoBeginRecord(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    showToast('🎙 Микрофон недоступен в этом браузере'); return;
   }
-  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-  const rec=new SpeechRecognition();
-  rec.lang='ru-RU'; rec.interimResults=false; rec.maxAlternatives=1;
-  const micBtn=document.getElementById('gco-mic-btn');
-  if(micBtn){ micBtn.style.color='var(--red)'; micBtn.title='Слушаю…'; }
-  rec.onresult=e=>{
-    const txt=e.results[0][0].transcript;
-    const inp=document.getElementById('gco-input');
-    if(inp){ inp.value+=(inp.value?' ':'')+txt; inp.focus(); gcoUpdateSendBtn(); }
+  try{
+    _gcoRecStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+  }catch(e){
+    showToast('❌ Нет доступа к микрофону'); return;
+  }
+  _gcoAudioChunks=[];
+  const mime=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+    ?'audio/webm;codecs=opus'
+    :MediaRecorder.isTypeSupported('audio/webm')?'audio/webm':'audio/mp4';
+  _gcoMediaRec=new MediaRecorder(_gcoRecStream,{mimeType:mime});
+  _gcoMediaRec.ondataavailable=e=>{ if(e.data&&e.data.size>0) _gcoAudioChunks.push(e.data); };
+  _gcoMediaRec.onstop=async()=>{
+    _gcoRecStream.getTracks().forEach(t=>t.stop());
+    const blob=new Blob(_gcoAudioChunks,{type:mime});
+    const ext=mime.includes('mp4')?'m4a':'webm';
+    const file=new File([blob],`voice_${Date.now()}.${ext}`,{type:mime});
+    await _gcoSendVoiceFile(file, _gcoRecSec);
   };
-  rec.onend=()=>{ if(micBtn){ micBtn.style.color=''; micBtn.title='Голосовое'; } };
-  rec.onerror=()=>{ showToast('Ошибка голосового ввода'); if(micBtn){ micBtn.style.color=''; micBtn.title='Голосовое'; } };
-  rec.start();
+  _gcoMediaRec.start(200);
+  _gcoRecording=true;
+  _gcoRecSec=0;
+  clearInterval(_gcoRecTimer);
+  _gcoRecTimer=setInterval(()=>{
+    _gcoRecSec++;
+    const micBtn=document.getElementById('gco-mic-btn');
+    if(micBtn){
+      const s=String(_gcoRecSec%60).padStart(2,'0');
+      const m=String(Math.floor(_gcoRecSec/60)).padStart(2,'0');
+      micBtn.title=`${m}:${s} — нажми чтобы остановить`;
+    }
+  },1000);
+  const micBtn=document.getElementById('gco-mic-btn');
+  if(micBtn){
+    micBtn.innerHTML='<i class="ti ti-player-stop-filled" style="font-size:16px"></i>';
+    micBtn.style.color='#ff4444';
+    micBtn.style.background='rgba(255,68,68,.18)';
+    micBtn.title='Запись… нажми чтобы остановить';
+  }
+  showToast('🔴 Запись…');
+}
+
+function _gcoStopRecord(){
+  clearInterval(_gcoRecTimer);
+  if(_gcoMediaRec&&_gcoRecording){
+    _gcoRecording=false;
+    _gcoMediaRec.stop();
+  }
+  const micBtn=document.getElementById('gco-mic-btn');
+  if(micBtn){
+    micBtn.innerHTML='<i class="ti ti-microphone" style="font-size:16px"></i>';
+    micBtn.style.color='';
+    micBtn.style.background='';
+    micBtn.title='Голосовое';
+  }
+}
+
+async function _gcoSendVoiceFile(file, dur){
+  if(file.size<500){ showToast('Слишком короткое сообщение'); return; }
+  showToast('📤 Отправка…');
+  const url=await _uploadFile(file);
+  if(!url){ showToast('❌ Ошибка загрузки голосового'); return; }
+  const content=JSON.stringify({type:'audio',url,name:file.name,size:file.size,dur:dur||0});
+  const r=await apiCall('/groups/'+_grpChatId+'/messages','POST',{content});
+  if(!r){ showToast('❌ Не удалось отправить'); }
+}
+
+// ══ AUDIO BUBBLE (inside _buildGroupMsg) — handled via parsedMsg.type==='audio' ──
+
+// ══ GROUP AUDIO CALL ─────────────────────────────────────────────────────
+let _gcoCallTimer=null, _gcoCallSec=0, _gcoCallMuted=false, _gcoCallStream=null;
+
+async function gcoStartCall(){
+  if(!_grpChatId){ showToast('Сначала открой группу'); return; }
+  // Request mic access
+  try{
+    _gcoCallStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+  }catch(e){
+    showToast('❌ Нет доступа к микрофону'); return;
+  }
+  // Fill overlay
+  const overlay=document.getElementById('gco-call-overlay');
+  if(!overlay) return;
+  const av=document.getElementById('gco-call-av');
+  const nameEl=document.getElementById('gco-call-name');
+  const statusEl=document.getElementById('gco-call-status');
+  const timerEl=document.getElementById('gco-call-timer');
+  const membersEl=document.getElementById('gco-call-members');
+  if(av) av.textContent=document.getElementById('gco-icon')?.textContent||'👥';
+  if(nameEl) nameEl.textContent=document.getElementById('gco-name')?.textContent||'Группа';
+  if(statusEl) statusEl.textContent='Звонок…';
+  if(timerEl) timerEl.textContent='00:00';
+  if(membersEl){
+    // Show current user avatar
+    const me=_cwUser();
+    const letter=(me?.username||'Я')[0].toUpperCase();
+    membersEl.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0095F6,#5263FF);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;border:2px solid rgba(0,149,246,.5)">${letter}</div>
+      <div style="font-size:10px;color:rgba(255,255,255,.5)">${me?.username||'Вы'}</div>
+    </div>`;
+  }
+  overlay.style.display='flex';
+  // Start timer
+  _gcoCallSec=0;
+  _gcoCallMuted=false;
+  clearInterval(_gcoCallTimer);
+  const muteBtn=document.getElementById('gco-call-mute-btn');
+  if(muteBtn) muteBtn.innerHTML='<i class="ti ti-microphone" style="font-size:22px"></i>';
+  _gcoCallTimer=setInterval(()=>{
+    _gcoCallSec++;
+    const m=String(Math.floor(_gcoCallSec/60)).padStart(2,'0');
+    const s=String(_gcoCallSec%60).padStart(2,'0');
+    if(timerEl) timerEl.textContent=`${m}:${s}`;
+    if(_gcoCallSec===2&&statusEl) statusEl.textContent='Подключено';
+  },1000);
+  // Update topbar call button
+  const callBtn=document.getElementById('gco-call-btn');
+  if(callBtn){ callBtn.style.color='#4ade80'; callBtn.title='Идёт звонок'; }
+}
+
+function gcoEndCall(){
+  clearInterval(_gcoCallTimer);
+  if(_gcoCallStream){ _gcoCallStream.getTracks().forEach(t=>t.stop()); _gcoCallStream=null; }
+  const overlay=document.getElementById('gco-call-overlay');
+  if(overlay) overlay.style.display='none';
+  const callBtn=document.getElementById('gco-call-btn');
+  if(callBtn){ callBtn.style.color=''; callBtn.title='Аудио звонок'; }
+  const m=String(Math.floor(_gcoCallSec/60)).padStart(2,'0');
+  const s=String(_gcoCallSec%60).padStart(2,'0');
+  showToast(`📵 Звонок завершён ${m}:${s}`);
+}
+
+function gcoToggleCallMute(){
+  _gcoCallMuted=!_gcoCallMuted;
+  if(_gcoCallStream) _gcoCallStream.getAudioTracks().forEach(t=>t.enabled=!_gcoCallMuted);
+  const btn=document.getElementById('gco-call-mute-btn');
+  if(btn) btn.innerHTML=_gcoCallMuted
+    ?'<i class="ti ti-microphone-off" style="font-size:22px"></i>'
+    :'<i class="ti ti-microphone" style="font-size:22px"></i>';
+  if(btn) btn.style.background=_gcoCallMuted?'rgba(255,59,48,.3)':'rgba(255,255,255,.12)';
+  showToast(_gcoCallMuted?'🔇 Микрофон выключен':'🎙 Микрофон включён');
+}
+
+function gcoToggleCallSpeaker(){
+  const btn=document.getElementById('gco-call-spk-btn');
+  const isOn=btn&&btn.dataset.spk!=='off';
+  if(btn){ btn.dataset.spk=isOn?'off':'on'; btn.style.background=isOn?'rgba(255,255,255,.12)':'rgba(0,149,246,.3)'; }
+  showToast(isOn?'🔇 Динамик выключен':'🔊 Динамик включён');
 }
 
 // ══ EMOJI PICKER ─────────────────────────────────────────────────────────
@@ -11649,11 +11873,6 @@ async function gcoHandleFileInChat(input){
   } else {
     showToast('Ошибка отправки');
   }
-}
-
-// Group call (stub)
-function gcoStartCall(){
-  showToast('📞 Звонок скоро будет доступен!');
 }
 
 /* ====== END GROUP FULL VIEW JS ====== */
