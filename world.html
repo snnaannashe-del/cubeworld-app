@@ -185,9 +185,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   flex-shrink:0;z-index:50;min-height:50px
 }
 /* Profile avatar button (topbar left) */
+@keyframes avatarGlow{0%,100%{box-shadow:0 0 0 0 rgba(0,149,246,.5)}50%{box-shadow:0 0 0 5px rgba(0,149,246,.15)}}
 .itb-profile-btn{
   width:34px;height:34px;border-radius:50%;
-  background:rgba(255,255,255,.06);border:1px solid var(--border);
+  background:rgba(255,255,255,.06);border:2px solid var(--accent);
+  animation:avatarGlow 3s ease-in-out infinite;
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;font-size:18px;flex-shrink:0;overflow:hidden;
   transition:border-color .15s;padding:0
@@ -1021,6 +1023,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .cl-dm-btn{background:rgba(0,149,246,.2);border:none;color:var(--accent);font-size:11px;padding:2px 7px;border-radius:5px;cursor:pointer}
 .cl-empty-users{padding:20px 12px;text-align:center;color:var(--text3);font-size:11px}
 #chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#ca-input-panel{flex-shrink:0}
 .ca-header{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border);flex-shrink:0;background:rgba(255,255,255,.01)}
 .ca-icon{font-size:19px}
 .ca-name{font-size:13.5px;font-weight:700;color:#e0e0f8}
@@ -2467,15 +2470,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #int-topbar.tb-hidden{max-height:0!important;min-height:0!important;opacity:0!important;padding-top:0!important;padding-bottom:0!important;border-bottom:none!important;pointer-events:none}
 
   /* ── chat layout on mobile: full-screen list OR full-screen chat ── */
-  #sec-chat{flex-direction:column!important;overflow:hidden}
-  #chat-list{width:100%!important;border-right:none!important;flex:1!important;max-height:none!important;min-height:0;overflow:hidden;display:flex;flex-direction:column}
-  .cl-scroll{overflow-y:auto!important;flex:1}
+  #sec-chat{flex-direction:column!important;overflow:hidden;height:100%}
+  #chat-list{width:100%!important;border-right:none!important;flex:1!important;max-height:100%!important;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+  .cl-scroll{overflow-y:auto!important;flex:1;min-height:0}
   /* chat-area HIDDEN by default on mobile; shown only when chat-open */
   #chat-area{display:none!important}
   #sec-chat.chat-open #chat-list{display:none!important}
-  #sec-chat.chat-open #chat-area{display:flex!important;flex:1!important;flex-direction:column;overflow:hidden}
+  #sec-chat.chat-open #chat-area{display:flex!important;width:100%!important;height:100%!important;flex:unset!important;flex-direction:column;overflow:hidden}
   .ca-msgs{flex:1;overflow-y:auto!important;min-height:0}
-  .ca-input-panel{padding:8px 10px!important;flex-shrink:0}
+  #ca-input-panel{flex-shrink:0;padding:8px 10px}
   /* Back button */
   #ca-mob-back{display:flex!important;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0;cursor:pointer;color:var(--accent);font-size:13px;font-weight:600}
   #ca-mob-back span{font-size:18px}
@@ -3090,7 +3093,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
             </div>
           </div>
           <div class="ca-msgs" id="ca-msgs">
-            <div class="ca-empty" id="ca-empty-placeholder">💬 Выбери чат выше</div>
+            <div class="ca-empty" id="ca-empty-placeholder" style="display:none"></div>
           </div>
           <div id="ca-input-panel" style="display:none">
             <div class="emoji-picker" id="emoji-picker"></div>
@@ -5029,6 +5032,8 @@ function initInteriorData(cubeId){
   if(!app.chatMessages[cid]['saved']) app.chatMessages[cid]['saved']=[];
   if(!app.chatMessages[cid]['r0'])    app.chatMessages[cid]['r0']=[];
   app.dmConversations = app.dmConversations||{}; // {userId: {display_name, lastMsg, time, unread}}
+  _restoreDmState(); // restore DMs and conversations from localStorage
+  _restoreFavorites(cid); // restore saved/favorite messages
 
   // Channels
   app.channels=[
@@ -5352,6 +5357,44 @@ let _chatOnlineUsers = []; // [{user_id, display_name}]
 let _typingTimer = null;
 let _typingSendTimer = null;
 
+// ── DM + Favorites persistence ──
+function _saveDmState(){
+  try{
+    localStorage.setItem('cw_dm_convs', JSON.stringify(app.dmConversations||{}));
+    // Save DM messages (limit 200 per conversation to avoid quota)
+    const ns=app.chatMessages[_DM_NAMESPACE]||{};
+    const trimmed={};
+    Object.keys(ns).forEach(k=>{ trimmed[k]=(ns[k]||[]).slice(-200); });
+    localStorage.setItem('cw_dm_msgs', JSON.stringify(trimmed));
+    // Save favorites
+    const cid=app.currentCubeId;
+    if(cid&&app.chatMessages[cid]&&app.chatMessages[cid]['saved']){
+      localStorage.setItem('cw_fav_msgs_'+cid, JSON.stringify((app.chatMessages[cid]['saved']||[]).slice(-500)));
+    }
+  }catch(e){}
+}
+function _restoreDmState(){
+  try{
+    const convs=localStorage.getItem('cw_dm_convs');
+    if(convs) app.dmConversations=JSON.parse(convs)||{};
+    const msgs=localStorage.getItem('cw_dm_msgs');
+    if(msgs){
+      if(!app.chatMessages[_DM_NAMESPACE]) app.chatMessages[_DM_NAMESPACE]={};
+      const parsed=JSON.parse(msgs)||{};
+      Object.assign(app.chatMessages[_DM_NAMESPACE], parsed);
+    }
+  }catch(e){}
+}
+function _restoreFavorites(cubeId){
+  try{
+    const saved=localStorage.getItem('cw_fav_msgs_'+cubeId);
+    if(saved){
+      if(!app.chatMessages[cubeId]) app.chatMessages[cubeId]={};
+      if(!app.chatMessages[cubeId]['saved']) app.chatMessages[cubeId]['saved']=JSON.parse(saved)||[];
+    }
+  }catch(e){}
+}
+
 // ── Tab switching (kept for compat) ──
 function switchChatTab(tab) {}
 
@@ -5503,6 +5546,7 @@ function openDmWith(userId, displayName) {
   if(!app.dmConversations) app.dmConversations={};
   if(!app.dmConversations[userId]) app.dmConversations[userId]={display_name:displayName,lastMsg:'',time:'',unread:0};
   else app.dmConversations[userId].display_name=displayName;
+  _saveDmState();
   // Mark active in sidebar
   document.querySelectorAll('.cl-room').forEach(e=>e.classList.remove('active'));
   document.querySelector(`[data-chat-id="dm:${userId}"]`)?.classList.add('active');
@@ -5541,6 +5585,7 @@ function openDmWith(userId, displayName) {
           })),
           ...local
         ];
+        _saveDmState();
         if(app.currentRoomId===dmKey) renderChatMsgs(dmKey);
       }).catch(()=>{});
   }
@@ -5576,7 +5621,7 @@ function _startDmPoll(userId, displayName, dmKey){
           added=true;
         }
       }
-      if(added && app.currentRoomId===dmKey) renderChatMsgs(dmKey);
+      if(added){ _saveDmState(); if(app.currentRoomId===dmKey) renderChatMsgs(dmKey); }
     }catch(e){}
   }, 8000);
 }
@@ -5632,6 +5677,7 @@ function handleIncomingDm(msg, myUserId) {
   if(!isMe && app.currentRoomId!==dmKey)
     app.dmConversations[dmPeer].unread = (app.dmConversations[dmPeer].unread||0)+1;
 
+  _saveDmState();
   renderChatRooms(); updateChatBadge();
   if(app.currentRoomId===dmKey) renderChatMsgs(dmKey);
   else if(!isMe){
@@ -5655,7 +5701,7 @@ function mobChatBack(){
   if(backBtn) backBtn.style.display='none';
   // Clear active chat header
   const h=document.getElementById('ca-header'); if(h) h.style.display='none';
-  const msgs=document.getElementById('ca-msgs'); if(msgs) msgs.innerHTML='<div class="ca-empty">💬 Выбери чат выше</div>';
+  const msgs=document.getElementById('ca-msgs'); if(msgs) msgs.innerHTML='';
   const ip=document.getElementById('ca-input-panel'); if(ip) ip.style.display='none';
   app.currentRoomId=null; _chatActiveDm=null;
 }
@@ -5926,6 +5972,7 @@ function sendChatMsg() {
     if(!app.dmConversations[_chatActiveDm.user_id]) app.dmConversations[_chatActiveDm.user_id]={display_name:_chatActiveDm.display_name,lastMsg:'',time:'',unread:0};
     app.dmConversations[_chatActiveDm.user_id].lastMsg=text.slice(0,30);
     app.dmConversations[_chatActiveDm.user_id].time=time;
+    _saveDmState();
     renderChatRooms();
     if(_ws && _ws.readyState===WebSocket.OPEN) {
       _ws.send(JSON.stringify({type:'dm', to_user_id:_chatActiveDm.user_id, content:text,
@@ -5953,6 +6000,8 @@ function addCubeRoomMsg(msg, overrideRid) {
   if(!app.chatMessages[cid]) app.chatMessages[cid]={};
   if(!app.chatMessages[cid][rid]) app.chatMessages[cid][rid]=[];
   app.chatMessages[cid][rid].push(msg);
+  // Persist DMs and Favorites
+  if(rid.startsWith('dm:') || rid==='saved') _saveDmState();
 }
 
 // ── Voice recording ──
