@@ -1764,7 +1764,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .po-avatar img{width:100%;height:100%;object-fit:cover}
 .po-name{font-size:19px;font-weight:800;color:#e0e0f8;margin-bottom:2px}
 .po-uname{font-size:13px;color:var(--accent);margin-bottom:8px}
-.po-type-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:14px}
+.po-type-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:6px}
+.po-info-wrap{overflow:hidden;max-height:0;transition:max-height .3s ease;width:100%}
+.po-info-wrap.open{max-height:600px}
+.po-expand-btn{background:none;border:1px solid var(--border);border-radius:20px;color:var(--text3);font-size:10px;font-weight:600;padding:3px 14px;cursor:pointer;margin:6px 0 14px;letter-spacing:.3px}
 .po-type-badge.pub{background:rgba(0,149,246,.12);color:var(--accent);border:1px solid rgba(0,149,246,.25)}
 .po-type-badge.hid{background:rgba(255,255,255,.07);color:var(--text2);border:1px solid var(--border)}
 .po-type-badge.biz{background:rgba(251,191,36,.1);color:var(--gold);border:1px solid rgba(251,191,36,.25)}
@@ -3581,16 +3584,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div class="po-name" id="po-name">—</div>
       <div class="po-uname" id="po-uname"></div>
       <div class="po-type-badge pub" id="po-type-badge">🌐 Публичный</div>
+      <!-- Collapsible info block: bio + address + links -->
+      <div class="po-info-wrap" id="po-info-block">
+        <div style="text-align:center;padding:10px 24px 4px">
+          <div class="po-bio" id="po-bio" style="padding:0;text-align:center"></div>
+          <div id="po-extra"></div>
+        </div>
+      </div>
+      <button class="po-expand-btn" id="po-expand-btn" onclick="poToggleInfo()">Полный ↓</button>
     </div>
     <div class="po-stats-row">
       <div class="po-stat"><div class="po-stat-val" id="po-follows">0</div><div class="po-stat-lbl">Подписки</div></div>
       <div class="po-stat"><div class="po-stat-val" id="po-followers">0</div><div class="po-stat-lbl">Подписчиков</div></div>
       <div class="po-stat"><div class="po-stat-val" id="po-likes">0</div><div class="po-stat-lbl">Лайки</div></div>
-    </div>
-    <!-- Bio + address + links (centered block) -->
-    <div id="po-info-block" style="text-align:center;padding:14px 24px 6px">
-      <div class="po-bio" id="po-bio" style="padding:0;text-align:center"></div>
-      <div id="po-extra"></div>
     </div>
     <!-- Grid tabs -->
     <div style="display:flex;border-bottom:1px solid var(--border2);margin-top:8px">
@@ -8510,11 +8516,23 @@ function openPortfolio(){
   });
   // Posts grid
   _renderPortfolioGrid();
+  // Reset info block to collapsed
+  const infoWrap=document.getElementById('po-info-block');
+  const expBtn=document.getElementById('po-expand-btn');
+  if(infoWrap){ infoWrap.classList.remove('open'); }
+  if(expBtn){ expBtn.textContent='Полный ↓'; }
   // Slide up
   document.getElementById('portfolio-overlay').classList.add('open');
 }
 function closePortfolio(){
   document.getElementById('portfolio-overlay').classList.remove('open');
+}
+function poToggleInfo(){
+  const wrap=document.getElementById('po-info-block');
+  const btn=document.getElementById('po-expand-btn');
+  if(!wrap) return;
+  const open=wrap.classList.toggle('open');
+  if(btn) btn.textContent=open?'Свернуть ↑':'Полный ↓';
 }
 let _poTab='short';
 function poSetTab(tab, btn){
