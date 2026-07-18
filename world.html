@@ -1063,6 +1063,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .cm-react-popup.open{display:flex}
 .cm-react-popup span{font-size:18px;cursor:pointer;padding:3px;border-radius:5px;transition:background .1s}
 .cm-react-popup span:hover{background:rgba(255,255,255,.1)}
+/* DM message context menu */
+#dm-ctx-overlay{position:fixed;inset:0;z-index:1990;display:none}
+#dm-ctx-overlay.open{display:block}
+#dm-ctx-sheet{position:fixed;bottom:0;left:0;right:0;background:#111128;border-radius:18px 18px 0 0;z-index:1991;transform:translateY(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);padding:0 0 20px;max-width:520px;margin:0 auto}
+#dm-ctx-overlay.open #dm-ctx-sheet{transform:translateY(0)}
+.dm-ctx-preview{padding:12px 16px 8px;border-bottom:1px solid rgba(255,255,255,.08)}
+.dm-ctx-ptext{font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.dm-ctx-btn{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;font-size:14px;color:#e0e0f8;transition:background .12s}
+.dm-ctx-btn:hover{background:rgba(255,255,255,.06)}
+.dm-ctx-btn i{font-size:16px;color:var(--text2);width:20px;text-align:center}
 /* File & image */
 .cm-file{display:flex;align-items:center;gap:9px;padding:8px 11px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;cursor:pointer;transition:all .15s;min-width:170px}
 .cm-file:hover{background:rgba(255,255,255,.09)}
@@ -4371,17 +4381,23 @@ async function loadChatHistory(roomId){
   // Only prepend if history not loaded yet
   if(app.chatMessages[cubeId][roomId].length===0){
     const myUserId = localStorage.getItem('cw_user_id');
-    const history = msgs.map(m=>({
-      id: m.id,
-      sender: String(m.user_id)===String(myUserId) ? 'me' : 'them',
-      author: m.display_name||'Аноним',
-      text: m.content,
-      time: new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
-      type: m.msg_type||'text',
-      fileName: m.file_name, fileSize: m.file_size,
-      duration: m.duration,
-      reactions: {}
-    }));
+    const history = msgs.map(m=>{
+      const mtype=m.msg_type||'text';
+      const fileUrl=(mtype==='image'||mtype==='video'||mtype==='file')
+        ?(m.file_url||m.content||''):'';
+      return {
+        id: m.id,
+        sender: String(m.user_id)===String(myUserId) ? 'me' : 'them',
+        author: m.display_name||'Аноним',
+        text: m.content,
+        time: new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+        type: mtype,
+        fileName: m.file_name, fileSize: m.file_size,
+        fileUrl: fileUrl,
+        duration: m.duration,
+        reactions: {}
+      };
+    });
     app.chatMessages[cubeId][roomId] = [...history, ...app.chatMessages[cubeId][roomId]];
     if(app.currentRoomId===roomId) renderChatMsgs(roomId);
   }
@@ -5903,7 +5919,52 @@ function buildMsgEl(m, idx) {
   const reactsHtml = buildReactionsHtml(m.reactions||{}, m.id);
 
   wrap.innerHTML = av + `<div class="cm-body">${authorHtml}${contentHtml}${reactsHtml}</div>`;
+
+  // Long-press / right-click to show DM context menu
+  const bubble = wrap.querySelector('.cm-bubble');
+  if(bubble && (m.type==='text'||m.type==='image'||m.type==='video'||m.type==='file')) {
+    bubble.addEventListener('contextmenu', e=>{ e.preventDefault(); showDmMsgMenu(m); });
+    let _lp=null;
+    bubble.addEventListener('touchstart', e=>{
+      _lp=setTimeout(()=>{ const sel=window.getSelection(); if(sel&&!sel.isCollapsed) return; showDmMsgMenu(m); }, 550);
+    }, {passive:true});
+    bubble.addEventListener('touchend', ()=>clearTimeout(_lp), {passive:true});
+    bubble.addEventListener('touchmove', ()=>clearTimeout(_lp), {passive:true});
+  }
+
   return wrap;
+}
+
+// ── DM message context menu ──
+let _dmCtxMsg = null;
+function showDmMsgMenu(m) {
+  _dmCtxMsg = m;
+  document.getElementById('dm-ctx-text').textContent = (m.text||'').slice(0,120);
+  const ov = document.getElementById('dm-ctx-overlay');
+  ov.classList.add('open');
+}
+function hideDmMsgMenu() {
+  document.getElementById('dm-ctx-overlay')?.classList.remove('open');
+}
+function dmCtxReply() {
+  hideDmMsgMenu();
+  if(!_dmCtxMsg) return;
+  startReply(_dmCtxMsg.id, _dmCtxMsg.author||'Аноним', _dmCtxMsg.text||'');
+}
+function dmCtxCopy() {
+  hideDmMsgMenu();
+  if(!_dmCtxMsg) return;
+  navigator.clipboard?.writeText(_dmCtxMsg.text||'').then(()=>showToast('📋 Скопировано')).catch(()=>{});
+}
+function dmCtxSave() {
+  hideDmMsgMenu();
+  if(!_dmCtxMsg || !app.currentCubeId) return;
+  const cid = app.currentCubeId;
+  if(!app.chatMessages[cid]) app.chatMessages[cid]={};
+  if(!app.chatMessages[cid]['saved']) app.chatMessages[cid]['saved']=[];
+  app.chatMessages[cid]['saved'].push({..._dmCtxMsg, sender:'them'});
+  _saveDmState();
+  showToast('⭐ Сохранено в Избранное');
 }
 
 function buildReactionsHtml(reactions, msgId) {
@@ -5944,8 +6005,8 @@ function showReactPopup(bubbleEl, msgId) {
 }
 
 function toggleReaction(msgId, emoji) {
-  if(!msgId || !_ws || _ws.readyState!==WebSocket.OPEN) return;
-  _ws.send(JSON.stringify({type:'react', msg_id:msgId, emoji}));
+  if(!msgId) return;
+  _wsSend({type:'react', msg_id:msgId, emoji});
 }
 
 // ── Reply ──
@@ -5967,11 +6028,8 @@ function scrollToMsg(msgId) {
 
 // ── Typing ──
 function chatTyping() {
-  if(!_ws || _ws.readyState!==WebSocket.OPEN) return;
   clearTimeout(_typingSendTimer);
-  _typingSendTimer = setTimeout(()=>{
-    _ws.send(JSON.stringify({type:'typing'}));
-  }, 400);
+  _typingSendTimer = setTimeout(()=>{ _wsSend({type:'typing'}); }, 400);
 }
 function showTypingIndicator(name) {
   const msgsEl=document.getElementById('ca-msgs'); if(!msgsEl) return;
@@ -6012,15 +6070,15 @@ function sendChatMsg() {
     app.dmConversations[_chatActiveDm.user_id].time=time;
     _saveDmState();
     renderChatRooms();
-    // Send via WS primary + HTTP fallback for reliability
-    _wsSend({type:'dm', to_user_id:_chatActiveDm.user_id, content:text,
-      msg_type:'text', reply_to_id:_chatReplyTo?.id||null});
-    // HTTP fallback — ensures backend saves message even if WS drops
-    fetch(CUBE_API+'/dm/'+_chatActiveDm.user_id,{
-      method:'POST',
-      headers:{'Authorization':'Bearer '+(localStorage.getItem('cw_access_token')||''),'Content-Type':'application/json'},
-      body:JSON.stringify({content:text, msg_type:'text'})
-    }).catch(()=>{});
+    // Send via WS; only use HTTP fallback if WS failed (avoids saving message twice on backend)
+    if(!_wsSend({type:'dm', to_user_id:_chatActiveDm.user_id, content:text,
+        msg_type:'text', reply_to_id:_chatReplyTo?.id||null})){
+      fetch(CUBE_API+'/dm/'+_chatActiveDm.user_id,{
+        method:'POST',
+        headers:{'Authorization':'Bearer '+(localStorage.getItem('cw_access_token')||''),'Content-Type':'application/json'},
+        body:JSON.stringify({content:text, msg_type:'text'})
+      }).catch(()=>{});
+    }
   } else {
     const msgObj={sender:'me',text,time,type:'text',replyTo:_chatReplyTo,expiresSecs,reactions:{}};
     addCubeRoomMsg(msgObj);
@@ -6136,17 +6194,17 @@ async function _chatPickAndSend(accept){
       app.dmConversations[_chatActiveDm.user_id].lastMsg='📎 '+file.name.slice(0,20);
       app.dmConversations[_chatActiveDm.user_id].time=time;
       _saveDmState(); renderChatRooms();
-      // Send via WS + HTTP POST fallback for reliability
+      // Send via WS; HTTP fallback only if WS failed (avoids duplicate on backend)
       const dmMsg={type:'dm', to_user_id:_chatActiveDm.user_id,
         content:url, msg_type:msgType, file_name:file.name, file_size:size, file_url:url};
-      _wsSend(dmMsg);
-      // HTTP fallback ensures server saves the file message even if WS drops
-      const token=localStorage.getItem('cw_access_token');
-      fetch(CUBE_API+'/dm/'+_chatActiveDm.user_id,{
-        method:'POST',
-        headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-        body:JSON.stringify({content:url, msg_type:msgType, file_name:file.name, file_size:size, file_url:url})
-      }).catch(()=>{});
+      if(!_wsSend(dmMsg)){
+        const token=localStorage.getItem('cw_access_token');
+        fetch(CUBE_API+'/dm/'+_chatActiveDm.user_id,{
+          method:'POST',
+          headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+          body:JSON.stringify({content:url, msg_type:msgType, file_name:file.name, file_size:size, file_url:url})
+        }).catch(()=>{});
+      }
     } else {
       addCubeRoomMsg(msgObj);
       renderChatMsgs(app.currentRoomId);
@@ -6254,7 +6312,7 @@ async function filterDmList(q){
     localMatches.forEach(([uid,info])=>{
       el.appendChild(_makeChatRow(
         {id:'dm:'+uid, name:info.display_name, lastMsg:info.lastMsg||'', time:info.time||'', unread:info.unread||0},
-        ()=>{ openDmWith(uid,info.display_name); document.getElementById('dm-search-inp').value=''; }
+        ()=>{ openDmWith(uid,info.display_name); document.getElementById('dm-search-inp').value=''; filterDmList(''); }
       ));
     });
   }
@@ -6272,7 +6330,7 @@ async function filterDmList(q){
       const row=_makeChatRow(
         {id:'user:'+uid, name, lastMsg:'Нажми «Написать» чтобы начать чат', time:'', unread:0},
         ()=>{ openDmWith(uid,name); document.getElementById('dm-search-inp').value=''; },
-        {showStart:true, startFn:`openDmWith('${uid}','${name.replace(/'/g,"\\'")}');document.getElementById('dm-search-inp').value='';`}
+        {showStart:true, startFn:`openDmWith('${uid}','${name.replace(/'/g,"\\'")}');document.getElementById('dm-search-inp').value='';filterDmList('');`}
       );
       el.appendChild(row);
     });
@@ -13053,6 +13111,18 @@ const _grpOvId='grp-chat-overlay';
 
 <!-- ══ FAB FIXED OVERLAY (outside all overflow:hidden parents) ══════════ -->
 <div id="vf-fab-overlay" style="display:none;position:fixed;z-index:500;right:14px;flex-direction:column;align-items:center;gap:10px;padding-bottom:12px"></div>
+
+<!-- ══ DM MESSAGE CONTEXT MENU ═══════════════════════════════════════════ -->
+<div id="dm-ctx-overlay" onclick="hideDmMsgMenu()">
+  <div id="dm-ctx-sheet" onclick="event.stopPropagation()">
+    <div class="dm-ctx-preview">
+      <div class="dm-ctx-ptext" id="dm-ctx-text"></div>
+    </div>
+    <div class="dm-ctx-btn" onclick="dmCtxReply()"><i class="ti ti-arrow-back-up"></i> Ответить</div>
+    <div class="dm-ctx-btn" onclick="dmCtxCopy()"><i class="ti ti-copy"></i> Копировать</div>
+    <div class="dm-ctx-btn" onclick="dmCtxSave()"><i class="ti ti-star"></i> В избранное</div>
+  </div>
+</div>
 
 <!-- ══ MSG ACTION BOTTOM SHEET ══════════════════════════════════════════ -->
 <div id="msg-action-sheet" style="display:none;position:fixed;inset:0;z-index:9800">
