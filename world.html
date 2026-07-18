@@ -4205,13 +4205,20 @@ let _globalWs = null; // always-on WS for DM delivery even outside cubes
 
 function connectGlobalWS(){
   const token = localStorage.getItem('cw_access_token');
-  if(!token || _globalWs) return;
+  if(!token || (_globalWs && _globalWs.readyState<=1)) return;
   _globalWs = new WebSocket(`${CUBE_WS}/ws/${encodeURIComponent(token)}`);
+  // Keepalive ping every 25s so the WS doesn't get closed by proxies
+  const _gwPing = setInterval(()=>{
+    if(_globalWs && _globalWs.readyState===WebSocket.OPEN)
+      _globalWs.send(JSON.stringify({type:'ping'}));
+    else clearInterval(_gwPing);
+  }, 25000);
   _globalWs.onmessage = e => {
     try{
       const msg = JSON.parse(e.data);
       const myUserId = localStorage.getItem('cw_user_id');
       if(msg.type==='dm') handleIncomingDm(msg, myUserId);
+      if(msg.type==='pong') return; // keepalive ack
       else if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
         if(next>prev){ app.wallet.balance=next; syncWalletUI(); showToast('💰 +'+(next-prev).toLocaleString('ru')+' CUBE!'); }
@@ -4224,6 +4231,15 @@ function connectGlobalWS(){
     setTimeout(connectGlobalWS, 4000);
   };
   _globalWs.onerror = ()=>{ _globalWs=null; };
+}
+
+// ── Unified WS send: tries cube-room WS first, then globalWs ──────────────
+function _wsSend(msg){
+  if(_ws && _ws.readyState===WebSocket.OPEN){ _ws.send(JSON.stringify(msg)); return true; }
+  if(_globalWs && _globalWs.readyState===WebSocket.OPEN){ _globalWs.send(JSON.stringify(msg)); return true; }
+  // Neither open — reconnect globalWs (will be ready for next attempt)
+  connectGlobalWS();
+  return false;
 }
 
 function openRoomWS(roomId){
@@ -4283,14 +4299,19 @@ function openRoomWS(roomId){
           if(local){ local.id=msg.id; if(app.currentRoomId===roomId) renderChatMsgs(roomId); }
           // If already has ID (shouldn't happen) — ignore completely
         } else {
-          const msgObj = {
+          const mType = msg.msg_type || 'text';
+        // For file/image/video types the content IS the URL
+        const fileUrl = (mType==='image'||mType==='video'||mType==='file')
+          ? (msg.file_url || msg.content || '') : '';
+        const msgObj = {
             id: msg.id,
             sender: 'them',
             author: msg.display_name || 'Аноним',
             text, time,
-            type: msg.msg_type || 'text',
+            type: mType,
             replyTo: msg.reply_preview || null,
             fileName: msg.file_name, fileSize: msg.file_size,
+            fileUrl: fileUrl,
             fileData: msg.file_data, duration: msg.duration,
             expiresSecs: msg.expires_secs,
             reactions: {}
@@ -5573,16 +5594,23 @@ function openDmWith(userId, displayName) {
         // Merge server messages with any locally-added ones
         const local = _dmStore(dmKey).filter(m=>!m.id); // unsent/local-only
         app.chatMessages[_DM_NAMESPACE][dmKey] = [
-          ...msgs.map(m=>({
-            id: m.id,
-            sender: String(m.from_user_id)===String(myId) ? 'me' : 'them',
-            author: String(m.from_user_id)===String(myId) ? 'Я' : displayName,
-            text: m.content,
-            time: new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
-            type: m.msg_type||'text',
-            fileName: m.file_name, fileSize: m.file_size, duration: m.duration,
-            reactions: {}
-          })),
+          ...msgs.map(m=>{
+            const mtype=m.msg_type||'text';
+            const furl=(mtype==='image'||mtype==='video'||mtype==='file')
+              ?(m.file_url||m.content||''):'';
+            return {
+              id: m.id,
+              sender: String(m.from_user_id)===String(myId) ? 'me' : 'them',
+              author: String(m.from_user_id)===String(myId) ? 'Я' : displayName,
+              text: m.content,
+              time: new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+              type: mtype,
+              fileName: m.file_name, fileSize: m.file_size,
+              fileUrl: furl,
+              duration: m.duration,
+              reactions: {}
+            };
+          }),
           ...local
         ];
         _saveDmState();
@@ -5611,12 +5639,15 @@ function _startDmPoll(userId, displayName, dmKey){
       let added=false;
       for(const m of msgs){
         if(!store.find(x=>x.id===m.id)){
+          const pt=m.msg_type||'text';
+          const pu=(pt==='image'||pt==='video'||pt==='file')?(m.file_url||m.content||''):'';
           store.push({
             id:m.id,
             sender:String(m.from_user_id)===String(myId)?'me':'them',
             author:String(m.from_user_id)===String(myId)?'Я':displayName,
             text:m.content, time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
-            type:m.msg_type||'text', fileName:m.file_name, fileSize:m.file_size, duration:m.duration, reactions:{}
+            type:pt, fileName:m.file_name, fileSize:m.file_size,
+            fileUrl:pu, duration:m.duration, reactions:{}
           });
           added=true;
         }
@@ -5652,16 +5683,23 @@ function handleIncomingDm(msg, myUserId) {
     if(pending){ pending.id = msg.id; }
     else {
       // No pending match (e.g. reconnected) — add it
+      const echoType=msg.msg_type||'text';
+      const echoUrl=(echoType==='image'||echoType==='video'||echoType==='file')?(msg.file_url||msg.content||''):'';
       store.push({id:msg.id, sender:'me', author:'Я', text:msg.content, time,
-        type:msg.msg_type||'text', fileName:msg.file_name, fileSize:msg.file_size, duration:msg.duration, reactions:{}});
+        type:echoType, fileName:msg.file_name, fileSize:msg.file_size,
+        fileUrl:echoUrl, duration:msg.duration, reactions:{}});
     }
   } else {
+    const dmMType=msg.msg_type||'text';
+    const dmFileUrl=(dmMType==='image'||dmMType==='video'||dmMType==='file')
+      ? (msg.file_url||msg.content||'') : '';
     _dmStore(dmKey).push({
       id: msg.id, sender: 'them',
       author: msg.display_name || 'Аноним',
       text: msg.content, time,
-      type: msg.msg_type||'text',
+      type: dmMType,
       fileName: msg.file_name, fileSize: msg.file_size,
+      fileUrl: dmFileUrl,
       fileData: msg.file_data, duration: msg.duration,
       reactions: {}
     });
@@ -5963,7 +6001,7 @@ function sendChatMsg() {
   const expiresSecs=expSel?.value ? parseInt(expSel.value) : null;
 
   if(_chatActiveDm) {
-    // DM
+    // DM — send via WS (_ws or _globalWs fallback)
     const msgObj={sender:'me',text,time,type:'text',replyTo:_chatReplyTo,reactions:{}};
     addCubeRoomMsg(msgObj, 'dm:'+_chatActiveDm.user_id);
     renderChatMsgs('dm:'+_chatActiveDm.user_id);
@@ -5974,19 +6012,21 @@ function sendChatMsg() {
     app.dmConversations[_chatActiveDm.user_id].time=time;
     _saveDmState();
     renderChatRooms();
-    if(_ws && _ws.readyState===WebSocket.OPEN) {
-      _ws.send(JSON.stringify({type:'dm', to_user_id:_chatActiveDm.user_id, content:text,
-        msg_type:'text', reply_to_id:_chatReplyTo?.id||null}));
-    }
+    // Send via WS primary + HTTP fallback for reliability
+    _wsSend({type:'dm', to_user_id:_chatActiveDm.user_id, content:text,
+      msg_type:'text', reply_to_id:_chatReplyTo?.id||null});
+    // HTTP fallback — ensures backend saves message even if WS drops
+    fetch(CUBE_API+'/dm/'+_chatActiveDm.user_id,{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+(localStorage.getItem('cw_access_token')||''),'Content-Type':'application/json'},
+      body:JSON.stringify({content:text, msg_type:'text'})
+    }).catch(()=>{});
   } else {
     const msgObj={sender:'me',text,time,type:'text',replyTo:_chatReplyTo,expiresSecs,reactions:{}};
     addCubeRoomMsg(msgObj);
     renderChatMsgs(app.currentRoomId);
-    if(_ws && _ws.readyState===WebSocket.OPEN) {
-      _ws.send(JSON.stringify({type:'message', content:text, msg_type:'text',
-        reply_to_id:_chatReplyTo?.id||null,
-        expires_secs:expiresSecs||null}));
-    } else {
+    if(!_wsSend({type:'message', content:text, msg_type:'text',
+        reply_to_id:_chatReplyTo?.id||null, expires_secs:expiresSecs||null})){
       openRoomWS(app.currentRoomId);
     }
   }
@@ -6040,15 +6080,13 @@ function _sendVoiceBlob(blob, dur) {
     if(_chatActiveDm) {
       addCubeRoomMsg(msgObj,'dm:'+_chatActiveDm.user_id);
       renderChatMsgs('dm:'+_chatActiveDm.user_id);
-      if(_ws&&_ws.readyState===WebSocket.OPEN)
-        _ws.send(JSON.stringify({type:'dm',to_user_id:_chatActiveDm.user_id,
-          content:'🎤 Голосовое',msg_type:'voice',file_data:b64,duration:dur}));
+      _wsSend({type:'dm',to_user_id:_chatActiveDm.user_id,
+        content:'🎤 Голосовое',msg_type:'voice',file_data:b64,duration:dur});
     } else {
       addCubeRoomMsg(msgObj);
       renderChatMsgs(app.currentRoomId);
-      if(_ws&&_ws.readyState===WebSocket.OPEN)
-        _ws.send(JSON.stringify({type:'message',content:'🎤 Голосовое',
-          msg_type:'voice',file_data:b64,duration:dur}));
+      _wsSend({type:'message',content:'🎤 Голосовое',
+        msg_type:'voice',file_data:b64,duration:dur});
     }
   };
   reader.readAsDataURL(blob);
@@ -6088,29 +6126,32 @@ async function _chatPickAndSend(accept){
     // Optimistic local message
     const msgObj={sender:'me', author:'Я', text:file.name, time, type:msgType,
       fileName:file.name, fileSize:size, fileUrl:url, reactions:{}};
-    const token=localStorage.getItem('cw_access_token');
     if(_chatActiveDm){
       const dmKey='dm:'+_chatActiveDm.user_id;
       addCubeRoomMsg(msgObj, dmKey);
       renderChatMsgs(dmKey);
-      // Send via API
-      try{
-        await fetch(CUBE_API+'/dm/'+_chatActiveDm.user_id,{
-          method:'POST',
-          headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-          body:JSON.stringify({content:url, msg_type:msgType, file_name:file.name, file_size:size})
-        });
-      }catch(e){}
-      // Also via WS for realtime delivery
-      if(_ws&&_ws.readyState===WebSocket.OPEN)
-        _ws.send(JSON.stringify({type:'dm',to_user_id:_chatActiveDm.user_id,
-          content:url, msg_type:msgType, file_name:file.name, file_size:size, file_url:url}));
+      // Update sidebar last message
+      if(!app.dmConversations) app.dmConversations={};
+      if(!app.dmConversations[_chatActiveDm.user_id]) app.dmConversations[_chatActiveDm.user_id]={display_name:_chatActiveDm.display_name,lastMsg:'',time:'',unread:0};
+      app.dmConversations[_chatActiveDm.user_id].lastMsg='📎 '+file.name.slice(0,20);
+      app.dmConversations[_chatActiveDm.user_id].time=time;
+      _saveDmState(); renderChatRooms();
+      // Send via WS + HTTP POST fallback for reliability
+      const dmMsg={type:'dm', to_user_id:_chatActiveDm.user_id,
+        content:url, msg_type:msgType, file_name:file.name, file_size:size, file_url:url};
+      _wsSend(dmMsg);
+      // HTTP fallback ensures server saves the file message even if WS drops
+      const token=localStorage.getItem('cw_access_token');
+      fetch(CUBE_API+'/dm/'+_chatActiveDm.user_id,{
+        method:'POST',
+        headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+        body:JSON.stringify({content:url, msg_type:msgType, file_name:file.name, file_size:size, file_url:url})
+      }).catch(()=>{});
     } else {
       addCubeRoomMsg(msgObj);
       renderChatMsgs(app.currentRoomId);
-      if(_ws&&_ws.readyState===WebSocket.OPEN)
-        _ws.send(JSON.stringify({type:'message', content:url,
-          msg_type:msgType, file_name:file.name, file_size:size, file_url:url}));
+      _wsSend({type:'message', content:url,
+        msg_type:msgType, file_name:file.name, file_size:size});
     }
     showToast(isImg?'✅ Фото отправлено':isVid?'✅ Видео отправлено':'✅ Файл отправлен');
   };
@@ -6165,13 +6206,11 @@ function sendSticker(s){
   if(_chatActiveDm) {
     addCubeRoomMsg(msgObj,'dm:'+_chatActiveDm.user_id);
     renderChatMsgs('dm:'+_chatActiveDm.user_id);
-    if(_ws&&_ws.readyState===WebSocket.OPEN)
-      _ws.send(JSON.stringify({type:'dm',to_user_id:_chatActiveDm.user_id,content:s,msg_type:'sticker'}));
+    _wsSend({type:'dm',to_user_id:_chatActiveDm.user_id,content:s,msg_type:'sticker'});
   } else {
     addCubeRoomMsg(msgObj);
     renderChatMsgs(app.currentRoomId);
-    if(_ws&&_ws.readyState===WebSocket.OPEN)
-      _ws.send(JSON.stringify({type:'message',content:s,msg_type:'sticker'}));
+    _wsSend({type:'message',content:s,msg_type:'sticker'});
   }
 }
 
