@@ -532,12 +532,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-bubble-reply{background:rgba(0,149,246,.1);border-left:3px solid var(--accent);border-radius:6px;padding:5px 8px;margin-bottom:6px}
 .gco-bubble-reply .rpl-name{font-size:10px;color:var(--accent);font-weight:700;margin-bottom:2px}
 .gco-bubble-reply .rpl-text{font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
-/* Hover reaction bar */
+/* Reaction bar — shown on hover (desktop) OR via JS toggle (mobile double-tap) */
 .gco-react-bar{position:absolute;bottom:calc(100% + 5px);left:0;background:#1a1a2f;border:1px solid var(--border);border-radius:22px;padding:4px 6px;display:none;gap:1px;z-index:20;box-shadow:0 4px 20px rgba(0,0,0,.6);animation:fadeUp .12s ease}
 .gco-msg.me .gco-react-bar{left:auto;right:0}
-.gco-bubble-wrap:hover .gco-react-bar{display:flex}
+@media(hover:hover){.gco-bubble-wrap:hover .gco-react-bar{display:flex}}
+.gco-react-bar.show{display:flex}
 .gco-react-btn{background:none;border:none;cursor:pointer;font-size:18px;padding:3px 5px;border-radius:50%;line-height:1;transition:transform .1s}
-.gco-react-btn:hover{transform:scale(1.35)}
+.gco-react-btn:active{transform:scale(1.35)}
 /* Reaction badges */
 .gco-bubble-reactions{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
 .gco-bubble-rbadge{background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:10px;padding:2px 7px;font-size:11px;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:3px}
@@ -10288,12 +10289,25 @@ function _buildGroupMsg(m, myId){
         <div style="display:none;align-items:center;justify-content:center;height:120px;font-size:36px;color:var(--text3);background:rgba(255,255,255,.04);border-radius:12px">🖼</div>
       </div>${txt?`<div style="margin-top:6px">${txt}</div>`:''}`;
     } else if(parsedMsg.type==='video'){
-      bubbleContent=`<div style="max-width:280px;border-radius:12px;overflow:hidden;margin:-4px -4px 0">
-        <video src="${safeUrl}" style="max-width:280px;width:100%;height:auto;display:block;border-radius:12px;max-height:360px"
-          controls playsinline preload="metadata"
-          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      const vidSrc=rawUrl+(rawUrl.includes('#')?'':'#t=0.001');
+      const vidId='vid-'+m.id;
+      bubbleContent=`<div style="max-width:280px;border-radius:12px;overflow:hidden;margin:-4px -4px 0;position:relative;background:#000;min-height:160px" onclick="">
+        <video id="${vidId}" src="${escHtml(vidSrc)}"
+          style="max-width:280px;width:100%;min-height:160px;height:auto;display:block;border-radius:12px;max-height:360px;object-fit:cover"
+          playsinline webkit-playsinline preload="metadata"
+          onerror="this.style.display='none';document.getElementById('ve-${m.id}').style.display='flex'"
+          onplay="document.getElementById('vp-${m.id}').style.display='none'"
+          onpause="document.getElementById('vp-${m.id}').style.display='flex'"
+          onended="document.getElementById('vp-${m.id}').style.display='flex'">
         </video>
-        <div style="display:none;align-items:center;justify-content:center;height:120px;font-size:36px;color:var(--text3)">🎥</div>
+        <div id="vp-${m.id}" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;border-radius:12px">
+          <div style="width:50px;height:50px;background:rgba(0,0,0,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)" onclick="event.stopPropagation();const v=document.getElementById('${vidId}');v.controls=true;v.play()">
+            <div style="width:0;height:0;border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:4px;pointer-events:all;cursor:pointer"></div>
+          </div>
+        </div>
+        <div id="ve-${m.id}" style="display:none;align-items:center;justify-content:center;height:160px;font-size:36px;color:var(--text3);flex-direction:column;gap:8px">
+          🎥<span style="font-size:11px;color:var(--text3)">Видео недоступно</span>
+        </div>
       </div>${txt?`<div style="margin-top:6px">${txt}</div>`:''}`;
     } else {
       // File — detect type and show in-app viewer
@@ -10347,6 +10361,21 @@ function _buildGroupMsg(m, myId){
     },{passive:true});
     bubble.addEventListener('touchend',()=>clearTimeout(_lp),{passive:true});
     bubble.addEventListener('touchmove',()=>clearTimeout(_lp),{passive:true});
+    // Double-tap → show react bar on mobile
+    let _lastTap=0;
+    bubble.addEventListener('touchend',e=>{
+      const now=Date.now();
+      if(now-_lastTap<320){
+        e.preventDefault();
+        const reactBar=div.querySelector('.gco-react-bar');
+        if(reactBar){
+          reactBar.classList.toggle('show');
+          // Auto-hide after 3s
+          setTimeout(()=>reactBar.classList.remove('show'),3000);
+        }
+      }
+      _lastTap=now;
+    },{passive:false});
   }
   return div;
 }
@@ -10620,12 +10649,8 @@ function _renderFmt(text){
   s=s.replace(/\|\|([^|\n]+)\|\|/g,'<span class="spoiler-bubble" onclick="this.classList.toggle(\'open\')" title="Спойлер — нажми чтобы показать">$1</span>');
   // 9. Link: [text](url)
   s=s.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-  // 10. Auto-link bare URLs (after other replacements to avoid double-linking)
-  s=s.replace(/((?:^|[\s(])(https?:\/\/[^\s<"]+))/g,(m,p1,url,offset,str)=>{
-    // don't re-link already linked
-    if(str.lastIndexOf('href="',offset)>str.lastIndexOf('"',offset-1)) return m;
-    return m.replace(url,`<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
-  });
+  // 10. Auto-link bare URLs (only those not already wrapped in <a>)
+  s=s.replace(/(?<![">])(https?:\/\/[^\s<"&]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
   return s;
 }
 
