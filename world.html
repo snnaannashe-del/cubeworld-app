@@ -4450,7 +4450,7 @@ function initWorld(){
   // Size canvas
   const rsz=()=>{wW=cv.width=wrap.clientWidth||window.innerWidth;wH=cv.height=wrap.clientHeight||(window.innerHeight-44);};
   rsz();new ResizeObserver(rsz).observe(wrap);
-  // Mouse
+  // ── Mouse ───────────────────────────────────────
   cv.addEventListener('mousedown',e=>{
     wDrag=true;wAutoRot=false;wDragSX=e.clientX;wDragSY=e.clientY;
     wDragDX=wDragDY=0;wThetaD=wTarTheta;wPhiD=wTarPhi;
@@ -4463,12 +4463,39 @@ function initWorld(){
       wTarTheta=wThetaD+wDragDX*0.009;
       wTarPhi=Math.max(-0.75,Math.min(0.75,wPhiD-wDragDY*0.007));}
     const tt=document.getElementById('cube-tooltip');
-    if(tt.style.display==='block'){tt.style.left=(e.clientX+14)+'px';tt.style.top=(e.clientY-20)+'px';}
+    if(tt&&tt.style.display==='block'){tt.style.left=(e.clientX+14)+'px';tt.style.top=(e.clientY-20)+'px';}
   });
   window.addEventListener('mouseup',e=>{
     if(!wDrag)return;wDrag=false;wrap.classList.remove('dragging');
     if(Math.abs(wDragDX)+Math.abs(wDragDY)<5)handleWorldClick();
   });
+  // ── Touch (mobile) ───────────────────────────────
+  let _tSX=0,_tSY=0,_tDX=0,_tDY=0,_tThD=0,_tPhD=0;
+  cv.addEventListener('touchstart',e=>{
+    e.preventDefault();
+    const t=e.touches[0];
+    wDrag=true;wAutoRot=false;
+    _tSX=t.clientX;_tSY=t.clientY;_tDX=_tDY=0;
+    _tThD=wTarTheta;_tPhD=wTarPhi;
+    const rect=wrap.getBoundingClientRect();
+    wMouseX=t.clientX-rect.left;wMouseY=t.clientY-rect.top;
+  },{passive:false});
+  cv.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    const t=e.touches[0];
+    _tDX=t.clientX-_tSX;_tDY=t.clientY-_tSY;
+    wTarTheta=_tThD+_tDX*0.009;
+    wTarPhi=Math.max(-0.75,Math.min(0.75,_tPhD-_tDY*0.007));
+    const rect=wrap.getBoundingClientRect();
+    wMouseX=t.clientX-rect.left;wMouseY=t.clientY-rect.top;
+  },{passive:false});
+  cv.addEventListener('touchend',e=>{
+    e.preventDefault();
+    wDrag=false;
+    // Tap = minimal movement → enter cube
+    if(Math.abs(_tDX)+Math.abs(_tDY)<12) handleWorldClick();
+    _tDX=_tDY=0;
+  },{passive:false});
   wRenderLoop();
 }
 
@@ -4680,15 +4707,15 @@ async function submitJoinKey(){
 function enterInterior(cubeId){
   app.currentCubeId=cubeId;
   const cube=app.cubes.find(c=>c.id===cubeId);
-  document.getElementById('itb-icon').textContent=cube?cube.icon:'';
-  document.getElementById('itb-name').textContent=cube?cube.name:'Куб';
+  // Null-safe updates (elements may not exist in redesigned topbar)
+  const _iconEl=document.getElementById('itb-icon'); if(_iconEl) _iconEl.textContent=cube?cube.icon:'';
+  const _nameEl=document.getElementById('itb-name'); if(_nameEl) _nameEl.textContent=cube?cube.name:'Куб';
   const _mkEl=document.getElementById('itb-mykey'); if(_mkEl)_mkEl.textContent=app.userKey?app.userKey.slice(0,12)+'…':'';
-  document.getElementById('itb-timer').style.color='var(--cyan)';
-  // Show Key 2 button only for cube owner
-  const keyBtn=document.getElementById('itb-cube-key-btn');
-  if(keyBtn) keyBtn.style.display = (cube&&cube.isOwn)?'':'none';
+  const _tmrEl=document.getElementById('itb-timer'); if(_tmrEl) _tmrEl.style.color='var(--cyan)';
+  // Key 2 button in cube-switcher row
+  const keyBtn=document.getElementById('itb-cube-key-btn'); if(keyBtn) keyBtn.style.display=(cube&&cube.isOwn)?'':'none';
   const csKey2=document.getElementById('cs-key2-btn');
-  if(csKey2) csKey2.style.display = (cube&&cube.isOwn)?'':'none';
+  if(csKey2) csKey2.style.display = (cube&&cube.isOwn)?'flex':'none';
   showView('v-int');
   initInteriorData(cubeId);
   // Restore last visited section instead of always going to feed
