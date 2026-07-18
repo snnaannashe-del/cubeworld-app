@@ -340,8 +340,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vf-fab-wrap{position:absolute;right:12px;bottom:80px;z-index:15;display:flex;flex-direction:column;align-items:center;gap:0}
 .vf-fab-trigger{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.7);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.4);transition:transform .22s,background .18s;flex-shrink:0;backdrop-filter:blur(8px)}
 .vf-fab-trigger:hover,.vf-fab-trigger:active{transform:scale(1.08);background:rgba(255,255,255,.15);color:#fff}
-.vf-fab-items{display:flex;flex-direction:column;align-items:center;gap:10px;padding-bottom:12px;max-height:0;overflow:hidden;opacity:0;pointer-events:none;transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .25s}
-.vf-fab-wrap.open .vf-fab-items{max-height:260px;opacity:1;pointer-events:auto}
+.vf-fab-items{display:flex;flex-direction:column;align-items:center;gap:10px;padding-bottom:12px;padding-top:4px;max-height:0;overflow:hidden;opacity:0;pointer-events:none;transition:max-height .38s cubic-bezier(.4,0,.2,1),opacity .25s}
+.vf-fab-wrap.open .vf-fab-items{max-height:420px;opacity:1;pointer-events:auto;overflow:visible}
 .vf-fab-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;background:none;border:none;padding:0;color:#fff;outline:none;transform:translateY(8px);transition:transform .25s}
 .vf-fab-wrap.open .vf-fab-item{transform:translateY(0)}
 /* author avatar stays above FAB items */
@@ -6709,13 +6709,20 @@ function openCubeCtx(e, cubeId){
   // Show switch button only if not current cube
   const swBtn = menu.querySelector('button:first-of-type');
   if(swBtn) swBtn.style.display = cubeId===app.currentCubeId ? 'none' : 'flex';
-  // Position
+  // Position — show first, then measure to avoid clipping
   const x = e.clientX||e.pageX||window.innerWidth/2;
   const y = e.clientY||e.pageY||100;
+  menu.style.visibility='hidden';
   menu.style.display='block';
-  const mw=menu.offsetWidth||200, mh=menu.offsetHeight||140;
-  menu.style.left = Math.min(x, window.innerWidth-mw-8)+'px';
-  menu.style.top  = Math.min(y+6, window.innerHeight-mh-8)+'px';
+  requestAnimationFrame(()=>{
+    const mw=menu.offsetWidth||180, mh=menu.offsetHeight||100;
+    const left = Math.min(x, window.innerWidth-mw-8);
+    // Show above cursor if not enough space below
+    const top = (y+6+mh > window.innerHeight-8) ? Math.max(8, y-mh-6) : y+6;
+    menu.style.left = left+'px';
+    menu.style.top  = top+'px';
+    menu.style.visibility='visible';
+  });
   setTimeout(()=>document.addEventListener('click',closeCubeCtx,{once:true}),10);
 }
 function closeCubeCtx(){ document.getElementById('cube-ctx-menu').style.display='none'; _cubeCtxId=null; }
@@ -9490,20 +9497,75 @@ function toggleVfTabsDrawer(){
   }
 }
 
-// FAB speed-dial toggle
+// FAB speed-dial toggle — renders into a fixed overlay so overflow:hidden parents can't clip it
 let _vfFabOpen = null;
+let _vfFabCloseTimer = null;
+function closeVfFab(){
+  const ov=document.getElementById('vf-fab-overlay');
+  if(ov){ ov.style.display='none'; ov.innerHTML=''; }
+  _vfFabOpen=null;
+  clearTimeout(_vfFabCloseTimer);
+}
 function toggleVfFab(postId){
-  // Close previous
-  if(_vfFabOpen && _vfFabOpen !== postId){
-    const prev = document.getElementById('vf-fab-'+_vfFabOpen);
-    if(prev) prev.classList.remove('open');
-  }
-  const fab = document.getElementById('vf-fab-'+postId);
-  if(!fab) return;
-  const isOpen = fab.classList.toggle('open');
-  _vfFabOpen = isOpen ? postId : null;
-  // Auto-close after 4s
-  if(isOpen) setTimeout(()=>{ if(_vfFabOpen===postId){ fab.classList.remove('open'); _vfFabOpen=null; }}, 4000);
+  // If same post — close
+  if(_vfFabOpen===postId){ closeVfFab(); return; }
+  closeVfFab();
+
+  const trigger=document.querySelector(`#vf-fab-${postId} .vf-fab-trigger`);
+  if(!trigger) return;
+  const rect=trigger.getBoundingClientRect();
+
+  // Find post data
+  const post=_vfPosts.find(p=>String(p.id)===String(postId));
+  if(!post) return;
+
+  const isLiked=!!(app.vfLiked||{})[postId];
+  const isFollowing=!!(app.vfFollowing||{})[post.user_id];
+  const isMine=String(post.user_id)===String(app.userId||'');
+  const letter=(post.display_name||'?')[0].toUpperCase();
+
+  const ov=document.getElementById('vf-fab-overlay');
+  ov.innerHTML=`
+    ${!isMine?`<div class="vf-fab-author" style="margin-bottom:4px">
+      <div class="vfa-author-av" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}');closeVfFab()">
+        ${letter}
+        <div class="vfa-follow-dot${isFollowing?' following':''}" id="vfa-fd2-${post.user_id}" onclick="event.stopPropagation();vfFollow('${post.user_id}')">${isFollowing?'✓':'+'}</div>
+      </div>
+    </div>`:''}
+    <button class="vf-fab-item" onclick="vfLike('${post.id}',this)">
+      <div class="vfa-icon${isLiked?' liked':''}" id="vfa-heart-${post.id}"><i class="ti ti-heart${isLiked?'-filled':''}"></i></div>
+      <span class="vfa-count" id="vfa-lc-${post.id}">${_fmtN(post.likes||0)}</span>
+    </button>
+    <button class="vf-fab-item" onclick="openVfComments('${post.id}');closeVfFab()">
+      <div class="vfa-icon"><i class="ti ti-message-circle"></i></div>
+      <span class="vfa-count" id="vfa-cc2-${post.id}">${_fmtN(post.comment_count||0)}</span>
+    </button>
+    <button class="vf-fab-item" onclick="vfShare('${post.id}');closeVfFab()">
+      <div class="vfa-icon"><i class="ti ti-share-3"></i></div>
+      <span class="vfa-count">${_fmtN(post.share_count||0)||''}</span>
+    </button>
+    <div class="vf-fab-item" style="cursor:default">
+      <div class="vfa-icon"><i class="ti ti-eye"></i></div>
+      <span class="vfa-count">${_fmtN(post.view_count||0)}</span>
+    </div>`;
+
+  // Position: right-aligned, bottom of overlay = top of trigger
+  ov.style.display='flex';
+  const ovH=ov.scrollHeight||300;
+  const top=Math.max(8, rect.top - ovH - 8);
+  ov.style.right=(window.innerWidth - rect.right - 2)+'px';
+  ov.style.left='auto';
+  ov.style.top=top+'px';
+
+  _vfFabOpen=postId;
+  // Auto-close after 5s
+  _vfFabCloseTimer=setTimeout(closeVfFab, 5000);
+  // Close on outside tap
+  setTimeout(()=>document.addEventListener('click',_vfFabOutside,{once:true}),50);
+}
+function _vfFabOutside(e){
+  const ov=document.getElementById('vf-fab-overlay');
+  if(ov && !ov.contains(e.target)) closeVfFab();
 }
 
 // Cube-switcher auto-hide on mobile scroll (hide after 3rd scroll, show on bird-btn)
@@ -11834,6 +11896,9 @@ const _grpOvId='grp-chat-overlay';
 
 <!-- ══ SWIPE FEEDBACK INDICATOR ════════════════════════════════════════ -->
 <div class="swipe-indicator" id="swipe-indicator"></div>
+
+<!-- ══ FAB FIXED OVERLAY (outside all overflow:hidden parents) ══════════ -->
+<div id="vf-fab-overlay" style="display:none;position:fixed;z-index:500;right:14px;flex-direction:column;align-items:center;gap:10px;padding-bottom:12px"></div>
 
 </body>
 </html>
