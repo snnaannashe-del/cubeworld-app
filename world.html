@@ -405,8 +405,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .cpm-inp:focus{border-color:rgba(0,149,246,.5);background:rgba(255,255,255,.07)}
 .cpm-inp-ta{min-height:82px;resize:vertical;line-height:1.5}
 /* Group chat overlay */
-#grp-chat-overlay{position:fixed;inset:0;background:var(--bg);z-index:600;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1)}
+#grp-chat-overlay{position:fixed;inset:0;background:var(--bg);z-index:600;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1);overflow:hidden}
 #grp-chat-overlay.open{transform:translateX(0)}
+/* Lock all inner blocks — no movement on mobile */
+#grp-chat-overlay .gco-topbar{flex-shrink:0;position:sticky;top:0;z-index:5}
+#grp-chat-overlay .gco-pinned{flex-shrink:0}
+#grp-chat-overlay .gco-reply-bar{flex-shrink:0}
+#grp-chat-overlay .gco-input-row{flex-shrink:0;position:sticky;bottom:0;z-index:5}
 .gco-topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(5,5,20,.97);backdrop-filter:var(--blur);flex-shrink:0}
 .gco-back{background:transparent;border:1px solid var(--border);color:var(--text2);padding:5px 12px;border-radius:20px;font-size:13px;cursor:pointer;transition:all var(--transition)}
 .gco-back:hover{background:rgba(255,255,255,.07);color:var(--text)}
@@ -566,11 +571,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-epick{background:none;border:none;font-size:20px;cursor:pointer;width:34px;height:34px;border-radius:8px;transition:all .1s;display:flex;align-items:center;justify-content:center}
 .gco-epick:hover{background:rgba(255,255,255,.1);transform:scale(1.2)}
 /* Context menu */
-.gco-ctx{position:fixed;background:#16162c;border:1px solid var(--border);border-radius:11px;padding:4px;z-index:9999;min-width:170px;box-shadow:0 8px 36px rgba(0,0,0,.7);animation:fadeUp .12s ease}
-.gco-ctx-item{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text);transition:background .12s}
-.gco-ctx-item:hover{background:rgba(255,255,255,.06)}
-.gco-ctx-item.danger{color:var(--red)}
-.gco-ctx-sep{height:1px;background:var(--border);margin:3px 8px}
+.gco-ctx{position:fixed;background:#16162c;border:1px solid var(--border);border-radius:14px;padding:5px;z-index:9999;min-width:180px;box-shadow:0 8px 36px rgba(0,0,0,.7);backdrop-filter:blur(14px)}
+.gco-ctx-item{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:9px;cursor:pointer;font-size:13px;color:var(--text);transition:background .12s}
+.gco-ctx-item:hover,.gco-ctx-item:active{background:rgba(255,255,255,.07)}
+.gco-ctx-item.danger{color:#f87171}
+.gco-ctx-sep{height:1px;background:rgba(255,255,255,.07);margin:3px 6px}
+/* Format popup buttons */
+.mfp-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e0e0f8;font-size:14px;cursor:pointer;padding:6px 10px;transition:background .12s;min-width:36px;text-align:center}
+.mfp-btn:hover,.mfp-btn:active{background:rgba(0,149,246,.2);border-color:rgba(0,149,246,.4);color:#0095F6}
+/* Multi-select checkbox on messages */
+.gco-msg.select-mode{padding-left:36px;position:relative;cursor:pointer}
+.gco-msg.select-mode .gco-msg-cb{position:absolute;left:4px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.3);background:transparent;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.gco-msg.select-mode.selected .gco-msg-cb{background:#0095F6;border-color:#0095F6;color:#fff;font-size:13px}
+/* File viewer overlay */
+#fv-overlay{display:none}
+#fv-overlay.open{display:flex}
 /* Members tab redesign */
 .gco-member-card{display:flex;align-items:center;gap:10px;padding:10px 6px;border-bottom:1px solid var(--border2);cursor:pointer;border-radius:8px;transition:background .15s}
 .gco-member-card:hover{background:rgba(255,255,255,.04)}
@@ -2846,7 +2861,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendGroupMsg();}"
               oninput="gcoChatTyping();gcoUpdateSendBtn()">
             <div class="gco-emoji-picker" id="gco-emoji-picker">
-              ${['😊','😂','❤️','🔥','👍','😍','🎉','😭','😮','🥰','😎','🤔','💯','✨','🙏','💪','🤣','😅','😆','🤩','😴','🥳','😤','🤗','💀','👀','🫡','🚀','💎','🌟','⚡','🎯','💰','🦋','🐉','🌙'].map(e=>`<button class="gco-epick" onclick="gcoInsertEmoji('${e}')">${e}</button>`).join('')}
+              <button class="gco-epick" onclick="gcoInsertEmoji('😊')">😊</button><button class="gco-epick" onclick="gcoInsertEmoji('😂')">😂</button><button class="gco-epick" onclick="gcoInsertEmoji('❤️')">❤️</button><button class="gco-epick" onclick="gcoInsertEmoji('🔥')">🔥</button><button class="gco-epick" onclick="gcoInsertEmoji('👍')">👍</button><button class="gco-epick" onclick="gcoInsertEmoji('😍')">😍</button><button class="gco-epick" onclick="gcoInsertEmoji('🎉')">🎉</button><button class="gco-epick" onclick="gcoInsertEmoji('😭')">😭</button><button class="gco-epick" onclick="gcoInsertEmoji('😮')">😮</button><button class="gco-epick" onclick="gcoInsertEmoji('🥰')">🥰</button><button class="gco-epick" onclick="gcoInsertEmoji('😎')">😎</button><button class="gco-epick" onclick="gcoInsertEmoji('🤔')">🤔</button><button class="gco-epick" onclick="gcoInsertEmoji('💯')">💯</button><button class="gco-epick" onclick="gcoInsertEmoji('✨')">✨</button><button class="gco-epick" onclick="gcoInsertEmoji('🙏')">🙏</button><button class="gco-epick" onclick="gcoInsertEmoji('💪')">💪</button><button class="gco-epick" onclick="gcoInsertEmoji('🤣')">🤣</button><button class="gco-epick" onclick="gcoInsertEmoji('😅')">😅</button><button class="gco-epick" onclick="gcoInsertEmoji('🤩')">🤩</button><button class="gco-epick" onclick="gcoInsertEmoji('😴')">😴</button><button class="gco-epick" onclick="gcoInsertEmoji('🥳')">🥳</button><button class="gco-epick" onclick="gcoInsertEmoji('😤')">😤</button><button class="gco-epick" onclick="gcoInsertEmoji('🤗')">🤗</button><button class="gco-epick" onclick="gcoInsertEmoji('💀')">💀</button><button class="gco-epick" onclick="gcoInsertEmoji('👀')">👀</button><button class="gco-epick" onclick="gcoInsertEmoji('🫡')">🫡</button><button class="gco-epick" onclick="gcoInsertEmoji('🚀')">🚀</button><button class="gco-epick" onclick="gcoInsertEmoji('💎')">💎</button><button class="gco-epick" onclick="gcoInsertEmoji('🌟')">🌟</button><button class="gco-epick" onclick="gcoInsertEmoji('⚡')">⚡</button><button class="gco-epick" onclick="gcoInsertEmoji('🎯')">🎯</button><button class="gco-epick" onclick="gcoInsertEmoji('💰')">💰</button><button class="gco-epick" onclick="gcoInsertEmoji('🦋')">🦋</button><button class="gco-epick" onclick="gcoInsertEmoji('🐉')">🐉</button><button class="gco-epick" onclick="gcoInsertEmoji('🌙')">🌙</button>
             </div>
           </div>
           <button class="gco-icon-btn" onclick="gcoToggleEmoji()" title="Эмодзи" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:16px"></i></button>
@@ -2892,12 +2907,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         </div>
         <!-- Context menu -->
         <div class="gco-ctx" id="gco-ctx" style="display:none">
-          <div class="gco-ctx-item" onclick="gcoCtxReply()"><i class="ti ti-arrow-back-up" style="font-size:14px"></i> Ответить</div>
-          <div class="gco-ctx-item" onclick="gcoCtxForward()"><i class="ti ti-arrow-forward-up" style="font-size:14px"></i> Переслать</div>
-          <div class="gco-ctx-item" onclick="gcoCtxCopy()"><i class="ti ti-copy" style="font-size:14px"></i> Копировать текст</div>
+          <div class="gco-ctx-item" onclick="gcoCtxReply()"><i class="ti ti-arrow-back-up" style="font-size:14px;color:#0095F6"></i> Ответить</div>
+          <div class="gco-ctx-item" onclick="gcoCtxCopy()"><i class="ti ti-copy" style="font-size:14px;color:var(--text2)"></i> Скопировать</div>
+          <div class="gco-ctx-item" id="gco-ctx-edit" onclick="gcoCtxEdit()" style="display:none"><i class="ti ti-pencil" style="font-size:14px;color:var(--text2)"></i> Изменить</div>
+          <div class="gco-ctx-item" onclick="gcoCtxPin()"><i class="ti ti-pin" style="font-size:14px;color:var(--text2)"></i> Закрепить</div>
+          <div class="gco-ctx-item" onclick="gcoCtxForward()"><i class="ti ti-arrow-forward-up" style="font-size:14px;color:var(--text2)"></i> Переслать</div>
           <div class="gco-ctx-sep"></div>
-          <div class="gco-ctx-item" onclick="gcoCtxPin()"><i class="ti ti-pin" style="font-size:14px"></i> Закрепить</div>
-          <div class="gco-ctx-item danger" id="gco-ctx-edit" onclick="gcoCtxEdit()"><i class="ti ti-pencil" style="font-size:14px"></i> Изменить</div>
+          <div class="gco-ctx-item" onclick="gcoCtxSelect()"><i class="ti ti-checkbox" style="font-size:14px;color:var(--text2)"></i> Выбрать</div>
           <div class="gco-ctx-item danger" onclick="gcoCtxDelete()"><i class="ti ti-trash" style="font-size:14px"></i> Удалить</div>
         </div>
         <!-- hidden file inputs -->
@@ -10194,10 +10210,44 @@ function _buildGroupMsg(m, myId){
     replyHtml=`<div class="gco-bubble-reply"><div class="rpl-name" style="color:var(--accent)">↩ ${escHtml(parsedMsg.reply.author||'')}</div><div class="rpl-text">${escHtml((parsedMsg.reply.text||'').slice(0,80))}</div></div>`;
   }
   if(parsedMsg&&parsedMsg.url){
-    const txt=parsedMsg.text?`<div class="gco-bubble-text">${_linkify(parsedMsg.text)}</div>`:'';
-    if(parsedMsg.type==='image') bubbleContent=`<img src="${escHtml(parsedMsg.url)}" style="max-width:240px;border-radius:10px;display:block;cursor:zoom-in;margin-bottom:4px" onclick="openLightbox('${escHtml(parsedMsg.url)}','image')">${txt}`;
-    else if(parsedMsg.type==='video') bubbleContent=`<video src="${escHtml(parsedMsg.url)}" style="max-width:240px;border-radius:10px;display:block" controls></video>${txt}`;
-    else bubbleContent=`<div onclick="window.open('${escHtml(parsedMsg.url)}','_blank')" style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:10px;padding:10px 12px;cursor:pointer;margin-bottom:4px;border:1px solid rgba(255,255,255,.08)"><span style="font-size:26px">📄</span><div><div style="font-size:12px;font-weight:600;color:#e0e0f8">${escHtml(parsedMsg.url.split('/').pop()||'Файл')}</div><div style="font-size:10px;color:var(--text3)">Нажми чтобы открыть</div></div></div>${txt}`;
+    const safeUrl=escHtml(parsedMsg.url);
+    const rawUrl=parsedMsg.url;
+    const fname=rawUrl.split('/').pop()||'Файл';
+    const txt=parsedMsg.text?`<div class="gco-bubble-text" style="margin-top:6px">${_linkify(parsedMsg.text)}</div>`:'';
+    if(parsedMsg.type==='image'){
+      bubbleContent=`<div style="position:relative;max-width:240px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.05);min-height:80px;cursor:zoom-in" onclick="openLightbox('${safeUrl}','image')">
+        <img src="${safeUrl}" style="max-width:240px;width:100%;border-radius:10px;display:block"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          onload="this.style.display='block';this.nextElementSibling.style.display='none'">
+        <div style="display:none;align-items:center;justify-content:center;height:80px;font-size:28px;color:var(--text3)">🖼</div>
+      </div>${txt}`;
+    } else if(parsedMsg.type==='video'){
+      bubbleContent=`<div style="max-width:240px;border-radius:10px;overflow:hidden;background:#000;position:relative">
+        <video src="${safeUrl}" style="max-width:240px;width:100%;border-radius:10px;display:block;max-height:300px"
+          controls playsinline preload="metadata"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        </video>
+        <div style="display:none;align-items:center;justify-content:center;height:80px;font-size:28px;color:var(--text3)">🎥</div>
+      </div>${txt}`;
+    } else {
+      // File — detect type and show in-app viewer
+      const ext=(fname.split('.').pop()||'').toLowerCase();
+      const isPdf=ext==='pdf';
+      const isTxt=['txt','log','csv','json','md','xml','html','js','py','ts'].includes(ext);
+      const isImg=['jpg','jpeg','png','gif','webp','svg'].includes(ext);
+      const icon=isPdf?'📕':isTxt?'📝':isImg?'🖼':'📄';
+      const onclickAttr=isPdf||isTxt||isImg
+        ? `openFv('${safeUrl}','${escHtml(fname)}','${ext}')`
+        : `window.open('${safeUrl}','_blank')`;
+      const actionLabel=isPdf||isTxt||isImg?'Открыть':'Скачать';
+      bubbleContent=`<div onclick="${onclickAttr}" style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:10px;padding:10px 12px;cursor:pointer;margin-bottom:4px;border:1px solid rgba(255,255,255,.08);max-width:240px">
+        <span style="font-size:28px;flex-shrink:0">${icon}</span>
+        <div style="min-width:0">
+          <div style="font-size:12px;font-weight:600;color:#e0e0f8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px">${escHtml(fname)}</div>
+          <div style="font-size:10px;color:var(--accent);margin-top:2px">${actionLabel}</div>
+        </div>
+      </div>${txt}`;
+    }
   } else {
     bubbleContent=`<div class="gco-bubble-text">${_linkify(m.content||'')}</div>`;
   }
@@ -10209,7 +10259,7 @@ function _buildGroupMsg(m, myId){
   div.innerHTML=`${avHtml}
     <div class="gco-bubble-wrap">
       <div class="gco-react-bar">${['👍','❤️','😂','🔥','😮','😢'].map(e=>`<button class="gco-react-btn" onclick="gcoReact(${m.id},'${e}',event)">${e}</button>`).join('')}</div>
-      <div class="gco-bubble" oncontextmenu="gcoShowCtxMenu(event,${m.id},'${safeText}','${safeName}',${isMe})">
+      <div class="gco-bubble" oncontextmenu="gcoShowCtxMenu(event,${m.id},'${safeText}','${safeName}',${isMe})" id="gcob-${m.id}">
         ${!isMe?`<div class="gco-bubble-name" style="color:${nameColor};font-size:11px;font-weight:700;margin-bottom:4px">${escHtml(m.display_name||'Аноним')}</div>`:''}
         ${replyHtml}
         ${bubbleContent}
@@ -10217,6 +10267,14 @@ function _buildGroupMsg(m, myId){
         <div class="gco-bubble-reactions" id="gco-reacts-${m.id}"></div>
       </div>
     </div>`;
+  // Long-press for mobile context menu
+  const bubble=div.querySelector('.gco-bubble');
+  if(bubble){
+    let _lp=null;
+    bubble.addEventListener('touchstart',e=>{ _lp=setTimeout(()=>gcoShowCtxMenu(e.touches[0],m.id,safeText,safeName,isMe),550); },{passive:true});
+    bubble.addEventListener('touchend',()=>clearTimeout(_lp),{passive:true});
+    bubble.addEventListener('touchmove',()=>clearTimeout(_lp),{passive:true});
+  }
   return div;
 }
 // ── Date separator helper ─────────────────────────────────────────────
@@ -10516,6 +10574,166 @@ function gcoCtxEdit(){
   }
   showToast('✏️ Редактируй и отправь заново');
 }
+function gcoCtxSelect(){
+  gcoHideCtxMenu();
+  if(!_grpCtxState) return;
+  gcoEnterSelect(_grpCtxState.id);
+}
+
+// ── FILE VIEWER ────────────────────────────────────────────────────────
+function openFv(url, name, ext){
+  const ov=document.getElementById('fv-overlay');
+  const body=document.getElementById('fv-body');
+  const dlBtn=document.getElementById('fv-dl-btn');
+  const nameEl=document.getElementById('fv-name');
+  if(!ov||!body) return;
+  if(nameEl) nameEl.textContent=name||url.split('/').pop()||'Файл';
+  if(dlBtn){ dlBtn.href=url; dlBtn.download=name||''; }
+  const isImg=['jpg','jpeg','png','gif','webp','svg'].includes(ext);
+  const isPdf=ext==='pdf';
+  const isTxt=['txt','log','csv','json','md','xml','js','py','ts'].includes(ext);
+  if(isImg){
+    body.innerHTML=`<img src="${escHtml(url)}" style="max-width:100%;max-height:100%;object-fit:contain;margin:auto;display:block;padding:8px" onerror="this.alt='Не удалось загрузить изображение';this.style.opacity='.4'">`;
+  } else if(isPdf){
+    body.innerHTML=`<iframe src="${escHtml(url)}" style="width:100%;height:100%;border:none;flex:1" title="${escHtml(name||'PDF')}"></iframe>`;
+  } else if(isTxt){
+    body.innerHTML=`<div style="padding:16px;color:#e0e0f8;font-size:13px;font-family:monospace;white-space:pre-wrap;word-break:break-all">Загрузка…</div>`;
+    fetch(url).then(r=>r.text()).then(t=>{ body.innerHTML=`<pre style="padding:16px;color:#e0e0f8;font-size:13px;font-family:monospace;white-space:pre-wrap;word-break:break-all;margin:0">${t.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>`; }).catch(()=>{ body.innerHTML=`<div style="padding:24px;text-align:center;color:var(--text3)">Не удалось загрузить файл. <a href="${escHtml(url)}" target="_blank" style="color:var(--accent)">Открыть в браузере</a></div>`; });
+  } else {
+    body.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:20px;color:var(--text3)"><span style="font-size:60px">📄</span><div style="font-size:14px">${escHtml(name||'Файл')}</div><a href="${escHtml(url)}" target="_blank" download style="background:rgba(0,149,246,.2);border:1px solid rgba(0,149,246,.4);color:#0095F6;border-radius:10px;padding:10px 24px;text-decoration:none;font-size:13px">⬇️ Скачать</a></div>`;
+  }
+  ov.classList.add('open');
+}
+function closeFv(){
+  document.getElementById('fv-overlay')?.classList.remove('open');
+  document.getElementById('fv-body').innerHTML='';
+}
+
+// ── MULTI-SELECT ───────────────────────────────────────────────────────
+let _gcoSelectMode=false;
+let _gcoSelected=new Set();
+function gcoEnterSelect(firstId){
+  _gcoSelectMode=true;
+  _gcoSelected=new Set();
+  const container=document.getElementById('gco-msgs');
+  if(!container) return;
+  container.querySelectorAll('.gco-msg').forEach(el=>{
+    el.classList.add('select-mode');
+    // Add checkbox
+    if(!el.querySelector('.gco-msg-cb')){
+      const cb=document.createElement('div'); cb.className='gco-msg-cb';
+      el.prepend(cb);
+    }
+    el.addEventListener('click',_gcoMsgSelectClick,true);
+  });
+  const bar=document.getElementById('msg-select-bar');
+  if(bar) bar.style.display='flex';
+  if(firstId) _gcoToggleMsg(firstId);
+}
+function _gcoMsgSelectClick(e){
+  e.preventDefault(); e.stopPropagation();
+  _gcoToggleMsg(this.dataset.msgId);
+}
+function _gcoToggleMsg(id){
+  if(!id) return;
+  if(_gcoSelected.has(id)) _gcoSelected.delete(id);
+  else if(_gcoSelected.size<100) _gcoSelected.add(id);
+  // Update visual
+  document.querySelectorAll('.gco-msg').forEach(el=>{
+    const sel=_gcoSelected.has(el.dataset.msgId);
+    el.classList.toggle('selected',sel);
+    const cb=el.querySelector('.gco-msg-cb');
+    if(cb) cb.innerHTML=sel?'✓':'';
+  });
+  const cnt=document.getElementById('msg-select-count');
+  if(cnt) cnt.textContent=_gcoSelected.size+' выбрано';
+}
+function gcoExitSelect(){
+  _gcoSelectMode=false; _gcoSelected=new Set();
+  const container=document.getElementById('gco-msgs');
+  if(container) container.querySelectorAll('.gco-msg').forEach(el=>{
+    el.classList.remove('select-mode','selected');
+    el.querySelector('.gco-msg-cb')?.remove();
+    el.removeEventListener('click',_gcoMsgSelectClick,true);
+  });
+  const bar=document.getElementById('msg-select-bar');
+  if(bar) bar.style.display='none';
+}
+async function gcoSelectAction(action){
+  if(!_gcoSelected.size) return;
+  if(action==='delete'){
+    if(!confirm(`Удалить ${_gcoSelected.size} сообщений?`)) return;
+    for(const id of _gcoSelected){
+      await apiCall('/groups/'+_grpChatId+'/messages/'+id,'DELETE',{});
+      const el=document.querySelector(`[data-msg-id="${id}"]`);
+      if(el) el.remove();
+    }
+    showToast('🗑 Удалено: '+_gcoSelected.size);
+  } else if(action==='forward'){
+    const texts=[]; document.querySelectorAll('.gco-msg.selected .gco-bubble-text').forEach(el=>texts.push(el.textContent));
+    navigator.clipboard.writeText(texts.join('\n---\n')); showToast('📋 Скопировано '+_gcoSelected.size+' сообщений');
+  }
+  gcoExitSelect();
+}
+
+// ── TEXT FORMAT POPUP ──────────────────────────────────────────────────
+let _mfpTarget=null;
+function _setupFormatPopup(inputEl){
+  if(!inputEl) return;
+  inputEl.addEventListener('mouseup',_showFmtPopup);
+  inputEl.addEventListener('touchend',_showFmtPopup);
+  inputEl.addEventListener('keyup',e=>{ if(!inputEl.selectionStart||inputEl.selectionStart===inputEl.selectionEnd) closeFmtPopup(); });
+}
+function _showFmtPopup(e){
+  const el=e.currentTarget;
+  const start=el.selectionStart, end=el.selectionEnd;
+  if(start===end){ closeFmtPopup(); return; }
+  _mfpTarget=el;
+  const popup=document.getElementById('msg-fmt-popup');
+  if(!popup) return;
+  popup.style.display='block';
+  requestAnimationFrame(()=>{
+    const rect=el.getBoundingClientRect();
+    const pw=popup.offsetWidth||200;
+    const x=Math.min(rect.left+rect.width/2-pw/2, window.innerWidth-pw-8);
+    popup.style.left=Math.max(4,x)+'px';
+    popup.style.top=Math.max(4,rect.top-popup.offsetHeight-8)+'px';
+  });
+}
+function closeFmtPopup(){ document.getElementById('msg-fmt-popup').style.display='none'; _mfpTarget=null; }
+function mfpApply(type){
+  if(!_mfpTarget) return;
+  const el=_mfpTarget;
+  const start=el.selectionStart, end=el.selectionEnd;
+  if(start===end){ closeFmtPopup(); return; }
+  const sel=el.value.substring(start,end);
+  const before=el.value.substring(0,start), after=el.value.substring(end);
+  let wrapped=sel;
+  if(type==='bold') wrapped='**'+sel+'**';
+  else if(type==='italic') wrapped='_'+sel+'_';
+  else if(type==='strike') wrapped='~~'+sel+'~~';
+  else if(type==='under') wrapped='__'+sel+'__';
+  else if(type==='mono') wrapped='`'+sel+'`';
+  else if(type==='quote') wrapped='\n> '+sel.split('\n').join('\n> ')+'\n';
+  else if(type==='spoiler') wrapped='||'+sel+'||';
+  else if(type==='link'){
+    const url=prompt('Введи URL:','https://');
+    if(!url){ closeFmtPopup(); return; }
+    wrapped='['+sel+']('+url+')';
+  }
+  el.value=before+wrapped+after;
+  el.setSelectionRange(before.length, before.length+wrapped.length);
+  el.focus();
+  closeFmtPopup();
+}
+// Auto-init format popup on gco-input
+document.addEventListener('DOMContentLoaded',()=>{
+  _setupFormatPopup(document.getElementById('gco-input'));
+});
+document.addEventListener('click',e=>{
+  const p=document.getElementById('msg-fmt-popup');
+  if(p&&p.style.display!=='none'&&!p.contains(e.target)) closeFmtPopup();
+});
 
 // ══ EMOJI PICKER ─────────────────────────────────────────────────────────
 function gcoToggleEmoji(){
@@ -11904,6 +12122,38 @@ const _grpOvId='grp-chat-overlay';
 
 <!-- ══ FAB FIXED OVERLAY (outside all overflow:hidden parents) ══════════ -->
 <div id="vf-fab-overlay" style="display:none;position:fixed;z-index:500;right:14px;flex-direction:column;align-items:center;gap:10px;padding-bottom:12px"></div>
+
+<!-- ══ FILE VIEWER OVERLAY ══════════════════════════════════════════════ -->
+<div id="fv-overlay" style="display:none;position:fixed;inset:0;z-index:9500;background:#0a0a1a;flex-direction:column">
+  <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.4);flex-shrink:0">
+    <button onclick="closeFv()" style="background:none;border:none;color:#e0e0f8;font-size:22px;cursor:pointer;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0"><i class="ti ti-arrow-left"></i></button>
+    <div style="flex:1;min-width:0"><div id="fv-name" style="font-size:13px;font-weight:600;color:#e0e0f8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div></div>
+    <a id="fv-dl-btn" target="_blank" download style="background:rgba(0,149,246,.2);border:1px solid rgba(0,149,246,.4);color:#0095F6;border-radius:8px;padding:6px 12px;font-size:12px;text-decoration:none;flex-shrink:0"><i class="ti ti-download"></i> Скачать</a>
+  </div>
+  <div id="fv-body" style="flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center"></div>
+</div>
+
+<!-- ══ MSG FORMAT POPUP ══════════════════════════════════════════════════ -->
+<div id="msg-fmt-popup" style="display:none;position:fixed;z-index:9600;background:#1a1a2e;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:6px;box-shadow:0 8px 32px rgba(0,0,0,.7)">
+  <div style="display:flex;gap:2px;flex-wrap:wrap;max-width:260px">
+    <button class="mfp-btn" onclick="mfpApply('bold')" title="Жирный"><b>B</b></button>
+    <button class="mfp-btn" onclick="mfpApply('italic')" title="Курсив"><i>I</i></button>
+    <button class="mfp-btn" onclick="mfpApply('strike')" title="Зачеркнутый"><s>S</s></button>
+    <button class="mfp-btn" onclick="mfpApply('under')" title="Подчеркнутый"><u>U</u></button>
+    <button class="mfp-btn" onclick="mfpApply('mono')" title="Моноширный" style="font-family:monospace">M</button>
+    <button class="mfp-btn" onclick="mfpApply('quote')" title="Цитата">❝</button>
+    <button class="mfp-btn" onclick="mfpApply('spoiler')" title="Скрытый">👁</button>
+    <button class="mfp-btn" onclick="mfpApply('link')" title="Ссылка">🔗</button>
+  </div>
+</div>
+
+<!-- ══ MULTI-SELECT BAR ══════════════════════════════════════════════════ -->
+<div id="msg-select-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9400;background:#0d0d28;border-top:1px solid rgba(255,255,255,.1);padding:10px 16px;display:none;align-items:center;gap:10px">
+  <span id="msg-select-count" style="flex:1;font-size:13px;color:#e0e0f8;font-weight:600">0 выбрано</span>
+  <button onclick="gcoSelectAction('forward')" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;padding:6px 10px;border-radius:8px"><i class="ti ti-arrow-forward-up"></i> Переслать</button>
+  <button onclick="gcoSelectAction('delete')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;padding:6px 10px;border-radius:8px"><i class="ti ti-trash"></i> Удалить</button>
+  <button onclick="gcoExitSelect()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:6px"><i class="ti ti-x"></i></button>
+</div>
 
 </body>
 </html>
