@@ -2133,17 +2133,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #int-sidenav{display:none!important}
 
   /* ── compact topbar — scrollable slider ── */
-  #int-topbar{padding:6px 10px;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  #int-topbar::-webkit-scrollbar{display:none}
-  .itb-back{padding:4px 9px;font-size:11px;flex-shrink:0}
+  #int-topbar{padding:6px 10px;gap:6px;flex-wrap:nowrap;overflow:visible}
+  .itb-back{padding:4px 9px;font-size:11px;flex-shrink:0;margin-left:auto}
   .itb-enc,.itb-anon,.itb-mykey{display:none!important}
-  .itb-timer{font-size:11px}
+  .itb-timer{font-size:11px;flex-shrink:0}
   /* Profile avatar — smaller on mobile */
   .itb-profile-btn{width:30px;height:30px;font-size:16px}
-  /* Search bar compact on mobile */
-  .search-btn{min-width:0!important;max-width:36px!important;flex:0 0 36px!important;padding:6px 10px!important;border-radius:50%!important}
-  .search-btn span:not(.search-btn-icon){display:none!important}
-  .search-btn-shortcut{display:none!important}
+  /* Search bar — icon + "Поиск" on mobile */
+  .search-btn{min-width:0!important;flex:1!important;max-width:unset!important;padding:7px 12px!important;border-radius:22px!important}
+  .search-btn .search-btn-text{display:inline!important}
+  .search-btn .search-btn-shortcut{display:none!important}
+  .search-btn span:last-of-type:not(.search-btn-icon){display:none!important}
   /* Wallet CUBE badge compact */
   .itb-wallet-pill{padding:3px 8px!important}
   /* Cube switcher strip — visible on mobile, compact */
@@ -2507,7 +2507,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <!-- 2. Search (flex:1 fills middle) -->
     <button class="search-btn" onclick="openSrchModal()" style="flex:1;margin:0;min-width:0">
       <span class="search-btn-icon"><i class="ti ti-search"></i></span>
-      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Поиск или спроси AI…</span>
+      <span class="search-btn-text" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Поиск или спроси AI…</span>
       <span class="search-btn-shortcut">⌘K</span>
     </button>
 
