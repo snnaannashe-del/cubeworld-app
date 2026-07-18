@@ -409,6 +409,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #grp-chat-overlay.open{transform:translateX(0)}
 /* Lock all inner blocks — no movement on mobile */
 #grp-chat-overlay *{max-width:100%;box-sizing:border-box}
+/* Images/videos inside chat keep their natural max-width constraint */
+#grp-chat-overlay img{max-width:min(280px,100%);width:auto}
+#grp-chat-overlay video{max-width:min(280px,100%);width:100%}
 #grp-chat-overlay .gco-topbar{flex-shrink:0;position:sticky;top:0;z-index:5;width:100%}
 #grp-chat-overlay .gco-pinned{flex-shrink:0;width:100%}
 #grp-chat-overlay .gco-reply-bar{flex-shrink:0;width:100%}
@@ -441,9 +444,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .spoiler-bubble{background:rgba(255,255,255,.15);border-radius:4px;padding:0 4px;cursor:pointer;color:transparent;filter:blur(6px);transition:all .25s;-webkit-user-select:none;user-select:none}
 .spoiler-bubble.open{color:inherit;filter:none}
 .gco-bubble-time{font-size:10px;color:var(--text3);margin-top:4px;text-align:right;user-select:none;-webkit-user-select:none}
-.gco-input-row{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--border);background:rgba(5,5,20,.95);backdrop-filter:var(--blur);flex-shrink:0;align-items:center;width:100%;overflow:visible;padding-bottom:max(8px,env(safe-area-inset-bottom))}
-.gco-input{flex:1;min-width:0;width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:20px;color:#e0e0f8;padding:9px 14px;font-size:13px;font-family:inherit;outline:none;transition:border-color var(--transition),background var(--transition)}
+.gco-input-row{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--border);background:rgba(5,5,20,.95);backdrop-filter:var(--blur);flex-shrink:0;align-items:flex-end;width:100%;overflow:visible;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+.gco-input{flex:1;min-width:0;width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:20px;color:#e0e0f8;padding:9px 14px;font-size:13px;font-family:inherit;outline:none;transition:border-color var(--transition),background var(--transition);resize:none;overflow:hidden;line-height:1.4;max-height:120px;overflow-y:auto;display:block}
 .gco-input:focus{border-color:rgba(0,149,246,.4);background:rgba(255,255,255,.08)}
+.gco-input::placeholder{color:var(--text3)}
 .gco-send{background:linear-gradient(135deg,rgba(0,149,246,.8),rgba(0,100,220,.7));border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all var(--transition);box-shadow:0 2px 10px rgba(0,149,246,.25)}
 .gco-send:hover{transform:scale(1.1);box-shadow:0 4px 16px rgba(0,149,246,.4)}
 /* Group members panel (slides from right within overlay) */
@@ -518,7 +522,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 /* ═══ TELEGRAM-STYLE GROUP ENHANCEMENTS ════════════════════════════════ */
 /* Bubble wrap + tail */
-.gco-bubble-wrap{position:relative;max-width:78%;min-width:0;overflow:hidden}
+.gco-bubble-wrap{position:relative;max-width:78%;min-width:0;overflow:visible}
 .gco-msg.me .gco-bubble-wrap{margin-left:auto}
 .gco-bubble{position:relative;border-radius:14px 14px 14px 2px;padding:9px 13px;background:rgba(255,255,255,.07);word-break:break-word;overflow-wrap:break-word;min-width:60px;overflow:hidden}
 .gco-bubble::before{content:'';position:absolute;bottom:0;left:-7px;width:0;height:0;border-top:8px solid transparent;border-right:7px solid rgba(255,255,255,.07)}
@@ -2917,9 +2921,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <div class="gco-input-row" id="gco-input-row" style="position:relative;gap:6px">
           <button class="gco-icon-btn" onclick="gcoAttachInChat()" title="Прикрепить" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-paperclip" style="font-size:16px"></i></button>
           <div style="position:relative;flex:1">
-            <input class="gco-input" id="gco-input" placeholder="Написать…"
+            <textarea class="gco-input" id="gco-input" placeholder="Написать…" rows="1"
+              autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="true"
               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendGroupMsg();}"
-              oninput="gcoChatTyping();gcoUpdateSendBtn()">
+              oninput="gcoChatTyping();gcoUpdateSendBtn();gcoAutoGrow(this)"></textarea>
             <div class="gco-emoji-picker" id="gco-emoji-picker">
               <button class="gco-epick" onclick="gcoInsertEmoji('😊')">😊</button><button class="gco-epick" onclick="gcoInsertEmoji('😂')">😂</button><button class="gco-epick" onclick="gcoInsertEmoji('❤️')">❤️</button><button class="gco-epick" onclick="gcoInsertEmoji('🔥')">🔥</button><button class="gco-epick" onclick="gcoInsertEmoji('👍')">👍</button><button class="gco-epick" onclick="gcoInsertEmoji('😍')">😍</button><button class="gco-epick" onclick="gcoInsertEmoji('🎉')">🎉</button><button class="gco-epick" onclick="gcoInsertEmoji('😭')">😭</button><button class="gco-epick" onclick="gcoInsertEmoji('😮')">😮</button><button class="gco-epick" onclick="gcoInsertEmoji('🥰')">🥰</button><button class="gco-epick" onclick="gcoInsertEmoji('😎')">😎</button><button class="gco-epick" onclick="gcoInsertEmoji('🤔')">🤔</button><button class="gco-epick" onclick="gcoInsertEmoji('💯')">💯</button><button class="gco-epick" onclick="gcoInsertEmoji('✨')">✨</button><button class="gco-epick" onclick="gcoInsertEmoji('🙏')">🙏</button><button class="gco-epick" onclick="gcoInsertEmoji('💪')">💪</button><button class="gco-epick" onclick="gcoInsertEmoji('🤣')">🤣</button><button class="gco-epick" onclick="gcoInsertEmoji('😅')">😅</button><button class="gco-epick" onclick="gcoInsertEmoji('🤩')">🤩</button><button class="gco-epick" onclick="gcoInsertEmoji('😴')">😴</button><button class="gco-epick" onclick="gcoInsertEmoji('🥳')">🥳</button><button class="gco-epick" onclick="gcoInsertEmoji('😤')">😤</button><button class="gco-epick" onclick="gcoInsertEmoji('🤗')">🤗</button><button class="gco-epick" onclick="gcoInsertEmoji('💀')">💀</button><button class="gco-epick" onclick="gcoInsertEmoji('👀')">👀</button><button class="gco-epick" onclick="gcoInsertEmoji('🫡')">🫡</button><button class="gco-epick" onclick="gcoInsertEmoji('🚀')">🚀</button><button class="gco-epick" onclick="gcoInsertEmoji('💎')">💎</button><button class="gco-epick" onclick="gcoInsertEmoji('🌟')">🌟</button><button class="gco-epick" onclick="gcoInsertEmoji('⚡')">⚡</button><button class="gco-epick" onclick="gcoInsertEmoji('🎯')">🎯</button><button class="gco-epick" onclick="gcoInsertEmoji('💰')">💰</button><button class="gco-epick" onclick="gcoInsertEmoji('🦋')">🦋</button><button class="gco-epick" onclick="gcoInsertEmoji('🐉')">🐉</button><button class="gco-epick" onclick="gcoInsertEmoji('🌙')">🌙</button>
             </div>
@@ -10274,7 +10279,8 @@ function _buildGroupMsg(m, myId){
   // Reply reference
   let replyHtml='';
   if(parsedMsg&&parsedMsg.reply){
-    replyHtml=`<div class="gco-bubble-reply"><div class="rpl-name" style="color:var(--accent)">↩ ${escHtml(parsedMsg.reply.author||'')}</div><div class="rpl-text">${escHtml((parsedMsg.reply.text||'').slice(0,80))}</div></div>`;
+    const rplText=_parseMsgPreview(parsedMsg.reply.text||'').slice(0,80);
+    replyHtml=`<div class="gco-bubble-reply"><div class="rpl-name" style="color:var(--accent)">↩ ${escHtml(parsedMsg.reply.author||'')}</div><div class="rpl-text">${escHtml(rplText)}</div></div>`;
   }
   if(parsedMsg&&parsedMsg.url){
     const safeUrl=escHtml(parsedMsg.url);
@@ -10332,7 +10338,9 @@ function _buildGroupMsg(m, myId){
     bubbleContent=`<div class="gco-bubble-text">${_renderFmt(m.content||'')}</div>`;
   }
   const tick=isMe?`<span class="gco-tick read" style="margin-left:4px;font-size:11px;color:rgba(255,255,255,.45)">✓✓</span>`:'';
-  const safeText=(m.content||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ');
+  // Use decoded text for context menu display; keep raw content for API operations
+  const decodedText=_parseMsgPreview(m.content||'');
+  const safeText=decodedText.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ');
   const safeName=(m.display_name||'').replace(/'/g,"\\'");
   // Avatar: show for others, hide consecutive from same user
   const avHtml=isMe?'':`<div class="gco-av" style="${avStyle};font-size:13px;font-weight:700">${letter}</div>`;
@@ -10442,7 +10450,7 @@ async function sendGroupMsg(){
     return;
   }
 
-  inp.value='';
+  inp.value=''; inp.style.height='auto';
   gcoHideCtxMenu();
   const myName=localStorage.getItem('cw_display_name')||'Я';
   const container=document.getElementById('gco-msgs');
@@ -10543,6 +10551,12 @@ async function _loadGrpMembers(){
 
 // gcoSwitchTab kept for backward compat (no longer used for UI, but may be called elsewhere)
 function gcoSwitchTab(tab, el){}
+
+// ── Auto-grow textarea ──────────────────────────────────────────────────────
+function gcoAutoGrow(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight, 120)+'px';
+}
 
 // ── Send button ↔ mic toggle ────────────────────────────────────────────────
 function gcoUpdateSendBtn(){
@@ -11073,21 +11087,36 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   // Bubble selection
   document.addEventListener('selectionchange', _onBubbleSelChange);
-  // Close bubble popup on outside tap
+  // Close bubble popup + emoji picker on outside tap
   document.addEventListener('mousedown',e=>{
     const popup=document.getElementById('bub-sel-popup');
-    if(popup&&popup.style.display!=='none'&&!popup.contains(e.target)){
-      _closeBubblePopup();
-    }
+    if(popup&&popup.style.display!=='none'&&!popup.contains(e.target)) _closeBubblePopup();
+    const ep=document.getElementById('gco-emoji-picker');
+    if(ep&&ep.classList.contains('open')&&!ep.contains(e.target)&&!e.target.closest('#gco-input-row')) ep.classList.remove('open');
   });
   document.addEventListener('touchstart',e=>{
     const popup=document.getElementById('bub-sel-popup');
-    if(popup&&popup.style.display!=='none'&&!popup.contains(e.target)){
-      const t=e.touches[0];
-      const el=document.elementFromPoint(t.clientX,t.clientY);
+    if(popup&&popup.style.display!=='none'){
+      const t=e.touches[0]; const el=document.elementFromPoint(t.clientX,t.clientY);
       if(!el||!el.closest('#bub-sel-popup')) _closeBubblePopup();
     }
+    const ep=document.getElementById('gco-emoji-picker');
+    if(ep&&ep.classList.contains('open')){
+      const t=e.touches[0]; const el=document.elementFromPoint(t.clientX,t.clientY);
+      if(!el||(!el.closest('#gco-emoji-picker')&&!el.closest('#gco-input-row'))) ep.classList.remove('open');
+    }
   },{passive:true});
+
+  // Swipe-right on grp-info-panel to close
+  const infoPanel=document.getElementById('grp-info-panel');
+  if(infoPanel){
+    let _ipTouchX=0;
+    infoPanel.addEventListener('touchstart',e=>{ _ipTouchX=e.touches[0].clientX; },{passive:true});
+    infoPanel.addEventListener('touchend',e=>{
+      const dx=e.changedTouches[0].clientX-_ipTouchX;
+      if(dx>60) closeGrpInfo();
+    },{passive:true});
+  }
 });
 
 /* Legacy aliases so old onclick handlers still work */
