@@ -198,7 +198,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   background:rgba(255,255,255,.05);border:1px solid var(--border);
   color:var(--text2);padding:5px 12px;border-radius:8px;font-size:12px;
   cursor:pointer;transition:all var(--transition);flex-shrink:0;
-  display:flex;align-items:center;gap:5px
+  display:flex;align-items:center;gap:5px;margin-left:auto
 }
 .itb-back:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:var(--text)}
 /* E2E badge */
@@ -4006,6 +4006,7 @@ async function syncFromBackend(){
     // Restore account_type from DB (survives browser clear)
     if(me.account_type){
       app.myProfile.accountType = me.account_type;
+      app.myProfile.privacy = me.account_type; // sync so openPortfolio reads correctly
       app.myProfile.isHidden = me.account_type === 'hidden';
       applyPrivacyMode();
     }
@@ -8804,7 +8805,7 @@ function _renderPortfolioGrid(){
       <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:30px">${isShort?'🎬':'📝'}</div>
       <div style="font-size:16px;font-weight:700;color:#e0e0f8">${isShort?'Нет коротких видео':'Нет постов'}</div>
       <div style="font-size:13px;color:rgba(255,255,255,.4);text-align:center;max-width:240px;line-height:1.5">${isShort?'Загрузи первое Short-видео и поделись с кубом':'Создай первый пост — текст, фото или трансляцию'}</div>
-      <button onclick="closePortfolio();document.querySelector('.vf-fab')?.click()" style="margin-top:4px;padding:10px 24px;background:#0095F6;border:none;border-radius:24px;color:#fff;font-size:13px;font-weight:700;cursor:pointer">+ Создать</button>
+      <button onclick="closePortfolio();setTimeout(openCreatePost,300)" style="margin-top:4px;padding:10px 24px;background:#0095F6;border:none;border-radius:24px;color:#fff;font-size:13px;font-weight:700;cursor:pointer">+ Создать</button>
     </div>`;
     return;
   }
