@@ -8356,8 +8356,8 @@ async function saveMyProfile(){
   const newUsername=(unEl?unEl.value.trim():'');
   if(newUsername && newUsername!==(app._myUsername||'')){
     const uRes=await apiCall('/me/username',{method:'POST',body:JSON.stringify({username:newUsername})});
-    if(uRes?.ok){ app._myUsername=newUsername; }
-    else { showToast('❌ @'+newUsername+' уже занят или недопустим'); }
+    if(uRes && !uRes.detail){ app._myUsername=newUsername; }
+    else if(uRes?.detail){ showToast('❌ @'+newUsername+' уже занят или недопустим'); }
   }
   const res=await apiCall('/me',{method:'PATCH',body:JSON.stringify({
     display_name: newName||undefined,
@@ -8418,18 +8418,10 @@ function syncAccTypeUI(type){
   }
 }
 
-// ── Business bio: hashtag preview ────────────────
+// ── Business bio: char counter ────────────────────
 function peBizBioInput(ta){
   const c=document.getElementById('mpe-biz-bio-count');
   if(c) c.textContent=ta.value.length;
-  const preview=document.getElementById('pe-biz-bio-preview');
-  if(!preview) return;
-  const val=ta.value;
-  if(!val.trim()){ preview.style.display='none'; return; }
-  preview.style.display='block';
-  // Highlight hashtags
-  const html=escHtml(val).replace(/(#[\wа-яёА-ЯЁ]+)/gi,'<span class="ht">$1</span>');
-  preview.innerHTML=html;
 }
 
 // ── Business links ────────────────────────────────
@@ -8466,47 +8458,104 @@ function peRemoveLink(i){
 // ════════════════════════════════════════════════
 function openPortfolio(){
   const p=app.myProfile;
+  const privacy=p.privacy||'public';
+  const isHidden=privacy==='hidden';
+  const isBiz=privacy==='business';
   const name=app.displayName||p.displayName||'Пользователь';
   const un=app._myUsername?'@'+app._myUsername:'';
-  // Header
+
+  // ── Header ──────────────────────────────────────
   const hdr=document.getElementById('po-header-name');
   if(hdr) hdr.textContent=un||name;
-  // Avatar
+
+  // ── Avatar ──────────────────────────────────────
   const av=document.getElementById('po-avatar');
   if(av){
-    if(p.photoUrl) av.innerHTML=`<img src="${p.photoUrl}" alt="avatar">`;
-    else av.innerHTML=`<span id="po-av-emoji">${p.avatar||'👤'}</span>`;
+    if(p.photoUrl){
+      av.innerHTML=`<img src="${p.photoUrl}" alt="avatar">`;
+    } else {
+      const emojiToShow=isHidden?'👻':(p.avatar||'👤');
+      av.innerHTML=`<span>${emojiToShow}</span>`;
+    }
   }
-  // Name + username
-  const nm=document.getElementById('po-name'); if(nm) nm.textContent=name;
-  const unEl=document.getElementById('po-uname'); if(unEl) unEl.textContent=un;
-  // Type badge
+
+  // ── Name + @username ────────────────────────────
+  const nm=document.getElementById('po-name');
+  // Hidden: conceal real name
+  if(nm) nm.textContent=isHidden?'——':name;
+  const unEl=document.getElementById('po-uname');
+  if(unEl) unEl.textContent=un;
+
+  // ── Account type badge ──────────────────────────
   const badge=document.getElementById('po-type-badge');
   if(badge){
     const types={public:{cls:'pub',label:'🌐 Публичный'},hidden:{cls:'hid',label:'👻 Скрытый'},business:{cls:'biz',label:'💼 Бизнес'}};
-    const t=types[p.privacy||'public'];
+    const t=types[privacy];
     badge.className='po-type-badge '+t.cls;
     badge.textContent=t.label;
   }
-  // Bio with clickable links + hashtag highlight for business
+
+  // ── Bio + extra (address, links) ─────────────────
   const bioEl=document.getElementById('po-bio');
-  if(bioEl){
-    const isBiz=p.privacy==='business';
-    const bio=isBiz?(p.bizBio||p.bio||''):(p.bio||'');
-    let html=escHtml(bio).replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
-    if(isBiz) html=html.replace(/(#[\wа-яёА-ЯЁ]+)/gi,'<span style="color:var(--accent);font-weight:600">$1</span>');
-    bioEl.innerHTML=html||'<span style="color:var(--text3);font-size:12px">Нет описания</span>';
-    // Business extra: address + links
-    let extra='';
-    if(isBiz){
-      if(p.address) extra+=`<div style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--text2);margin-top:8px"><i class="ti ti-map-pin" style="color:var(--accent)"></i>${escHtml(p.address)}</div>`;
-      const links=(p.links||[]).filter(l=>l.trim());
-      if(links.length) extra+=`<div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:10px">${links.map(l=>`<a href="${escHtml(l)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--accent);text-decoration:none"><i class="ti ti-link" style="font-size:11px"></i>${escHtml(l.replace(/^https?:\/\/(www\.)?/,''))}</a>`).join('')}</div>`;
+  const ex=document.getElementById('po-extra');
+  let hasInfo=false;
+
+  if(isHidden){
+    // Hidden: show nothing in info block
+    if(bioEl) bioEl.innerHTML='';
+    if(ex) ex.innerHTML='';
+  } else if(isBiz){
+    // Business: bizBio with hashtag + link highlight, then address + links
+    const bio=p.bizBio||p.bio||'';
+    if(bioEl){
+      if(bio.trim()){
+        let html=escHtml(bio)
+          .replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>')
+          .replace(/(#[\wа-яёА-ЯЁ]+)/gi,'<span style="color:var(--accent);font-weight:600">$1</span>');
+        bioEl.innerHTML=html;
+        hasInfo=true;
+      } else {
+        bioEl.innerHTML='';
+      }
     }
-    const ex=document.getElementById('po-extra');
+    let extra='';
+    if(p.address){
+      extra+=`<div style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--text2);margin-top:8px"><i class="ti ti-map-pin" style="color:var(--accent);font-size:13px"></i>${escHtml(p.address)}</div>`;
+      hasInfo=true;
+    }
+    const links=(p.links||[]).filter(l=>l.trim());
+    if(links.length){
+      extra+=`<div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:10px">${
+        links.map(l=>`<a href="${escHtml(l)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--accent);text-decoration:none"><i class="ti ti-link" style="font-size:11px"></i>${escHtml(l.replace(/^https?:\/\/(www\.)?/,''))}</a>`).join('')
+      }</div>`;
+      hasInfo=true;
+    }
     if(ex) ex.innerHTML=extra;
+  } else {
+    // Public: bio only, clickable links
+    const bio=p.bio||'';
+    if(bioEl){
+      if(bio.trim()){
+        const html=escHtml(bio).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+        bioEl.innerHTML=html;
+        hasInfo=true;
+      } else {
+        bioEl.innerHTML='';
+      }
+    }
+    if(ex) ex.innerHTML='';
   }
-  // Stats (placeholder — real follows/likes would come from backend)
+
+  // ── Expand button: show only if there's something to show ──
+  const infoWrap=document.getElementById('po-info-block');
+  const expBtn=document.getElementById('po-expand-btn');
+  if(infoWrap){ infoWrap.classList.remove('open'); }
+  if(expBtn){
+    expBtn.style.display=(!isHidden&&hasInfo)?'':'none';
+    expBtn.textContent='Полный ↓';
+  }
+
+  // ── Stats ───────────────────────────────────────
   apiCall('/activity/stats').then(stats=>{
     if(!stats) return;
     const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
@@ -8514,14 +8563,11 @@ function openPortfolio(){
     set('po-followers', stats.followers||0);
     set('po-likes', stats.reactions_received||0);
   });
-  // Posts grid
+
+  // ── Grid ────────────────────────────────────────
   _renderPortfolioGrid();
-  // Reset info block to collapsed
-  const infoWrap=document.getElementById('po-info-block');
-  const expBtn=document.getElementById('po-expand-btn');
-  if(infoWrap){ infoWrap.classList.remove('open'); }
-  if(expBtn){ expBtn.textContent='Полный ↓'; }
-  // Slide up
+
+  // ── Slide up ────────────────────────────────────
   document.getElementById('portfolio-overlay').classList.add('open');
 }
 function closePortfolio(){
