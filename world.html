@@ -1329,7 +1329,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .live-indicator::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);display:block;animation:pulse 1.5s infinite}
 
 /* ══ CUBE SWITCHER ══════════════════════ */
-#cube-switcher{display:flex;align-items:center;gap:6px;padding:6px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.2);overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch}
+#cube-switcher{display:flex;align-items:center;gap:6px;padding:6px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.2);flex-shrink:0;overflow:hidden}
 #cube-switcher::-webkit-scrollbar{height:2px}
 .cube-tab{display:flex;align-items:center;gap:6px;padding:5px 11px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.03);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;font-size:12px;color:var(--text2)}
 .cube-tab:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.15);color:var(--text)}
@@ -2540,10 +2540,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   </div>
   <!-- Cube switcher strip -->
   <div id="cube-switcher">
-    <span style="font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;flex-shrink:0">Кубы:</span>
-    <div id="cube-tabs-wrap" style="display:flex;gap:6px;flex:1;overflow-x:auto;scrollbar-width:none"></div>
-    <button id="cs-key2-btn" onclick="showCubeKeyPanel()" style="display:none;flex-shrink:0;font-size:12px;font-weight:700;padding:4px 13px;border-radius:16px;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.4);color:var(--gold);cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px">🔑 Key 2</button>
-    <button class="cs-add" onclick="exitInterior()" title="Открыть другой куб">+</button>
+    <div id="cube-tabs-wrap" style="display:flex;gap:6px;flex:1;overflow-x:auto;scrollbar-width:none;min-width:0"></div>
+    <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;margin-left:auto">
+      <button id="cs-key2-btn" onclick="showCubeKeyPanel()" style="flex-shrink:0;font-size:12px;font-weight:700;padding:4px 13px;border-radius:16px;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.4);color:var(--gold);cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px">🔑 Key 2</button>
+      <button class="cs-add" onclick="exitInterior()" title="Открыть другой куб">+</button>
+    </div>
   </div>
   <!-- Bird button for cube-switcher (mobile only, shows when cs is scrolled away) -->
   <button id="cs-bird-btn" onclick="showCubeSwitcher()">
@@ -4840,9 +4841,9 @@ function enterInterior(cubeId){
   const _mkEl=document.getElementById('itb-mykey'); if(_mkEl)_mkEl.textContent=app.userKey?app.userKey.slice(0,12)+'…':'';
   const _tmrEl=document.getElementById('itb-timer'); if(_tmrEl) _tmrEl.style.color='var(--cyan)';
   // Key 2 button in cube-switcher row
-  const keyBtn=document.getElementById('itb-cube-key-btn'); if(keyBtn) keyBtn.style.display=(cube&&cube.isOwn)?'':'none';
+  const keyBtn=document.getElementById('itb-cube-key-btn'); if(keyBtn) keyBtn.style.display='';
   const csKey2=document.getElementById('cs-key2-btn');
-  if(csKey2) csKey2.style.display = (cube&&cube.isOwn)?'flex':'none';
+  if(csKey2) csKey2.style.display='flex';
   showView('v-int');
   initInteriorData(cubeId);
   // Restore last visited section instead of always going to feed
@@ -6647,8 +6648,11 @@ function switchCube(cubeId){
   const _nm=document.getElementById('itb-name'); if(_nm) _nm.textContent=cube.name;
   const tel=document.getElementById('itb-timer');
   if(tel){tel.textContent=fmtTime(cube.life); tel.className='itb-timer'+(cube.life<=300?' urgent':'');}
+  // Key 2 always visible
+  const csKey2=document.getElementById('cs-key2-btn'); if(csKey2) csKey2.style.display='flex';
   initInteriorData(cubeId);
-  switchSection('feed',document.querySelector('.sn-item.active'));
+  // Stay on current section (don't force-reset to feed)
+  switchSection(_curSection||'feed', document.querySelector('.sn-item.active'));
   renderCubeSwitcher();
 }
 // Update switcher timers every second
