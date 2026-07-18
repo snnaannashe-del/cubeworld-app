@@ -1799,7 +1799,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .po-type-badge.biz{background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
 
 /* Bio block */
-#po-info-block{width:100%;text-align:center;padding:0 24px 14px;box-sizing:border-box}
+#po-info-block{width:100%;text-align:center;padding:0 24px 14px;box-sizing:border-box;transition:max-height .35s ease,opacity .25s ease;overflow:hidden}
 .po-bio{font-size:13.5px;color:rgba(255,255,255,.65);line-height:1.6;white-space:pre-wrap;word-break:break-word;text-align:center;margin-bottom:6px}
 .po-bio a{color:#0095F6;text-decoration:none}
 
@@ -3722,9 +3722,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div class="po-avatar" id="po-avatar"><span>👤</span></div>
       <div class="po-name" id="po-name">—</div>
       <div class="po-uname" id="po-uname"></div>
-      <div class="po-type-badge pub" id="po-type-badge">🌐 Публичный</div>
-      <!-- Bio + address + links — always visible -->
-      <div id="po-info-block">
+      <div class="po-type-badge pub" id="po-type-badge" onclick="poToggleInfo()" style="cursor:pointer">🌐 Публичный</div>
+      <!-- Bio + address + links — collapsible -->
+      <div id="po-info-block" style="display:none;overflow:hidden;transition:max-height .3s ease">
         <div class="po-bio" id="po-bio"></div>
         <div id="po-extra"></div>
       </div>
@@ -8767,6 +8767,22 @@ function openPortfolio(){
     if(ex) ex.innerHTML='';
   }
 
+  // ── Info block toggle state ──────────────────────
+  const infoBlock=document.getElementById('po-info-block');
+  if(infoBlock){
+    infoBlock.style.display=hasInfo?'block':'none';
+    infoBlock.style.maxHeight='0';
+    infoBlock.style.opacity='0';
+    infoBlock.dataset.open='0';
+  }
+  // update badge to show chevron hint if has content
+  if(badge){
+    badge.style.cursor=hasInfo?'pointer':'default';
+    // strip old chevron if present
+    badge.textContent=badge.textContent.replace(/\s*[▾▴]$/,'');
+    if(hasInfo) badge.textContent+=' ▾';
+  }
+
   // ── Stats ───────────────────────────────────────
   apiCall('/activity/stats').then(stats=>{
     if(!stats) return;
@@ -8784,6 +8800,23 @@ function openPortfolio(){
 }
 function closePortfolio(){
   document.getElementById('portfolio-overlay').classList.remove('open');
+}
+function poToggleInfo(){
+  const block=document.getElementById('po-info-block');
+  const badge=document.getElementById('po-type-badge');
+  if(!block||block.style.display==='none') return;
+  const isOpen=block.dataset.open==='1';
+  if(isOpen){
+    block.style.maxHeight='0';
+    block.style.opacity='0';
+    block.dataset.open='0';
+    if(badge) badge.textContent=badge.textContent.replace(/\s*[▾▴]$/,'')+' ▾';
+  } else {
+    block.style.maxHeight=block.scrollHeight+'px';
+    block.style.opacity='1';
+    block.dataset.open='1';
+    if(badge) badge.textContent=badge.textContent.replace(/\s*[▾▴]$/,'')+' ▴';
+  }
 }
 let _poTab='short';
 function poSetTab(tab, btn){
