@@ -2150,22 +2150,35 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .search-btn span:last-of-type:not(.search-btn-icon){display:none!important}
   /* Wallet CUBE badge compact */
   .itb-wallet-pill{padding:3px 8px!important}
-  /* Cube switcher strip — visible on mobile, compact */
+  /* Cube switcher strip — mobile */
   #cube-switcher{
     display:flex!important;
-    padding:5px 10px;
-    gap:5px;
+    padding:5px 8px;
+    gap:6px;
     border-bottom:1px solid var(--border);
     background:rgba(0,0,0,.25);
-    overflow-x:auto;
+    overflow:hidden;
     flex-shrink:0;
-    -webkit-overflow-scrolling:touch;
-    scroll-behavior:smooth;
+    align-items:center;
   }
-  #cube-switcher::-webkit-scrollbar{display:none}
-  #cube-switcher>span{font-size:9px!important;white-space:nowrap}
-  .cube-tab{font-size:10px!important;padding:3px 9px!important;gap:3px!important;white-space:nowrap}
+  #cube-tabs-wrap{
+    flex:1!important;
+    overflow-x:auto!important;
+    scrollbar-width:none!important;
+    -webkit-overflow-scrolling:touch;
+    gap:5px!important;
+    min-width:0;
+  }
+  #cube-tabs-wrap::-webkit-scrollbar{display:none}
+  #cube-switcher>span{font-size:9px!important;white-space:nowrap;flex-shrink:0}
+  /* On mobile: compact tabs, no stretch */
+  .cube-tab{font-size:10px!important;padding:4px 10px!important;gap:4px!important;
+    flex:0 0 auto!important;min-width:unset!important;max-width:unset!important;
+    white-space:nowrap;justify-content:flex-start!important}
   .ct-timer{font-size:9px!important}
+  /* Key 2 + add pinned right */
+  #cs-key2-btn{font-size:10px!important;padding:3px 9px!important;flex-shrink:0}
+  .cs-add{flex-shrink:0!important}
 
   /* ── main layout adjusts ── */
   #int-layout{flex-direction:column;overflow:hidden;flex:1}
@@ -2546,6 +2559,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div id="cube-tabs-wrap" style="display:flex;gap:6px;flex:1;overflow-x:auto;scrollbar-width:none;min-width:0;-webkit-overflow-scrolling:touch"></div>
     <button id="cs-key2-btn" onclick="showCubeKeyPanel()" style="flex-shrink:0;font-size:12px;font-weight:700;padding:4px 13px;border-radius:16px;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.4);color:var(--gold);cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px">🔑 Key 2</button>
     <button class="cs-add" onclick="exitInterior()" title="Открыть другой куб">+</button>
+  </div>
+  <!-- Cube tab context menu -->
+  <div id="cube-ctx-menu" style="display:none;position:fixed;z-index:9999;background:#1a1a2e;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:6px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.6);backdrop-filter:blur(12px)">
+    <div id="cube-ctx-name" style="font-size:11px;color:rgba(255,255,255,.4);padding:4px 10px 8px;border-bottom:1px solid rgba(255,255,255,.08);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+    <button onclick="cubeCtxSwitch()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;background:none;border:none;color:#e0e0f8;font-size:13px;cursor:pointer;border-radius:8px;text-align:left" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='none'">
+      <i class="ti ti-arrows-exchange" style="font-size:15px;color:#0095F6"></i> Перейти в куб
+    </button>
+    <button onclick="cubeCtxExit()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;background:none;border:none;color:#e0e0f8;font-size:13px;cursor:pointer;border-radius:8px;text-align:left" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='none'">
+      <i class="ti ti-door-exit" style="font-size:15px;color:#f87171"></i> Выйти из куба
+    </button>
+    <button onclick="cubeCtxRemove()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;border-radius:8px;text-align:left" onmouseover="this.style.background='rgba(248,113,113,.1)'" onmouseout="this.style.background='none'">
+      <i class="ti ti-x" style="font-size:15px"></i> Закрыть комнату
+    </button>
   </div>
   <!-- Bird button for cube-switcher (mobile only, shows when cs is scrolled away) -->
   <button id="cs-bird-btn" onclick="showCubeSwitcher()">
@@ -6659,11 +6685,62 @@ function _saveVisitedCubes(){
 function renderCubeSwitcher(){
   const wrap = document.getElementById('cube-tabs-wrap'); if(!wrap) return;
   wrap.innerHTML = app.visitedCubes.map(c=>`
-    <div class="cube-tab ${c.id===app.currentCubeId?'active':''}" onclick="switchCube('${c.id}')">
-      <div class="ct-dot" style="background:${c.colorCss}"></div>
-      ${c.icon} ${c.name}
+    <div class="cube-tab ${c.id===app.currentCubeId?'active':''}"
+      onclick="switchCube('${c.id}')"
+      oncontextmenu="openCubeCtx(event,'${c.id}');return false;"
+      data-cube-id="${c.id}">
+      <div class="ct-dot" style="background:${c.colorCss||'#4ade80'}"></div>
+      ${c.icon||'🔷'} ${c.name}
       <span class="ct-timer">${fmtTime(c.life)}</span>
     </div>`).join('');
+  // Long-press for mobile
+  wrap.querySelectorAll('.cube-tab').forEach(tab=>{
+    let _lpt=null;
+    tab.addEventListener('touchstart',e=>{
+      _lpt=setTimeout(()=>{ openCubeCtx(e.touches[0],tab.dataset.cubeId); },500);
+    },{passive:true});
+    tab.addEventListener('touchend',()=>{ clearTimeout(_lpt); },{passive:true});
+    tab.addEventListener('touchmove',()=>{ clearTimeout(_lpt); },{passive:true});
+  });
+}
+
+// ── Cube context menu ──────────────────────────────────────────────
+let _cubeCtxId = null;
+function openCubeCtx(e, cubeId){
+  _cubeCtxId = cubeId;
+  const cube = app.visitedCubes.find(c=>c.id===cubeId);
+  const menu = document.getElementById('cube-ctx-menu');
+  const nameEl = document.getElementById('cube-ctx-name');
+  if(nameEl) nameEl.textContent = (cube?.icon||'') + ' ' + (cube?.name||cubeId);
+  // Show switch button only if not current cube
+  const swBtn = menu.querySelector('button:first-of-type');
+  if(swBtn) swBtn.style.display = cubeId===app.currentCubeId ? 'none' : 'flex';
+  // Position
+  const x = e.clientX||e.pageX||window.innerWidth/2;
+  const y = e.clientY||e.pageY||100;
+  menu.style.display='block';
+  const mw=menu.offsetWidth||200, mh=menu.offsetHeight||140;
+  menu.style.left = Math.min(x, window.innerWidth-mw-8)+'px';
+  menu.style.top  = Math.min(y+6, window.innerHeight-mh-8)+'px';
+  setTimeout(()=>document.addEventListener('click',closeCubeCtx,{once:true}),10);
+}
+function closeCubeCtx(){ document.getElementById('cube-ctx-menu').style.display='none'; _cubeCtxId=null; }
+function cubeCtxSwitch(){ closeCubeCtx(); if(_cubeCtxId) switchCube(_cubeCtxId); }
+function cubeCtxExit(){
+  closeCubeCtx();
+  // If exiting current cube → go to world
+  if(_cubeCtxId===app.currentCubeId){ exitInterior(); return; }
+  // Remove from visited list
+  cubeCtxRemove();
+}
+function cubeCtxRemove(){
+  closeCubeCtx();
+  if(!_cubeCtxId) return;
+  const wasCurrent = _cubeCtxId===app.currentCubeId;
+  app.visitedCubes = app.visitedCubes.filter(c=>c.id!==_cubeCtxId);
+  _saveVisitedCubes();
+  renderCubeSwitcher();
+  if(wasCurrent) exitInterior();
 }
 function switchCube(cubeId){
   if(cubeId===app.currentCubeId) return;
