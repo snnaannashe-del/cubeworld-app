@@ -431,6 +431,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-bubble-name{font-size:10px;color:var(--accent);font-weight:700;margin-bottom:3px}
 .gco-bubble-text{font-size:13px;color:#e0e0f8;line-height:1.5;white-space:pre-wrap;word-break:break-word;user-select:none;-webkit-user-select:none}
 .gco-bubble-text.selectable{user-select:text;-webkit-user-select:text}
+.gco-bubble-text b{font-weight:700;color:#fff}
+.gco-bubble-text s{text-decoration:line-through;color:var(--text2)}
+.gco-bubble-text u{text-decoration:underline}
+.gco-bubble-text i{font-style:italic;color:#c9d6ff}
+.gco-bubble-text code{background:rgba(255,255,255,.1);border-radius:4px;padding:1px 5px;font-family:'Courier New',monospace;font-size:12px;color:#a5f3fc}
+.gco-bubble-text blockquote{border-left:3px solid var(--accent);padding:2px 8px;margin:2px 0 2px 0;color:var(--text2);font-style:italic;display:block}
+.gco-bubble-text a{color:var(--accent);text-decoration:underline;word-break:break-all}
+.spoiler-bubble{background:rgba(255,255,255,.15);border-radius:4px;padding:0 4px;cursor:pointer;color:transparent;filter:blur(6px);transition:all .25s;-webkit-user-select:none;user-select:none}
+.spoiler-bubble.open{color:inherit;filter:none}
 .gco-bubble-time{font-size:10px;color:var(--text3);margin-top:4px;text-align:right;user-select:none;-webkit-user-select:none}
 .gco-input-row{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--border);background:rgba(5,5,20,.95);backdrop-filter:var(--blur);flex-shrink:0;align-items:center;width:100%;overflow:visible;padding-bottom:max(8px,env(safe-area-inset-bottom))}
 .gco-input{flex:1;min-width:0;width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:20px;color:#e0e0f8;padding:9px 14px;font-size:13px;font-family:inherit;outline:none;transition:border-color var(--transition),background var(--transition)}
@@ -10270,7 +10279,7 @@ function _buildGroupMsg(m, myId){
     const safeUrl=escHtml(parsedMsg.url);
     const rawUrl=parsedMsg.url;
     const fname=rawUrl.split('/').pop()||'Файл';
-    const txt=parsedMsg.text?`<div class="gco-bubble-text" style="margin-top:6px">${_linkify(parsedMsg.text)}</div>`:'';
+    const txt=parsedMsg.text?`<div class="gco-bubble-text" style="margin-top:6px">${_renderFmt(parsedMsg.text)}</div>`:'';
     if(parsedMsg.type==='image'){
       bubbleContent=`<div style="max-width:280px;border-radius:12px;overflow:hidden;cursor:zoom-in;margin:-4px -4px 0" onclick="openLightbox('${safeUrl}','image')">
         <img src="${safeUrl}" style="max-width:280px;width:100%;height:auto;display:block;border-radius:12px"
@@ -10306,7 +10315,7 @@ function _buildGroupMsg(m, myId){
       </div>${txt}`;
     }
   } else {
-    bubbleContent=`<div class="gco-bubble-text">${_linkify(m.content||'')}</div>`;
+    bubbleContent=`<div class="gco-bubble-text">${_renderFmt(m.content||'')}</div>`;
   }
   const tick=isMe?`<span class="gco-tick read" style="margin-left:4px;font-size:11px;color:rgba(255,255,255,.45)">✓✓</span>`:'';
   const safeText=(m.content||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ');
@@ -10419,7 +10428,7 @@ async function sendGroupMsg(){
   const t=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
   const optDiv=document.createElement('div'); optDiv.className='gco-msg me';
   optDiv.innerHTML=`<div class="gco-bubble-wrap" style="margin-left:auto">
-    <div class="gco-bubble"><div class="gco-bubble-text">${escHtml(txt)}</div>
+    <div class="gco-bubble"><div class="gco-bubble-text">${_renderFmt(txt)}</div>
     <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;text-align:right">${t}<span class="gco-tick" style="margin-left:4px">✓</span></div>
     </div></div>`;
   if(typingRow) container.insertBefore(optDiv, typingRow);
@@ -10587,6 +10596,37 @@ function gcoUnreact(msgId, emoji){
   const wrap=document.getElementById('gco-reacts-'+msgId);
   if(wrap) wrap.innerHTML=Object.entries(_grpMsgReactions[msgId]).filter(([,v])=>v>0)
     .map(([em,cnt])=>`<span class="gco-bubble-rbadge mine" onclick="gcoUnreact(${msgId},'${em}')">${em} ${cnt}</span>`).join('');
+}
+
+// ══ FORMAT RENDERER ──────────────────────────────────────────────────────
+// Converts markdown-like syntax to safe HTML for bubble display
+function _renderFmt(text){
+  if(!text) return '';
+  // 1. Escape HTML
+  let s=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // 2. Block: > quote (at line start)
+  s=s.replace(/(^|\n)&gt;\s?([^\n]*)/g,'$1<blockquote>$2</blockquote>');
+  // 3. Inline code: `code`
+  s=s.replace(/`([^`\n]+)`/g,'<code>$1</code>');
+  // 4. Bold: **text**
+  s=s.replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>');
+  // 5. Italic: *text* (single star, not double)
+  s=s.replace(/\*([^*\n]+)\*/g,'<i>$1</i>');
+  // 6. Strikethrough: ~~text~~
+  s=s.replace(/~~([^~\n]+)~~/g,'<s>$1</s>');
+  // 7. Underline: __text__
+  s=s.replace(/__([^_\n]+)__/g,'<u>$1</u>');
+  // 8. Spoiler: ||text||
+  s=s.replace(/\|\|([^|\n]+)\|\|/g,'<span class="spoiler-bubble" onclick="this.classList.toggle(\'open\')" title="Спойлер — нажми чтобы показать">$1</span>');
+  // 9. Link: [text](url)
+  s=s.replace(/\[([^\]]+)\]\((https?:\/\/[^\)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  // 10. Auto-link bare URLs (after other replacements to avoid double-linking)
+  s=s.replace(/((?:^|[\s(])(https?:\/\/[^\s<"]+))/g,(m,p1,url,offset,str)=>{
+    // don't re-link already linked
+    if(str.lastIndexOf('href="',offset)>str.lastIndexOf('"',offset-1)) return m;
+    return m.replace(url,`<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
+  });
+  return s;
 }
 
 // ══ CONTEXT MENU ─────────────────────────────────────────────────────────
@@ -11265,6 +11305,20 @@ function setupCloudinary(){
   showToast(cloud.trim()&&preset.trim() ? '✅ Cloudinary подключён! Файлы теперь сохраняются навсегда.' : '⚠️ Cloudinary отключён, временное хранилище.');
 }
 
+// ── Catbox.moe hosting (free, anonymous, permanent — images + video + files up to 200MB) ──
+async function _uploadToCatbox(file){
+  const fd=new FormData();
+  fd.append('reqtype','fileupload');
+  fd.append('userhash',''); // anonymous
+  fd.append('fileToUpload', file, file.name||'upload');
+  try{
+    const res=await fetch('https://catbox.moe/user/api.php',{method:'POST',body:fd});
+    if(!res.ok) return null;
+    const url=(await res.text()).trim();
+    return url.startsWith('https://')?url:null;
+  }catch(e){ return null; }
+}
+
 // ── Telegraph image hosting (free, anonymous, no setup needed) ────────
 async function _uploadToTelegraph(file){
   if(!file.type.startsWith('image/')) return null; // only images
@@ -11326,7 +11380,20 @@ async function _uploadFile(file, progressBarId){
     }catch(e){}
   }
 
-  // 3. Fallback: backend upload (ephemeral, files may disappear on restart)
+  // 3. Catbox.moe for videos + all files (free, anonymous, permanent, up to 200MB)
+  if(file.size < 200*1024*1024){
+    setBar(20);
+    showToast('📤 Загружаем на постоянный сервер…');
+    try{
+      const url=await _uploadToCatbox(file);
+      if(url){
+        if(bar){ setBar(100); setTimeout(()=>{ bar.parentElement.style.display='none'; setBar(0); },600); }
+        return url;
+      }
+    }catch(e){}
+  }
+
+  // 4. Fallback: backend upload (ephemeral, files may disappear on restart)
   let pct=10; setBar(10);
   const ticker=setInterval(()=>{ pct=Math.min(pct+10,85); setBar(pct); },200);
   const fd=new FormData();
@@ -11458,7 +11525,7 @@ function _renderGcoPost(m){
   let mediaHtml='', textHtml='', parsed=null;
   try{ if(m.content && m.content.startsWith('{')) parsed=JSON.parse(m.content); }catch(e){}
   if(parsed){
-    textHtml=`<div class="gco-post-text">${_linkify(parsed.text||'')}</div>`;
+    textHtml=`<div class="gco-post-text">${_renderFmt(parsed.text||'')}</div>`;
     if(parsed.type==='image') mediaHtml=`<img class="gco-post-img" src="${escHtml(parsed.url)}" onclick="window.open('${escHtml(parsed.url)}','_blank')">`;
     else if(parsed.type==='video') mediaHtml=`<video class="gco-post-video" src="${escHtml(parsed.url)}" controls></video>`;
     else if(parsed.url) mediaHtml=`<a class="gco-post-doc chat-link" href="${escHtml(parsed.url)}" target="_blank">📄 Скачать файл</a>`;
