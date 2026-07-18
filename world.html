@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <title>CubeWorld — Next-Gen Anonymous Social</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css">
 <!-- PWA -->
@@ -405,13 +405,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .cpm-inp:focus{border-color:rgba(0,149,246,.5);background:rgba(255,255,255,.07)}
 .cpm-inp-ta{min-height:82px;resize:vertical;line-height:1.5}
 /* Group chat overlay */
-#grp-chat-overlay{position:fixed;inset:0;background:var(--bg);z-index:600;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1);overflow:hidden}
+#grp-chat-overlay{position:fixed;inset:0;top:0;left:0;right:0;bottom:0;width:100%;max-width:100%;background:var(--bg);z-index:600;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1);overflow:hidden;overflow-x:hidden;-webkit-overflow-scrolling:touch;box-sizing:border-box}
 #grp-chat-overlay.open{transform:translateX(0)}
 /* Lock all inner blocks — no movement on mobile */
-#grp-chat-overlay .gco-topbar{flex-shrink:0;position:sticky;top:0;z-index:5}
-#grp-chat-overlay .gco-pinned{flex-shrink:0}
-#grp-chat-overlay .gco-reply-bar{flex-shrink:0}
-#grp-chat-overlay .gco-input-row{flex-shrink:0;position:sticky;bottom:0;z-index:5}
+#grp-chat-overlay *{max-width:100%;box-sizing:border-box}
+#grp-chat-overlay .gco-topbar{flex-shrink:0;position:sticky;top:0;z-index:5;width:100%}
+#grp-chat-overlay .gco-pinned{flex-shrink:0;width:100%}
+#grp-chat-overlay .gco-reply-bar{flex-shrink:0;width:100%}
+#grp-chat-overlay .fmt-bar{flex-shrink:0;width:100%}
+#grp-chat-overlay .gco-input-row{flex-shrink:0;width:100%;position:sticky;bottom:0;z-index:5}
 .gco-topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(5,5,20,.97);backdrop-filter:var(--blur);flex-shrink:0}
 .gco-back{background:transparent;border:1px solid var(--border);color:var(--text2);padding:5px 12px;border-radius:20px;font-size:13px;cursor:pointer;transition:all var(--transition)}
 .gco-back:hover{background:rgba(255,255,255,.07);color:var(--text)}
@@ -420,7 +422,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-online{font-size:11px;color:var(--green);margin-left:auto;flex-shrink:0}
 .gco-members-btn{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:6px 11px;font-size:12px;color:var(--text2);cursor:pointer;transition:all var(--transition)}
 .gco-members-btn:hover{background:rgba(255,255,255,.1);color:var(--text)}
-.gco-msgs{flex:1;overflow-y:auto;padding:14px 14px;display:flex;flex-direction:column;gap:6px}
+.gco-msgs{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 12px;display:flex;flex-direction:column;gap:6px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;min-height:0;width:100%}
 .gco-msg{display:flex;align-items:flex-start;gap:8px;padding:2px 0;animation:fadeUp .15s ease}
 .gco-msg.me{flex-direction:row-reverse}
 .gco-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(0,149,246,.5),rgba(131,58,180,.4));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
@@ -430,7 +432,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-bubble-text{font-size:13px;color:#e0e0f8;line-height:1.5;white-space:pre-wrap;word-break:break-word;user-select:none;-webkit-user-select:none}
 .gco-bubble-text.selectable{user-select:text;-webkit-user-select:text}
 .gco-bubble-time{font-size:10px;color:var(--text3);margin-top:4px;text-align:right;user-select:none;-webkit-user-select:none}
-.gco-input-row{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:rgba(5,5,20,.95);backdrop-filter:var(--blur);flex-shrink:0}
+.gco-input-row{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--border);background:rgba(5,5,20,.95);backdrop-filter:var(--blur);flex-shrink:0;align-items:center;width:100%;overflow:hidden;padding-bottom:max(8px,env(safe-area-inset-bottom))}
 .gco-input{flex:1;min-width:0;width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:20px;color:#e0e0f8;padding:9px 14px;font-size:13px;font-family:inherit;outline:none;transition:border-color var(--transition),background var(--transition)}
 .gco-input:focus{border-color:rgba(0,149,246,.4);background:rgba(255,255,255,.08)}
 .gco-send{background:linear-gradient(135deg,rgba(0,149,246,.8),rgba(0,100,220,.7));border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all var(--transition);box-shadow:0 2px 10px rgba(0,149,246,.25)}
@@ -508,9 +510,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 /* ═══ TELEGRAM-STYLE GROUP ENHANCEMENTS ════════════════════════════════ */
 /* Bubble wrap + tail */
-.gco-bubble-wrap{position:relative;max-width:78%;min-width:0}
+.gco-bubble-wrap{position:relative;max-width:78%;min-width:0;overflow:hidden}
 .gco-msg.me .gco-bubble-wrap{margin-left:auto}
-.gco-bubble{position:relative;border-radius:14px 14px 14px 2px;padding:9px 13px;background:rgba(255,255,255,.07);word-break:break-word;overflow-wrap:break-word;min-width:60px}
+.gco-bubble{position:relative;border-radius:14px 14px 14px 2px;padding:9px 13px;background:rgba(255,255,255,.07);word-break:break-word;overflow-wrap:break-word;min-width:60px;overflow:hidden}
 .gco-bubble::before{content:'';position:absolute;bottom:0;left:-7px;width:0;height:0;border-top:8px solid transparent;border-right:7px solid rgba(255,255,255,.07)}
 .gco-msg.me .gco-bubble{background:rgba(0,149,246,.25);border-radius:14px 14px 2px 14px}
 .gco-msg.me .gco-bubble::before{display:none}
@@ -10953,6 +10955,25 @@ function bspFmtBubble(type){
 document.addEventListener('DOMContentLoaded',()=>{
   _setupFmtBar(document.getElementById('gco-input'));
   _setupFmtBar(document.getElementById('ca-text-input'));
+
+  // ── Prevent viewport horizontal shift when keyboard opens in Groups overlay ──
+  const overlay=document.getElementById('grp-chat-overlay');
+  if(overlay){
+    // When input focused inside overlay, prevent body scroll & keep overlay stable
+    overlay.addEventListener('focusin',e=>{
+      if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'){
+        document.body.style.overflow='hidden';
+        // Force overlay to stay at full width
+        overlay.style.width='100%';
+        overlay.style.maxWidth='100vw';
+        overlay.style.left='0';
+        overlay.style.right='0';
+      }
+    });
+    overlay.addEventListener('focusout',()=>{
+      document.body.style.overflow='';
+    });
+  }
   // Bubble selection
   document.addEventListener('selectionchange', _onBubbleSelChange);
   // Close bubble popup on outside tap
@@ -11178,6 +11199,20 @@ function setupCloudinary(){
   showToast(cloud.trim()&&preset.trim() ? '✅ Cloudinary подключён! Файлы теперь сохраняются навсегда.' : '⚠️ Cloudinary отключён, временное хранилище.');
 }
 
+// ── Telegraph image hosting (free, anonymous, no setup needed) ────────
+async function _uploadToTelegraph(file){
+  if(!file.type.startsWith('image/')) return null; // only images
+  const fd=new FormData();
+  fd.append('file', file, file.name||'image.jpg');
+  try{
+    const res=await fetch('https://telegra.ph/upload',{method:'POST',body:fd});
+    if(!res.ok) return null;
+    const j=await res.json();
+    if(Array.isArray(j)&&j[0]?.src) return 'https://telegra.ph'+j[0].src;
+  }catch(e){}
+  return null;
+}
+
 async function _uploadToCloudinary(file, onProgress){
   const cloud=_cldCloud(), preset=_cldPreset();
   if(!cloud || !preset) return null;
@@ -11202,7 +11237,7 @@ async function _uploadFile(file, progressBarId){
   if(bar){ bar.parentElement.style.display='block'; bar.style.width='10%'; }
   const setBar=(v)=>{ if(bar) bar.style.width=v+'%'; };
 
-  // Try Cloudinary first (permanent storage)
+  // 1. Try Cloudinary first (permanent, if configured)
   if(_cldCloud() && _cldPreset()){
     try{
       const url=await _uploadToCloudinary(file, pct=>setBar(pct));
@@ -11213,7 +11248,19 @@ async function _uploadFile(file, progressBarId){
     }catch(e){}
   }
 
-  // Fallback: backend upload
+  // 2. Telegraph for images (free, anonymous, permanent)
+  if(file.type.startsWith('image/')){
+    setBar(30);
+    try{
+      const url=await _uploadToTelegraph(file);
+      if(url){
+        if(bar){ setBar(100); setTimeout(()=>{ bar.parentElement.style.display='none'; setBar(0); },600); }
+        return url;
+      }
+    }catch(e){}
+  }
+
+  // 3. Fallback: backend upload (ephemeral, files may disappear on restart)
   let pct=10; setBar(10);
   const ticker=setInterval(()=>{ pct=Math.min(pct+10,85); setBar(pct); },200);
   const fd=new FormData();
