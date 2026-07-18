@@ -329,7 +329,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vf-tabs-toggle{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.45);font-size:18px;margin-left:auto;padding:6px 8px;transition:all .2s;display:flex;align-items:center}
 .vf-tabs-toggle:hover{color:#fff}
 /* Persistent bird button — shows when tabs are hidden */
-.vf-tabs-bird{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:31;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 14px;color:rgba(255,255,255,.7);cursor:pointer;font-size:12px;display:flex;align-items:center;gap:5px;transition:opacity .25s,transform .25s;opacity:0;pointer-events:none}
+.vf-tabs-bird{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:31;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.13);border-radius:50%;width:26px;height:26px;color:rgba(255,255,255,.6);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;padding:0;transition:opacity .25s,transform .25s;opacity:0;pointer-events:none}
 .vf-tabs-bird.show{opacity:1;pointer-events:auto}
 .vf-tabs-bird:hover{background:rgba(0,0,0,.8);color:#fff}
 /* Cube-switcher bird button (mobile) — shows when cs is hidden */
@@ -338,8 +338,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 /* ── FEED FAB (speed-dial action button) ── */
 .vf-fab-wrap{position:absolute;right:12px;bottom:80px;z-index:15;display:flex;flex-direction:column;align-items:center;gap:0}
-.vf-fab-trigger{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#0095F6,#5263FF);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,149,246,.45);transition:transform .22s,box-shadow .22s;flex-shrink:0}
-.vf-fab-trigger:hover,.vf-fab-trigger:active{transform:scale(1.08);box-shadow:0 6px 26px rgba(0,149,246,.6)}
+.vf-fab-trigger{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.7);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.4);transition:transform .22s,background .18s;flex-shrink:0;backdrop-filter:blur(8px)}
+.vf-fab-trigger:hover,.vf-fab-trigger:active{transform:scale(1.08);background:rgba(255,255,255,.15);color:#fff}
 .vf-fab-items{display:flex;flex-direction:column;align-items:center;gap:10px;padding-bottom:12px;max-height:0;overflow:hidden;opacity:0;pointer-events:none;transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .25s}
 .vf-fab-wrap.open .vf-fab-items{max-height:260px;opacity:1;pointer-events:auto}
 .vf-fab-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;background:none;border:none;padding:0;color:#fff;outline:none;transform:translateY(8px);transition:transform .25s}
@@ -2561,16 +2561,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <button class="cs-add" onclick="exitInterior()" title="Открыть другой куб">+</button>
   </div>
   <!-- Cube tab context menu -->
-  <div id="cube-ctx-menu" style="display:none;position:fixed;z-index:9999;background:#1a1a2e;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:6px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.6);backdrop-filter:blur(12px)">
-    <div id="cube-ctx-name" style="font-size:11px;color:rgba(255,255,255,.4);padding:4px 10px 8px;border-bottom:1px solid rgba(255,255,255,.08);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
-    <button onclick="cubeCtxSwitch()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;background:none;border:none;color:#e0e0f8;font-size:13px;cursor:pointer;border-radius:8px;text-align:left" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='none'">
-      <i class="ti ti-arrows-exchange" style="font-size:15px;color:#0095F6"></i> Перейти в куб
-    </button>
-    <button onclick="cubeCtxExit()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;background:none;border:none;color:#e0e0f8;font-size:13px;cursor:pointer;border-radius:8px;text-align:left" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='none'">
-      <i class="ti ti-door-exit" style="font-size:15px;color:#f87171"></i> Выйти из куба
-    </button>
-    <button onclick="cubeCtxRemove()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;border-radius:8px;text-align:left" onmouseover="this.style.background='rgba(248,113,113,.1)'" onmouseout="this.style.background='none'">
-      <i class="ti ti-x" style="font-size:15px"></i> Закрыть комнату
+  <div id="cube-ctx-menu" style="display:none;position:fixed;z-index:9999;background:rgba(18,18,32,.96);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:5px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,.7);backdrop-filter:blur(16px)">
+    <div id="cube-ctx-name" style="font-size:11px;color:rgba(255,255,255,.35);padding:4px 10px 7px;border-bottom:1px solid rgba(255,255,255,.07);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+    <button onclick="cubeCtxExit()" style="display:flex;align-items:center;gap:9px;width:100%;padding:10px 12px;background:none;border:none;color:#e0e0f8;font-size:13px;cursor:pointer;border-radius:9px;text-align:left" onmouseover="this.style.background='rgba(248,113,113,.12)'" onmouseout="this.style.background='none'">
+      <i class="ti ti-door-exit" style="font-size:16px;color:#f87171"></i> Выйти из куба
     </button>
   </div>
   <!-- Bird button for cube-switcher (mobile only, shows when cs is scrolled away) -->
@@ -2698,7 +2692,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <div class="vf-feed-col" id="vf-feed-col" style="width:min(calc(100vh*9/16),430px)">
           <!-- Bird button: shows when tabs are hidden, calls toggleVfTabsDrawer() -->
           <button class="vf-tabs-bird" id="vf-tabs-bird" onclick="toggleVfTabsDrawer()">
-            <i class="ti ti-chevron-down" style="font-size:13px"></i> Shorts · Post · Rec · Top
+            <i class="ti ti-chevron-down" style="font-size:11px"></i>
           </button>
           <!-- Tabs drawer (shown inside the 9:16 col on desktop, overlays full feed on mobile) -->
           <div class="vf-tabs-drawer" id="vf-tabs-drawer">
@@ -6725,19 +6719,22 @@ function openCubeCtx(e, cubeId){
   setTimeout(()=>document.addEventListener('click',closeCubeCtx,{once:true}),10);
 }
 function closeCubeCtx(){ document.getElementById('cube-ctx-menu').style.display='none'; _cubeCtxId=null; }
-function cubeCtxSwitch(){ closeCubeCtx(); if(_cubeCtxId) switchCube(_cubeCtxId); }
+function cubeCtxSwitch(){ const id=_cubeCtxId; closeCubeCtx(); if(id) switchCube(id); }
 function cubeCtxExit(){
-  closeCubeCtx();
-  // If exiting current cube → go to world
-  if(_cubeCtxId===app.currentCubeId){ exitInterior(); return; }
-  // Remove from visited list
-  cubeCtxRemove();
+  const id=_cubeCtxId; closeCubeCtx();
+  if(!id) return;
+  // Always exit to world
+  exitInterior();
+  // Remove cube from switcher list
+  app.visitedCubes = app.visitedCubes.filter(c=>c.id!==id);
+  _saveVisitedCubes();
+  renderCubeSwitcher();
 }
 function cubeCtxRemove(){
-  closeCubeCtx();
-  if(!_cubeCtxId) return;
-  const wasCurrent = _cubeCtxId===app.currentCubeId;
-  app.visitedCubes = app.visitedCubes.filter(c=>c.id!==_cubeCtxId);
+  const id=_cubeCtxId; closeCubeCtx();
+  if(!id) return;
+  const wasCurrent = id===app.currentCubeId;
+  app.visitedCubes = app.visitedCubes.filter(c=>c.id!==id);
   _saveVisitedCubes();
   renderCubeSwitcher();
   if(wasCurrent) exitInterior();
