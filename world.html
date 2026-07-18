@@ -2500,7 +2500,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 <section class="view" id="v-int">
   <div id="int-topbar">
     <!-- 1. Profile avatar -->
-    <button class="itb-profile-btn" id="itb-profile-btn" onclick="openMyProfile()" title="Мой профиль">
+    <button class="itb-profile-btn" id="itb-profile-btn" onclick="openPortfolio()" title="Мой профиль">
       <span id="itb-av-inner" style="font-size:18px;line-height:1">👤</span>
     </button>
 
@@ -2567,7 +2567,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div class="sn-section">Инструменты</div>
       <div class="sn-item" onclick="switchSection('analytics',this);renderAnalytics()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-chart-bar"></i></span></span>Аналитика</div>
       <div class="sn-item" onclick="openReferralModal()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-link"></i></span></span>Рефералы</div>
-      <div class="sn-item" onclick="openMyProfile()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-user-circle"></i></span></span>Мой профиль</div>
+      <div class="sn-item" onclick="openPortfolio()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-user-circle"></i></span></span>Мой профиль</div>
       <div class="sn-divider"></div>
       <div style="padding:10px 12px 6px;font-size:10px;color:var(--text3);line-height:1.65">
         <div style="margin-bottom:6px;color:var(--green);font-weight:700;font-size:11px"><i class="ti ti-ghost" style="font-size:12px"></i> Ghost Mode ON</div>
@@ -2646,7 +2646,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           <div class="mms-icon mms-orange"><i class="ti ti-plug-connected" style="color:#FB923C"></i></div>
           <span>API Хаб</span>
         </button>
-        <button class="mms-item" onclick="openMyProfile();closeMobMore()">
+        <button class="mms-item" onclick="openPortfolio();closeMobMore()">
           <div class="mms-icon mms-indigo"><i class="ti ti-user-circle" style="color:#818CF8"></i></div>
           <span>Профиль</span>
         </button>
@@ -8701,8 +8701,8 @@ function openPortfolio(){
 
   // ── Name + @username ────────────────────────────
   const nm=document.getElementById('po-name');
-  // Hidden: conceal real name
-  if(nm) nm.textContent=isHidden?'——':name;
+  // Own profile: always show real name (even if hidden from others)
+  if(nm) nm.textContent=name||'Пользователь';
   const unEl=document.getElementById('po-uname');
   if(unEl) unEl.textContent=un;
 
@@ -8799,8 +8799,13 @@ function _renderPortfolioGrid(){
   const isVideoPost=p=>p.type==='short'||p.type==='video';
   const myPosts=all.filter(p=>_poTab==='short'?isVideoPost(p):!isVideoPost(p));
   if(!myPosts.length){
-    const label=_poTab==='short'?'Коротких видео пока нет':'Постов пока нет';
-    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:48px 20px;color:var(--text3);font-size:13px">${label}</div>`;
+    const isShort=_poTab==='short';
+    grid.innerHTML=`<div style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:40vh;padding:40px 20px;gap:14px">
+      <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:30px">${isShort?'🎬':'📝'}</div>
+      <div style="font-size:16px;font-weight:700;color:#e0e0f8">${isShort?'Нет коротких видео':'Нет постов'}</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.4);text-align:center;max-width:240px;line-height:1.5">${isShort?'Загрузи первое Short-видео и поделись с кубом':'Создай первый пост — текст, фото или трансляцию'}</div>
+      <button onclick="closePortfolio();document.querySelector('.vf-fab')?.click()" style="margin-top:4px;padding:10px 24px;background:#0095F6;border:none;border-radius:24px;color:#fff;font-size:13px;font-weight:700;cursor:pointer">+ Создать</button>
+    </div>`;
     return;
   }
   grid.innerHTML=myPosts.slice(0,30).map(p=>{
