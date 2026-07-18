@@ -4467,7 +4467,19 @@ function initWorld(){
   });
   window.addEventListener('mouseup',e=>{
     if(!wDrag)return;wDrag=false;wrap.classList.remove('dragging');
-    if(Math.abs(wDragDX)+Math.abs(wDragDY)<5)handleWorldClick();
+    if(Math.abs(wDragDX)+Math.abs(wDragDY)<8){
+      // Re-detect hover at mouseup position to avoid timing gaps
+      const rect=wrap.getBoundingClientRect();
+      const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+      wMouseX=mx;wMouseY=my;
+      wHovId=null;let hovDist=9999;
+      wObjects.forEach(o=>{
+        if(o.cube.life<=0)return;
+        const dx=mx-o.csx,dy=my-o.csy,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<o.csr*1.4&&d<hovDist){hovDist=d;wHovId=o.cube.id;}
+      });
+      handleWorldClick();
+    }
   });
   // ── Touch (mobile) ───────────────────────────────
   let _tSX=0,_tSY=0,_tDX=0,_tDY=0,_tThD=0,_tPhD=0;
@@ -4493,7 +4505,19 @@ function initWorld(){
     e.preventDefault();
     wDrag=false;
     // Tap = minimal movement → enter cube
-    if(Math.abs(_tDX)+Math.abs(_tDY)<12) handleWorldClick();
+    if(Math.abs(_tDX)+Math.abs(_tDY)<12){
+      // Force hover detection from touch-start position (don't wait for RAF)
+      const rect=wrap.getBoundingClientRect();
+      const tx=_tSX-rect.left,ty=_tSY-rect.top;
+      wMouseX=tx;wMouseY=ty;
+      wHovId=null;let hovDist=9999;
+      wObjects.forEach(o=>{
+        if(o.cube.life<=0)return;
+        const dx=tx-o.csx,dy=ty-o.csy,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<o.csr*1.8&&d<hovDist){hovDist=d;wHovId=o.cube.id;}
+      });
+      handleWorldClick();
+    }
     _tDX=_tDY=0;
   },{passive:false});
   wRenderLoop();
@@ -6516,10 +6540,10 @@ function switchCube(cubeId){
   if(cubeId===app.currentCubeId) return;
   const cube=app.cubes.find(c=>c.id===cubeId); if(!cube||cube.life<=0){ showToast('⏰ Куб истёк'); return; }
   app.currentCubeId=cubeId;
-  document.getElementById('itb-icon').textContent=cube.icon;
-  document.getElementById('itb-name').textContent=cube.name;
+  const _ic=document.getElementById('itb-icon'); if(_ic) _ic.textContent=cube.icon;
+  const _nm=document.getElementById('itb-name'); if(_nm) _nm.textContent=cube.name;
   const tel=document.getElementById('itb-timer');
-  tel.textContent=fmtTime(cube.life); tel.className='itb-timer'+(cube.life<=300?' urgent':'');
+  if(tel){tel.textContent=fmtTime(cube.life); tel.className='itb-timer'+(cube.life<=300?' urgent':'');}
   initInteriorData(cubeId);
   switchSection('feed',document.querySelector('.sn-item.active'));
   renderCubeSwitcher();
