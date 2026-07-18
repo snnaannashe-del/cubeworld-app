@@ -434,8 +434,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gc-open-chat{margin-top:6px;width:100%;padding:7px;border-radius:8px;border:none;background:rgba(0,149,246,.18);color:var(--accent);font-size:12px;font-weight:700;cursor:pointer;transition:all .18s}
 .gc-open-chat:hover{background:rgba(0,149,246,.35)}
 /* Group full view overhaul */
-#grp-chat-overlay{position:fixed;inset:0;background:var(--bg);z-index:600;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1)}
-#grp-chat-overlay.open{transform:translateX(0)}
 .gco-topbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);flex-shrink:0;min-height:54px}
 .gco-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);flex-shrink:0;background:rgba(255,255,255,.01)}
 .gco-tab{padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.5);border:none;background:transparent;border-bottom:2px solid transparent;transition:all .18s}
@@ -4914,10 +4912,10 @@ function updateOnlineUsersList(users) {
 // ── Open DM with user ──
 /* ── Load DM inbox from backend ─────────────────────────────────────────── */
 async function loadDmInbox(){
-  const token=localStorage.getItem('cw_token');
+  const token=localStorage.getItem('cw_access_token');
   if(!token) return;
   try{
-    const r=await fetch(`${API}/dm/inbox`,{headers:{'Authorization':'Bearer '+token}});
+    const r=await fetch(`${API_BASE}/dm/inbox`,{headers:{'Authorization':'Bearer '+token}});
     if(!r.ok) return;
     const list=await r.json();
     if(!app.dmConversations) app.dmConversations={};
@@ -5950,16 +5948,6 @@ function openWalletModal(){ syncWalletUI(); openModal('modal-wallet'); }
 function walletSend(){ showToast('📤 Введи ключ получателя в чате'); }
 function walletReceive(){ showToast('📥 Твой адрес: '+app.userKey.slice(0,18)+'…'); }
 function walletUpgrade(){ openKeyShop(); }
-function renderWalletTxs(){
-  const el=document.getElementById('wallet-txs'); if(!el) return;
-  el.innerHTML=app.wallet.txs.slice(0,12).map(t=>`
-    <div class="tx-item">
-      <div class="tx-icon ${t.dir}">${t.icon}</div>
-      <div class="tx-info"><div class="tx-desc">${t.desc}</div><div class="tx-time">${t.time}</div></div>
-      <div class="tx-amount ${t.dir}">${t.amount} CUBE</div>
-    </div>`).join('');
-}
-
 // ════════════════════════════════════════════════
 //  GHOST MODE
 // ════════════════════════════════════════════════
@@ -6069,47 +6057,6 @@ function comingSoon(){ showToast('🚧 Скоро. Следи за обновл�
 // ════════════════════════════════════════════════
 //  EARN SECTION
 // ════════════════════════════════════════════════
-function renderEarnSection(){
-  // Earn cards
-  const cards=[
-    {emoji:'⛏️',title:'Пассивный майнинг',    desc:'Зарабатывай пока онлайн',      reward:'0.8 CUBE/мин', btn:'Активен',    disabled:true},
-    {emoji:'📢',title:'Реферальная программа', desc:'Приведи друга, получи 50 CUBE', reward:'+50 CUBE',     btn:'Скопировать ссылку',fn:'copyRefLink'},
-    {emoji:'🏆',title:'Премиум сигнал',        desc:'Продай сигнал подписчикам',    reward:'+30 CUBE',     btn:'Создать',    fn:"openModal('modal-signal')"},
-    {emoji:'🖼️',title:'NFT дроп',             desc:'Создай уникальный контент-куб', reward:'+100 CUBE',    btn:'Скоро',      disabled:true},
-  ];
-  document.getElementById('earn-cards').innerHTML=cards.map(c=>`
-    <div class="earn-card">
-      <div class="ec-icon">${c.emoji}</div>
-      <div class="ec-title">${c.title}</div>
-      <div class="ec-desc">${c.desc}</div>
-      <div class="ec-reward">${c.reward}</div>
-      <button class="ec-btn${c.disabled?' claimed':''}" ${c.disabled?'disabled':''} onclick="${c.fn||''}">
-        ${c.btn}
-      </button>
-    </div>`).join('');
-
-  // Task list
-  document.getElementById('task-list').innerHTML=app.tasks.map(t=>`
-    <div class="task-item ${t.done?'done':''}" onclick="completeTask('${t.id}',this)">
-      <div class="ti-icon">${t.icon}</div>
-      <div class="ti-info"><div class="ti-title">${t.title}</div><div class="ti-desc">${t.desc}</div></div>
-      <div class="ti-reward">+${t.reward} CUBE</div>
-      ${t.done?'<div class="ti-check">✓</div>':''}
-    </div>`).join('');
-
-  // Update balance display
-  document.getElementById('earn-bal-display').textContent = app.wallet.balance.toLocaleString('ru');
-}
-function completeTask(id, el){
-  const t=app.tasks.find(x=>x.id===id); if(!t||t.done) return;
-  t.done=true;
-  earnCube(t.reward, t.title, t.icon);
-  el.classList.add('done');
-  el.innerHTML=el.innerHTML+'<div class="ti-check">✓</div>';
-  el.onclick=null;
-}
-function copyRefLink(){ navigator.clipboard.writeText('https://cubeworld.app/?ref='+app.userKey.slice(0,8)); showToast('🔗 Реферальная ссылка скопирована!'); }
-
 function copyInviteLink(){
   const cube=app.cubes.find(c=>c.id===app.currentCubeId);
   const numId=(app.currentCubeId||'').replace(/^[a-z]+/,'');
@@ -7488,8 +7435,6 @@ function openStory(id){
   renderStories();
   setTimeout(()=>closeModal('modal-story'), 6000);
 }
-function openMyStory(){ showToast('📷 Функция сторис: загрузи фото или напиши текст'); }
-
 // ════════════════════════════════════════════════
 //  ONLINE MEMBERS
 // ════════════════════════════════════════════════
@@ -8629,7 +8574,7 @@ function vfSwitchTab2(tab, el){
   if(tab==='shorts'){ _vfTab='foryou'; _vfTypeFilter='short'; renderFeed(); return; }
   if(tab==='post'){   _vfTab='foryou'; _vfTypeFilter='ball';  renderFeed(); return; }
   if(tab==='rec'){    _vfTab='following'; _vfTypeFilter='all'; loadVideoFeed(); return; }
-  if(tab==='top'){    _vfTab='top'; _vfTypeFilter='all'; renderFeed(); return; }
+  if(tab==='top'){    _vfTab='top'; _vfTypeFilter='all'; loadVideoFeed(); return; }
 }
 
 // Toggle tabs drawer visibility (chevron collapses header)
@@ -9360,12 +9305,13 @@ async function sendGroupMsg(){
     content=JSON.stringify({text:txt, reply:{id:_grpReplyState.id, author:_grpReplyState.author, text:_grpReplyState.text.slice(0,80)}});
     gcoCancelReply();
   }
-  // Optimistic bubble
+  // Optimistic bubble (TG-style: no avatar for own messages)
   const t=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
   const optDiv=document.createElement('div'); optDiv.className='gco-msg me';
-  optDiv.innerHTML=`<div class="gco-av">${(myName||'?')[0].toUpperCase()}</div>
-    <div class="gco-bubble-wrap"><div class="gco-bubble"><div class="gco-bubble-text">${escHtml(txt)}</div>
-    <div class="gco-bubble-time">${t}<span class="gco-tick">✓</span></div></div></div>`;
+  optDiv.innerHTML=`<div class="gco-bubble-wrap" style="margin-left:auto">
+    <div class="gco-bubble"><div class="gco-bubble-text">${escHtml(txt)}</div>
+    <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;text-align:right">${t}<span class="gco-tick" style="margin-left:4px">✓</span></div>
+    </div></div>`;
   if(typingRow) container.insertBefore(optDiv, typingRow);
   else container?.appendChild(optDiv);
   container.scrollTop=container.scrollHeight;
