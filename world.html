@@ -4601,6 +4601,7 @@ function addCubeToWorld(cube){_addObjToWorld(cube,undefined);}
 function enterWorld(){
   document.getElementById('wb-key-badge').textContent=app.userKey.slice(0,14)+'…';
   document.getElementById('wb-count').textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
+  try{localStorage.setItem('cw_last_view','world');}catch(e){}
   showView('v-world');
   if(!wDone){wDone=true;requestAnimationFrame(initWorld);}
   // Fetch real data in background
@@ -4788,6 +4789,8 @@ async function submitJoinKey(){
 // ════════════════════════════════════════════════
 function enterInterior(cubeId){
   app.currentCubeId=cubeId;
+  // Persist: remember we're inside this cube
+  try{ localStorage.setItem('cw_last_view','interior'); localStorage.setItem('cw_last_cube',cubeId); }catch(e){}
   const cube=app.cubes.find(c=>c.id===cubeId);
   // Null-safe updates (elements may not exist in redesigned topbar)
   const _iconEl=document.getElementById('itb-icon'); if(_iconEl) _iconEl.textContent=cube?cube.icon:'';
@@ -4812,7 +4815,7 @@ function enterInterior(cubeId){
   loadRealPosts();
   loadRealSignals();
 }
-function exitInterior(){ if(liveInterval){clearInterval(liveInterval);liveInterval=null;} showView('v-world'); }
+function exitInterior(){ if(liveInterval){clearInterval(liveInterval);liveInterval=null;} try{localStorage.setItem('cw_last_view','world');}catch(e){} showView('v-world'); }
 
 // ════════════════════════════════════════════════
 //  INTERIOR — DATA INIT
@@ -10917,7 +10920,25 @@ function saveUniverse(){
     }).then(r=>r.ok?r.json():null).then(me=>{
       if(me && me.id) localStorage.setItem('cw_user_id', me.id);
     }).catch(()=>{});
-    setTimeout(function(){ enterWorld(); }, 0);
+    setTimeout(function(){
+      enterWorld();
+      // Restore last session: if user was inside a cube, go back there
+      const _lastView = localStorage.getItem('cw_last_view');
+      const _lastCube = localStorage.getItem('cw_last_cube');
+      if(_lastView === 'interior' && _lastCube){
+        // Wait for syncFromBackend to populate app.cubes, then restore
+        const _tryRestore = (attempt) => {
+          const cube = app.cubes.find(c=>c.id===_lastCube);
+          if(cube && cube.life > 0){
+            enterInterior(_lastCube);
+          } else if(attempt < 8){
+            setTimeout(()=>_tryRestore(attempt+1), 400);
+          }
+          // if cube not found after retries, stay on world view
+        };
+        setTimeout(()=>_tryRestore(0), 600);
+      }
+    }, 0);
     // Show onboarding for first-time users
     if(!localStorage.getItem('cw_onboarded')){
       setTimeout(openOnboarding, 1200);
