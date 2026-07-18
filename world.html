@@ -1809,6 +1809,64 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .po-grid{max-width:580px;margin:0 auto}
   #po-info-block{padding-left:0;padding-right:0}
 }
+/* ═══════════════════════════════════════════════════════
+   DESKTOP ADAPTIVE CENTERING — все страницы как профиль
+   ═══════════════════════════════════════════════════════ */
+@media(min-width:900px){
+  /* Outer background — darker than content frame */
+  #v-int{
+    align-items:center;
+    background:#01010c;
+  }
+  /* Topbar centered frame */
+  #int-topbar{
+    max-width:1020px;
+    width:100%;
+    box-sizing:border-box;
+    border-left:1px solid var(--border);
+    border-right:1px solid var(--border);
+    border-radius:0;
+  }
+  /* Main layout frame */
+  #int-layout{
+    max-width:1020px;
+    width:100%;
+    box-sizing:border-box;
+    border-left:1px solid var(--border);
+    border-right:1px solid var(--border);
+    border-bottom:1px solid var(--border);
+    border-radius:0 0 16px 16px;
+    overflow:hidden;
+  }
+  /* Sidenav keeps fixed width, content gets the rest */
+  #int-sidenav{flex-shrink:0}
+
+  /* ── Scrollable sections: center inner content ── */
+  #sec-signals,#sec-channels,#sec-analytics,
+  #sec-market,#sec-earn,#sec-wallet,#sec-groups{
+    align-items:center;
+  }
+  /* Each direct child of scrollable sections gets max-width */
+  #sec-wallet>*,#sec-earn>*,#sec-signals>*,
+  #sec-analytics>*,#sec-market>*,#sec-channels>*,
+  #sec-groups>*{
+    max-width:700px;
+    width:100%;
+    box-sizing:border-box;
+  }
+  /* Grids: 2-col on desktop */
+  .earn-grid{grid-template-columns:repeat(3,1fr)}
+  .an-kpi-grid{grid-template-columns:repeat(4,1fr)}
+  /* Sec headers full-width inside their section */
+  .sec-header{width:100%;box-sizing:border-box}
+  /* Chat: constrain the chat pane width */
+  #sec-chat{max-width:unset}
+  .chat-rooms-list{max-width:280px;flex-shrink:0}
+  /* Overlays already centered via .pe-header/.pe-body max-width */
+  #pe-overlay,#portfolio-overlay{align-items:center}
+  #pe-overlay .pe-header,#pe-overlay .pe-body{max-width:620px}
+  /* Feed stays full-width (TikTok style has own desktop layout) */
+}
 /* keep old mpe classes so existing refs don't break */
 .mpe-avatar-grid{display:none}.mpe-status-row{display:none}.mpe-s-opt{display:none}.mpe-av-opt{display:none}
 /* Conditional profile field groups */
