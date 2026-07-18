@@ -1712,14 +1712,75 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .an-tr-sub{font-size:10px;color:var(--text3)}
 .an-tr-val{font-size:11px;font-weight:800;color:var(--gold);font-family:'Courier New',monospace;flex-shrink:0}
 
-/* ══ MY PROFILE EDITOR ══════════════════════ */
-.mpe-avatar-grid{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0 11px}
-.mpe-av-opt{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:21px;cursor:pointer;border:2px solid transparent;background:rgba(255,255,255,.04);transition:all .14s}
-.mpe-av-opt:hover{background:rgba(255,255,255,.08)}
-.mpe-av-opt.sel{border-color:var(--accent);background:rgba(0,149,246,.15)}
-.mpe-status-row{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}
-.mpe-s-opt{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;transition:all .14s;white-space:nowrap}
-.mpe-s-opt.sel{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.1);color:var(--green)}
+/* ══ MY PROFILE EDITOR (new full-screen overlay) ══════════════════ */
+#pe-overlay{position:fixed;inset:0;background:var(--bg);z-index:700;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1)}
+#pe-overlay.open{transform:translateX(0)}
+.pe-header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(5,5,20,.97);backdrop-filter:var(--blur);flex-shrink:0;min-height:52px}
+.pe-back-btn{background:none;border:none;color:var(--accent);font-size:22px;cursor:pointer;padding:4px;line-height:1;display:flex;align-items:center}
+.pe-header-title{flex:1;font-size:15px;font-weight:700;color:#e0e0f8}
+.pe-portfolio-btn{font-size:11px;font-weight:700;color:var(--accent);background:rgba(0,149,246,.1);border:1px solid rgba(0,149,246,.3);border-radius:8px;padding:5px 11px;cursor:pointer;white-space:nowrap}
+.pe-body{flex:1;overflow-y:auto;padding:0 18px 40px}
+/* Avatar section */
+.pe-av-wrap{position:relative;width:84px;height:84px;margin:0 auto 6px;cursor:pointer}
+.pe-av-circle{width:84px;height:84px;border-radius:50%;font-size:42px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border:2.5px solid var(--border);overflow:hidden;transition:border-color .15s}
+.pe-av-circle:hover{border-color:var(--accent)}
+.pe-av-circle img{width:100%;height:100%;object-fit:cover}
+.pe-av-edit{position:absolute;bottom:1px;right:1px;width:24px;height:24px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid var(--bg);pointer-events:none}
+/* UID toggle */
+.pe-uid-btn{background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;display:flex;align-items:center;gap:5px;margin:6px auto 0;padding:3px 8px;border-radius:6px;transition:background .12s}
+.pe-uid-btn:hover{background:rgba(255,255,255,.05)}
+.pe-uid-revealed{font-family:'Courier New',monospace;font-size:12px;color:#e0e0f8;letter-spacing:.08em;display:none;text-align:center;margin-top:4px;padding:5px 12px;background:rgba(255,255,255,.04);border-radius:8px;border:1px solid var(--border2)}
+/* Emoji picker popup */
+.pe-emoji-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:#0c0c22;border:1px solid var(--border);border-radius:16px;padding:16px;z-index:750;display:none;box-shadow:0 12px 40px rgba(0,0,0,.7);opacity:0;transition:all .18s}
+.pe-emoji-popup.open{display:block;opacity:1;transform:translate(-50%,-50%) scale(1)}
+.pe-emoji-grid{display:flex;gap:7px;flex-wrap:wrap;max-width:230px;justify-content:center}
+.pe-emoji-opt{width:38px;height:38px;border-radius:9px;font-size:23px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,.04);border:2px solid transparent;transition:all .1s}
+.pe-emoji-opt:hover,.pe-emoji-opt.sel{border-color:var(--accent);background:rgba(0,149,246,.15)}
+/* Account type 3-way */
+.acc-3-wrap{display:flex;gap:6px;margin:6px 0 10px}
+.acc-3-opt{flex:1;padding:8px 4px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text2);transition:all .15s;white-space:nowrap}
+.acc-3-opt.sel{background:rgba(0,149,246,.15);border-color:var(--accent);color:var(--accent)}
+/* Status dropdown */
+.pe-status-btn{display:flex;align-items:center;gap:9px;padding:10px 13px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px;width:100%;text-align:left;color:#e0e0f8;transition:background .12s}
+.pe-status-btn:hover{background:rgba(255,255,255,.07)}
+.pe-status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.pe-status-drop{background:#0e0e24;border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:0;transition:max-height .2s ease;margin-top:4px}
+.pe-status-drop.open{max-height:200px}
+.pe-status-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;font-size:13px;color:#e0e0f8;transition:background .1s}
+.pe-status-opt:hover{background:rgba(255,255,255,.06)}
+/* Bio textarea */
+.pe-bio-area{width:100%;min-height:54px;max-height:54px;resize:none;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;color:#e0e0f8;padding:9px 12px;font-size:12.5px;font-family:inherit;outline:none;transition:max-height .22s ease,border-color .15s;box-sizing:border-box;line-height:1.5}
+.pe-bio-area:focus{max-height:140px;border-color:rgba(0,149,246,.4)}
+.pe-field-label{display:block;font-size:11px;color:var(--text2);margin:12px 0 5px;font-weight:600;letter-spacing:.03em}
+.pe-inp{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;color:#e0e0f8;padding:9px 12px;font-size:12.5px;font-family:inherit;outline:none;box-sizing:border-box;transition:border-color .15s}
+.pe-inp:focus{border-color:rgba(0,149,246,.4)}
+/* ══ PORTFOLIO OVERLAY ═══════════════════════════════════════════ */
+#portfolio-overlay{position:fixed;inset:0;background:var(--bg);z-index:800;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .32s cubic-bezier(.32,0,.18,1)}
+#portfolio-overlay.open{transform:translateY(0)}
+.po-header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(5,5,20,.97);backdrop-filter:var(--blur);flex-shrink:0}
+.po-scroll{flex:1;overflow-y:auto}
+.po-hero{display:flex;flex-direction:column;align-items:center;padding:28px 20px 16px}
+.po-avatar{width:92px;height:92px;border-radius:50%;font-size:46px;display:flex;align-items:center;justify-content:center;border:3px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,linear-gradient(135deg,#0095F6,#833AB4) border-box;overflow:hidden;margin-bottom:10px}
+.po-avatar img{width:100%;height:100%;object-fit:cover}
+.po-name{font-size:19px;font-weight:800;color:#e0e0f8;margin-bottom:2px}
+.po-uname{font-size:13px;color:var(--accent);margin-bottom:8px}
+.po-type-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:14px}
+.po-type-badge.pub{background:rgba(0,149,246,.12);color:var(--accent);border:1px solid rgba(0,149,246,.25)}
+.po-type-badge.hid{background:rgba(255,255,255,.07);color:var(--text2);border:1px solid var(--border)}
+.po-type-badge.biz{background:rgba(251,191,36,.1);color:var(--gold);border:1px solid rgba(251,191,36,.25)}
+.po-stats-row{display:flex;border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);width:100%}
+.po-stat{flex:1;text-align:center;padding:14px 6px}
+.po-stat-val{font-size:18px;font-weight:900;color:#e0e0f8;font-family:'Courier New',monospace}
+.po-stat-lbl{font-size:10px;color:var(--text3);margin-top:2px}
+.po-bio{padding:14px 20px;font-size:13.5px;color:var(--text2);line-height:1.65;white-space:pre-wrap;word-break:break-word}
+.po-bio a{color:var(--accent);text-decoration:none}
+.po-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px}
+.po-cell{aspect-ratio:1;background:rgba(255,255,255,.05);position:relative;overflow:hidden;cursor:pointer}
+.po-cell-thumb{width:100%;height:100%;object-fit:cover;display:block}
+.po-cell-views{position:absolute;bottom:5px;left:5px;font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.9);display:flex;align-items:center;gap:2px}
+.po-cell-type{position:absolute;top:5px;right:5px;font-size:10px;color:rgba(255,255,255,.7)}
+/* keep old mpe classes so existing refs don't break */
+.mpe-avatar-grid{display:none}.mpe-status-row{display:none}.mpe-s-opt{display:none}.mpe-av-opt{display:none}
 
 /* ══ REFERRAL ════════════════════════════════ */
 .ref-link-box{background:#000;border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:12px 14px;margin-bottom:12px}
@@ -3374,53 +3435,111 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 </div>
 
 <!-- My Profile Editor -->
-<div class="modal-backdrop" id="modal-my-profile">
-  <div class="modal" style="max-width:380px">
-    <h3>🧬 Мой профиль</h3>
-    <div style="text-align:center;margin-bottom:8px">
-      <div id="mpe-cur-avatar" style="font-size:52px;margin-bottom:4px">👤</div>
-      <div id="mpe-cur-key" style="font-size:11px;font-family:'Courier New',monospace;color:var(--text2)"></div>
-      <div id="mpe-cur-uid" style="font-size:11px;color:var(--text3);margin-top:2px;cursor:pointer"
-           onclick="copyMyUid()" title="Нажми чтобы скопировать"></div>
+<!-- ══ PROFILE EDITOR OVERLAY ═══════════════════════════════════ -->
+<div id="pe-overlay">
+  <div class="pe-header">
+    <button class="pe-back-btn" onclick="closePeOverlay()"><i class="ti ti-arrow-left"></i></button>
+    <span class="pe-header-title">Мой профиль</span>
+    <button class="pe-portfolio-btn" onclick="openPortfolio()">Portfolio →</button>
+  </div>
+  <div class="pe-body">
+    <!-- Row 1: Avatar (tap → emoji picker; photo upload inside picker) -->
+    <div style="text-align:center;padding:22px 0 10px;position:relative">
+      <div class="pe-av-wrap" onclick="peAvatarTap(event)">
+        <div class="pe-av-circle" id="pe-av-circle"><span id="pe-av-emoji">👤</span></div>
+        <div class="pe-av-edit">✏️</div>
+      </div>
+      <input type="file" id="pe-photo-inp" accept="image/*" style="display:none" onchange="pePhotoUpload(this)">
+      <!-- UID row (hidden by default) -->
+      <button class="pe-uid-btn" id="pe-uid-btn" onclick="peToggleUid()">
+        <i class="ti ti-eye" style="font-size:12px"></i><span id="pe-uid-btn-label">Показать UID</span>
+      </button>
+      <div class="pe-uid-revealed" id="pe-uid-revealed"></div>
     </div>
-    <!-- My stats -->
-    <div class="my-stats-grid" id="mpe-stats-grid">
-      <div class="my-stat"><div class="my-stat-val" style="color:var(--gold)" id="mpe-s-cube">—</div><div class="my-stat-lbl">CUBE</div></div>
-      <div class="my-stat"><div class="my-stat-val" style="color:var(--accent)" id="mpe-s-msgs">—</div><div class="my-stat-lbl">Сообщений</div></div>
-      <div class="my-stat"><div class="my-stat-val" style="color:var(--cyan)" id="mpe-s-hrs">—</div><div class="my-stat-lbl">Часов онлайн</div></div>
-      <div class="my-stat"><div class="my-stat-val" style="color:#e0e0f8" id="mpe-s-posts">—</div><div class="my-stat-lbl">Постов</div></div>
-      <div class="my-stat"><div class="my-stat-val" style="color:var(--green)" id="mpe-s-inv">—</div><div class="my-stat-lbl">Рефералов</div></div>
-      <div class="my-stat"><div class="my-stat-val" style="color:#f472b6" id="mpe-s-reacts">—</div><div class="my-stat-lbl">Реакций</div></div>
+
+    <!-- Emoji picker popup (shown on avatar tap) -->
+    <div class="pe-emoji-popup" id="pe-emoji-popup">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:10px;text-align:center;font-weight:600">Выбери аватар</div>
+      <div class="pe-emoji-grid" id="pe-emoji-grid"></div>
+      <div style="margin-top:12px;text-align:center">
+        <button onclick="document.getElementById('pe-photo-inp').click();peCloseEmojiPicker()" style="background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:8px;color:#e0e0f8;font-size:12px;padding:7px 16px;cursor:pointer;width:100%">📷 Загрузить фото</button>
+      </div>
+      <button onclick="peCloseEmojiPicker()" style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer">✕</button>
     </div>
-    <!-- Account Type compact toggle -->
-    <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:6px">Тип аккаунта</label>
-    <div class="acc-toggle-wrap" id="acc-type-row">
-      <div class="acc-toggle-opt sel pub" id="acc-pub" onclick="selectAccType('public')">🌐 Публичный</div>
-      <div class="acc-toggle-opt hid" id="acc-hid" onclick="selectAccType('hidden')">👻 Скрытый</div>
+
+    <!-- Row 5: Account type (3 options) -->
+    <label class="pe-field-label">Тип аккаунта</label>
+    <div class="acc-3-wrap">
+      <div class="acc-3-opt sel" id="acc3-pub" onclick="selectAccType('public')">🌐 Публичный</div>
+      <div class="acc-3-opt" id="acc3-hid" onclick="selectAccType('hidden')">👻 Скрытый</div>
+      <div class="acc-3-opt" id="acc3-biz" onclick="selectAccType('business')">💼 Бизнес</div>
     </div>
-    <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px">Аватар</label>
-    <div class="mpe-avatar-grid" id="mpe-avatar-grid"></div>
-    <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:10px">Статус</label>
-    <div class="mpe-status-row" id="mpe-status-row"></div>
-    <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:10px">Имя / Ник</label>
-    <input id="mpe-display-name" type="text" maxlength="40" placeholder="Как тебя называть в чате?" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;color:#e0e0f8;padding:8px 12px;font-size:12.5px;font-family:inherit;outline:none;box-sizing:border-box">
-    <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:10px">@username <span style="color:var(--text3);font-weight:400">(для поиска, как в Telegram)</span></label>
+
+    <!-- Row 7: Status slide-down -->
+    <label class="pe-field-label">Статус</label>
+    <button class="pe-status-btn" id="pe-status-btn" onclick="peToggleStatusDrop()">
+      <span class="pe-status-dot" id="pe-sdot" style="background:#00b894"></span>
+      <span id="pe-slabel">В сети</span>
+      <i class="ti ti-chevron-down" style="margin-left:auto;font-size:13px;color:var(--text3)"></i>
+    </button>
+    <div class="pe-status-drop" id="pe-status-drop">
+      <div class="pe-status-opt" onclick="peSetStatus('online')"><span class="pe-status-dot" style="background:#00b894"></span>В сети</div>
+      <div class="pe-status-opt" onclick="peSetStatus('busy')"><span class="pe-status-dot" style="background:#e17055"></span>Занят</div>
+      <div class="pe-status-opt" onclick="peSetStatus('away')"><span class="pe-status-dot" style="background:#fdcb6e"></span>Отошёл</div>
+      <div class="pe-status-opt" onclick="peSetStatus('ghost')"><span class="pe-status-dot" style="background:rgba(200,200,255,.3);border:1px solid var(--border)"></span>Призрак</div>
+    </div>
+
+    <!-- Row 8: Name -->
+    <label class="pe-field-label">Имя</label>
+    <input id="mpe-display-name" class="pe-inp" type="text" maxlength="40" placeholder="Как тебя называть?">
+
+    <!-- Row 9: @username -->
+    <label class="pe-field-label">@username <span style="color:var(--text3);font-weight:400;font-size:10px">для поиска, как в Telegram</span></label>
     <div style="position:relative">
-      <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:14px;font-weight:700">@</span>
-      <input id="mpe-username" type="text" maxlength="24" placeholder="твой_ник" autocomplete="off"
-        style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;color:#e0e0f8;padding:8px 12px 8px 26px;font-size:12.5px;font-family:'Courier New',monospace;outline:none;box-sizing:border-box"
+      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:14px;font-weight:700">@</span>
+      <input id="mpe-username" class="pe-inp" type="text" maxlength="24" placeholder="твой_ник" autocomplete="off"
+        style="padding-left:28px;font-family:'Courier New',monospace"
         oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9_]/g,'')">
     </div>
-    <div id="mpe-uid-label" style="font-size:10px;color:var(--text3);margin-top:5px"></div>
-    <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:4px;margin-top:10px">Bio / Описание</label>
-    <textarea id="mpe-bio" rows="2" maxlength="120" placeholder="Пару слов о себе..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;color:#e0e0f8;padding:8px 12px;font-size:12.5px;font-family:inherit;resize:none;outline:none"></textarea>
-    <div style="font-size:10px;color:var(--text3);margin-top:4px;text-align:right"><span id="mpe-bio-count">0</span>/120</div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modal-my-profile')">Отмена</button>
+
+    <!-- Row 11: Description (400 chars, expands on focus) -->
+    <label class="pe-field-label">Описание <span style="color:var(--text3);font-weight:400;font-size:10px">до 400 символов</span></label>
+    <textarea id="mpe-bio" class="pe-bio-area" maxlength="400" placeholder="Пару слов о себе… Ссылка в bio будет кликабельной на странице Portfolio" oninput="peBioInput(this)"></textarea>
+    <div style="font-size:10px;color:var(--text3);margin-top:4px;text-align:right"><span id="mpe-bio-count">0</span>/400</div>
+
+    <!-- Buttons -->
+    <div class="modal-actions" style="margin-top:24px">
+      <button class="btn btn-ghost" onclick="closePeOverlay()">Отмена</button>
       <button class="btn btn-accent" onclick="saveMyProfile()">💾 Сохранить</button>
     </div>
   </div>
 </div>
+
+<!-- ══ PORTFOLIO OVERLAY ═══════════════════════════════════════════ -->
+<div id="portfolio-overlay">
+  <div class="po-header">
+    <button class="pe-back-btn" onclick="closePortfolio()"><i class="ti ti-arrow-left"></i></button>
+    <span class="pe-header-title" id="po-header-name">Portfolio</span>
+  </div>
+  <div class="po-scroll" id="po-scroll">
+    <div class="po-hero">
+      <div class="po-avatar" id="po-avatar"><span id="po-av-emoji">👤</span></div>
+      <div class="po-name" id="po-name">—</div>
+      <div class="po-uname" id="po-uname"></div>
+      <div class="po-type-badge pub" id="po-type-badge">🌐 Публичный</div>
+    </div>
+    <div class="po-stats-row">
+      <div class="po-stat"><div class="po-stat-val" id="po-follows">0</div><div class="po-stat-lbl">Подписки</div></div>
+      <div class="po-stat"><div class="po-stat-val" id="po-followers">0</div><div class="po-stat-lbl">Подписчиков</div></div>
+      <div class="po-stat"><div class="po-stat-val" id="po-likes">0</div><div class="po-stat-lbl">Лайки</div></div>
+    </div>
+    <div class="po-bio" id="po-bio"></div>
+    <div class="po-grid" id="po-grid"></div>
+  </div>
+</div>
+
+<!-- dummy for old openModal/closeModal refs -->
+<div id="modal-my-profile" style="display:none"></div>
 
 <!-- ══ SEARCH MODAL ══════════════════════════════ -->
 <div class="srch-overlay" id="srch-overlay" onclick="srchOverlayClick(event)">
@@ -7958,126 +8077,302 @@ function renderAnalytics(){
 // ════════════════════════════════════════════════
 //  MY PROFILE EDITOR
 // ════════════════════════════════════════════════
-const PROFILE_AVATARS=['👤','🧑‍💻','🤖','👻','🎨','📡','🐋','🧠','🔮','⚡','🎯','🦊','🐉','🦁','🥷'];
-const STATUS_OPTS=[{v:'online',l:'🟢 В сети'},{v:'busy',l:'🔴 Занят'},{v:'idle',l:'🟡 Отошёл'},{v:'ghost',l:'👻 Призрак'}];
+const PROFILE_AVATARS=['👤','🧑‍💻','🤖','👻','🎨','📡','🐋','🧠','🔮','⚡','🎯','🦊','🐉','🦁','🥷','🌙','🎭','🦋','🌈','💎'];
+const STATUS_OPTS=[{v:'online',l:'В сети',c:'#00b894'},{v:'busy',l:'Занят',c:'#e17055'},{v:'away',l:'Отошёл',c:'#fdcb6e'},{v:'ghost',l:'Призрак',c:'rgba(200,200,255,.3)'}];
 
-if(!app.myProfile) app.myProfile={avatar:'👤',status:'online',bio:'',displayName:'',privacy:'public'};
+if(!app.myProfile) app.myProfile={avatar:'👤',status:'online',bio:'',displayName:'',privacy:'public',photoUrl:null};
+let _peUidVisible=false;
+let _peStatusDropOpen=false;
+let _peEmojiOpen=false;
+
+/* ── UID generation rules ─────────────────────────────────────────
+   Range: 00000115000 – 30000000000 (11 digits), min 3 distinct digits */
+function _genDisplayUid(seed){
+  // Use seed (backend integer id) to produce a deterministic display UID
+  const min=115000, max=30000000000;
+  // Simple LCG-style expansion of small id into the range
+  let n = (seed * 97331 + 1000000) % (max - min) + min;
+  // Pad to 11 digits
+  let s = String(Math.floor(n)).padStart(11,'0');
+  // Validate: at least 3 distinct digit chars
+  const distinct = new Set(s.split('')).size;
+  if(distinct < 3){
+    // Flip 3 digits deterministically
+    const arr = s.split('');
+    arr[2] = String((parseInt(arr[0])+3)%10);
+    arr[5] = String((parseInt(arr[1])+7)%10);
+    arr[8] = String((parseInt(arr[2])+5)%10);
+    s = arr.join('');
+  }
+  // No all-same check
+  if(new Set(s.split('')).size < 2) s = s.slice(0,8)+'123';
+  return s;
+}
 
 async function openMyProfile(){
   const p=app.myProfile;
-  document.getElementById('mpe-cur-avatar').textContent=p.avatar;
-  document.getElementById('mpe-cur-key').textContent=app.userKey?app.userKey.slice(0,18)+'…':'';
-  const myUid = localStorage.getItem('cw_user_id');
-  const uidEl = document.getElementById('mpe-cur-uid');
-  if(uidEl && myUid) uidEl.textContent='Мой UID: #'+myUid+' · нажми чтобы скопировать';
-  // Load real stats
-  const stats=await apiCall('/activity/stats');
-  const bal=await apiCall('/cube/balance');
-  if(stats){
-    const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
-    set('mpe-s-cube',(bal?.balance??app.wallet.balance).toLocaleString('ru'));
-    set('mpe-s-msgs',stats.messages||0);
-    set('mpe-s-hrs',(stats.online_hours||0)+'ч');
-    set('mpe-s-posts',stats.posts||0);
-    set('mpe-s-inv',stats.invites||0);
-    set('mpe-s-reacts',stats.reactions_received||0);
-  }
+  // Render avatar
+  _peRenderAvatar(p.avatar, p.photoUrl);
+  // Emoji picker
+  const eg=document.getElementById('pe-emoji-grid');
+  if(eg) eg.innerHTML=PROFILE_AVATARS.map(a=>`<div class="pe-emoji-opt${a===p.avatar?' sel':''}" onclick="peSelectEmoji('${a}',this)">${a}</div>`).join('');
   // Display name
   const dnEl=document.getElementById('mpe-display-name');
   if(dnEl) dnEl.value=app.displayName||p.displayName||'';
-  // Avatar grid
-  const grid=document.getElementById('mpe-avatar-grid');
-  if(grid) grid.innerHTML=PROFILE_AVATARS.map(a=>`
-    <div class="mpe-av-opt${a===p.avatar?' sel':''}" onclick="selectProfileAvatar('${a}',this)">${a}</div>`).join('');
-  // Status options
-  const srow=document.getElementById('mpe-status-row');
-  if(srow) srow.innerHTML=STATUS_OPTS.map(s=>`
-    <span class="mpe-s-opt${s.v===p.status?' sel':''}" onclick="selectProfileStatus('${s.v}',this)">${s.l}</span>`).join('');
   // Bio
   const bioEl=document.getElementById('mpe-bio');
-  if(bioEl){ bioEl.value=p.bio||''; bioEl.oninput=()=>{ const c=document.getElementById('mpe-bio-count'); if(c) c.textContent=bioEl.value.length; }; document.getElementById('mpe-bio-count').textContent=(p.bio||'').length; }
+  if(bioEl){ bioEl.value=p.bio||''; const c=document.getElementById('mpe-bio-count'); if(c) c.textContent=(p.bio||'').length; }
   // Username
   const unEl=document.getElementById('mpe-username');
-  const uidLbl=document.getElementById('mpe-uid-label');
   if(unEl) unEl.value=app._myUsername||'';
-  if(uidLbl) uidLbl.textContent=app._myUID?'Твой UID: '+app._myUID:'Загружается…';
-  // Load from /me
-  apiCall('/me').then(me=>{ if(!me) return; app._myUID='#'+me.id; app._myUsername=me.username||''; if(unEl) unEl.value=me.username||''; if(uidLbl) uidLbl.textContent='Твой UID: #'+me.id+(me.username?' · @'+me.username:''); });
-  // Account type toggle
+  // Status
+  peApplyStatus(p.status||'online');
+  // Account type
   syncAccTypeUI(p.privacy||'public');
-  openModal('modal-my-profile');
+  // UID — hidden by default
+  _peUidVisible=false;
+  const uidBtn=document.getElementById('pe-uid-btn-label');
+  const uidRev=document.getElementById('pe-uid-revealed');
+  if(uidBtn) uidBtn.textContent='Показать UID';
+  if(uidRev){ uidRev.style.display='none'; uidRev.textContent=''; }
+  // Fetch /me for real data
+  apiCall('/me').then(me=>{
+    if(!me) return;
+    app._myUID=_genDisplayUid(me.id);
+    app._myRawUID=me.id;
+    app._myUsername=me.username||'';
+    const u=document.getElementById('mpe-username');
+    if(u && !u.value) u.value=me.username||'';
+  });
+  // Open overlay
+  document.getElementById('pe-overlay').classList.add('open');
 }
 
-function selectProfileAvatar(a, el){
-  document.querySelectorAll('.mpe-av-opt').forEach(x=>x.classList.remove('sel'));
+function closePeOverlay(){
+  document.getElementById('pe-overlay').classList.remove('open');
+  peCloseEmojiPicker();
+}
+// backward compat shims
+// openModal/closeModal — extends originals to handle pe-overlay
+{ const _origOpen=openModal, _origClose=closeModal;
+  openModal=function(id){ if(id==='modal-my-profile'){ openMyProfile(); return; } _origOpen(id); };
+  closeModal=function(id){ if(id==='modal-my-profile'){ closePeOverlay(); return; } _origClose(id); };
+}
+
+function _peRenderAvatar(emoji, photoUrl){
+  const circle=document.getElementById('pe-av-circle');
+  if(!circle) return;
+  if(photoUrl){
+    circle.innerHTML=`<img src="${photoUrl}" alt="avatar">`;
+  } else {
+    circle.innerHTML=`<span id="pe-av-emoji">${emoji||'👤'}</span>`;
+  }
+}
+
+function peAvatarTap(e){
+  e.stopPropagation();
+  if(_peEmojiOpen){ peCloseEmojiPicker(); return; }
+  _peEmojiOpen=true;
+  document.getElementById('pe-emoji-popup').classList.add('open');
+}
+function peCloseEmojiPicker(){
+  _peEmojiOpen=false;
+  document.getElementById('pe-emoji-popup')?.classList.remove('open');
+}
+function peSelectEmoji(a, el){
+  document.querySelectorAll('.pe-emoji-opt').forEach(x=>x.classList.remove('sel'));
   el.classList.add('sel');
   app.myProfile.avatar=a;
-  document.getElementById('mpe-cur-avatar').textContent=a;
+  app.myProfile.photoUrl=null;
+  _peRenderAvatar(a, null);
+  peCloseEmojiPicker();
+}
+function pePhotoUpload(inp){
+  const file=inp.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    app.myProfile.photoUrl=e.target.result;
+    app.myProfile.avatar='📷';
+    _peRenderAvatar('📷', e.target.result);
+  };
+  reader.readAsDataURL(file);
 }
 
-function selectProfileStatus(v, el){
-  document.querySelectorAll('.mpe-s-opt').forEach(x=>x.classList.remove('sel'));
-  el.classList.add('sel');
-  app.myProfile.status=v;
+function peToggleUid(){
+  const rev=document.getElementById('pe-uid-revealed');
+  const btn=document.getElementById('pe-uid-btn-label');
+  _peUidVisible=!_peUidVisible;
+  if(_peUidVisible){
+    const uid=app._myUID||_genDisplayUid(parseInt(localStorage.getItem('cw_user_id')||'1'));
+    if(rev){ rev.style.display='block'; rev.textContent='UID · '+uid; }
+    if(btn) btn.textContent='Скрыть UID';
+  } else {
+    if(rev){ rev.style.display='none'; }
+    if(btn) btn.textContent='Показать UID';
+  }
 }
+
+function peToggleStatusDrop(){
+  _peStatusDropOpen=!_peStatusDropOpen;
+  document.getElementById('pe-status-drop')?.classList.toggle('open',_peStatusDropOpen);
+}
+function peSetStatus(v){
+  app.myProfile.status=v;
+  peApplyStatus(v);
+  _peStatusDropOpen=false;
+  document.getElementById('pe-status-drop')?.classList.remove('open');
+}
+function peApplyStatus(v){
+  const map={online:{l:'В сети',c:'#00b894'},busy:{l:'Занят',c:'#e17055'},away:{l:'Отошёл',c:'#fdcb6e'},ghost:{l:'Призрак',c:'rgba(200,200,255,.3)'}};
+  const s=map[v]||map.online;
+  const dot=document.getElementById('pe-sdot');
+  const lbl=document.getElementById('pe-slabel');
+  if(dot) dot.style.background=s.c;
+  if(lbl) lbl.textContent=s.l;
+}
+
+function peBioInput(ta){
+  const c=document.getElementById('mpe-bio-count');
+  if(c) c.textContent=ta.value.length;
+}
+
+// Keep for backward compat
+function selectProfileAvatar(a,el){ peSelectEmoji(a,el); }
+function selectProfileStatus(v,el){ peSetStatus(v); }
 
 async function saveMyProfile(){
   const bioEl=document.getElementById('mpe-bio');
   if(bioEl) app.myProfile.bio=bioEl.value.trim();
   const dnEl=document.getElementById('mpe-display-name');
   const newName=(dnEl?dnEl.value.trim():'')||app.displayName||'';
-  if(newName) { app.displayName=newName; app.myProfile.displayName=newName; }
-  // Save @username if changed
+  if(newName){ app.displayName=newName; app.myProfile.displayName=newName; }
   const unEl=document.getElementById('mpe-username');
   const newUsername=(unEl?unEl.value.trim():'');
-  if(newUsername && newUsername !== (app._myUsername||'')){
+  if(newUsername && newUsername!==(app._myUsername||'')){
     const uRes=await apiCall('/me/username',{method:'POST',body:JSON.stringify({username:newUsername})});
     if(uRes?.ok){ app._myUsername=newUsername; }
     else { showToast('❌ @'+newUsername+' уже занят или недопустим'); }
   }
-  // Patch backend (include account_type)
   const res=await apiCall('/me',{method:'PATCH',body:JSON.stringify({
     display_name: newName||undefined,
-    avatar_url: app.myProfile.avatar||undefined,
-    account_type: app.myProfile.accountType||'public'
+    avatar_url: app.myProfile.photoUrl||app.myProfile.avatar||undefined,
+    account_type: app.myProfile.privacy||'public',
+    bio: app.myProfile.bio||undefined
   })});
-  // Update visible name badge
   const dn=document.getElementById('wb-key-badge');
   if(dn&&newName) dn.textContent=getDisplayName();
-  // Apply hidden mode UI
   applyPrivacyMode();
-  closeModal('modal-my-profile');
+  closePeOverlay();
   showToast(res?'✅ Профиль сохранён':'✅ Обновлено локально');
   earnCube(5,'Обновлён профиль','🧬');
   pushNotification('🧬','Профиль обновлён · +5 CUBE');
 }
 
 // ════════════════════════════════════════════════
-//  ACCOUNT PRIVACY
+//  ACCOUNT PRIVACY (3 types)
 // ════════════════════════════════════════════════
 function selectAccType(type){
   app.myProfile.privacy=type;
   syncAccTypeUI(type);
 }
 function syncAccTypeUI(type){
-  const pub=document.getElementById('acc-pub');
-  const hid=document.getElementById('acc-hid');
-  if(!pub||!hid) return;
-  pub.classList.toggle('sel', type==='public');
-  pub.classList.toggle('pub', type==='public');
-  hid.classList.toggle('sel', type==='hidden');
-  hid.classList.toggle('hid', type==='hidden');
-  // Show/hide avatar section based on type
-  const avatarLabel=document.querySelector('label[for="mpe-avatar"]');
-  const grid=document.getElementById('mpe-avatar-grid');
-  if(grid){
-    grid.style.opacity=type==='hidden'?'0.35':'1';
-    grid.style.pointerEvents=type==='hidden'?'none':'auto';
+  ['pub','hid','biz'].forEach(k=>{
+    const el=document.getElementById('acc3-'+k);
+    if(el) el.classList.remove('sel');
+  });
+  const map={public:'pub',hidden:'hid',business:'biz'};
+  const el=document.getElementById('acc3-'+(map[type]||'pub'));
+  if(el) el.classList.add('sel');
+  // Ghost avatar when hidden
+  const av=document.getElementById('pe-av-circle');
+  if(av && !app.myProfile.photoUrl){
+    const emoji=type==='hidden'?'👻':(app.myProfile.avatar||'👤');
+    av.innerHTML=`<span id="pe-av-emoji">${emoji}</span>`;
   }
-  // Update current avatar preview
-  const av=document.getElementById('mpe-cur-avatar');
-  if(av) av.textContent=type==='hidden'?'👻':(app.myProfile.avatar||'👤');
 }
+
+// ════════════════════════════════════════════════
+//  PORTFOLIO PAGE
+// ════════════════════════════════════════════════
+function openPortfolio(){
+  const p=app.myProfile;
+  const name=app.displayName||p.displayName||'Пользователь';
+  const un=app._myUsername?'@'+app._myUsername:'';
+  // Header
+  const hdr=document.getElementById('po-header-name');
+  if(hdr) hdr.textContent=un||name;
+  // Avatar
+  const av=document.getElementById('po-avatar');
+  if(av){
+    if(p.photoUrl) av.innerHTML=`<img src="${p.photoUrl}" alt="avatar">`;
+    else av.innerHTML=`<span id="po-av-emoji">${p.avatar||'👤'}</span>`;
+  }
+  // Name + username
+  const nm=document.getElementById('po-name'); if(nm) nm.textContent=name;
+  const unEl=document.getElementById('po-uname'); if(unEl) unEl.textContent=un;
+  // Type badge
+  const badge=document.getElementById('po-type-badge');
+  if(badge){
+    const types={public:{cls:'pub',label:'🌐 Публичный'},hidden:{cls:'hid',label:'👻 Скрытый'},business:{cls:'biz',label:'💼 Бизнес'}};
+    const t=types[p.privacy||'public'];
+    badge.className='po-type-badge '+t.cls;
+    badge.textContent=t.label;
+  }
+  // Bio with clickable links
+  const bioEl=document.getElementById('po-bio');
+  if(bioEl){
+    const bio=p.bio||'';
+    const linked=bio.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+    bioEl.innerHTML=linked;
+  }
+  // Stats (placeholder — real follows/likes would come from backend)
+  apiCall('/activity/stats').then(stats=>{
+    if(!stats) return;
+    const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+    set('po-follows', stats.following||0);
+    set('po-followers', stats.followers||0);
+    set('po-likes', stats.reactions_received||0);
+  });
+  // Posts grid
+  _renderPortfolioGrid();
+  // Slide up
+  document.getElementById('portfolio-overlay').classList.add('open');
+}
+function closePortfolio(){
+  document.getElementById('portfolio-overlay').classList.remove('open');
+}
+function _renderPortfolioGrid(){
+  const grid=document.getElementById('po-grid');
+  if(!grid) return;
+  const myId=String(localStorage.getItem('cw_user_id')||'0');
+  const myPosts=(app.feed||[]).filter(p=>String(p.user_id||p.author_id)===myId||p._mine);
+  if(!myPosts.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--text3);font-size:13px">Постов пока нет</div>';
+    return;
+  }
+  grid.innerHTML=myPosts.slice(0,30).map(p=>{
+    const views=p.views||p.view_count||0;
+    const isVideo=p.type==='short'||p.type==='video';
+    const thumb=p.thumbnail||p.media_url||'';
+    const bg=thumb?`background:url('${thumb}') center/cover no-repeat`:`background:rgba(255,255,255,.05)`;
+    const inner=thumb?`<img class="po-cell-thumb" src="${thumb}" alt="">`:
+      `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:28px">${p.emoji||'📝'}</div>`;
+    const typeIcon=isVideo?'▶':'📝';
+    return `<div class="po-cell" style="${bg}">
+      ${inner}
+      <div class="po-cell-views"><span>${isVideo?'▶':''}</span>${views>0?_fmtNum(views):''}</div>
+      <div class="po-cell-type">${isVideo?'▶':''}</div>
+    </div>`;
+  }).join('');
+}
+function _fmtNum(n){ return n>=1000?(n/1000).toFixed(1)+'K':String(n); }
+
+// Close dropdowns when clicking elsewhere in pe-overlay
+document.addEventListener('click', e=>{
+  if(_peEmojiOpen && !e.target.closest('.pe-av-wrap') && !e.target.closest('.pe-emoji-popup')) peCloseEmojiPicker();
+  if(_peStatusDropOpen && !e.target.closest('.pe-status-btn') && !e.target.closest('.pe-status-drop')){ _peStatusDropOpen=false; document.getElementById('pe-status-drop')?.classList.remove('open'); }
+});
+
 function getDisplayName(){
   const p=app.myProfile;
   if(p.privacy==='hidden'){
