@@ -414,7 +414,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #grp-chat-overlay .gco-reply-bar{flex-shrink:0;width:100%}
 #grp-chat-overlay .fmt-bar{flex-shrink:0;width:100%}
 #grp-chat-overlay .gco-input-row{flex-shrink:0;width:100%;position:sticky;bottom:0;z-index:5}
-.gco-topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(5,5,20,.97);backdrop-filter:var(--blur);flex-shrink:0}
+.gco-topbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(5,5,20,.97);backdrop-filter:var(--blur);flex-shrink:0;min-height:54px}
 .gco-back{background:transparent;border:1px solid var(--border);color:var(--text2);padding:5px 12px;border-radius:20px;font-size:13px;cursor:pointer;transition:all var(--transition)}
 .gco-back:hover{background:rgba(255,255,255,.07);color:var(--text)}
 .gco-icon{font-size:22px}
@@ -432,7 +432,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-bubble-text{font-size:13px;color:#e0e0f8;line-height:1.5;white-space:pre-wrap;word-break:break-word;user-select:none;-webkit-user-select:none}
 .gco-bubble-text.selectable{user-select:text;-webkit-user-select:text}
 .gco-bubble-time{font-size:10px;color:var(--text3);margin-top:4px;text-align:right;user-select:none;-webkit-user-select:none}
-.gco-input-row{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--border);background:rgba(5,5,20,.95);backdrop-filter:var(--blur);flex-shrink:0;align-items:center;width:100%;overflow:hidden;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+.gco-input-row{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--border);background:rgba(5,5,20,.95);backdrop-filter:var(--blur);flex-shrink:0;align-items:center;width:100%;overflow:visible;padding-bottom:max(8px,env(safe-area-inset-bottom))}
 .gco-input{flex:1;min-width:0;width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:20px;color:#e0e0f8;padding:9px 14px;font-size:13px;font-family:inherit;outline:none;transition:border-color var(--transition),background var(--transition)}
 .gco-input:focus{border-color:rgba(0,149,246,.4);background:rgba(255,255,255,.08)}
 .gco-send{background:linear-gradient(135deg,rgba(0,149,246,.8),rgba(0,100,220,.7));border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all var(--transition);box-shadow:0 2px 10px rgba(0,149,246,.25)}
@@ -455,7 +455,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gc-open-chat{margin-top:6px;width:100%;padding:7px;border-radius:8px;border:none;background:rgba(0,149,246,.18);color:var(--accent);font-size:12px;font-weight:700;cursor:pointer;transition:all .18s}
 .gc-open-chat:hover{background:rgba(0,149,246,.35)}
 /* Group full view overhaul */
-.gco-topbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);flex-shrink:0;min-height:54px}
 .gco-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);flex-shrink:0;background:rgba(255,255,255,.01)}
 .gco-tab{padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.5);border:none;background:transparent;border-bottom:2px solid transparent;transition:all .18s}
 .gco-tab.active{color:#fff;border-bottom-color:var(--accent)}
@@ -593,7 +592,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-voice-btn:hover{color:var(--text)}
 .gco-voice-btn.rec{color:var(--red);animation:pulse .8s infinite}
 /* Emoji picker floating */
-.gco-emoji-picker{position:absolute;bottom:calc(100% + 8px);left:0;background:#14142a;border:1px solid var(--border);border-radius:14px;padding:10px;z-index:200;display:none;grid-template-columns:repeat(8,34px);gap:2px;box-shadow:0 8px 36px rgba(0,0,0,.7);animation:fadeUp .14s ease}
+.gco-emoji-picker{position:fixed;bottom:80px;left:10px;background:#14142a;border:1px solid var(--border);border-radius:14px;padding:10px;z-index:9500;display:none;grid-template-columns:repeat(8,34px);gap:2px;box-shadow:0 8px 36px rgba(0,0,0,.7);animation:fadeUp .14s ease;max-width:calc(100vw - 20px)}
 .gco-emoji-picker.open{display:grid}
 .gco-epick{background:none;border:none;font-size:20px;cursor:pointer;width:34px;height:34px;border-radius:8px;transition:all .1s;display:flex;align-items:center;justify-content:center}
 .gco-epick:hover{background:rgba(255,255,255,.1);transform:scale(1.2)}
@@ -2891,16 +2890,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         </div>
         <!-- Format bar (shows above keyboard when input focused) -->
         <div class="fmt-bar" id="gco-fmt-bar">
-          <button class="fmt-bar-btn" onclick="fmtApply('bold')" title="Жирный"><b>B</b></button>
-          <button class="fmt-bar-btn" onclick="fmtApply('italic')" title="Курсив"><i>I</i></button>
-          <button class="fmt-bar-btn" onclick="fmtApply('strike')" title="Зачёрк."><s>S</s></button>
-          <button class="fmt-bar-btn" onclick="fmtApply('under')" title="Подчёрк."><u>U</u></button>
-          <button class="fmt-bar-btn" onclick="fmtApply('mono')" title="Моно" style="font-family:monospace">M</button>
-          <button class="fmt-bar-btn" onclick="fmtApply('quote')" title="Цитата">❝</button>
-          <button class="fmt-bar-btn" onclick="fmtApply('spoiler')" title="Скрытый">||x||</button>
-          <button class="fmt-bar-btn" onclick="fmtApply('link')" title="Ссылка">🔗</button>
+          <button class="fmt-bar-btn" onmousedown="event.preventDefault()" onclick="fmtApply('bold')" title="Жирный"><b>B</b></button>
+          <button class="fmt-bar-btn" onmousedown="event.preventDefault()" onclick="fmtApply('italic')" title="Курсив"><i>I</i></button>
+          <button class="fmt-bar-btn" onmousedown="event.preventDefault()" onclick="fmtApply('strike')" title="Зачёрк."><s>S</s></button>
+          <button class="fmt-bar-btn" onmousedown="event.preventDefault()" onclick="fmtApply('under')" title="Подчёрк."><u>U</u></button>
+          <button class="fmt-bar-btn" onmousedown="event.preventDefault()" onclick="fmtApply('mono')" title="Моно" style="font-family:monospace">M</button>
+          <button class="fmt-bar-btn" onmousedown="event.preventDefault()" onclick="fmtApply('quote')" title="Цитата">❝</button>
+          <button class="fmt-bar-btn" onmousedown="event.preventDefault()" onclick="fmtApply('spoiler')" title="Скрытый">||x||</button>
+          <button class="fmt-bar-btn" onmousedown="event.preventDefault()" onclick="fmtApply('link')" title="Ссылка">🔗</button>
           <div class="fmt-bar-sep"></div>
-          <button class="fmt-bar-btn" onclick="fmtApply('date')" title="Дата">📅</button>
+          <button class="fmt-bar-btn" onmousedown="event.preventDefault()" onclick="fmtApply('date')" title="Дата">📅</button>
           <div style="flex:1"></div>
           <button class="fmt-bar-close" onclick="hideFmtBar()">✕</button>
         </div>
@@ -2916,7 +2915,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
             </div>
           </div>
           <button class="gco-icon-btn" onclick="gcoToggleEmoji()" title="Эмодзи" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:16px"></i></button>
-          <button id="gco-mic-btn" title="Голосовое" style="background:rgba(255,255,255,.06);border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;color:var(--text2);font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s">
+          <button id="gco-mic-btn" title="Голосовое" onclick="gcoStartVoiceInChat()" style="background:rgba(255,255,255,.06);border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;color:var(--text2);font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s">
             <i class="ti ti-microphone" style="font-size:16px"></i>
           </button>
           <button id="gco-send-btn" class="gco-send" onclick="sendGroupMsg()" title="Отправить" style="display:none"><i class="ti ti-send" style="font-size:15px"></i></button>
@@ -10238,7 +10237,7 @@ function closeGroupChat(){
 }
 
 function toggleGrpMembersPanel(){
-  document.getElementById('grp-members-panel').classList.toggle('open');
+  document.getElementById('grp-info-panel')?.classList.toggle('open');
 }
 
 // Telegram sender colors (cycle by user_id hash)
@@ -10390,6 +10389,21 @@ async function sendGroupMsg(){
   const inp=document.getElementById('gco-input');
   const txt=(inp?.value||'').trim();
   if(!txt) return;
+
+  // ── Edit mode ─────────────────────────────────────────────────
+  const editId=inp.dataset.editMsgId;
+  if(editId){
+    inp.value=''; delete inp.dataset.editMsgId;
+    inp.placeholder='Написать…'; inp.style.borderColor='';
+    gcoUpdateSendBtn();
+    // Optimistic update of the bubble
+    const bubbleEl=document.getElementById('gcob-'+editId);
+    if(bubbleEl){ const tEl=bubbleEl.querySelector('.gco-bubble-text'); if(tEl) tEl.textContent=txt; }
+    await apiCall('/groups/'+_grpChatId+'/messages/'+editId,'PUT',{content:txt});
+    showToast('✏️ Изменено');
+    return;
+  }
+
   inp.value='';
   gcoHideCtxMenu();
   const myName=localStorage.getItem('cw_display_name')||'Я';
@@ -10567,11 +10581,12 @@ function gcoReact(msgId, emoji, e){
 }
 function gcoUnreact(msgId, emoji){
   if(!_grpMsgReactions[msgId]) return;
-  _grpMsgReactions[msgId][emoji]=Math.max(0,(_grpMsgReactions[msgId][emoji]||1)-1);
-  gcoReact(msgId, emoji, null); // re-render without incrementing
-  _grpMsgReactions[msgId][emoji]=(_grpMsgReactions[msgId][emoji]||0)+0; // noop
+  const cur=_grpMsgReactions[msgId][emoji]||0;
+  if(cur<=0) return;
+  _grpMsgReactions[msgId][emoji]=cur-1;
   const wrap=document.getElementById('gco-reacts-'+msgId);
-  if(wrap) wrap.innerHTML=Object.entries(_grpMsgReactions[msgId]).filter(([,v])=>v>0).map(([em,cnt])=>`<span class="gco-bubble-rbadge mine">${em} ${cnt}</span>`).join('');
+  if(wrap) wrap.innerHTML=Object.entries(_grpMsgReactions[msgId]).filter(([,v])=>v>0)
+    .map(([em,cnt])=>`<span class="gco-bubble-rbadge mine" onclick="gcoUnreact(${msgId},'${em}')">${em} ${cnt}</span>`).join('');
 }
 
 // ══ CONTEXT MENU ─────────────────────────────────────────────────────────
@@ -10617,15 +10632,21 @@ function gcoHideCtxMenu(){
 }
 function gcoCtxReply(){
   if(!_grpCtxState) return;
+  gcoHideCtxMenu();
   gcoReply(_grpCtxState.id, _grpCtxState.author||'', _grpCtxState.text||'');
 }
+function gcoReactFromCtx(emoji){
+  if(!_grpCtxState) return;
+  gcoReact(_grpCtxState.id, emoji, null);
+  gcoHideCtxMenu();
+}
 function gcoCtxCopy(){
-  if(_grpCtxState) navigator.clipboard.writeText(_grpCtxState.text||'');
+  if(_grpCtxState) navigator.clipboard.writeText(_parseMsgPreview(_grpCtxState.text||''));
   showToast('📋 Скопировано'); gcoHideCtxMenu();
 }
 function gcoCtxPin(){
   if(!_grpCtxState) return;
-  const t=(_grpCtxState.text||'').slice(0,80);
+  const t=_parseMsgPreview(_grpCtxState.text||'').slice(0,80);
   _grpPinnedText=t;
   document.getElementById('gco-pinned-text').textContent=t;
   document.getElementById('gco-pinned').classList.add('visible');
@@ -10645,8 +10666,8 @@ async function gcoCtxDelete(){
 function gcoCtxForward(){
   if(!_grpCtxState) return;
   gcoHideCtxMenu();
-  // Put text in clipboard with attribution
-  navigator.clipboard.writeText(`[Переслано от ${_grpCtxState.author||''}]\n${_grpCtxState.text||''}`);
+  const preview=_parseMsgPreview(_grpCtxState.text||'');
+  navigator.clipboard.writeText(`[Переслано от ${_grpCtxState.author||''}]\n${preview}`);
   showToast('➡️ Скопировано для пересылки');
 }
 function gcoCtxEdit(){
@@ -10654,13 +10675,20 @@ function gcoCtxEdit(){
   gcoHideCtxMenu();
   const inp=document.getElementById('gco-input');
   if(inp){
-    inp.value=_grpCtxState.text||'';
-    inp.focus();
+    const preview=_parseMsgPreview(_grpCtxState.text||'');
+    inp.value=preview;
     inp.dataset.editMsgId=_grpCtxState.id;
     inp.placeholder='Редактировать сообщение…';
+    inp.style.borderColor='rgba(0,149,246,.6)';
+    inp.focus();
+    inp.setSelectionRange(preview.length,preview.length);
     gcoUpdateSendBtn();
   }
-  showToast('✏️ Редактируй и отправь заново');
+  showToast('✏️ Редактируй и отправь');
+}
+function gcoCancelEditMode(){
+  const inp=document.getElementById('gco-input');
+  if(inp){ inp.value=''; delete inp.dataset.editMsgId; inp.placeholder='Написать…'; inp.style.borderColor=''; gcoUpdateSendBtn(); }
 }
 function gcoCtxSelectText(){
   gcoHideCtxMenu();
@@ -10782,6 +10810,7 @@ async function gcoSelectAction(action){
 
 // ══ FORMAT BAR + BUBBLE SELECTION (unified for Groups + DM) ══════════
 let _fmtActiveInput=null;  // which textarea is currently targeted
+let _fmtSavedSel={start:0,end:0}; // selection saved before button blur
 let _bspBubbleEl=null;     // which bubble element has selection
 let _bspSelText='';        // cached selected text from bubble
 
@@ -10828,8 +10857,11 @@ function hideFmtBar(){
 function fmtApply(type){
   const el=_fmtActiveInput;
   if(!el) return;
-  const start=el.selectionStart||0, end=el.selectionEnd||0;
-  if(start===end) return;
+  // Use live selection if available, otherwise fall back to saved (mobile blur resets it)
+  const liveSel = document.activeElement===el;
+  const start = liveSel ? (el.selectionStart||0) : _fmtSavedSel.start;
+  const end   = liveSel ? (el.selectionEnd||0)   : _fmtSavedSel.end;
+  if(start===end){ showToast('Выдели текст для форматирования'); return; }
   const sel=el.value.substring(start,end);
   const before=el.value.substring(0,start), after=el.value.substring(end);
   const w=_fmtWrap(type, sel);
@@ -10844,18 +10876,18 @@ function fmtApply(type){
 function _setupFmtBar(inputEl){
   if(!inputEl||inputEl._fmtBarHooked) return;
   inputEl._fmtBarHooked=true;
+  const saveSel=()=>{ _fmtSavedSel={start:inputEl.selectionStart||0,end:inputEl.selectionEnd||0}; };
   const check=()=>{
     const s=inputEl.selectionStart, e2=inputEl.selectionEnd;
+    saveSel();
     if(s!==e2){ showFmtBar(inputEl); }
     // Don't auto-hide: user dismisses with ✕
   };
   inputEl.addEventListener('focus',()=>{ _fmtActiveInput=inputEl; });
   inputEl.addEventListener('mouseup',check);
+  inputEl.addEventListener('keyup',check);
+  inputEl.addEventListener('select',saveSel);
   inputEl.addEventListener('touchend',()=>setTimeout(check,80));
-  inputEl.addEventListener('keyup',()=>{
-    const s=inputEl.selectionStart,e2=inputEl.selectionEnd;
-    if(s!==e2) showFmtBar(inputEl);
-  });
 }
 
 /* ── Bubble text selection popup ────────────────────────────────────── */
@@ -11015,13 +11047,47 @@ function mfpCtxForward(){
 }
 function mfpCtxSelect(){ hideFmtBar(); if(_grpCtxState) gcoEnterSelect(_grpCtxState.id); }
 
+// ══ VOICE INPUT ──────────────────────────────────────────────────────────
+function gcoStartVoiceInChat(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    showToast('🎙 Голосовой ввод недоступен в этом браузере');
+    return;
+  }
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const rec=new SpeechRecognition();
+  rec.lang='ru-RU'; rec.interimResults=false; rec.maxAlternatives=1;
+  const micBtn=document.getElementById('gco-mic-btn');
+  if(micBtn){ micBtn.style.color='var(--red)'; micBtn.title='Слушаю…'; }
+  rec.onresult=e=>{
+    const txt=e.results[0][0].transcript;
+    const inp=document.getElementById('gco-input');
+    if(inp){ inp.value+=(inp.value?' ':'')+txt; inp.focus(); gcoUpdateSendBtn(); }
+  };
+  rec.onend=()=>{ if(micBtn){ micBtn.style.color=''; micBtn.title='Голосовое'; } };
+  rec.onerror=()=>{ showToast('Ошибка голосового ввода'); if(micBtn){ micBtn.style.color=''; micBtn.title='Голосовое'; } };
+  rec.start();
+}
+
 // ══ EMOJI PICKER ─────────────────────────────────────────────────────────
 function gcoToggleEmoji(){
-  document.getElementById('gco-emoji-picker')?.classList.toggle('open');
+  const picker=document.getElementById('gco-emoji-picker');
+  if(!picker) return;
+  const isOpen=picker.classList.toggle('open');
+  if(isOpen){
+    // Position above the input row using fixed coords
+    const inputRow=document.getElementById('gco-input-row');
+    if(inputRow){
+      const rect=inputRow.getBoundingClientRect();
+      picker.style.bottom=(window.innerHeight-rect.top+8)+'px';
+      picker.style.left='10px';
+      picker.style.right='10px';
+      picker.style.width='auto';
+    }
+  }
 }
 function gcoInsertEmoji(e){
   const inp=document.getElementById('gco-input');
-  if(inp){ inp.value+=e; inp.focus(); }
+  if(inp){ inp.value+=e; inp.focus(); gcoUpdateSendBtn(); }
   document.getElementById('gco-emoji-picker')?.classList.remove('open');
 }
 
@@ -11380,7 +11446,7 @@ async function submitGcoPost(){
     if(modal) modal.style.display='none';
     document.getElementById('gco-post-text').value='';
     gcoClearUpload();
-    await _loadGroupPosts(_grpChatId);
+    await _loadGroupMsgs(true);
   } else {
     showToast('Ошибка публикации');
   }
@@ -12488,6 +12554,17 @@ const _grpOvId='grp-chat-overlay';
         <div id="mas-author" style="font-size:11px;color:var(--accent);font-weight:700;margin-bottom:4px"></div>
         <div id="mas-text" style="font-size:13px;color:var(--text2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical"></div>
       </div>
+    </div>
+    <!-- Quick reactions row -->
+    <div style="display:flex;gap:6px;padding:10px 18px 4px;border-bottom:1px solid rgba(255,255,255,.07);overflow-x:auto">
+      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('👍')">👍</button>
+      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('❤️')">❤️</button>
+      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('😂')">😂</button>
+      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('😮')">😮</button>
+      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('😢')">😢</button>
+      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('🔥')">🔥</button>
+      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('🎉')">🎉</button>
+      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('💯')">💯</button>
     </div>
     <!-- Actions -->
     <div style="padding:6px 0 8px">
