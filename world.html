@@ -1759,31 +1759,45 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #portfolio-overlay.open{transform:translateY(0)}
 .po-header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(5,5,20,.97);backdrop-filter:var(--blur);flex-shrink:0}
 .po-scroll{flex:1;overflow-y:auto}
-.po-hero{display:flex;flex-direction:column;align-items:center;padding:28px 20px 16px}
+.po-hero{display:flex;flex-direction:column;align-items:center;padding:32px 20px 16px;width:100%;box-sizing:border-box}
 .po-avatar{width:92px;height:92px;border-radius:50%;font-size:46px;display:flex;align-items:center;justify-content:center;border:3px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,linear-gradient(135deg,#0095F6,#833AB4) border-box;overflow:hidden;margin-bottom:10px}
 .po-avatar img{width:100%;height:100%;object-fit:cover}
 .po-name{font-size:19px;font-weight:800;color:#e0e0f8;margin-bottom:2px}
 .po-uname{font-size:13px;color:var(--accent);margin-bottom:8px}
-.po-type-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:6px}
-.po-info-wrap{overflow:hidden;max-height:0;transition:max-height .3s ease;width:100%}
-.po-info-wrap.open{max-height:600px}
-.po-expand-btn{background:none;border:1px solid var(--border);border-radius:20px;color:var(--text3);font-size:10px;font-weight:600;padding:3px 14px;cursor:pointer;margin:6px 0 14px;letter-spacing:.3px}
+.po-type-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:10px}
 .po-type-badge.pub{background:rgba(0,149,246,.12);color:var(--accent);border:1px solid rgba(0,149,246,.25)}
 .po-type-badge.hid{background:rgba(255,255,255,.07);color:var(--text2);border:1px solid var(--border)}
 .po-type-badge.biz{background:rgba(251,191,36,.1);color:var(--gold);border:1px solid rgba(251,191,36,.25)}
+/* Portfolio info block — always visible */
+#po-info-block{width:100%;text-align:center;padding:0 24px 8px}
+.po-bio{font-size:13.5px;color:var(--text2);line-height:1.65;white-space:pre-wrap;word-break:break-word;text-align:center;margin-bottom:6px}
+.po-bio a{color:var(--accent);text-decoration:none}
+/* Portfolio stats */
 .po-stats-row{display:flex;border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);width:100%}
-.po-stat{flex:1;text-align:center;padding:14px 6px}
+.po-stat{flex:1;text-align:center;padding:14px 6px;cursor:pointer;transition:background .12s}
+.po-stat:hover{background:rgba(255,255,255,.03)}
 .po-stat-val{font-size:18px;font-weight:900;color:#e0e0f8;font-family:'Courier New',monospace}
 .po-stat-lbl{font-size:10px;color:var(--text3);margin-top:2px}
-.po-bio{font-size:13.5px;color:var(--text2);line-height:1.65;white-space:pre-wrap;word-break:break-word;text-align:center;margin-bottom:8px}
-.po-bio a{color:var(--accent);text-decoration:none}
+/* Portfolio edit button */
+.po-edit-btn{font-size:12px;font-weight:700;color:var(--accent);background:rgba(0,149,246,.1);border:1px solid rgba(0,149,246,.25);border-radius:8px;padding:5px 12px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.po-edit-btn:hover{background:rgba(0,149,246,.18)}
+/* Grid tabs */
+.po-tabs-bar{display:flex;border-bottom:1px solid var(--border2)}
+.po-tab{flex:1;padding:12px 0;background:none;border:none;border-bottom:2px solid transparent;color:var(--text3);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:color .15s,border-color .15s}
 .po-tab.active{color:#e0e0f8!important;border-bottom-color:var(--accent)!important}
-.po-tab:hover{color:#e0e0f8!important}
+.po-tab:hover{color:#e0e0f8}
 .po-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px}
 .po-cell{aspect-ratio:1;background:rgba(255,255,255,.05);position:relative;overflow:hidden;cursor:pointer}
 .po-cell-thumb{width:100%;height:100%;object-fit:cover;display:block}
 .po-cell-views{position:absolute;bottom:5px;left:5px;font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.9);display:flex;align-items:center;gap:2px}
-.po-cell-type{position:absolute;top:5px;right:5px;font-size:10px;color:rgba(255,255,255,.7)}
+/* Desktop centering for profile overlays */
+@media(min-width:640px){
+  .pe-header,.pe-body{max-width:580px;width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}
+  .po-header{max-width:580px;width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}
+  .po-hero,.po-stats-row,.po-tabs-bar{max-width:580px;margin-left:auto;margin-right:auto}
+  .po-grid{max-width:580px;margin:0 auto}
+  #po-info-block{padding-left:0;padding-right:0}
+}
 /* keep old mpe classes so existing refs don't break */
 .mpe-avatar-grid{display:none}.mpe-status-row{display:none}.mpe-s-opt{display:none}.mpe-av-opt{display:none}
 /* Conditional profile field groups */
@@ -3576,35 +3590,46 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 <div id="portfolio-overlay">
   <div class="po-header">
     <button class="pe-back-btn" onclick="closePortfolio()"><i class="ti ti-arrow-left"></i></button>
-    <span class="pe-header-title" id="po-header-name">Portfolio</span>
+    <span class="pe-header-title" id="po-header-name" style="flex:1"></span>
+    <button class="po-edit-btn" onclick="closePortfolio();openMyProfile()">
+      <i class="ti ti-edit" style="font-size:13px"></i> Изменить
+    </button>
   </div>
   <div class="po-scroll" id="po-scroll">
+    <!-- Hero -->
     <div class="po-hero">
-      <div class="po-avatar" id="po-avatar"><span id="po-av-emoji">👤</span></div>
+      <div class="po-avatar" id="po-avatar"><span>👤</span></div>
       <div class="po-name" id="po-name">—</div>
       <div class="po-uname" id="po-uname"></div>
       <div class="po-type-badge pub" id="po-type-badge">🌐 Публичный</div>
-      <!-- Collapsible info block: bio + address + links -->
-      <div class="po-info-wrap" id="po-info-block">
-        <div style="text-align:center;padding:10px 24px 4px">
-          <div class="po-bio" id="po-bio" style="padding:0;text-align:center"></div>
-          <div id="po-extra"></div>
-        </div>
+      <!-- Bio + address + links — always visible -->
+      <div id="po-info-block">
+        <div class="po-bio" id="po-bio"></div>
+        <div id="po-extra"></div>
       </div>
-      <button class="po-expand-btn" id="po-expand-btn" onclick="poToggleInfo()">Полный ↓</button>
     </div>
+    <!-- Stats -->
     <div class="po-stats-row">
-      <div class="po-stat"><div class="po-stat-val" id="po-follows">0</div><div class="po-stat-lbl">Подписки</div></div>
-      <div class="po-stat"><div class="po-stat-val" id="po-followers">0</div><div class="po-stat-lbl">Подписчиков</div></div>
-      <div class="po-stat"><div class="po-stat-val" id="po-likes">0</div><div class="po-stat-lbl">Лайки</div></div>
+      <div class="po-stat">
+        <div class="po-stat-val" id="po-follows">0</div>
+        <div class="po-stat-lbl">Подписки</div>
+      </div>
+      <div class="po-stat">
+        <div class="po-stat-val" id="po-followers">0</div>
+        <div class="po-stat-lbl">Подписчиков</div>
+      </div>
+      <div class="po-stat">
+        <div class="po-stat-val" id="po-likes">0</div>
+        <div class="po-stat-lbl">Лайки</div>
+      </div>
     </div>
     <!-- Grid tabs -->
-    <div style="display:flex;border-bottom:1px solid var(--border2);margin-top:8px">
-      <button class="po-tab active" id="po-tab-short" onclick="poSetTab('short',this)" style="flex:1;padding:12px 0;background:none;border:none;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;display:flex;align-items:center;justify-content:center;gap:6px;transition:color .15s,border-color .15s">
+    <div class="po-tabs-bar">
+      <button class="po-tab active" id="po-tab-short" onclick="poSetTab('short',this)">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><polygon points="5.5,4 10,7 5.5,10" fill="currentColor"/></svg>
         Shorts
       </button>
-      <button class="po-tab" id="po-tab-post" onclick="poSetTab('post',this)" style="flex:1;padding:12px 0;background:none;border:none;color:var(--text3);font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;display:flex;align-items:center;justify-content:center;gap:6px;transition:color .15s,border-color .15s">
+      <button class="po-tab" id="po-tab-post" onclick="poSetTab('post',this)">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="7.5" y="1" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="1" y="7.5" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.4"/></svg>
         Посты
       </button>
@@ -8546,15 +8571,6 @@ function openPortfolio(){
     if(ex) ex.innerHTML='';
   }
 
-  // ── Expand button: show only if there's something to show ──
-  const infoWrap=document.getElementById('po-info-block');
-  const expBtn=document.getElementById('po-expand-btn');
-  if(infoWrap){ infoWrap.classList.remove('open'); }
-  if(expBtn){
-    expBtn.style.display=(!isHidden&&hasInfo)?'':'none';
-    expBtn.textContent='Полный ↓';
-  }
-
   // ── Stats ───────────────────────────────────────
   apiCall('/activity/stats').then(stats=>{
     if(!stats) return;
@@ -8572,13 +8588,6 @@ function openPortfolio(){
 }
 function closePortfolio(){
   document.getElementById('portfolio-overlay').classList.remove('open');
-}
-function poToggleInfo(){
-  const wrap=document.getElementById('po-info-block');
-  const btn=document.getElementById('po-expand-btn');
-  if(!wrap) return;
-  const open=wrap.classList.toggle('open');
-  if(btn) btn.textContent=open?'Свернуть ↑':'Полный ↓';
 }
 let _poTab='short';
 function poSetTab(tab, btn){
