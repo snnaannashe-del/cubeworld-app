@@ -10328,7 +10328,7 @@ function _buildGroupMsg(m, myId){
   let replyHtml='';
   if(parsedMsg&&parsedMsg.reply){
     const rplText=_parseMsgPreview(parsedMsg.reply.text||'').slice(0,80);
-    replyHtml=`<div class="gco-bubble-reply"><div class="rpl-name" style="color:var(--accent)">↩ ${escHtml(parsedMsg.reply.author||'')}</div><div class="rpl-text">${escHtml(rplText)}</div></div>`;
+    replyHtml=`<div class="gco-bubble-reply"><div class="rpl-name" style="color:var(--accent)">↩ ${escHtml(parsedMsg.reply.author||'')}</div><div class="rpl-text">${_renderFmt(rplText)}</div></div>`;
   }
   if(parsedMsg&&parsedMsg.url){
     const safeUrl=escHtml(parsedMsg.url);
@@ -10417,7 +10417,10 @@ function _buildGroupMsg(m, myId){
       </div>${txt}`;
     }
   } else {
-    bubbleContent=`<div class="gco-bubble-text">${_renderFmt(m.content||'')}</div>`;
+    // If parsedMsg exists (JSON content with text+reply but no url), use parsedMsg.text
+    // Otherwise fall back to raw m.content (plain text message)
+    const displayText=(parsedMsg&&parsedMsg.text!==undefined)?String(parsedMsg.text||''):(m.content||'');
+    bubbleContent=`<div class="gco-bubble-text">${_renderFmt(displayText)}</div>`;
   }
   const tick=isMe?`<span class="gco-tick read" style="margin-left:4px;font-size:11px;color:rgba(255,255,255,.45)">✓✓</span>`:'';
   // Use decoded text for context menu display; keep raw content for API operations
@@ -11614,18 +11617,25 @@ async function _uploadToTelegraph(file){
 async function _uploadToCloudinary(file, onProgress){
   const cloud=_cldCloud(), preset=_cldPreset();
   if(!cloud || !preset) return null;
+  // Use explicit resource type — 'auto' can fail for videos on some presets
+  const resType=file.type.startsWith('video/')?'video':file.type.startsWith('image/')?'image':'auto';
   const fd=new FormData();
   fd.append('file', file);
   fd.append('upload_preset', preset);
   return new Promise((resolve)=>{
     const xhr=new XMLHttpRequest();
-    xhr.open('POST',`https://api.cloudinary.com/v1_1/${cloud}/auto/upload`);
+    xhr.open('POST',`https://api.cloudinary.com/v1_1/${cloud}/${resType}/upload`);
     xhr.upload.onprogress=e=>{ if(onProgress&&e.lengthComputable) onProgress(Math.round(e.loaded/e.total*90)); };
     xhr.onload=()=>{
-      try{ const j=JSON.parse(xhr.responseText); resolve(j.secure_url||null); }
-      catch(e){ resolve(null); }
+      try{
+        const j=JSON.parse(xhr.responseText);
+        if(j.error){ console.warn('Cloudinary error:',j.error.message); resolve(null); return; }
+        resolve(j.secure_url||null);
+      }catch(e){ resolve(null); }
     };
     xhr.onerror=()=>resolve(null);
+    xhr.ontimeout=()=>resolve(null);
+    xhr.timeout=60000;
     xhr.send(fd);
   });
 }
@@ -11859,19 +11869,25 @@ function gcoAttachInChat(){
 
 async function gcoHandleFileInChat(input){
   const file=input.files[0]; if(!file) return;
-  showToast('⏳ Загружаем…');
-  const url=await _uploadFile(file, null);
-  if(!url){ showToast('Ошибка загрузки'); return; }
   const isImg=file.type.startsWith('image/');
   const isVid=file.type.startsWith('video/');
-  const type=isImg?'image':isVid?'video':'doc';
-  const content=JSON.stringify({text:'', url, type});
-  const res=await apiCall('/groups/'+_grpChatId+'/messages','POST',{content, msg_type:'file'});
-  if(res&&(res.ok||res.id)){
+  const label=isVid?'🎬 Загружаем видео…':isImg?'🖼 Загружаем фото…':'📄 Загружаем файл…';
+  showToast(label);
+  const url=await _uploadFile(file, null);
+  if(!url){
+    showToast('❌ Не удалось загрузить файл. Проверь подключение.');
     input.value='';
-    await _loadGroupMsgs(true);
+    return;
+  }
+  const type=isImg?'image':isVid?'video':'doc';
+  const content=JSON.stringify({text:'', url, type, name:file.name, size:file.size});
+  const res=await apiCall('/groups/'+_grpChatId+'/messages','POST',{content, msg_type:'file'});
+  input.value='';
+  if(res&&(res.ok||res.id||res.message_id||res.content)){
+    showToast(isVid?'✅ Видео отправлено':isImg?'✅ Фото отправлено':'✅ Файл отправлен');
+    _loadGroupMsgs(true);
   } else {
-    showToast('Ошибка отправки');
+    showToast('❌ Ошибка отправки сообщения');
   }
 }
 
