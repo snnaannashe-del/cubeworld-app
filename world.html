@@ -1038,10 +1038,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .cm-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,rgba(0,149,246,.3),rgba(131,58,180,.3));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-bottom:2px;border:1px solid rgba(255,255,255,.08)}
 .cm-body{display:flex;flex-direction:column;max-width:100%}
 .cm-author{font-size:10px;color:var(--accent);margin-bottom:3px;padding-left:3px;font-weight:600;letter-spacing:.02em}
-.cm-bubble{padding:9px 13px;border-radius:14px;font-size:13.5px;line-height:1.55;word-break:break-word;position:relative;transition:background .15s}
-.chat-msg.me .cm-bubble{background:linear-gradient(135deg,rgba(0,149,246,.35),rgba(0,100,220,.28));border:1px solid rgba(0,149,246,.35);border-bottom-right-radius:3px;box-shadow:0 2px 12px rgba(0,149,246,.15)}
-.chat-msg.them .cm-bubble{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);border-bottom-left-radius:3px}
-.chat-msg.system-msg .cm-bubble{background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:8px;font-size:11px;color:var(--text3);text-align:center;padding:4px 14px}
+.cm-bubble{padding:9px 13px;border-radius:18px;font-size:13.5px;line-height:1.55;word-break:break-word;position:relative;transition:background .15s}
+.chat-msg.me .cm-bubble{background:linear-gradient(135deg,#0095F6,#0060d0);border:none;border-bottom-right-radius:4px;box-shadow:none;color:#fff}
+.chat-msg.them .cm-bubble{background:rgba(255,255,255,.1);border:none;border-bottom-left-radius:4px}
+.chat-msg.system-msg .cm-bubble{background:rgba(255,255,255,.05);border:none;border-radius:8px;font-size:11px;color:var(--text3);text-align:center;padding:4px 14px}
 /* Reply preview inside bubble */
 .cm-reply{background:rgba(0,149,246,.12);border-left:2px solid var(--accent);border-radius:4px;padding:4px 8px;margin-bottom:5px;cursor:pointer}
 .cm-reply-author{font-size:9.5px;color:var(--accent);font-weight:600}
@@ -2466,22 +2466,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #int-topbar{transition:max-height .3s ease,opacity .3s ease,padding .3s ease,min-height .3s ease;overflow:hidden}
   #int-topbar.tb-hidden{max-height:0!important;min-height:0!important;opacity:0!important;padding-top:0!important;padding-bottom:0!important;border-bottom:none!important;pointer-events:none}
 
-  /* ── chat layout on mobile: list on top, area below ── */
+  /* ── chat layout on mobile: full-screen list OR full-screen chat ── */
   #sec-chat{flex-direction:column!important;overflow:hidden}
-  #chat-list{
-    width:100%!important;border-right:none!important;
-    border-bottom:1px solid var(--border);
-    flex:0 0 auto;max-height:42%;min-height:100px;
-  }
-  .cl-scroll{max-height:none!important;overflow-y:auto}
-  #chat-area{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
-  .ca-msgs{flex:1;overflow-y:auto!important}
-  .ca-input-panel{padding:8px 10px!important;flex-shrink:0}
-  /* When a chat is open, hide the list to give full space to chat */
+  #chat-list{width:100%!important;border-right:none!important;flex:1!important;max-height:none!important;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+  .cl-scroll{overflow-y:auto!important;flex:1}
+  /* chat-area HIDDEN by default on mobile; shown only when chat-open */
+  #chat-area{display:none!important}
   #sec-chat.chat-open #chat-list{display:none!important}
-  #sec-chat.chat-open #chat-area{flex:1!important}
-  /* Back button in chat area on mobile */
-  #ca-mob-back{display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0;cursor:pointer;color:var(--accent);font-size:13px;font-weight:600}
+  #sec-chat.chat-open #chat-area{display:flex!important;flex:1!important;flex-direction:column;overflow:hidden}
+  .ca-msgs{flex:1;overflow-y:auto!important;min-height:0}
+  .ca-input-panel{padding:8px 10px!important;flex-shrink:0}
+  /* Back button */
+  #ca-mob-back{display:flex!important;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0;cursor:pointer;color:var(--accent);font-size:13px;font-weight:600}
   #ca-mob-back span{font-size:18px}
 
   /* ── modal full-screen on mobile ── */
@@ -5725,9 +5721,14 @@ function buildMsgEl(m, idx) {
   wrap.className = 'chat-msg ' + (m.sender||'them');
   if(m.id) wrap.dataset.msgId = m.id;
 
+  // No avatar for own messages (Telegram style); letter avatar for others
+  const authorName=m.author||'?';
+  const letter=authorName[0].toUpperCase();
+  const avColors=['#0095F6','#e91e8c','#00C9A7','#845EC2','#F9C74F','#4CC9F0'];
+  const avC=avColors[Math.abs(authorName.split('').reduce((a,c)=>a+c.charCodeAt(0),0))%avColors.length];
   const av = m.sender==='me'
-    ? `<div class="cm-avatar">🙂</div>`
-    : `<div class="cm-avatar">${m.avatar||'👤'}</div>`;
+    ? ''  // No avatar for own messages
+    : `<div class="cm-avatar" style="background:${avC}">${letter}</div>`;
 
   // Reply preview
   let replyHtml = '';
@@ -5773,9 +5774,13 @@ function buildMsgEl(m, idx) {
     </div>`;
   } else if(t==='file') {
     const icon = getFileIcon(m.fileName||'');
+    const fileUrl=m.fileUrl||m.fileData||'';
+    const onclickAttr=fileUrl.startsWith('http')
+      ? `window.open('${escHtml(fileUrl)}','_blank')`
+      : `downloadFile('${fileUrl}','${escHtml(m.fileName||'файл')}')`;
     contentHtml = `<div class="cm-bubble">
       ${replyHtml}
-      <div class="cm-file" onclick="downloadFile('${m.fileData||''}','${escHtml(m.fileName||'файл')}')">
+      <div class="cm-file" onclick="${onclickAttr}" style="cursor:pointer">
         <span class="cm-file-icon">${icon}</span>
         <div class="cm-file-info">
           <div class="cm-file-name">${escHtml(m.fileName||'файл')}</div>
@@ -5786,19 +5791,26 @@ function buildMsgEl(m, idx) {
       ${metaHtml}
     </div>`;
   } else if(t==='image') {
-    if(m.fileData) {
-      const mime = m.fileName?.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
-      contentHtml = `<div class="cm-bubble">
+    const imgSrc=m.fileUrl||(m.fileData?`data:image/jpeg;base64,${m.fileData}`:'');
+    if(imgSrc){
+      contentHtml = `<div class="cm-bubble" style="padding:4px">
         ${replyHtml}
-        <img class="cm-image" src="data:${mime};base64,${m.fileData}" onclick="this.requestFullscreen&&this.requestFullscreen()" loading="lazy">
-        ${metaHtml}
+        <img class="cm-image" src="${escHtml(imgSrc)}"
+          onclick="openLightbox&&openLightbox('${escHtml(imgSrc)}','image')"
+          loading="lazy" style="max-width:260px;width:100%;border-radius:12px;display:block;cursor:zoom-in">
+        <div style="padding:4px 8px 2px">${metaHtml}</div>
       </div>`;
     } else {
-      contentHtml = `<div class="cm-bubble">
-        ${replyHtml}
-        <div class="cm-image-placeholder">🖼️</div>${metaHtml}
-      </div>`;
+      contentHtml = `<div class="cm-bubble">${replyHtml}<div class="cm-image-placeholder">🖼️</div>${metaHtml}</div>`;
     }
+  } else if(t==='video') {
+    const vidSrc=m.fileUrl||'';
+    contentHtml = vidSrc ? `<div class="cm-bubble" style="padding:4px">
+      ${replyHtml}
+      <video src="${escHtml(vidSrc)}#t=0.001" style="max-width:260px;width:100%;border-radius:12px;display:block"
+        playsinline webkit-playsinline preload="metadata" controls></video>
+      <div style="padding:4px 8px 2px">${metaHtml}</div>
+    </div>` : `<div class="cm-bubble">${replyHtml}🎬 Видео${metaHtml}</div>`;
   } else {
     contentHtml = `<div class="cm-bubble">${replyHtml}${escHtml(m.text||'')}${metaHtml}</div>`;
   }
@@ -6008,65 +6020,50 @@ function playVoiceMsg(bubbleEl, b64) {
 }
 
 // ── File sending ──
-function chatSendFile() {
-  if(!app.currentRoomId && !_chatActiveDm) return;
-  const inp=document.createElement('input'); inp.type='file';
-  inp.onchange=()=>{
-    const file=inp.files[0]; if(!file) return;
-    if(file.size>5*1024*1024) { showToast('Файл > 5MB'); return; }
-    const reader=new FileReader();
-    reader.onload=()=>{
-      const b64=reader.result.split(',')[1];
-      const size=formatBytes(file.size);
-      const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-      const msgObj={sender:'me',text:file.name,time,type:'file',
-        fileName:file.name,fileSize:size,fileData:b64,reactions:{}};
-      if(_chatActiveDm) {
-        addCubeRoomMsg(msgObj,'dm:'+_chatActiveDm.user_id);
-        renderChatMsgs('dm:'+_chatActiveDm.user_id);
-        if(_ws&&_ws.readyState===WebSocket.OPEN)
-          _ws.send(JSON.stringify({type:'dm',to_user_id:_chatActiveDm.user_id,
-            content:file.name,msg_type:'file',file_name:file.name,file_size:size,file_data:b64}));
-      } else {
-        addCubeRoomMsg(msgObj);
-        renderChatMsgs(app.currentRoomId);
-        if(_ws&&_ws.readyState===WebSocket.OPEN)
-          _ws.send(JSON.stringify({type:'message',content:file.name,
-            msg_type:'file',file_name:file.name,file_size:size,file_data:b64}));
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-  inp.click();
-}
+function chatSendFile() { _chatPickAndSend('*/*'); }
+function chatSendImage() { _chatPickAndSend('image/*,video/*'); }
 
-function chatSendImage() {
+async function _chatPickAndSend(accept){
   if(!app.currentRoomId && !_chatActiveDm) return;
-  const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
-  inp.onchange=()=>{
+  const inp=document.createElement('input'); inp.type='file'; inp.accept=accept;
+  inp.onchange=async()=>{
     const file=inp.files[0]; if(!file) return;
-    if(file.size>5*1024*1024) { showToast('Изображение > 5MB'); return; }
-    const reader=new FileReader();
-    reader.onload=()=>{
-      const b64=reader.result.split(',')[1];
-      const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-      const msgObj={sender:'me',text:file.name,time,type:'image',
-        fileName:file.name,fileSize:formatBytes(file.size),fileData:b64,reactions:{}};
-      if(_chatActiveDm) {
-        addCubeRoomMsg(msgObj,'dm:'+_chatActiveDm.user_id);
-        renderChatMsgs('dm:'+_chatActiveDm.user_id);
-        if(_ws&&_ws.readyState===WebSocket.OPEN)
-          _ws.send(JSON.stringify({type:'dm',to_user_id:_chatActiveDm.user_id,
-            content:file.name,msg_type:'image',file_name:file.name,file_data:b64}));
-      } else {
-        addCubeRoomMsg(msgObj);
-        renderChatMsgs(app.currentRoomId);
-        if(_ws&&_ws.readyState===WebSocket.OPEN)
-          _ws.send(JSON.stringify({type:'message',content:file.name,
-            msg_type:'image',file_name:file.name,file_data:b64}));
-      }
-    };
-    reader.readAsDataURL(file);
+    const isImg=file.type.startsWith('image/');
+    const isVid=file.type.startsWith('video/');
+    const msgType=isImg?'image':isVid?'video':'file';
+    showToast(isImg?'🖼 Загружаем фото…':isVid?'🎬 Загружаем видео…':'📄 Загружаем файл…');
+    const url=await _uploadFile(file, null);
+    if(!url){ showToast('❌ Не удалось загрузить файл'); return; }
+    const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+    const size=formatBytes(file.size);
+    // Optimistic local message
+    const msgObj={sender:'me', author:'Я', text:file.name, time, type:msgType,
+      fileName:file.name, fileSize:size, fileUrl:url, reactions:{}};
+    const token=localStorage.getItem('cw_access_token');
+    if(_chatActiveDm){
+      const dmKey='dm:'+_chatActiveDm.user_id;
+      addCubeRoomMsg(msgObj, dmKey);
+      renderChatMsgs(dmKey);
+      // Send via API
+      try{
+        await fetch(CUBE_API+'/dm/'+_chatActiveDm.user_id,{
+          method:'POST',
+          headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+          body:JSON.stringify({content:url, msg_type:msgType, file_name:file.name, file_size:size})
+        });
+      }catch(e){}
+      // Also via WS for realtime delivery
+      if(_ws&&_ws.readyState===WebSocket.OPEN)
+        _ws.send(JSON.stringify({type:'dm',to_user_id:_chatActiveDm.user_id,
+          content:url, msg_type:msgType, file_name:file.name, file_size:size, file_url:url}));
+    } else {
+      addCubeRoomMsg(msgObj);
+      renderChatMsgs(app.currentRoomId);
+      if(_ws&&_ws.readyState===WebSocket.OPEN)
+        _ws.send(JSON.stringify({type:'message', content:url,
+          msg_type:msgType, file_name:file.name, file_size:size, file_url:url}));
+    }
+    showToast(isImg?'✅ Фото отправлено':isVid?'✅ Видео отправлено':'✅ Файл отправлен');
   };
   inp.click();
 }
