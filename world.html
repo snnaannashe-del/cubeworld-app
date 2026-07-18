@@ -10921,22 +10921,22 @@ function saveUniverse(){
       if(me && me.id) localStorage.setItem('cw_user_id', me.id);
     }).catch(()=>{});
     setTimeout(function(){
-      enterWorld();
-      // Restore last session: if user was inside a cube, go back there
+      // Read restore state BEFORE enterWorld() overwrites cw_last_view
       const _lastView = localStorage.getItem('cw_last_view');
       const _lastCube = localStorage.getItem('cw_last_cube');
+      const _lastSec  = localStorage.getItem('cw_last_section') || 'feed';
+      enterWorld();
+      // Restore: if user was inside a cube, go straight back there
       if(_lastView === 'interior' && _lastCube){
-        // Wait for syncFromBackend to populate app.cubes, then restore
         const _tryRestore = (attempt) => {
           const cube = app.cubes.find(c=>c.id===_lastCube);
           if(cube && cube.life > 0){
             enterInterior(_lastCube);
-          } else if(attempt < 8){
-            setTimeout(()=>_tryRestore(attempt+1), 400);
+          } else if(attempt < 12){
+            setTimeout(()=>_tryRestore(attempt+1), 300);
           }
-          // if cube not found after retries, stay on world view
         };
-        setTimeout(()=>_tryRestore(0), 600);
+        setTimeout(()=>_tryRestore(0), 200);
       }
     }, 0);
     // Show onboarding for first-time users
