@@ -1772,7 +1772,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .po-stat{flex:1;text-align:center;padding:14px 6px}
 .po-stat-val{font-size:18px;font-weight:900;color:#e0e0f8;font-family:'Courier New',monospace}
 .po-stat-lbl{font-size:10px;color:var(--text3);margin-top:2px}
-.po-bio{padding:14px 20px;font-size:13.5px;color:var(--text2);line-height:1.65;white-space:pre-wrap;word-break:break-word}
+.po-bio{padding:14px 20px;font-size:13.5px;color:var(--text2);line-height:1.65;white-space:pre-wrap;word-break:break-word;text-align:center}
 .po-bio a{color:var(--accent);text-decoration:none}
 .po-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px}
 .po-cell{aspect-ratio:1;background:rgba(255,255,255,.05);position:relative;overflow:hidden;cursor:pointer}
@@ -1781,6 +1781,26 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .po-cell-type{position:absolute;top:5px;right:5px;font-size:10px;color:rgba(255,255,255,.7)}
 /* keep old mpe classes so existing refs don't break */
 .mpe-avatar-grid{display:none}.mpe-status-row{display:none}.mpe-s-opt{display:none}.mpe-av-opt{display:none}
+/* Conditional profile field groups */
+.pe-field-group{transition:opacity .18s,max-height .22s ease}
+.pe-field-group.pe-hidden{display:none}
+/* Business bio hashtag highlight */
+.pe-bio-area .pe-hash{color:#0095F6}
+.pe-bio-preview{padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:9px;font-size:12.5px;color:#e0e0f8;line-height:1.6;white-space:pre-wrap;word-break:break-word;min-height:40px;cursor:text}
+.pe-bio-preview .ht{color:var(--accent);font-weight:600}
+/* Business links */
+.pe-links-list{display:flex;flex-direction:column;gap:6px;margin:6px 0}
+.pe-link-row{display:flex;align-items:center;gap:6px}
+.pe-link-inp{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;color:#e0e0f8;padding:8px 10px;font-size:12px;font-family:inherit;outline:none;transition:border-color .15s}
+.pe-link-inp:focus{border-color:rgba(0,149,246,.4)}
+.pe-link-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:17px;padding:4px;line-height:1;transition:color .1s}
+.pe-link-del:hover{color:var(--red)}
+.pe-add-link-btn{display:flex;align-items:center;gap:5px;background:none;border:1px dashed rgba(0,149,246,.3);border-radius:8px;color:var(--accent);font-size:12px;padding:7px 12px;cursor:pointer;width:100%;justify-content:center;transition:background .12s}
+.pe-add-link-btn:hover{background:rgba(0,149,246,.07)}
+/* Post type chips in portfolio grid */
+.po-type-chip{position:absolute;top:5px;left:5px;font-size:9px;font-weight:800;padding:2px 6px;border-radius:10px;letter-spacing:.04em;backdrop-filter:blur(4px)}
+.po-type-chip.short{background:rgba(0,0,0,.55);color:#fff}
+.po-type-chip.post{background:rgba(0,0,0,.45);color:rgba(255,255,255,.8)}
 
 /* ══ REFERRAL ════════════════════════════════ */
 .ref-link-box{background:#000;border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:12px 14px;margin-bottom:12px}
@@ -3489,12 +3509,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div class="pe-status-opt" onclick="peSetStatus('ghost')"><span class="pe-status-dot" style="background:rgba(200,200,255,.3);border:1px solid var(--border)"></span>Призрак</div>
     </div>
 
-    <!-- Row 8: Name -->
-    <label class="pe-field-label">Имя</label>
-    <input id="mpe-display-name" class="pe-inp" type="text" maxlength="40" placeholder="Как тебя называть?">
+    <!-- Row 8: Name (hidden in Скрытый mode) -->
+    <div class="pe-field-group" id="pe-fg-name">
+      <label class="pe-field-label">Имя</label>
+      <input id="mpe-display-name" class="pe-inp" type="text" maxlength="40" placeholder="Как тебя называть?">
+    </div>
 
-    <!-- Row 9: @username -->
-    <label class="pe-field-label">@username <span style="color:var(--text3);font-weight:400;font-size:10px">для поиска, как в Telegram</span></label>
+    <!-- Row 9: @username (always visible) -->
+    <label class="pe-field-label">@username</label>
     <div style="position:relative">
       <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:14px;font-weight:700">@</span>
       <input id="mpe-username" class="pe-inp" type="text" maxlength="24" placeholder="твой_ник" autocomplete="off"
@@ -3502,10 +3524,42 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9_]/g,'')">
     </div>
 
-    <!-- Row 11: Description (400 chars, expands on focus) -->
-    <label class="pe-field-label">Описание <span style="color:var(--text3);font-weight:400;font-size:10px">до 400 символов</span></label>
-    <textarea id="mpe-bio" class="pe-bio-area" maxlength="400" placeholder="Пару слов о себе… Ссылка в bio будет кликабельной на странице Portfolio" oninput="peBioInput(this)"></textarea>
-    <div style="font-size:10px;color:var(--text3);margin-top:4px;text-align:right"><span id="mpe-bio-count">0</span>/400</div>
+    <!-- Row 11a: Description for Публичный (400 chars) — hidden in Скрытый/Бизнес -->
+    <div class="pe-field-group" id="pe-fg-bio-pub">
+      <label class="pe-field-label">Описание <span style="color:var(--text3);font-weight:400;font-size:10px">до 400 символов</span></label>
+      <textarea id="mpe-bio" class="pe-bio-area" maxlength="400" placeholder="Пару слов о себе… Ссылка будет кликабельной на Portfolio" oninput="peBioInput(this)"></textarea>
+      <div style="font-size:10px;color:var(--text3);margin-top:4px;text-align:right"><span id="mpe-bio-count">0</span>/400</div>
+    </div>
+
+    <!-- Row 11b: Business fields — shown only when Бизнес -->
+    <div class="pe-field-group pe-hidden" id="pe-fg-biz">
+      <!-- Business bio (1500 chars, hashtag preview) -->
+      <label class="pe-field-label" style="display:flex;align-items:center;justify-content:space-between">
+        <span>Описание <span style="color:var(--gold);font-size:9px;font-weight:800;padding:1px 6px;border-radius:10px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.25);margin-left:5px">БИЗНЕС</span></span>
+        <span style="color:var(--text3);font-weight:400;font-size:10px"><span id="mpe-biz-bio-count">0</span>/1500</span>
+      </label>
+      <textarea id="mpe-biz-bio" class="pe-bio-area" maxlength="1500" style="max-height:54px"
+        placeholder="Опишите ваш бизнес… #хештеги подсветятся"
+        oninput="peBizBioInput(this)"></textarea>
+      <!-- Live hashtag preview -->
+      <div id="pe-biz-bio-preview" class="pe-bio-preview" style="display:none;margin-top:6px"></div>
+
+      <!-- Links (up to 5) -->
+      <label class="pe-field-label" style="margin-top:14px;display:flex;align-items:center;gap:6px">
+        <i class="ti ti-link" style="color:var(--accent)"></i> Ссылки
+        <span style="color:var(--text3);font-size:10px;font-weight:400">до 5 штук</span>
+      </label>
+      <div class="pe-links-list" id="pe-links-list"></div>
+      <button class="pe-add-link-btn" id="pe-add-link-btn" onclick="peAddLink()">
+        <i class="ti ti-plus" style="font-size:14px"></i> Добавить ссылку
+      </button>
+
+      <!-- Address -->
+      <label class="pe-field-label" style="margin-top:14px;display:flex;align-items:center;gap:6px">
+        <i class="ti ti-map-pin" style="color:var(--accent)"></i> Адрес
+      </label>
+      <input id="mpe-address" class="pe-inp" type="text" maxlength="120" placeholder="Город, улица или онлайн">
+    </div>
 
     <!-- Buttons -->
     <div class="modal-actions" style="margin-top:24px">
@@ -4564,7 +4618,13 @@ function enterInterior(cubeId){
   if(csKey2) csKey2.style.display = (cube&&cube.isOwn)?'':'none';
   showView('v-int');
   initInteriorData(cubeId);
-  switchSection('feed',document.querySelector('.sn-item.active'));
+  // Restore last visited section instead of always going to feed
+  const _lastSec = localStorage.getItem('cw_last_section')||'feed';
+  const _snItems = document.querySelectorAll('.sn-item');
+  const _secNames = ['feed','chat','groups',null,null,'channels','signals','market',null,'earn','wallet',null,'analytics'];
+  const _lastIdx = _secNames.indexOf(_lastSec);
+  const _lastEl = _lastIdx>=0 ? _snItems[_lastIdx] : null;
+  switchSection(_lastSec, _lastEl);
   onEnterInterior();
   // Load real backend data for this cube
   loadRealPosts();
@@ -4748,6 +4808,7 @@ function switchSection(name,el){
   }
 
   _curSection = name;
+  try{ localStorage.setItem('cw_last_section', name); }catch(e){}
   document.querySelectorAll('.sn-item').forEach(i=>i.classList.remove('active'));
   if(el) el.classList.add('active');
 
@@ -6484,7 +6545,7 @@ function renderUserSearchCard(u){
     <div class="sui-head">
       <div class="sui-ava">${u.avatar_url&&(u.avatar_url.startsWith('/')||u.avatar_url.startsWith('http'))?`<img src="${escHtml(u.avatar_url)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover" onerror="this.parentElement.textContent='👤'">`:escHtml(u.avatar_url||'👤')}</div>
       <div class="sui-info">
-        <div class="sui-name">${escHtml(u.display_name||u.key_prefix||'Пользователь')}</div>
+        <div class="sui-name">${escHtml(u.display_name||u.username||'Пользователь')}</div>
         <div class="sui-sub">${escHtml(sub)}</div>
       </div>
       <span class="sui-badge${isPremium?' premium':''}">${(u.key_type||'FREE').toUpperCase()}</span>
@@ -8080,7 +8141,17 @@ function renderAnalytics(){
 const PROFILE_AVATARS=['👤','🧑‍💻','🤖','👻','🎨','📡','🐋','🧠','🔮','⚡','🎯','🦊','🐉','🦁','🥷','🌙','🎭','🦋','🌈','💎'];
 const STATUS_OPTS=[{v:'online',l:'В сети',c:'#00b894'},{v:'busy',l:'Занят',c:'#e17055'},{v:'away',l:'Отошёл',c:'#fdcb6e'},{v:'ghost',l:'Призрак',c:'rgba(200,200,255,.3)'}];
 
-if(!app.myProfile) app.myProfile={avatar:'👤',status:'online',bio:'',displayName:'',privacy:'public',photoUrl:null};
+// Restore profile from localStorage
+(function(){
+  try{
+    const saved=JSON.parse(localStorage.getItem('cw_my_profile')||'{}');
+    if(!app.myProfile) app.myProfile={avatar:'👤',status:'online',bio:'',displayName:'',privacy:'public',photoUrl:null,links:[],address:''};
+    Object.assign(app.myProfile, saved);
+    if(saved.displayName) app.displayName=saved.displayName;
+  }catch(e){
+    if(!app.myProfile) app.myProfile={avatar:'👤',status:'online',bio:'',displayName:'',privacy:'public',photoUrl:null,links:[],address:''};
+  }
+})();
 let _peUidVisible=false;
 let _peStatusDropOpen=false;
 let _peEmojiOpen=false;
@@ -8119,9 +8190,17 @@ async function openMyProfile(){
   // Display name
   const dnEl=document.getElementById('mpe-display-name');
   if(dnEl) dnEl.value=app.displayName||p.displayName||'';
-  // Bio
+  // Bio (public)
   const bioEl=document.getElementById('mpe-bio');
   if(bioEl){ bioEl.value=p.bio||''; const c=document.getElementById('mpe-bio-count'); if(c) c.textContent=(p.bio||'').length; }
+  // Bio (business)
+  const bizBioEl=document.getElementById('mpe-biz-bio');
+  if(bizBioEl){ bizBioEl.value=p.bizBio||''; const cb=document.getElementById('mpe-biz-bio-count'); if(cb) cb.textContent=(p.bizBio||'').length; peBizBioInput(bizBioEl); }
+  // Address
+  const addrEl=document.getElementById('mpe-address');
+  if(addrEl) addrEl.value=p.address||'';
+  // Links
+  if(!app.myProfile.links) app.myProfile.links=[];
   // Username
   const unEl=document.getElementById('mpe-username');
   if(unEl) unEl.value=app._myUsername||'';
@@ -8243,6 +8322,12 @@ function selectProfileStatus(v,el){ peSetStatus(v); }
 async function saveMyProfile(){
   const bioEl=document.getElementById('mpe-bio');
   if(bioEl) app.myProfile.bio=bioEl.value.trim();
+  const bizBioEl=document.getElementById('mpe-biz-bio');
+  if(bizBioEl) app.myProfile.bizBio=bizBioEl.value.trim();
+  const addrEl=document.getElementById('mpe-address');
+  if(addrEl) app.myProfile.address=addrEl.value.trim();
+  // Clean empty links
+  if(app.myProfile.links) app.myProfile.links=app.myProfile.links.filter(l=>l.trim());
   const dnEl=document.getElementById('mpe-display-name');
   const newName=(dnEl?dnEl.value.trim():'')||app.displayName||'';
   if(newName){ app.displayName=newName; app.myProfile.displayName=newName; }
@@ -8261,6 +8346,8 @@ async function saveMyProfile(){
   })});
   const dn=document.getElementById('wb-key-badge');
   if(dn&&newName) dn.textContent=getDisplayName();
+  // Persist to localStorage so avatar/bio survive refresh
+  try{ localStorage.setItem('cw_my_profile', JSON.stringify(app.myProfile)); }catch(e){}
   applyPrivacyMode();
   closePeOverlay();
   showToast(res?'✅ Профиль сохранён':'✅ Обновлено локально');
@@ -8289,6 +8376,68 @@ function syncAccTypeUI(type){
     const emoji=type==='hidden'?'👻':(app.myProfile.avatar||'👤');
     av.innerHTML=`<span id="pe-av-emoji">${emoji}</span>`;
   }
+  // Conditional field visibility
+  const show=(id,v)=>{ const e=document.getElementById(id); if(e) e.classList.toggle('pe-hidden',!v); };
+  if(type==='hidden'){
+    // Hidden: status + @username only
+    show('pe-fg-name', false);
+    show('pe-fg-bio-pub', false);
+    show('pe-fg-biz', false);
+  } else if(type==='business'){
+    // Business: all + biz fields
+    show('pe-fg-name', true);
+    show('pe-fg-bio-pub', false);
+    show('pe-fg-biz', true);
+    peRenderLinks();
+  } else {
+    // Public: name + bio (400 chars)
+    show('pe-fg-name', true);
+    show('pe-fg-bio-pub', true);
+    show('pe-fg-biz', false);
+  }
+}
+
+// ── Business bio: hashtag preview ────────────────
+function peBizBioInput(ta){
+  const c=document.getElementById('mpe-biz-bio-count');
+  if(c) c.textContent=ta.value.length;
+  const preview=document.getElementById('pe-biz-bio-preview');
+  if(!preview) return;
+  const val=ta.value;
+  if(!val.trim()){ preview.style.display='none'; return; }
+  preview.style.display='block';
+  // Highlight hashtags
+  const html=escHtml(val).replace(/(#[\wа-яёА-ЯЁ]+)/gi,'<span class="ht">$1</span>');
+  preview.innerHTML=html;
+}
+
+// ── Business links ────────────────────────────────
+function peRenderLinks(){
+  const list=document.getElementById('pe-links-list');
+  const addBtn=document.getElementById('pe-add-link-btn');
+  if(!list) return;
+  const links=app.myProfile.links||[];
+  list.innerHTML=links.map((url,i)=>`
+    <div class="pe-link-row" id="pe-lr-${i}">
+      <i class="ti ti-link" style="color:var(--accent);font-size:14px;flex-shrink:0"></i>
+      <input class="pe-link-inp" type="url" placeholder="https://example.com" value="${escHtml(url)}"
+        oninput="app.myProfile.links[${i}]=this.value">
+      <button class="pe-link-del" onclick="peRemoveLink(${i})" title="Удалить">×</button>
+    </div>`).join('');
+  if(addBtn) addBtn.style.display=links.length>=5?'none':'flex';
+}
+function peAddLink(){
+  if(!app.myProfile.links) app.myProfile.links=[];
+  if(app.myProfile.links.length>=5) return;
+  app.myProfile.links.push('');
+  peRenderLinks();
+  // Focus newly added input
+  const inputs=document.querySelectorAll('.pe-link-inp');
+  if(inputs.length) inputs[inputs.length-1].focus();
+}
+function peRemoveLink(i){
+  app.myProfile.links.splice(i,1);
+  peRenderLinks();
 }
 
 // ════════════════════════════════════════════════
@@ -8318,12 +8467,22 @@ function openPortfolio(){
     badge.className='po-type-badge '+t.cls;
     badge.textContent=t.label;
   }
-  // Bio with clickable links
+  // Bio with clickable links + hashtag highlight for business
   const bioEl=document.getElementById('po-bio');
   if(bioEl){
-    const bio=p.bio||'';
-    const linked=bio.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
-    bioEl.innerHTML=linked;
+    const isBiz=p.privacy==='business';
+    const bio=isBiz?(p.bizBio||p.bio||''):(p.bio||'');
+    let html=escHtml(bio).replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+    if(isBiz) html=html.replace(/(#[\wа-яёА-ЯЁ]+)/gi,'<span style="color:var(--accent);font-weight:600">$1</span>');
+    bioEl.innerHTML=html||'<span style="color:var(--text3);font-size:12px">Нет описания</span>';
+    // Business extra: address + links
+    let extra='';
+    if(isBiz){
+      if(p.address) extra+=`<div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:12.5px;color:var(--text2)"><i class="ti ti-map-pin" style="color:var(--accent)"></i>${escHtml(p.address)}</div>`;
+      const links=(p.links||[]).filter(l=>l.trim());
+      if(links.length) extra+=`<div style="display:flex;flex-direction:column;gap:5px;margin-top:10px">${links.map(l=>`<a href="${escHtml(l)}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--accent);text-decoration:none"><i class="ti ti-link" style="font-size:12px;flex-shrink:0"></i>${escHtml(l.replace(/^https?:\/\/(www\.)?/,''))}</a>`).join('')}</div>`;
+    }
+    if(extra){ let ex=document.getElementById('po-extra'); if(!ex){ ex=document.createElement('div'); ex.id='po-extra'; ex.style.padding='0 20px 14px'; bioEl.parentNode.insertBefore(ex, bioEl.nextSibling); } ex.innerHTML=extra; }
   }
   // Stats (placeholder — real follows/likes would come from backend)
   apiCall('/activity/stats').then(stats=>{
@@ -8357,11 +8516,13 @@ function _renderPortfolioGrid(){
     const bg=thumb?`background:url('${thumb}') center/cover no-repeat`:`background:rgba(255,255,255,.05)`;
     const inner=thumb?`<img class="po-cell-thumb" src="${thumb}" alt="">`:
       `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:28px">${p.emoji||'📝'}</div>`;
-    const typeIcon=isVideo?'▶':'📝';
+    const typeChip=isVideo
+      ? `<div class="po-type-chip short"><svg width="8" height="8" viewBox="0 0 8 8" fill="none" style="display:inline;vertical-align:middle;margin-right:2px"><polygon points="2,1 7,4 2,7" fill="white"/></svg>SHORT</div>`
+      : `<div class="po-type-chip post">📝 POST</div>`;
     return `<div class="po-cell" style="${bg}">
       ${inner}
-      <div class="po-cell-views"><span>${isVideo?'▶':''}</span>${views>0?_fmtNum(views):''}</div>
-      <div class="po-cell-type">${isVideo?'▶':''}</div>
+      ${typeChip}
+      <div class="po-cell-views">${views>0?_fmtNum(views):''}</div>
     </div>`;
   }).join('');
 }
@@ -9173,10 +9334,12 @@ async function vfFollow(userId){
   const isNow=!!(app.vfFollowing||{})[userId];
   const method=isNow?'DELETE':'POST';
   const data=await apiCall('/follow/'+userId,method);
-  if(!data) return;
+  if(!data){ showToast('❌ Ошибка'); return; }
   if(!app.vfFollowing)app.vfFollowing={};
   app.vfFollowing[userId]=!isNow;
-  // Update all instances
+  // Persist
+  try{ localStorage.setItem('cw_following',JSON.stringify(app.vfFollowing)); }catch(e){}
+  // Update feed follow buttons
   document.querySelectorAll(`[id="vfi-fb-${userId}"]`).forEach(el=>{
     el.textContent=!isNow?'Отписаться':'Подписаться';
     el.classList.toggle('following',!isNow);
@@ -9185,8 +9348,18 @@ async function vfFollow(userId){
     el.textContent=!isNow?'✓':'+';
     el.classList.toggle('following',!isNow);
   });
+  // Update mini-profile follow button
+  const miniBtn=document.getElementById('mini-follow-btn-'+userId);
+  if(miniBtn){ miniBtn.textContent=!isNow?'✓ Подписан':'➕ Подписаться'; miniBtn.style.background=!isNow?'rgba(74,222,128,.1)':''; }
+  // Refresh portfolio stats if open
+  const poFollows=document.getElementById('po-follows');
+  if(poFollows && data.following_count!==undefined) poFollows.textContent=data.following_count;
+  const poFollowers=document.getElementById('po-followers');
+  if(poFollowers && data.followers_count!==undefined) poFollowers.textContent=data.followers_count;
   showToast(!isNow?'Подписались! 🔔':'Отписались');
 }
+// Load persisted follow state
+(function(){ try{ const f=localStorage.getItem('cw_following'); if(f) app.vfFollowing=JSON.parse(f); }catch(e){} })();
 
 async function openVfComments(postId){
   _vfCommentPostId=postId;
