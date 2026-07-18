@@ -5037,6 +5037,9 @@ function switchSection(name,el){
 
   _curSection = name;
   try{ localStorage.setItem('cw_last_section', name); }catch(e){}
+  // Create-post side panel: ONLY in feed section
+  const _cs=document.getElementById('vf-create-side');
+  if(_cs) _cs.style.display = (name==='feed') ? '' : 'none';
   document.querySelectorAll('.sn-item').forEach(i=>i.classList.remove('active'));
   if(el) el.classList.add('active');
 
