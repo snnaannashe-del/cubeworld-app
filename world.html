@@ -4090,9 +4090,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   <div class="po-header">
     <button class="pe-back-btn" onclick="closePortfolio()"><i class="ti ti-arrow-left"></i></button>
     <span class="pe-header-title" id="po-header-name" style="flex:1"></span>
-    <button class="po-edit-btn" onclick="closePortfolio();openMyProfile()">
+    <button class="po-edit-btn" id="po-edit-btn" onclick="closePortfolio();openMyProfile()">
       <i class="ti ti-edit" style="font-size:13px"></i> Изменить
     </button>
+    <!-- Public profile action buttons (hidden in own profile mode) -->
+    <div id="po-public-actions" style="display:none;gap:6px;align-items:center">
+      <button onclick="poPublicMsg()" style="height:34px;padding:0 12px;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:10px;color:var(--text1);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px"><i class="ti ti-message"></i> Написать</button>
+      <button id="po-sub-btn" onclick="poPublicFollow()" style="height:34px;padding:0 14px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:12px;font-weight:600;cursor:pointer">Подписаться</button>
+    </div>
   </div>
   <div class="po-scroll" id="po-scroll">
     <!-- Hero -->
@@ -6985,10 +6990,10 @@ function cpAction(type) {
   } else if(type==='call') {
     showToast('📞 Функция звонков скоро...');
   } else if(type==='portfolio') {
-    // Open full user profile modal
+    closeContactPanel();
     const avEl2 = document.getElementById('cp-av');
     const avBg = avEl2?.style.background || 'linear-gradient(135deg,#0095F6,#5263FF)';
-    openUserProfModal(uid, _contactPanelName||'—', avBg);
+    openPublicPortfolio(uid, _contactPanelName||'—', avBg);
   } else if(type==='add') {
     showToast('✅ Контакт добавлен!');
   } else if(type==='mute') {
@@ -7042,7 +7047,7 @@ function cmc_open_profile() {
 }
 function cmc_open_full_profile() {
   hideMiniCard(0);
-  if(_cmc_uid) openUserProfModal(_cmc_uid, _cmc_name, _cmc_avColor);
+  if(_cmc_uid) openPublicPortfolio(_cmc_uid, _cmc_name, _cmc_avColor);
 }
 
 function buildReactionsHtml(reactions, msgId) {
@@ -10373,7 +10378,133 @@ function openPortfolio(){
   // ── Slide up ────────────────────────────────────
   document.getElementById('portfolio-overlay').classList.add('open');
 }
+// ── Public Portfolio (другой пользователь) ──────────────────────────────
+let _ppUid = null, _ppName = null, _ppFollowing = false;
+async function openPublicPortfolio(uid, name, avColor) {
+  if(!uid) { showToast('UID не известен'); return; }
+  _ppUid = uid; _ppName = name; _ppFollowing = false;
+  // Switch header to public mode
+  const editBtn = document.getElementById('po-edit-btn');
+  const pubActs = document.getElementById('po-public-actions');
+  if(editBtn) editBtn.style.display = 'none';
+  if(pubActs) pubActs.style.display = 'flex';
+  // Clear grid + set placeholder
+  const grid = document.getElementById('po-grid');
+  if(grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3);font-size:13px">Загрузка…</div>';
+  // Header name
+  const hdr = document.getElementById('po-header-name');
+  if(hdr) hdr.textContent = name || '—';
+  // Avatar — letter avatar
+  const av = document.getElementById('po-avatar');
+  if(av) {
+    const letter = (name||'?')[0].toUpperCase();
+    const bg = avColor || 'linear-gradient(135deg,#0095F6,#5263FF)';
+    av.innerHTML = `<span style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:${bg};border-radius:50%;font-size:32px;font-weight:700;color:#fff">${letter}</span>`;
+  }
+  const nm = document.getElementById('po-name');
+  if(nm) nm.textContent = name || '—';
+  const un = document.getElementById('po-uname');
+  if(un) un.textContent = '';
+  // Hide type badge
+  const badge = document.getElementById('po-type-badge');
+  if(badge) badge.style.display = 'none';
+  // Stats reset
+  ['po-follows','po-followers','po-likes'].forEach(id=>{ const e=document.getElementById(id); if(e) e.textContent='—'; });
+  // Slide up first, load data in background
+  document.getElementById('portfolio-overlay').classList.add('open');
+  // Fetch user profile
+  const token = localStorage.getItem('cw_access_token');
+  try {
+    const r = await fetch(`${API_BASE}/users/${uid}`, {headers:{Authorization:'Bearer '+token}});
+    if(r.ok) {
+      const data = await r.json();
+      if(data.display_name && nm) nm.textContent = data.display_name;
+      if(data.username && un) un.textContent = '@'+data.username;
+      _ppFollowing = data.is_following || false;
+      _ppUpdateSubBtn();
+      // Bio
+      const bioEl = document.getElementById('po-bio');
+      const infoBlock = document.getElementById('po-info-block');
+      if(bioEl && data.bio) {
+        bioEl.textContent = data.bio;
+        if(infoBlock) { infoBlock.style.display='block'; infoBlock.style.maxHeight='200px'; infoBlock.style.opacity='1'; }
+        if(badge) { badge.style.display=''; badge.textContent='🌐 Публичный'; }
+      } else {
+        if(infoBlock) infoBlock.style.display='none';
+      }
+      // Photo avatar
+      if(data.photo_url && av) {
+        av.innerHTML = `<img src="${data.photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+      }
+    }
+  } catch(e) {}
+  // Fetch stats
+  try {
+    const rs = await fetch(`${API_BASE}/activity/stats?user_id=${uid}`, {headers:{Authorization:'Bearer '+token}});
+    if(rs.ok) {
+      const stats = await rs.json();
+      const setS = (id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v||0; };
+      setS('po-follows', stats.following||0);
+      setS('po-followers', stats.followers||0);
+      setS('po-likes', stats.reactions_received||0);
+    }
+  } catch(e) {}
+  // Fetch posts for grid
+  try {
+    const rf = await fetch(`${API_BASE}/feed?user_id=${uid}&limit=30`, {headers:{Authorization:'Bearer '+token}});
+    const posts = rf.ok ? await rf.json() : [];
+    _ppRenderGrid(posts);
+  } catch(e) {
+    if(grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3);font-size:13px">Нет публикаций</div>';
+  }
+}
+function _ppUpdateSubBtn() {
+  const btn = document.getElementById('po-sub-btn');
+  if(!btn) return;
+  if(_ppFollowing) { btn.textContent='Подписан ✓'; btn.style.background='rgba(255,255,255,.08)'; btn.style.color='var(--text2)'; }
+  else { btn.textContent='Подписаться'; btn.style.background='var(--accent)'; btn.style.color='#fff'; }
+}
+async function poPublicFollow() {
+  if(!_ppUid) return;
+  const token = localStorage.getItem('cw_access_token');
+  const method = _ppFollowing ? 'DELETE' : 'POST';
+  try {
+    await fetch(`${API_BASE}/follow/${_ppUid}`, {method, headers:{Authorization:'Bearer '+token}});
+  } catch(e) {}
+  _ppFollowing = !_ppFollowing;
+  _ppUpdateSubBtn();
+  showToast(_ppFollowing ? '✅ Подписался' : '✅ Отписался');
+}
+function poPublicMsg() {
+  closePortfolio();
+  closeContactPanel && closeContactPanel();
+  openDmWith(_ppUid, _ppName||'Пользователь');
+}
+function _ppRenderGrid(posts) {
+  const grid = document.getElementById('po-grid');
+  if(!grid) return;
+  if(!posts||!posts.length) { grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3);font-size:13px">Нет публикаций</div>'; return; }
+  grid.innerHTML = posts.map(p=>{
+    const isVideo = p.type==='short'||p.type==='video';
+    const thumb = p.thumbnail_url||p.media_url||p.image_url||'';
+    const bg = thumb ? `url(${thumb}) center/cover` : 'rgba(255,255,255,.04)';
+    return `<div class="upm-post-cell" style="background:${bg};aspect-ratio:1;position:relative;cursor:pointer" onclick="openFeedPost && openFeedPost(${p.id||0})">
+      ${isVideo?'<div style="position:absolute;bottom:5px;right:5px;background:rgba(0,0,0,.7);border-radius:4px;padding:2px 5px;font-size:10px;color:#fff">▶</div>':''}
+      ${!thumb?`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;padding:6px;text-align:center">${(p.text||p.content||'📝').slice(0,60)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+// ── END Public Portfolio ──────────────────────────────────────────────────
+
 function closePortfolio(){
+  // Restore own-profile mode when closing
+  const editBtn = document.getElementById('po-edit-btn');
+  const pubActs = document.getElementById('po-public-actions');
+  if(editBtn) editBtn.style.display = '';
+  if(pubActs) pubActs.style.display = 'none';
+  const badge = document.getElementById('po-type-badge');
+  if(badge) badge.style.display = '';
+  _ppUid = null;
   document.getElementById('portfolio-overlay').classList.remove('open');
 }
 function poToggleInfo(){
