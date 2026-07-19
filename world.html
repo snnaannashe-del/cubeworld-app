@@ -4066,8 +4066,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   <div class="po-header">
     <button class="pe-back-btn" onclick="closePortfolio()"><i class="ti ti-arrow-left"></i></button>
     <span class="pe-header-title" id="po-header-name" style="flex:1"></span>
-    <button class="po-edit-btn" onclick="closePortfolio();openMyProfile()">
+    <button id="po-edit-btn" class="po-edit-btn" onclick="closePortfolio();openMyProfile()">
       <i class="ti ti-edit" style="font-size:13px"></i> Изменить
+    </button>
+    <button id="po-follow-btn" class="po-edit-btn" style="display:none" onclick="poFollowBtnClick()">
+      Подписаться
     </button>
   </div>
   <div class="po-scroll" id="po-scroll">
@@ -6796,7 +6799,11 @@ function cpAction(type) {
   } else if(type==='call') {
     showToast('📞 Функция звонков скоро...');
   } else if(type==='portfolio') {
-    showToast('🎨 Портфолио открывается...');
+    closeContactPanel();
+    const cpName = document.getElementById('cp-name');
+    const cpAv   = document.getElementById('cp-av');
+    const avColor = cpAv ? cpAv.style.background : '';
+    openPublicProfile(uid, cpName ? cpName.textContent : '', avColor);
   } else if(type==='add') {
     showToast('✅ Контакт добавлен!');
   } else if(type==='mute') {
@@ -10147,12 +10154,98 @@ function openPortfolio(){
   // ── Grid ────────────────────────────────────────
   _renderPortfolioGrid();
 
+  // ── Restore own-profile buttons ─────────────────
+  delete document.getElementById('portfolio-overlay').dataset.viewUid;
+  const _eb=document.getElementById('po-edit-btn'); if(_eb) _eb.style.display='';
+  const _fb=document.getElementById('po-follow-btn'); if(_fb) _fb.style.display='none';
+
   // ── Slide up ────────────────────────────────────
   document.getElementById('portfolio-overlay').classList.add('open');
 }
 function closePortfolio(){
-  document.getElementById('portfolio-overlay').classList.remove('open');
+  const overlay = document.getElementById('portfolio-overlay');
+  overlay.classList.remove('open');
+  delete overlay.dataset.viewUid;
+  const editBtn = document.getElementById('po-edit-btn');
+  if(editBtn) editBtn.style.display='';
+  const followBtn = document.getElementById('po-follow-btn');
+  if(followBtn) followBtn.style.display='none';
 }
+// ── Public profile of another user ────────────────────────────────────────
+function openPublicProfile(uid, name, avColor) {
+  if(!uid) return;
+  const overlay = document.getElementById('portfolio-overlay');
+  overlay.dataset.viewUid = uid;
+
+  // Swap buttons: hide "Изменить", show "Подписаться / Отписаться"
+  const editBtn = document.getElementById('po-edit-btn');
+  if(editBtn) editBtn.style.display='none';
+  const followBtn = document.getElementById('po-follow-btn');
+  if(followBtn) {
+    followBtn.style.display='';
+    _poUpdateFollowBtn(uid);
+  }
+
+  // Header name
+  const hdr = document.getElementById('po-header-name');
+  if(hdr) hdr.textContent = name || '—';
+
+  // Avatar — letter circle
+  const av = document.getElementById('po-avatar');
+  if(av){
+    const letter = (name||'?')[0].toUpperCase();
+    const bg = avColor || 'linear-gradient(135deg,#0095F6,#5263FF)';
+    av.innerHTML=`<span style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:50%;background:${bg};color:#fff;font-size:36px;font-weight:700">${letter}</span>`;
+  }
+
+  // Name / UID
+  const nm = document.getElementById('po-name');
+  if(nm) nm.textContent = name || '—';
+  const unEl = document.getElementById('po-uname');
+  if(unEl) unEl.textContent = 'UID ' + uid;
+
+  // Badge
+  const badge = document.getElementById('po-type-badge');
+  if(badge){ badge.className='po-type-badge pub'; badge.textContent='🌐 Публичный'; badge.style.cursor='default'; badge.onclick=null; }
+
+  // Hide bio block
+  const infoBlock = document.getElementById('po-info-block');
+  if(infoBlock) infoBlock.style.display='none';
+
+  // Stats: reset, then load
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('po-follows','…'); set('po-followers','…'); set('po-likes','…');
+  apiCall('/activity/stats?user_id='+uid).then(stats=>{
+    if(!stats) return;
+    // Only update if still viewing the same user
+    if(document.getElementById('portfolio-overlay').dataset.viewUid !== String(uid)) return;
+    set('po-follows', stats.following||0);
+    set('po-followers', stats.followers||0);
+    set('po-likes', stats.reactions_received||0);
+  });
+
+  // Grid: placeholder
+  const grid = document.getElementById('po-grid');
+  if(grid) grid.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text3);font-size:13px">Публикации загружаются...</div>';
+
+  overlay.classList.add('open');
+}
+
+function _poUpdateFollowBtn(uid) {
+  const followBtn = document.getElementById('po-follow-btn');
+  if(!followBtn) return;
+  const isFollowing = !!(app.vfFollowing||{})[uid];
+  followBtn.textContent = isFollowing ? '✓ Отписаться' : '➕ Подписаться';
+  followBtn.style.background = isFollowing ? 'rgba(74,222,128,.1)' : '';
+  followBtn.style.color = isFollowing ? 'var(--text2)' : '';
+}
+
+function poFollowBtnClick() {
+  const uid = document.getElementById('portfolio-overlay').dataset.viewUid;
+  if(!uid) return;
+  vfFollow(uid).then(()=>_poUpdateFollowBtn(uid));
+}
+
 function poToggleInfo(){
   const block=document.getElementById('po-info-block');
   const badge=document.getElementById('po-type-badge');
@@ -11101,6 +11194,9 @@ async function vfFollow(userId){
   const poFollowers=document.getElementById('po-followers');
   if(poFollowers && data.followers_count!==undefined) poFollowers.textContent=data.followers_count;
   showToast(!isNow?'Подписались! 🔔':'Отписались');
+  // Update public profile follow button if open
+  const poOverlay = document.getElementById('portfolio-overlay');
+  if(poOverlay && poOverlay.dataset.viewUid===String(userId)) _poUpdateFollowBtn(userId);
 }
 // Load persisted follow state
 (function(){ try{ const f=localStorage.getItem('cw_following'); if(f) app.vfFollowing=JSON.parse(f); }catch(e){} })();
