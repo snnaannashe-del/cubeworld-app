@@ -6454,10 +6454,11 @@ function buildMsgEl(m, idx) {
   // Long-press / right-click to show DM context menu
   const bubble = wrap.querySelector('.cm-bubble');
   if(bubble && (m.type==='text'||m.type==='image'||m.type==='video'||m.type==='file')) {
-    bubble.addEventListener('contextmenu', e=>{ e.preventDefault(); showDmMsgMenu(m); });
+    bubble.addEventListener('contextmenu', e=>{ e.preventDefault(); showDmMsgMenu(m, e); });
     let _lp=null;
     bubble.addEventListener('touchstart', e=>{
-      _lp=setTimeout(()=>{ const sel=window.getSelection(); if(sel&&!sel.isCollapsed) return; showDmMsgMenu(m); }, 550);
+      const t=e.touches[0]; const cx=t.clientX, cy=t.clientY;
+      _lp=setTimeout(()=>{ const sel=window.getSelection(); if(sel&&!sel.isCollapsed) return; showDmMsgMenu(m,{clientX:cx,clientY:cy}); }, 550);
     }, {passive:true});
     bubble.addEventListener('touchend', ()=>clearTimeout(_lp), {passive:true});
     bubble.addEventListener('touchmove', ()=>clearTimeout(_lp), {passive:true});
@@ -6732,6 +6733,9 @@ function openDmWith(userId, displayName) {
   // Open overlay
   document.getElementById('dm-chat-overlay').classList.add('open');
   _chatOverlayBackdrop(true);
+  // Hide mob-nav so it doesn't bleed through on mobile
+  const _mn = document.getElementById('mob-nav');
+  if(_mn && window.innerWidth<=768) _mn.style.display='none';
   // Init scroll button + reset state
   _dmNewMsgCount = 0;
   setTimeout(_dmScrollBtnInit, 100);
@@ -6794,8 +6798,13 @@ function closeDmChat() {
   app.currentRoomId = null;
   renderChatRooms();
   // Hide backdrop only if group chat is also closed
-  if(!document.getElementById('grp-chat-overlay')?.classList.contains('open'))
-    _chatOverlayBackdrop(false);
+  const grpOpen = document.getElementById('grp-chat-overlay')?.classList.contains('open');
+  if(!grpOpen) _chatOverlayBackdrop(false);
+  // Restore mob-nav if no overlay left
+  if(!grpOpen && window.innerWidth<=768) {
+    const _mn = document.getElementById('mob-nav');
+    if(_mn) _mn.style.display='';
+  }
 }
 
 // DM Reply (in overlay)
@@ -12150,6 +12159,9 @@ async function submitVideoPost(){
 // ═══ CREATE POST (unified SHORT/BALL) ════════════════════════════
 let _cpmType = 'short';
 function openCreatePost(){
+  // Don't open while a chat/DM overlay is active
+  if(document.getElementById('dm-chat-overlay')?.classList.contains('open')) return;
+  if(document.getElementById('grp-chat-overlay')?.classList.contains('open')) return;
   _cpmType='short';
   _cpmVideoUrl=''; _cpmImageUrl='';
   document.getElementById('cpm-short').classList.add('sel');
@@ -12343,6 +12355,8 @@ async function openGroupChat(groupId, groupName, groupIcon){
   document.getElementById('grp-chat-overlay').classList.add('open');
   document.getElementById('grp-info-panel')?.classList.remove('open');
   _chatOverlayBackdrop(true);
+  // Hide mob-nav on mobile
+  if(window.innerWidth<=768){ const _mn2=document.getElementById('mob-nav'); if(_mn2) _mn2.style.display='none'; }
   gcoUpdateSendBtn();
   _grpNewMsgCount = 0;
   setTimeout(_grpScrollBtnInit, 200);
@@ -12376,8 +12390,13 @@ function closeGroupChat(){
   document.getElementById('grp-chat-overlay').classList.remove('open');
   _stopGrpPoll();
   _grpChatId=null;
-  if(!document.getElementById('dm-chat-overlay')?.classList.contains('open'))
-    _chatOverlayBackdrop(false);
+  const dmOpen = document.getElementById('dm-chat-overlay')?.classList.contains('open');
+  if(!dmOpen) _chatOverlayBackdrop(false);
+  // Restore mob-nav if no overlays left
+  if(!dmOpen && window.innerWidth<=768){
+    const _mn3=document.getElementById('mob-nav');
+    if(_mn3) _mn3.style.display='';
+  }
 }
 // Alias for backdrop onclick
 function closeGrpChat(){ closeGroupChat(); }
