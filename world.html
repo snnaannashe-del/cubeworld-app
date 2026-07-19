@@ -2635,6 +2635,192 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .modal-wrap.modal-center{align-items:center!important}
   .modal-wrap.modal-center .modal{border-radius:14px!important;width:90%!important;max-height:85vh}
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   TELEGRAM-LEVEL CHAT UPGRADE — добавлено Task #97
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Scroll-to-bottom floating button ── */
+.chat-scroll-btn{
+  position:absolute;bottom:70px;right:14px;
+  width:40px;height:40px;border-radius:50%;
+  background:#1a1a38;border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 4px 16px rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:20;
+  color:#e0e0f8;font-size:18px;
+  opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;
+  transform:translateY(8px);
+}
+.chat-scroll-btn.visible{opacity:1;pointer-events:all;transform:translateY(0)}
+.chat-scroll-btn .scroll-badge{
+  position:absolute;top:-5px;right:-5px;
+  background:var(--accent);color:#fff;
+  font-size:10px;font-weight:700;
+  min-width:18px;height:18px;border-radius:9px;
+  display:none;align-items:center;justify-content:center;
+  padding:0 4px;
+}
+.chat-scroll-btn .scroll-badge.show{display:flex}
+
+/* ── DM typing indicator animated dots ── */
+.dm-typing-dots{display:inline-flex;align-items:center;gap:3px;height:14px}
+.dm-typing-dots span{
+  width:4px;height:4px;border-radius:50%;
+  background:var(--text3);display:block;
+  animation:dotBounce 1.2s infinite ease-in-out;
+}
+.dm-typing-dots span:nth-child(2){animation-delay:.2s}
+.dm-typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+/* ── Message status ticks ── */
+.msg-ticks{font-size:11px;margin-left:4px;display:inline-flex;align-items:center}
+.msg-ticks.sent{color:rgba(255,255,255,.4)}
+.msg-ticks.delivered{color:rgba(255,255,255,.6)}
+.msg-ticks.read{color:#4ade80}
+
+/* ── Swipe-to-reply visual hint ── */
+.gco-msg.swiping .gco-bubble-wrap{
+  transition:none!important;
+}
+.swipe-reply-icon{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(0,149,246,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:#fff;
+  opacity:0;transition:opacity .15s;
+  pointer-events:none;
+  right:-40px;
+}
+
+/* ── DM mic/send toggle ── */
+#dm-mic-btn{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(0,149,246,.8),rgba(0,100,220,.7));
+  border:none;color:#fff;font-size:17px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;
+  transition:all .2s cubic-bezier(.32,0,.18,1);
+  box-shadow:0 2px 10px rgba(0,149,246,.25);
+}
+#dm-mic-btn:hover{transform:scale(1.1)}
+#dm-mic-btn.recording{background:linear-gradient(135deg,#ef4444,#b91c1c);animation:pulse .8s infinite}
+#dm-co-send{transition:all .2s cubic-bezier(.32,0,.18,1)}
+
+/* ── Sticker btn in DM ── */
+#dm-sticker-btn{
+  width:32px;height:32px;border-radius:50%;
+  background:none;border:none;
+  color:var(--text3);font-size:18px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:color .15s;
+}
+#dm-sticker-btn:hover{color:var(--text1)}
+
+/* ── Forward modal ── */
+#forward-modal{
+  position:fixed;inset:0;z-index:3000;
+  display:none;align-items:flex-end;justify-content:center;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(8px);
+}
+#forward-modal.open{display:flex}
+#forward-sheet{
+  background:#0d0d22;border-radius:24px 24px 0 0;
+  width:100%;max-width:520px;max-height:70vh;
+  display:flex;flex-direction:column;overflow:hidden;
+  transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.32,0,.18,1);
+  padding-bottom:env(safe-area-inset-bottom,16px);
+}
+#forward-modal.open #forward-sheet{transform:translateY(0)}
+.fwd-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px 10px;border-bottom:1px solid var(--border);
+}
+.fwd-title{font-size:15px;font-weight:700;color:#e0e0f8}
+.fwd-close{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1}
+.fwd-contacts{overflow-y:auto;flex:1}
+.fwd-contact{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 18px;cursor:pointer;
+  transition:background .12s;
+}
+.fwd-contact:hover,.fwd-contact:active{background:rgba(255,255,255,.05)}
+.fwd-av{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.fwd-name{font-size:14px;color:#e0e0f8;font-weight:500}
+.fwd-sub{font-size:11px;color:var(--text3)}
+
+/* ── Online indicator dot in DM topbar ── */
+.dm-online-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#4ade80;display:inline-block;
+  margin-right:5px;flex-shrink:0;
+}
+#dm-co-sub{display:flex;align-items:center;gap:0}
+
+/* ── Chat background subtle pattern (both overlays) ── */
+#dm-chat-overlay .gco-msgs,
+#grp-chat-overlay .gco-msgs{
+  background-image:radial-gradient(rgba(0,149,246,.03) 1px, transparent 1px);
+  background-size:24px 24px;
+}
+
+/* ── Unread messages divider ── */
+.unread-divider{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 0;flex-shrink:0;margin:4px 0;
+}
+.unread-divider::before,.unread-divider::after{
+  content:'';flex:1;height:1px;background:rgba(0,149,246,.25);
+}
+.unread-divider span{
+  font-size:11px;color:var(--accent);
+  background:#0d0d22;padding:2px 10px;
+  border-radius:10px;white-space:nowrap;
+  border:1px solid rgba(0,149,246,.2);
+}
+
+/* ── Message selected highlight ── */
+.gco-msg.selected .gco-bubble{
+  box-shadow:0 0 0 2px var(--accent);
+}
+
+/* ── Improved reply preview in bubble ── */
+.gco-reply-preview{
+  border-left:3px solid var(--accent);
+  padding:4px 8px;margin-bottom:6px;
+  border-radius:0 6px 6px 0;
+  background:rgba(0,149,246,.08);
+  cursor:pointer;
+}
+.gco-reply-author{font-size:11px;color:var(--accent);font-weight:700;margin-bottom:2px}
+.gco-reply-txt{font-size:12px;color:var(--text2);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+
+/* ── Quick reaction float (inline above bubble) ── */
+.quick-react-bar{
+  position:absolute;
+  background:#1e1e3a;border:1px solid rgba(255,255,255,.12);
+  border-radius:24px;padding:4px 6px;
+  display:flex;gap:2px;
+  z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.5);
+  white-space:nowrap;
+  animation:fadeUp .15s ease;
+}
+.quick-react-bar button{
+  background:none;border:none;
+  font-size:20px;cursor:pointer;
+  padding:3px 5px;border-radius:12px;
+  transition:transform .12s,background .12s;
+  line-height:1;
+}
+.quick-react-bar button:hover{transform:scale(1.25);background:rgba(255,255,255,.08)}
 </style>
 </head>
 <body>
@@ -3018,7 +3204,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       </div>
 
       <!-- ═══ GROUP FULL VIEW OVERLAY ═════════════════════════════════ -->
-      <div id="grp-chat-overlay">
+      <div id="grp-chat-overlay" style="position:relative">
+        <!-- Scroll-to-bottom button for group -->
+        <div class="chat-scroll-btn" id="grp-scroll-btn" onclick="grpScrollToBottom(true)" style="position:absolute;bottom:70px;right:14px">
+          <i class="ti ti-chevron-down"></i>
+          <div class="scroll-badge" id="grp-scroll-badge"></div>
+        </div>
         <!-- Telegram-style topbar -->
         <div class="gco-topbar">
           <button class="gco-back" onclick="closeGroupChat()" style="border:none;background:none;color:var(--accent);font-size:22px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0">
@@ -3161,7 +3352,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div id="chat-overlay-backdrop" onclick="closeDmChat();closeGrpChat();" style="display:none;opacity:0;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:599;backdrop-filter:blur(2px);transition:opacity .3s ease"></div>
 
       <!-- ═══ DM CHAT OVERLAY ══════════════════════════════════════════ -->
-      <div id="dm-chat-overlay">
+      <div id="dm-chat-overlay" style="position:relative">
+        <!-- Scroll-to-bottom button -->
+        <div class="chat-scroll-btn" id="dm-scroll-btn" onclick="dmScrollToBottom(true)" style="position:absolute;bottom:70px;right:14px;z-index:20">
+          <i class="ti ti-chevron-down"></i>
+          <div class="scroll-badge" id="dm-scroll-badge"></div>
+        </div>
         <!-- Topbar -->
         <div class="gco-topbar">
           <button onclick="closeDmChat()" style="background:none;border:none;color:var(--accent);font-size:22px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0">
@@ -3209,13 +3405,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <!-- Input row -->
         <div class="gco-input-row" id="dm-co-input-row" style="position:relative">
           <button class="gco-icon-btn" onclick="dmAttach()" title="Прикрепить" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-paperclip" style="font-size:16px"></i></button>
+          <button id="dm-sticker-btn" onclick="dmToggleStickerPicker()" title="Стикеры">🎭</button>
           <div style="position:relative;flex:1">
             <textarea class="gco-input" id="dm-co-input" placeholder="Написать…" rows="1"
               autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="true"
               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendDmOverlayMsg();}"
-              oninput="gcoAutoGrow(this)"></textarea>
+              oninput="gcoAutoGrow(this);dmOnInput(this)"></textarea>
           </div>
-          <button class="gco-icon-btn" onclick="dmToggleEmoji()" title="Эмодзи" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:16px"></i></button>
+          <button class="gco-icon-btn" onclick="dmToggleEmoji()" title="Эмодзи" style="width:32px;height:32px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:15px"></i></button>
           <!-- Timer button -->
           <button id="dm-expire-btn" onclick="toggleDmExpire(event)" title="Таймер сообщения">∞</button>
           <!-- Expire popup -->
@@ -3226,7 +3423,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
             <div class="dm-exp-opt" data-val="86400" onclick="setDmExpire(this,'86400')">⏱ 24 часа</div>
             <div class="dm-exp-opt" data-val="604800" onclick="setDmExpire(this,'604800')">⏱ 7 дней</div>
           </div>
-          <button class="gco-send" id="dm-co-send" onclick="sendDmOverlayMsg()" title="Отправить"><i class="ti ti-send" style="font-size:15px"></i></button>
+          <!-- Send or mic button -->
+          <button class="gco-send" id="dm-co-send" onclick="sendDmOverlayMsg()" title="Отправить" style="display:none"><i class="ti ti-send" style="font-size:15px"></i></button>
+          <button id="dm-mic-btn" title="Голосовое (держи)"
+            onmousedown="dmStartVoice()" onmouseup="dmStopVoice()"
+            ontouchstart="dmStartVoice()" ontouchend="dmStopVoice()">
+            <i class="ti ti-microphone" style="font-size:16px"></i>
+          </button>
         </div>
         <!-- Hidden file input -->
         <input type="file" id="dm-file-input" accept="image/*,video/*,.pdf,.doc,.docx,.zip" style="display:none" onchange="dmHandleFile(this)">
@@ -4456,6 +4659,7 @@ function connectGlobalWS(){
       const myUserId = localStorage.getItem('cw_user_id');
       if(msg.type==='dm') handleIncomingDm(msg, myUserId);
       if(msg.type==='dm_react_update') updateMessageReactions(msg.msg_id, msg.counts);
+      if(msg.type==='dm_typing') { handleDmTyping(msg); return; }
       if(msg.type==='pong') return; // keepalive ack
       else if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
@@ -4495,6 +4699,7 @@ function openRoomWS(roomId){
       const myUserId = localStorage.getItem('cw_user_id');
       // DM and balance_update must work even outside a cube
       if(msg.type==='dm'){ handleIncomingDm(msg, myUserId); return; }
+      if(msg.type==='dm_typing'){ handleDmTyping(msg); return; }
       if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
         if(next>prev){ app.wallet.balance=next; syncWalletUI(); showToast('💰 +'+(next-prev).toLocaleString('ru')+' CUBE!'); }
@@ -6451,8 +6656,30 @@ function _appendDmMsg(m) {
       el.appendChild(sep);
     }
   }
-  el.appendChild(_buildDmMsg(m));
-  el.scrollTop = el.scrollHeight;
+  const msgEl = _buildDmMsg(m);
+  // Add swipe-to-reply on mobile
+  const bub = msgEl.querySelector('.cm-bubble') || msgEl.querySelector('.gco-bubble');
+  if(bub) {
+    // Add swipe reply icon placeholder
+    const bwrap = msgEl.querySelector('.gco-bubble-wrap') || msgEl.querySelector('.cm-bubble')?.parentElement;
+    if(bwrap && !bwrap.querySelector('.swipe-reply-icon')) {
+      const ico = document.createElement('div');
+      ico.className='swipe-reply-icon';
+      ico.innerHTML='↩';
+      bwrap.style.position='relative';
+      bwrap.appendChild(ico);
+    }
+    _addSwipeReply(bub, m);
+  }
+  el.appendChild(msgEl);
+  // Smart scroll: scroll to bottom unless user has scrolled up
+  const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+  if(m.sender==='me' || atBottom) {
+    el.scrollTop = el.scrollHeight;
+  } else {
+    // Show new message badge
+    if(m.sender!=='me') _dmNotifyNewMsg();
+  }
 }
 
 // Open DM overlay
@@ -6488,6 +6715,15 @@ function openDmWith(userId, displayName) {
   // Open overlay
   document.getElementById('dm-chat-overlay').classList.add('open');
   _chatOverlayBackdrop(true);
+  // Init scroll button + reset state
+  _dmNewMsgCount = 0;
+  setTimeout(_dmScrollBtnInit, 100);
+  // Reset send/mic toggle
+  const _dmInp = document.getElementById('dm-co-input');
+  const _hasTxt = _dmInp && _dmInp.value.trim().length > 0;
+  const _sb = document.getElementById('dm-co-send'), _mb = document.getElementById('dm-mic-btn');
+  if(_sb) _sb.style.display = _hasTxt ? 'flex' : 'none';
+  if(_mb) _mb.style.display = _hasTxt ? 'none' : 'flex';
   // Show DM in sidebar as active
   document.querySelectorAll('.cl-room').forEach(e=>e.classList.remove('active'));
   document.querySelector(`[data-chat-id="dm:${uid}"]`)?.classList.add('active');
@@ -6850,6 +7086,330 @@ function dmCtxReact(emoji) {
   _wsSend({type:'dm_react', msg_id:_dmCtxMsg.id, emoji});
   showToast(emoji);
 }
+
+// ══════════════════════════════════════════════════════════════════════════
+// TELEGRAM-LEVEL CHAT FEATURES — Task #97
+// ══════════════════════════════════════════════════════════════════════════
+
+// ── Scroll-to-bottom buttons ──────────────────────────────────────────────
+let _dmNewMsgCount = 0, _grpNewMsgCount = 0;
+
+function _initScrollBtn(msgsId, btnId, badgeId) {
+  const msgs = document.getElementById(msgsId);
+  const btn  = document.getElementById(btnId);
+  const badge= document.getElementById(badgeId);
+  if(!msgs||!btn) return;
+  msgs.addEventListener('scroll', ()=>{
+    const atBottom = msgs.scrollHeight - msgs.scrollTop - msgs.clientHeight < 60;
+    if(atBottom) {
+      btn.classList.remove('visible');
+      if(msgsId==='dm-co-msgs') _dmNewMsgCount=0;
+      else _grpNewMsgCount=0;
+      if(badge) badge.classList.remove('show');
+    } else {
+      btn.classList.add('visible');
+    }
+  }, {passive:true});
+}
+
+function dmScrollToBottom(smooth) {
+  const el = document.getElementById('dm-co-msgs');
+  if(!el) return;
+  el.scrollTo({top:el.scrollHeight, behavior: smooth?'smooth':'instant'});
+  _dmNewMsgCount=0;
+  const badge = document.getElementById('dm-scroll-badge');
+  if(badge) badge.classList.remove('show');
+  document.getElementById('dm-scroll-btn')?.classList.remove('visible');
+}
+
+function grpScrollToBottom(smooth) {
+  const el = document.getElementById('gco-msgs');
+  if(!el) return;
+  el.scrollTo({top:el.scrollHeight, behavior: smooth?'smooth':'instant'});
+  _grpNewMsgCount=0;
+  const badge = document.getElementById('grp-scroll-badge');
+  if(badge) badge.classList.remove('show');
+  document.getElementById('grp-scroll-btn')?.classList.remove('visible');
+}
+
+// Call after overlay opens
+function _dmScrollBtnInit() {
+  _initScrollBtn('dm-co-msgs','dm-scroll-btn','dm-scroll-badge');
+}
+function _grpScrollBtnInit() {
+  _initScrollBtn('gco-msgs','grp-scroll-btn','grp-scroll-badge');
+}
+
+// Show new-msg badge when not at bottom
+function _dmNotifyNewMsg() {
+  const el = document.getElementById('dm-co-msgs');
+  if(!el) return;
+  const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+  if(atBottom) { el.scrollTop = el.scrollHeight; return; }
+  _dmNewMsgCount++;
+  const badge = document.getElementById('dm-scroll-badge');
+  if(badge) { badge.textContent=_dmNewMsgCount; badge.classList.add('show'); }
+  document.getElementById('dm-scroll-btn')?.classList.add('visible');
+}
+
+// ── Send / Mic toggle for DM ──────────────────────────────────────────────
+function dmOnInput(ta) {
+  gcoAutoGrow(ta);
+  const hasText = ta.value.trim().length > 0;
+  const sendBtn = document.getElementById('dm-co-send');
+  const micBtn  = document.getElementById('dm-mic-btn');
+  if(sendBtn) sendBtn.style.display = hasText ? 'flex' : 'none';
+  if(micBtn)  micBtn.style.display  = hasText ? 'none' : 'flex';
+  // Typing indicator
+  _dmSendTyping();
+}
+
+// ── DM Typing indicator ───────────────────────────────────────────────────
+let _dmTypingTimer = null, _dmTypingActive = false;
+function _dmSendTyping() {
+  if(!_chatActiveDm) return;
+  if(!_dmTypingActive) {
+    _dmTypingActive = true;
+    _wsSend({type:'dm_typing', to_user_id:_chatActiveDm.user_id});
+  }
+  clearTimeout(_dmTypingTimer);
+  _dmTypingTimer = setTimeout(()=>{
+    _dmTypingActive = false;
+  }, 2500);
+}
+
+function _dmShowTyping(fromName) {
+  const sub = document.getElementById('dm-co-sub');
+  if(!sub) return;
+  sub.innerHTML = `<div class="dm-typing-dots"><span></span><span></span><span></span></div>&nbsp;печатает`;
+  clearTimeout(window._dmTypingHideTimer);
+  window._dmTypingHideTimer = setTimeout(()=>{
+    if(sub) sub.innerHTML = '🔐 личная переписка · E2E';
+  }, 3500);
+}
+
+// Handle typing events from WS (call this from both WS handlers)
+function handleDmTyping(msg) {
+  if(!_chatActiveDm) return;
+  if(String(msg.from_user_id) === String(_chatActiveDm.user_id)) {
+    _dmShowTyping(msg.display_name||'');
+  }
+}
+
+// ── DM Voice: use same _sendVoiceBlob pipeline ───────────────────────────
+let _dmVoiceRecorder = null, _dmVoiceChunks = [];
+function dmStartVoice() {
+  if(_dmVoiceRecorder) return;
+  navigator.mediaDevices?.getUserMedia({audio:true}).then(stream=>{
+    _dmVoiceChunks = [];
+    _dmVoiceRecorder = new MediaRecorder(stream);
+    _dmVoiceRecorder.ondataavailable = e => _dmVoiceChunks.push(e.data);
+    _dmVoiceRecorder.onstop = ()=>{
+      const blob = new Blob(_dmVoiceChunks, {type:'audio/webm'});
+      const dur = Math.round((Date.now()-_dmVoiceStart)/1000);
+      stream.getTracks().forEach(t=>t.stop());
+      _sendVoiceBlob(blob, dur);
+    };
+    _dmVoiceStart = Date.now();
+    _dmVoiceRecorder.start();
+    document.getElementById('dm-mic-btn')?.classList.add('recording');
+  }).catch(()=>showToast('🎤 Нет доступа к микрофону'));
+}
+let _dmVoiceStart = 0;
+function dmStopVoice() {
+  if(_dmVoiceRecorder && _dmVoiceRecorder.state !== 'inactive') {
+    _dmVoiceRecorder.stop();
+    _dmVoiceRecorder = null;
+    document.getElementById('dm-mic-btn')?.classList.remove('recording');
+  }
+}
+
+// ── DM Sticker picker ────────────────────────────────────────────────────
+const DM_STICKERS = ['🚀','💎','🔥','⚡','🌊','🎯','💯','🏆','🔐','👻','💀','🤑','🐋','📈','🧠','👑','🎭','🌙','🔮','⚠️','❤️','😂','🤩','😎','🥳','🎉','😍','🤔','👍','🙏'];
+function dmToggleStickerPicker() {
+  const picker = document.getElementById('dm-sticker-picker');
+  if(!picker) return;
+  const grid = document.getElementById('dm-sticker-grid');
+  if(grid && !grid.innerHTML) {
+    grid.innerHTML = DM_STICKERS.map(s=>
+      `<button onclick="dmSendSticker('${s}')" style="font-size:26px;background:none;border:none;cursor:pointer;padding:4px;border-radius:8px;transition:transform .12s" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform=''">${s}</button>`
+    ).join('');
+  }
+  const isOpen = picker.style.display !== 'none';
+  picker.style.display = isOpen ? 'none' : 'block';
+  // Position above input row
+  const inputRow = document.getElementById('dm-co-input-row');
+  if(inputRow && !isOpen) {
+    const rect = inputRow.getBoundingClientRect();
+    picker.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
+    picker.style.left = '50%';
+    picker.style.transform = 'translateX(-50%)';
+    picker.style.position = 'fixed';
+  }
+}
+function dmSendSticker(s) {
+  document.getElementById('dm-sticker-picker').style.display = 'none';
+  if(!_chatActiveDm) return;
+  const time = new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  const msgObj = {sender:'me',author:'Я',authorId:String(localStorage.getItem('cw_user_id')||''),
+    type:'sticker',sticker:s,text:s,time,dateKey:_todayKey(),reactions:{}};
+  const dmKey = 'dm:'+_chatActiveDm.user_id;
+  addCubeRoomMsg(msgObj, dmKey);
+  _appendDmMsg(msgObj);
+  _wsSend({type:'dm',to_user_id:_chatActiveDm.user_id,content:s,msg_type:'sticker'});
+}
+// Close sticker picker on outside click
+document.addEventListener('click', e=>{
+  const picker = document.getElementById('dm-sticker-picker');
+  const btn = document.getElementById('dm-sticker-btn');
+  if(picker && btn && !picker.contains(e.target) && !btn.contains(e.target)) {
+    picker.style.display='none';
+  }
+});
+
+// ── Forward message modal ─────────────────────────────────────────────────
+let _fwdMsg = null;
+function dmCtxForward() {
+  hideDmMsgMenu();
+  if(!_dmCtxMsg) return;
+  _fwdMsg = _dmCtxMsg;
+  openForwardModal();
+}
+function openForwardModal() {
+  const modal = document.getElementById('forward-modal');
+  if(!modal) return;
+  modal.style.display = 'flex';
+  requestAnimationFrame(()=>modal.classList.add('open'));
+  _renderForwardContacts();
+}
+function closeForwardModal() {
+  const modal = document.getElementById('forward-modal');
+  if(!modal) return;
+  modal.classList.remove('open');
+  setTimeout(()=>{ modal.style.display='none'; }, 300);
+}
+function _renderForwardContacts() {
+  const list = document.getElementById('fwd-contacts-list');
+  if(!list) return;
+  const avColors = ['#0095F6','#e91e8c','#00C9A7','#845EC2','#F9C74F','#4CC9F0'];
+  const convs = Object.entries(app.dmConversations||{});
+  if(!convs.length) {
+    list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Нет переписок</div>';
+    return;
+  }
+  list.innerHTML = convs.map(([uid, c])=>{
+    const name = c.display_name||'Аноним';
+    const letter = name[0].toUpperCase();
+    const bg = avColors[Math.abs(name.split('').reduce((a,ch)=>a+ch.charCodeAt(0),0))%avColors.length];
+    return `<div class="fwd-contact" onclick="forwardTo('${uid}','${escHtml(name)}')">
+      <div class="fwd-av" style="background:${bg}">${letter}</div>
+      <div>
+        <div class="fwd-name">${escHtml(name)}</div>
+        <div class="fwd-sub">${escHtml((c.lastMsg||'').slice(0,30))}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function forwardTo(uid, name) {
+  closeForwardModal();
+  if(!_fwdMsg) return;
+  const text = _fwdMsg.text || _fwdMsg.fileUrl || '';
+  if(!text) { showToast('Нечего пересылать'); return; }
+  const time = new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  const msgObj = {sender:'me',author:'Я',authorId:String(localStorage.getItem('cw_user_id')||''),
+    text:'↗️ '+text, time, dateKey:_todayKey(), type:'text', reactions:{},
+    forwarded:true, forwardFrom:_fwdMsg.author||'?'};
+  const dmKey = 'dm:'+uid;
+  addCubeRoomMsg(msgObj, dmKey);
+  // If forwarding to current open DM, append visually
+  if(_chatActiveDm && String(_chatActiveDm.user_id)===String(uid)) {
+    _appendDmMsg(msgObj);
+  }
+  // Send via WS
+  _wsSend({type:'dm', to_user_id:uid, content:'↗️ '+text, msg_type:'text'});
+  if(!app.dmConversations[uid]) app.dmConversations[uid]={display_name:name,lastMsg:'',time:'',unread:0};
+  app.dmConversations[uid].lastMsg='↗️ '+text.slice(0,20);
+  app.dmConversations[uid].time=time;
+  _saveDmState(); renderChatRooms();
+  showToast('↗️ Переслано ' + name);
+  _fwdMsg = null;
+}
+
+// ── Swipe to reply (mobile) ───────────────────────────────────────────────
+function _addSwipeReply(bubbleEl, msgObj) {
+  let startX=0, startY=0, dx=0, swiping=false;
+  const THRESHOLD = 60;
+  const wrap = bubbleEl.closest('.gco-bubble-wrap') || bubbleEl.parentElement;
+
+  bubbleEl.addEventListener('touchstart', e=>{
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    dx = 0; swiping = false;
+  }, {passive:true});
+
+  bubbleEl.addEventListener('touchmove', e=>{
+    const cx = e.touches[0].clientX;
+    const cy = e.touches[0].clientY;
+    const ddx = cx - startX;
+    const ddy = cy - startY;
+    if(!swiping && Math.abs(ddx) < 10 && Math.abs(ddy) > 10) return; // vertical scroll
+    if(ddx > 0) {
+      swiping = true;
+      dx = Math.min(ddx, 80);
+      wrap.style.transform = `translateX(${dx}px)`;
+      wrap.style.transition = 'none';
+      const icon = wrap.querySelector('.swipe-reply-icon');
+      if(icon) icon.style.opacity = dx > 30 ? '1' : '0';
+    }
+  }, {passive:true});
+
+  bubbleEl.addEventListener('touchend', ()=>{
+    wrap.style.transition = 'transform .25s cubic-bezier(.32,0,.18,1)';
+    wrap.style.transform = 'translateX(0)';
+    const icon = wrap.querySelector('.swipe-reply-icon');
+    if(icon) { icon.style.opacity='0'; }
+    if(dx >= THRESHOLD) {
+      navigator.vibrate && navigator.vibrate(30);
+      if(document.getElementById('dm-chat-overlay')?.classList.contains('open')) {
+        startDmReply(msgObj);
+      } else {
+        startReply(msgObj.id, msgObj.author||'', msgObj.text||'');
+      }
+    }
+    dx=0; swiping=false;
+  }, {passive:true});
+}
+
+// ── Message status ticks (DM only) ───────────────────────────────────────
+function _ticksHtml(status) {
+  if(status==='read')      return '<span class="msg-ticks read">✓✓</span>';
+  if(status==='delivered') return '<span class="msg-ticks delivered">✓✓</span>';
+  return '<span class="msg-ticks sent">✓</span>';
+}
+
+// ── Init scroll buttons when overlays open ───────────────────────────────
+// Hook into openDmWith + openGrpChat
+(function patchOverlayOpen(){
+  const _origOpenDmWith = window.openDmWith || function(){};
+  // We patch _appendDmMsg instead, so new messages trigger badge
+})();
+
+// ── Wire DM typing events into existing WS handlers ──────────────────────
+// (injected after WS init — we patch the message dispatcher below)
+(function patchWsTyping(){
+  // Intercept globalWs messages to catch dm_typing
+  const _origHandleGlobal = window._handleGlobalWsMsg;
+  if(typeof _origHandleGlobal === 'function') {
+    window._handleGlobalWsMsg = function(msg) {
+      if(msg.type==='dm_typing') { handleDmTyping(msg); return; }
+      _origHandleGlobal(msg);
+    };
+  }
+})();
+
+// ══════════════════════════════════════════════════════════════════════════
+// END Task #97 additions
+// ══════════════════════════════════════════════════════════════════════════
 
 // ── Contact Profile Panel ─────────────────────────────────────────────────
 // ── User Profile Modal ────────────────────────────────────────────────────
@@ -11729,6 +12289,8 @@ async function openGroupChat(groupId, groupName, groupIcon){
   document.getElementById('grp-info-panel')?.classList.remove('open');
   _chatOverlayBackdrop(true);
   gcoUpdateSendBtn();
+  _grpNewMsgCount = 0;
+  setTimeout(_grpScrollBtnInit, 200);
   // Load messages + members + group details
   await _loadGroupMsgs(true);
   _loadGrpMembers();
@@ -14370,6 +14932,25 @@ const _grpOvId='grp-chat-overlay';
       <div class="upm-empty">Загрузка…</div>
     </div>
   </div>
+</div>
+
+<!-- ══ FORWARD MESSAGE MODAL ══════════════════════════════════════════════ -->
+<div id="forward-modal" onclick="closeForwardModal()">
+  <div id="forward-sheet" onclick="event.stopPropagation()">
+    <div class="fwd-header">
+      <span class="fwd-title">Переслать сообщение</span>
+      <button class="fwd-close" onclick="closeForwardModal()">✕</button>
+    </div>
+    <div class="fwd-contacts" id="fwd-contacts-list"></div>
+  </div>
+</div>
+
+<!-- ══ DM STICKER PICKER ══════════════════════════════════════════════════ -->
+<div id="dm-sticker-picker" style="display:none;position:fixed;bottom:64px;left:50%;transform:translateX(-50%);
+  background:#13132a;border:1px solid var(--border);border-radius:16px;
+  padding:10px;z-index:2000;box-shadow:0 8px 32px rgba(0,0,0,.6);
+  max-width:300px;width:90vw">
+  <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center" id="dm-sticker-grid"></div>
 </div>
 
 <!-- ══ DELETE CHAT MODAL ══════════════════════════════════════════════════ -->
