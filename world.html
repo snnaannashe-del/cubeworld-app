@@ -296,7 +296,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 /* Main content */
 #int-main{flex:1;display:flex;overflow:hidden;background:var(--bg2);min-height:0}
 .int-section{display:none;flex:1;overflow:hidden;animation:slideIn .18s ease;background:var(--bg2);min-height:0;min-width:0}
-.int-section.active{display:flex}
+.int-section.active{display:flex;flex-direction:column}
+/* sections that are side-by-side layouts override to row */
+#sec-feed.active,#sec-chat.active{flex-direction:row}
 
 /* ── FEED — TikTok Style ─── */
 #sec-feed{flex-direction:column;position:relative;background:#000;overflow:hidden;height:100%;isolation:isolate}
