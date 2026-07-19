@@ -6443,8 +6443,9 @@ function _appendDmMsg(m) {
   // Date separator if day changed
   const dk = m.dateKey || '';
   if(dk) {
-    const last = el.querySelector('.dm-date-sep:last-of-type span');
-    if(!last || last.dataset.dk !== dk) {
+    const allSeps = el.querySelectorAll('.dm-date-sep');
+    const lastSep = allSeps.length ? allSeps[allSeps.length-1].querySelector('span') : null;
+    if(!lastSep || lastSep.dataset.dk !== dk) {
       const sep = _makeDateSep(dk,'dm-date-sep');
       sep.querySelector('span').dataset.dk = dk;
       el.appendChild(sep);
@@ -6615,7 +6616,7 @@ async function dmHandleFile(input) {
   if(!url){ showToast('❌ Не удалось загрузить'); return; }
   const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
   const size=formatBytes(file.size);
-  const msgObj={sender:'me',author:'Я',text:file.name,time,type:msgType,fileName:file.name,fileSize:size,fileUrl:url,reactions:{}};
+  const msgObj={sender:'me',author:'Я',authorId:String(localStorage.getItem('cw_user_id')||''),text:file.name,time,dateKey:_todayKey(),type:msgType,fileName:file.name,fileSize:size,fileUrl:url,reactions:{}};
   const dmKey='dm:'+_chatActiveDm.user_id;
   addCubeRoomMsg(msgObj,dmKey); _appendDmMsg(msgObj);
   if(!app.dmConversations[_chatActiveDm.user_id]) app.dmConversations[_chatActiveDm.user_id]={display_name:_chatActiveDm.display_name,lastMsg:'',time:'',unread:0};
@@ -7168,11 +7169,13 @@ function sendChatMsg() {
   const expSel=document.getElementById('ca-expire-sel');
   const expiresSecs=expSel?.value ? parseInt(expSel.value) : null;
 
+  const _myId = localStorage.getItem('cw_user_id')||'';
   if(_chatActiveDm) {
     // DM — send via WS (_ws or _globalWs fallback)
-    const msgObj={sender:'me',text,time,type:'text',replyTo:_chatReplyTo,reactions:{}};
+    const msgObj={sender:'me',author:'Я',authorId:String(_myId),text,time,dateKey:_todayKey(),type:'text',replyTo:_chatReplyTo,reactions:{}};
     addCubeRoomMsg(msgObj, 'dm:'+_chatActiveDm.user_id);
-    renderChatMsgs('dm:'+_chatActiveDm.user_id);
+    const _dmOvOpenNow = document.getElementById('dm-chat-overlay')?.classList.contains('open');
+    if(_dmOvOpenNow) _appendDmMsg(msgObj); else renderChatMsgs('dm:'+_chatActiveDm.user_id);
     // Update sidebar
     if(!app.dmConversations) app.dmConversations={};
     if(!app.dmConversations[_chatActiveDm.user_id]) app.dmConversations[_chatActiveDm.user_id]={display_name:_chatActiveDm.display_name,lastMsg:'',time:'',unread:0};
@@ -7190,7 +7193,7 @@ function sendChatMsg() {
       }).catch(()=>{});
     }
   } else {
-    const msgObj={sender:'me',text,time,type:'text',replyTo:_chatReplyTo,expiresSecs,reactions:{}};
+    const msgObj={sender:'me',author:'Я',authorId:String(_myId),text,time,dateKey:_todayKey(),type:'text',replyTo:_chatReplyTo,expiresSecs,reactions:{}};
     addCubeRoomMsg(msgObj);
     renderChatMsgs(app.currentRoomId);
     if(!_wsSend({type:'message', content:text, msg_type:'text',
@@ -7244,10 +7247,11 @@ function _sendVoiceBlob(blob, dur) {
   reader.onload=()=>{
     const b64=reader.result.split(',')[1];
     const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-    const msgObj={sender:'me',text:'🎤 Голосовое',time,type:'voice',fileData:b64,duration:dur,reactions:{}};
+    const msgObj={sender:'me',author:'Я',authorId:String(localStorage.getItem('cw_user_id')||''),text:'🎤 Голосовое',time,dateKey:_todayKey(),type:'voice',fileData:b64,duration:dur,reactions:{}};
     if(_chatActiveDm) {
       addCubeRoomMsg(msgObj,'dm:'+_chatActiveDm.user_id);
-      renderChatMsgs('dm:'+_chatActiveDm.user_id);
+      const _dmOvOpen2=document.getElementById('dm-chat-overlay')?.classList.contains('open');
+      if(_dmOvOpen2) _appendDmMsg(msgObj); else renderChatMsgs('dm:'+_chatActiveDm.user_id);
       _wsSend({type:'dm',to_user_id:_chatActiveDm.user_id,
         content:'🎤 Голосовое',msg_type:'voice',file_data:b64,duration:dur});
     } else {
@@ -7292,7 +7296,7 @@ async function _chatPickAndSend(accept){
     const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
     const size=formatBytes(file.size);
     // Optimistic local message
-    const msgObj={sender:'me', author:'Я', text:file.name, time, type:msgType,
+    const msgObj={sender:'me', author:'Я', authorId:String(localStorage.getItem('cw_user_id')||''), text:file.name, time, dateKey:_todayKey(), type:msgType,
       fileName:file.name, fileSize:size, fileUrl:url, reactions:{}};
     if(_chatActiveDm){
       const dmKey='dm:'+_chatActiveDm.user_id;
@@ -7371,7 +7375,7 @@ function sendSticker(s){
   if(!app.currentRoomId && !_chatActiveDm) return;
   document.getElementById('sticker-picker').classList.remove('open');
   const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-  const msgObj={sender:'me',type:'sticker',sticker:s,text:s,time,reactions:{}};
+  const msgObj={sender:'me',author:'Я',authorId:String(localStorage.getItem('cw_user_id')||''),type:'sticker',sticker:s,text:s,time,dateKey:_todayKey(),reactions:{}};
   const _dmOvOpen = !!document.getElementById('dm-chat-overlay')?.classList.contains('open');
   if(_chatActiveDm) {
     const dmKey='dm:'+_chatActiveDm.user_id;
