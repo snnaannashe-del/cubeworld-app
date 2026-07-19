@@ -4426,6 +4426,7 @@ function connectGlobalWS(){
       const msg = JSON.parse(e.data);
       const myUserId = localStorage.getItem('cw_user_id');
       if(msg.type==='dm') handleIncomingDm(msg, myUserId);
+      if(msg.type==='dm_react_update') updateMessageReactions(msg.msg_id, msg.counts);
       if(msg.type==='pong') return; // keepalive ack
       else if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
@@ -4490,7 +4491,7 @@ function openRoomWS(roomId){
         if(app.currentRoomId===roomId) renderChatMsgs(roomId);
       } else if(msg.type==='typing'){
         showTypingIndicator(msg.display_name);
-      } else if(msg.type==='react'){
+      } else if(msg.type==='react'||msg.type==='dm_react_update'){
         updateMessageReactions(msg.msg_id, msg.counts);
       } else if(msg.type==='dm'){
         handleIncomingDm(msg, myUserId);
@@ -5889,6 +5890,7 @@ function _startDmPoll(userId, displayName, dmKey){
           id:m.id,
           sender:isMine?'me':'them',
           author:isMine?'Я':displayName,
+          authorId: isMine ? String(myId) : String(userId),
           text:m.content, time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
           type:pt, fileName:m.file_name, fileSize:m.file_size,
           fileUrl:pu, duration:m.duration, reactions:{}
@@ -6282,6 +6284,7 @@ function _buildDmMsg(m) {
 
   const tick = isMe ? `<span style="margin-left:4px;font-size:11px;color:rgba(255,255,255,.45)">✓✓</span>` : '';
   const expLabel = m.expiresSecs ? `<span style="font-size:10px;color:var(--accent);margin-right:4px">⏱${m.expiresSecs>=86400?Math.round(m.expiresSecs/86400)+'д':m.expiresSecs>=3600?Math.round(m.expiresSecs/3600)+'ч':Math.round(m.expiresSecs/60)+'м'}</span>` : '';
+  const reactHtml = buildDmReactionsHtml(m.reactions||{}, m.id||'');
   const avHtml = isMe ? '' : `<div class="gco-av" style="background:${avC};font-size:13px;font-weight:700" data-uid="${m.authorId||''}" data-name="${escHtml(m.author||'')}" data-av="${avC}">${letter}</div>`;
 
   div.innerHTML = `${avHtml}
@@ -6290,6 +6293,7 @@ function _buildDmMsg(m) {
         ${!isMe&&m.author ? `<div class="gco-bubble-name" style="color:${avC};font-size:11px;font-weight:700;margin-bottom:3px">${escHtml(m.author)}</div>` : ''}
         ${replyHtml}
         ${bubbleContent}
+        ${reactHtml}
         <div class="gco-bubble-time" style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:2px">${expLabel}${t}${tick}</div>
       </div>
     </div>`;
@@ -6297,8 +6301,9 @@ function _buildDmMsg(m) {
   // Avatar: click / hover for contact panel / mini-card
   const avEl2 = div.querySelector('.gco-av');
   if(avEl2 && !isMe) {
-    const uid2 = m.authorId||'';
-    const name2 = m.author||'';
+    // authorId may be absent for old cached msgs — fall back to the active DM peer
+    const uid2 = m.authorId || String(_chatActiveDm?.user_id||'');
+    const name2 = m.author || _chatActiveDm?.display_name || '';
     const ac2 = avC;
     const isMobile = ()=>window.innerWidth<=768;
     avEl2.style.cursor = 'pointer';
@@ -6734,14 +6739,24 @@ function dmCtxDelete() {
 function dmCtxReact(emoji) {
   hideDmMsgMenu();
   if(!_dmCtxMsg?.id) return;
+  // Optimistic update
+  const dmKey = 'dm:'+(_chatActiveDm?.user_id||'');
+  const store = _dmStore(dmKey);
+  const m = store.find(x=>String(x.id)===String(_dmCtxMsg.id));
+  if(m) {
+    if(!m.reactions) m.reactions={};
+    m.reactions[emoji] = (m.reactions[emoji]||0) + 1;
+    updateMessageReactions(_dmCtxMsg.id, m.reactions);
+  }
   _wsSend({type:'dm_react', msg_id:_dmCtxMsg.id, emoji});
-  showToast(emoji+' Реакция');
+  showToast(emoji);
 }
 
 // ── Contact Profile Panel ─────────────────────────────────────────────────
-let _contactPanelUid = null;
+let _contactPanelUid = null, _contactPanelName = null;
 function showContactPanel(uid, name, avColor) {
   _contactPanelUid = uid;
+  _contactPanelName = name;
   // Avatar
   const avEl = document.getElementById('cp-av');
   const letter = (name||'?')[0].toUpperCase();
@@ -6789,10 +6804,10 @@ function cpAction(type) {
   if(!uid) return;
   if(type==='message') {
     closeContactPanel();
-    // Open DM with this user
-    const conv = Object.values(app.dmConversations||{}).find(c=>String(c.peerId||c.peer_id)===String(uid));
-    if(conv) openDmWith(uid, conv.name||conv.display_name||'Пользователь');
-    else showToast('💬 Начинаем чат...');
+    // dmConversations is keyed by UID
+    const convInfo = (app.dmConversations||{})[uid];
+    const dname = convInfo?.display_name || _contactPanelName || 'Пользователь';
+    openDmWith(uid, dname);
   } else if(type==='call') {
     showToast('📞 Функция звонков скоро...');
   } else if(type==='portfolio') {
@@ -6862,14 +6877,41 @@ function buildReactionsHtml(reactions, msgId) {
 }
 
 function updateMessageReactions(msgId, counts) {
-  const cid=app.currentCubeId, rid=app.currentRoomId;
+  const rid = app.currentRoomId;
+  // DM namespace when in a DM
+  const cid = (rid && rid.startsWith('dm:')) ? _DM_NAMESPACE : app.currentCubeId;
   const msgs=(app.chatMessages[cid]||{})[rid]||[];
   const m=msgs.find(x=>String(x.id)===String(msgId));
   if(m) m.reactions=counts;
-  // Update in DOM without re-rendering all
-  const reactEl=document.querySelector(`.cm-reactions[data-msg-id="${msgId}"]`);
-  if(reactEl) reactEl.outerHTML=buildReactionsHtml(counts,msgId);
-  else { const msgs2=(app.chatMessages[cid]||{})[rid]||[]; if(msgs2.length) renderChatMsgs(rid); }
+  // Update DOM — works for both group and DM bubbles
+  const reactEl=document.querySelector(`.dm-reactions[data-msg-id="${msgId}"], .cm-reactions[data-msg-id="${msgId}"]`);
+  if(reactEl) {
+    reactEl.outerHTML = rid.startsWith('dm:')
+      ? buildDmReactionsHtml(counts, msgId)
+      : buildReactionsHtml(counts, msgId);
+  } else {
+    // Append reactions to existing bubble if not there yet
+    const bubble = document.querySelector(`#dmbub-${msgId}`);
+    if(bubble && Object.keys(counts||{}).length) {
+      const existing = bubble.querySelector('.dm-reactions');
+      if(existing) existing.remove();
+      const el = document.createElement('div');
+      el.innerHTML = buildDmReactionsHtml(counts, msgId);
+      bubble.appendChild(el.firstChild);
+    } else if(!bubble && msgs.length) {
+      renderChatMsgs(rid);
+    }
+  }
+}
+function buildDmReactionsHtml(reactions, msgId) {
+  const entries = Object.entries(reactions||{}).filter(([,v])=>v>0);
+  if(!entries.length) return '';
+  return `<div class="dm-reactions" data-msg-id="${msgId}" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">` +
+    entries.map(([emoji,cnt])=>
+      `<span onclick="dmCtxReact('${emoji}')" style="display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:2px 7px;font-size:13px;cursor:pointer">
+        ${emoji}<span style="font-size:10px;color:var(--text2)">${cnt}</span>
+      </span>`).join('') +
+    `</div>`;
 }
 
 const REACT_EMOJIS=['👍','❤️','😂','😮','😢','🔥','💯','🚀'];
