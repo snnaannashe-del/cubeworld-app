@@ -1032,6 +1032,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .cl-new:hover{background:rgba(0,149,246,.15);color:var(--accent)}
 .cl-new.active{color:var(--accent);background:rgba(0,149,246,.12);box-shadow:0 0 0 2px rgba(0,149,246,.3)}
 #dm-scroll-down{position:absolute;bottom:72px;right:14px;width:36px;height:36px;border-radius:50%;background:rgba(0,149,246,.92);border:none;color:#fff;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:20;box-shadow:0 2px 12px rgba(0,0,0,.45);transition:opacity .2s}
+/* ── Избранное chat overlay ── */
+#fav-chat-overlay{position:fixed;inset:0;width:100%;max-width:100%;background:var(--bg);display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;z-index:602;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1),opacity .25s ease}
+#fav-chat-overlay.open{transform:translateX(0)}
+@media(min-width:769px){
+  #fav-chat-overlay{top:24px;bottom:24px;left:50%;right:auto;width:520px;max-width:calc(100vw - 48px);border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.75);transform:translateX(-50%) scale(0.97) translateY(8px);opacity:0;pointer-events:none;transition:transform .28s cubic-bezier(.32,0,.18,1),opacity .22s ease}
+  #fav-chat-overlay.open{transform:translateX(-50%) scale(1) translateY(0);opacity:1;pointer-events:all}
+}
+.fav-msgs{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 16px;display:flex;flex-direction:column;gap:4px;overflow-anchor:none;will-change:scroll-position}
+.fav-input-row{display:flex;align-items:flex-end;gap:8px;padding:10px 14px;padding-bottom:max(10px,env(safe-area-inset-bottom));background:rgba(5,5,20,.97);border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.fav-input{flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:10px 16px;color:#e0e0f8;font-size:14px;resize:none;max-height:120px;min-height:42px;outline:none;line-height:1.4}
+.fav-send-btn{width:40px;height:40px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 #dm-del-overlay{position:fixed;inset:0;z-index:1995;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:none}
 #dm-del-sheet{position:fixed;bottom:0;left:0;right:0;background:#13132a;border-radius:20px 20px 0 0;z-index:1996;padding:0 0 env(safe-area-inset-bottom,16px);max-width:520px;margin:0 auto;box-shadow:0 -4px 40px rgba(0,0,0,.6);transform:translateY(100%);transition:transform .26s cubic-bezier(.32,0,.18,1)}
 #dm-del-sheet.open{transform:translateY(0)}
@@ -1975,8 +1986,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .pe-inp:focus{border-color:rgba(0,149,246,.4)}
 /* ══ PORTFOLIO OVERLAY ═══════════════════════════════════════════ */
 /* ══ PORTFOLIO OVERLAY — TikTok style ══════════════════ */
-#portfolio-overlay{position:fixed;inset:0;background:#000;z-index:800;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .32s cubic-bezier(.32,0,.18,1)}
-#portfolio-overlay.open{transform:translateY(0)}
+#portfolio-overlay{position:fixed;inset:0;width:100%;max-width:100%;background:var(--bg);display:flex;flex-direction:column;overflow:hidden;overflow-x:hidden;box-sizing:border-box;z-index:800;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1),opacity .25s ease}
+#portfolio-overlay.open{transform:translateX(0)}
 
 /* Header */
 .po-header{display:flex;align-items:center;gap:10px;padding:8px 14px;background:rgba(0,0,0,.9);backdrop-filter:var(--blur);flex-shrink:0;min-height:48px}
@@ -2044,14 +2055,27 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 @media(min-width:640px){
   .pe-header,.pe-body{max-width:580px;width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}
   /* Portfolio: wider card on desktop */
-  #portfolio-overlay{align-items:center;background:#06060f}
-  .po-scroll{max-width:680px;width:100%;background:#000;border-left:1px solid rgba(255,255,255,.07);border-right:1px solid rgba(255,255,255,.07)}
-  .po-header{max-width:680px;width:100%;margin:0 auto;box-sizing:border-box}
-  .po-hero{padding:36px 32px 0}
-  .po-avatar{width:120px;height:120px;font-size:60px}
-  .po-name{font-size:20px}
-  .po-stat-val{font-size:22px}
   .po-grid{gap:2px}
+}
+/* Desktop: portfolio/edit-profile float as centered card like DM overlay */
+@media(min-width:769px){
+  #portfolio-overlay{
+    top:24px;bottom:24px;left:50%;right:auto;
+    width:520px;max-width:calc(100vw - 48px);
+    border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.75);
+    transform:translateX(-50%) scale(0.97) translateY(8px);
+    opacity:0;pointer-events:none;
+    transition:transform .28s cubic-bezier(.32,0,.18,1),opacity .22s ease;
+  }
+  #portfolio-overlay.open{
+    transform:translateX(-50%) scale(1) translateY(0);opacity:1;pointer-events:all;
+  }
+  #portfolio-overlay .po-scroll{max-width:100%;background:var(--bg);border:none}
+  #portfolio-overlay .po-header{max-width:100%}
+  #portfolio-overlay .po-hero{padding:28px 24px 0}
+  #portfolio-overlay .po-avatar{width:100px;height:100px;font-size:50px}
+  #portfolio-overlay .po-name{font-size:18px}
+  #portfolio-overlay .po-stat-val{font-size:20px}
 }
 /* ═══════════════════════════════════════════════════════
    DESKTOP ADAPTIVE CENTERING — все страницы как профиль
@@ -2106,9 +2130,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   /* Chat: constrain the chat pane width */
   #sec-chat{max-width:unset}
   .chat-rooms-list{max-width:280px;flex-shrink:0}
-  /* Profile editor overlay */
-  #pe-overlay{align-items:center}
-  #pe-overlay .pe-header,#pe-overlay .pe-body{max-width:620px}
+  /* Profile editor overlay — floating card like DM overlay */
+  #pe-overlay{
+    top:24px;bottom:24px;left:50%;right:auto;
+    width:520px;max-width:calc(100vw - 48px);
+    border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.75);
+    transform:translateX(-50%) scale(0.97) translateY(8px);
+    opacity:0;pointer-events:none;
+    transition:transform .28s cubic-bezier(.32,0,.18,1),opacity .22s ease;
+  }
+  #pe-overlay.open{
+    transform:translateX(-50%) scale(1) translateY(0);opacity:1;pointer-events:all;
+  }
+  #pe-overlay .pe-header,#pe-overlay .pe-body{max-width:100%}
   /* Feed stays full-width (TikTok style has own desktop layout) */
   /* Cube switcher — same width as layout frame */
   #cube-switcher{max-width:1020px;align-self:center}
@@ -3141,7 +3175,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       </div>
 
       <!-- Backdrop for desktop DM/group overlays -->
-      <div id="chat-overlay-backdrop" onclick="closeDmChat();closeGrpChat();" style="display:none;opacity:0;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:599;backdrop-filter:blur(2px);transition:opacity .3s ease"></div>
+      <div id="chat-overlay-backdrop" onclick="closeDmChat();closeGrpChat();closeFavChat();closePortfolio();closePeOverlay();" style="display:none;opacity:0;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:599;backdrop-filter:blur(2px);transition:opacity .3s ease"></div>
 
       <!-- ═══ DM CHAT OVERLAY ══════════════════════════════════════════ -->
       <div id="dm-chat-overlay">
@@ -3269,7 +3303,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           <div class="cl-header">
             <h3>
               Чаты
-              <button class="cl-fav-btn" onclick="openRoom('saved')" title="Избранное">⭐</button>
+              <button class="cl-fav-btn" onclick="openFavChat()" title="Избранное">⭐</button>
             </h3>
             <div style="display:flex;align-items:center;gap:4px">
               <button class="cs-toggle" id="chat-stories-btn" onclick="toggleChatStories()" title="Сторис">
@@ -5245,6 +5279,11 @@ function enterInterior(cubeId){
   const _lastEl = _lastIdx>=0 ? _snItems[_lastIdx] : null;
   switchSection(_lastSec, _lastEl);
   onEnterInterior();
+  // Restore overlay state (portfolio / edit-profile / favorites)
+  const _lastOverlay = localStorage.getItem('cw_last_overlay');
+  if(_lastOverlay === 'portfolio') { setTimeout(()=>openMyProfile(), 150); }
+  else if(_lastOverlay === 'edit-profile') { setTimeout(()=>openMyProfile(), 150); }
+  else if(_lastOverlay === 'fav') { setTimeout(()=>openFavChat(), 150); }
   // Load real backend data for this cube
   loadRealPosts();
   loadRealSignals();
@@ -6885,15 +6924,69 @@ function dmCtxSave() {
   }
   saved.unshift({..._dmCtxMsg, savedAt: Date.now()});
   localStorage.setItem('cw_saved_msgs', JSON.stringify(saved.slice(0,500)));
-  // Also persist to cube-scoped store so openRoom('saved') can find it
-  const cid = app.currentCubeId;
-  if(cid) {
-    if(!app.chatMessages[cid]) app.chatMessages[cid]={};
-    if(!app.chatMessages[cid]['saved']) app.chatMessages[cid]['saved']=[];
-    app.chatMessages[cid]['saved'].unshift({..._dmCtxMsg, savedAt:Date.now()});
-    _saveFavorites(cid);
-  }
   showToast('⭐ Сохранено в Избранное');
+  // If fav overlay is open — append immediately
+  if(document.getElementById('fav-chat-overlay')?.classList.contains('open')) {
+    _renderFavMsg(_dmCtxMsg);
+  }
+}
+
+// ── Избранное chat overlay ─────────────────────────────────────────────────
+function openFavChat() {
+  const overlay = document.getElementById('fav-chat-overlay');
+  if(!overlay) return;
+  overlay.classList.add('open');
+  _chatOverlayBackdrop(true);
+  try{ localStorage.setItem('cw_last_overlay','fav'); }catch(e){}
+  renderFavChat();
+}
+function closeFavChat() {
+  document.getElementById('fav-chat-overlay')?.classList.remove('open');
+  try{ localStorage.removeItem('cw_last_overlay'); }catch(e){}
+  if(!document.getElementById('dm-chat-overlay')?.classList.contains('open')
+     && !document.getElementById('grp-chat-overlay')?.classList.contains('open'))
+    _chatOverlayBackdrop(false);
+}
+function renderFavChat() {
+  const el = document.getElementById('fav-msgs'); if(!el) return;
+  const saved = JSON.parse(localStorage.getItem('cw_saved_msgs')||'[]');
+  el.innerHTML = '';
+  const empty = document.getElementById('fav-empty');
+  if(empty) empty.style.display = saved.length ? 'none' : 'block';
+  // Render in chronological order (oldest first)
+  [...saved].reverse().forEach(m => _renderFavMsg(m, false));
+  el.scrollTop = el.scrollHeight;
+}
+function _renderFavMsg(m, scroll=true) {
+  const el = document.getElementById('fav-msgs'); if(!el) return;
+  const empty = document.getElementById('fav-empty');
+  if(empty) empty.style.display = 'none';
+  // Reuse _buildDmMsg for consistent rendering
+  const msgEl = _buildDmMsg({...m, sender: m.sender||'me'});
+  // Add timestamp label above
+  const wrap = document.createElement('div');
+  if(m.savedAt) {
+    const dt = new Date(m.savedAt);
+    const label = document.createElement('div');
+    label.style.cssText = 'font-size:10px;color:var(--text3);text-align:center;padding:4px 0 2px';
+    label.textContent = dt.toLocaleString('ru',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    wrap.appendChild(label);
+  }
+  wrap.appendChild(msgEl);
+  el.appendChild(wrap);
+  if(scroll) el.scrollTop = el.scrollHeight;
+}
+function sendFavNote() {
+  const inp = document.getElementById('fav-input'); if(!inp) return;
+  const text = (inp.value||'').trim(); if(!text) return;
+  inp.value = ''; inp.style.height = '';
+  const m = {text, sender:'me', author:'Я', type:'text',
+    time: new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+    savedAt: Date.now()};
+  const saved = JSON.parse(localStorage.getItem('cw_saved_msgs')||'[]');
+  saved.unshift(m);
+  localStorage.setItem('cw_saved_msgs', JSON.stringify(saved.slice(0,500)));
+  _renderFavMsg(m);
 }
 function dmCtxDelete() {
   hideDmMsgMenu();
@@ -6906,8 +6999,24 @@ function dmCtxDelete() {
 }
 function dmCtxReact(emoji) {
   hideDmMsgMenu();
-  if(!_dmCtxMsg?.id) return;
-  _wsSend({type:'dm_react', msg_id:_dmCtxMsg.id, emoji});
+  if(!_dmCtxMsg) return;
+  // Update local state immediately
+  if(!_dmCtxMsg.reactions) _dmCtxMsg.reactions = {};
+  _dmCtxMsg.reactions[emoji] = (_dmCtxMsg.reactions[emoji]||0) + 1;
+  // Update DOM without full re-render
+  const msgId = _dmCtxMsg.id;
+  if(msgId) {
+    const bub = document.getElementById('dmbub-'+msgId);
+    if(bub) {
+      const existing = bub.querySelector('.cm-reactions');
+      const newReact = buildReactionsHtml(_dmCtxMsg.reactions, msgId);
+      if(existing) existing.outerHTML = newReact;
+      else bub.insertAdjacentHTML('beforeend', newReact);
+    }
+  }
+  _saveDmState();
+  // Also send to server via WS
+  if(msgId) _wsSend({type:'dm_react', msg_id:msgId, emoji});
   showToast(emoji+' Реакция');
 }
 
@@ -9994,11 +10103,13 @@ async function openMyProfile(){
   });
   // Open overlay
   document.getElementById('pe-overlay').classList.add('open');
+  try{ localStorage.setItem('cw_last_overlay','edit-profile'); }catch(e){}
 }
 
 function closePeOverlay(){
   document.getElementById('pe-overlay').classList.remove('open');
   peCloseEmojiPicker();
+  try{ localStorage.removeItem('cw_last_overlay'); }catch(e){}
 }
 // backward compat shims
 // openModal/closeModal — extends originals to handle pe-overlay
@@ -10331,6 +10442,8 @@ function openPortfolio(){
 
   // ── Slide up ────────────────────────────────────
   document.getElementById('portfolio-overlay').classList.add('open');
+  _chatOverlayBackdrop(true);
+  try{ localStorage.setItem('cw_last_overlay','portfolio'); }catch(e){}
 }
 function closePortfolio(){
   const overlay = document.getElementById('portfolio-overlay');
@@ -10340,6 +10453,13 @@ function closePortfolio(){
   if(editBtn) editBtn.style.display='';
   const followBtn = document.getElementById('po-follow-btn');
   if(followBtn) followBtn.style.display='none';
+  try{ localStorage.removeItem('cw_last_overlay'); }catch(e){}
+  // Hide backdrop only if no other overlay is open
+  if(!document.getElementById('dm-chat-overlay')?.classList.contains('open')
+     && !document.getElementById('grp-chat-overlay')?.classList.contains('open')
+     && !document.getElementById('fav-chat-overlay')?.classList.contains('open')
+     && !document.getElementById('pe-overlay')?.classList.contains('open'))
+    _chatOverlayBackdrop(false);
 }
 // ── Public profile of another user ────────────────────────────────────────
 function openPublicProfile(uid, name, avColor) {
@@ -14384,6 +14504,30 @@ const _grpOvId='grp-chat-overlay';
     </div>
   </div>
   <button class="cmc-btn" onclick="cmc_open_profile()" style="width:100%;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:600;padding:6px 10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px"><i class="ti ti-user" style="font-size:12px"></i> Открыть профиль</button>
+</div>
+
+<!-- ══ ИЗБРАННОЕ CHAT OVERLAY ═════════════════════════════════════════════ -->
+<div id="fav-chat-overlay">
+  <!-- Topbar -->
+  <div class="gco-topbar" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(5,5,20,.97);backdrop-filter:blur(14px);flex-shrink:0;min-height:52px;border-bottom:1px solid rgba(255,255,255,.07)">
+    <button onclick="closeFavChat()" style="background:none;border:none;color:var(--accent);font-size:22px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0"><i class="ti ti-arrow-left"></i></button>
+    <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#f9c74f,#f8961e);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">⭐</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:15px;font-weight:700;color:#fff">Избранное</div>
+      <div style="font-size:11px;color:var(--text3)">Сохранённые сообщения</div>
+    </div>
+  </div>
+  <!-- Messages -->
+  <div class="fav-msgs" id="fav-msgs">
+    <div style="text-align:center;padding:40px 20px;color:var(--text3);font-size:13px" id="fav-empty">Нет сохранённых сообщений.<br>Нажми ⭐ в любом сообщении чтобы сохранить.</div>
+  </div>
+  <!-- Input -->
+  <div class="fav-input-row">
+    <textarea class="fav-input" id="fav-input" placeholder="Заметка для себя..." rows="1"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendFavNote();}"></textarea>
+    <button class="fav-send-btn" onclick="sendFavNote()">➤</button>
+  </div>
 </div>
 
 <!-- ══ DM DELETE MESSAGE CONFIRM ══════════════════════════════════════════ -->
