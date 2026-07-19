@@ -5810,6 +5810,8 @@ function deleteChatForMe() {
   // Remove from local store
   if(app.chatMessages[_DM_NAMESPACE]) delete app.chatMessages[_DM_NAMESPACE][dmKey];
   if(app.dmConversations) delete app.dmConversations[uid];
+  // Save deletion timestamp — history before this point is hidden on re-open
+  try{ localStorage.setItem('cw_del_ts_'+uid, Date.now().toString()); }catch(e){}
   // Persist deleted conversation UID so loadDmInbox won't restore it from server
   try{
     const _dc=new Set(JSON.parse(localStorage.getItem('cw_deleted_convs')||'[]'));
@@ -6515,9 +6517,15 @@ function openDmWith(userId, displayName) {
     fetch(CUBE_API+'/dm/'+uid, {headers:{Authorization:'Bearer '+token}})
       .then(r=>r.ok?r.json():null).then(msgs=>{
         if(!msgs||!msgs.length) return;
+        // Filter out messages older than deletion timestamp (if user deleted this chat)
+        const delTs = parseInt(localStorage.getItem('cw_del_ts_'+uid)||'0');
+        const filteredMsgs = delTs
+          ? msgs.filter(m => new Date(m.created_at||0).getTime() >= delTs)
+          : msgs;
+        if(!filteredMsgs.length) return;
         const local = _dmStore(dmKey).filter(m=>!m.id);
         app.chatMessages[_DM_NAMESPACE][dmKey] = [
-          ...msgs.map(m=>{
+          ...filteredMsgs.map(m=>{
             const mt=m.msg_type||'text';
             const fu=(mt==='image'||mt==='video'||mt==='file')?(m.file_url||m.content||''):'';
             const isMine2 = String(m.from_user_id)===String(myId);
@@ -6706,6 +6714,8 @@ function sendDmOverlayMsg() {
   }
 
   inp.value=''; inp.style.height='';
+  // Clear deletion timestamp — user started a new conversation, history filter no longer needed
+  try{ localStorage.removeItem('cw_del_ts_'+_chatActiveDm.user_id); }catch(e){}
   const _now = new Date();
   const time = _now.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
   const msgObj = {sender:'me', author:'Я', text, time, type:'text', replyTo:_dmReplyTo, expiresSecs:_dmExpireSecs, reactions:{}, createdAt:_now.toISOString()};
@@ -7071,10 +7081,10 @@ function cpAction(type) {
   if(!uid) return;
   if(type==='message') {
     closeContactPanel();
-    // Open DM with this user
-    const conv = Object.values(app.dmConversations||{}).find(c=>String(c.peerId||c.peer_id)===String(uid));
-    if(conv) openDmWith(uid, conv.name||conv.display_name||'Пользователь');
-    else showToast('💬 Начинаем чат...');
+    // UID IS the key in dmConversations — look up name from it or from contact panel header
+    const cpName = document.getElementById('cp-name');
+    const name = (cpName?.textContent?.trim()) || app.dmConversations?.[uid]?.display_name || 'Пользователь';
+    openDmWith(uid, name);
   } else if(type==='call') {
     showToast('📞 Функция звонков скоро...');
   } else if(type==='portfolio') {
