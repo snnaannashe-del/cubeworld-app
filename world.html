@@ -5854,7 +5854,7 @@ function _makeChatRow(r, onclickFn, opts) {
   const div=document.createElement('div');
   div.className='cl-room'; div.onclick=onclickFn;
   div.dataset.chatId=r.id||'';
-  // Avatar: gradient circle with letter (Telegram style)
+  // Avatar: use cached photo/emoji if available, else gradient letter
   const colors=[['#0095F6','#5263FF'],['#FF6B6B','#FF8E53'],['#00C9A7','#00B4D8'],['#845EC2','#D65DB1'],['#F9C74F','#F8961E'],['#4CC9F0','#4361EE'],['#4ade80','#22c55e']];
   const nameHash=Math.abs((r.name||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0));
   const [c1,c2]=colors[nameHash%colors.length];
@@ -5862,6 +5862,19 @@ function _makeChatRow(r, onclickFn, opts) {
   const isOnline=r.id&&r.id.startsWith('online:');
   const avatarStyle=`background:linear-gradient(135deg,${c1},${c2})`;
   const onlineDot=isOnline?`<div class="cl-room-online"></div>`:'';
+  // Check user cache for DM rooms
+  const _dmUidForRoom = r.id?.startsWith('dm:') ? r.id.replace('dm:','') : null;
+  const _cachedRoom = _dmUidForRoom ? (_userCache[_dmUidForRoom]||null) : null;
+  // Build avatar inner HTML for .cl-room-icon (50px container, already has border-radius)
+  let _roomAvInner;
+  const _rAvUrl = _cachedRoom?.avatar_url || r.avatar_url || null;
+  if(_rAvUrl && (_rAvUrl.startsWith('http')||_rAvUrl.startsWith('data:'))) {
+    _roomAvInner = `<img src="${escHtml(_rAvUrl)}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">${onlineDot}`;
+  } else if(_rAvUrl && [..._rAvUrl].length<=4 && /\p{Emoji}/u.test(_rAvUrl)) {
+    _roomAvInner = `${_rAvUrl}${onlineDot}`;
+  } else {
+    _roomAvInner = `${letter}${onlineDot}`;
+  }
   // Right side: start button for new contacts, or unread badge
   let rightBtn='';
   if(opts.showStart){
@@ -5869,14 +5882,16 @@ function _makeChatRow(r, onclickFn, opts) {
   } else if(r.unread){
     rightBtn=`<div class="cl-room-unread">${r.unread}</div>`;
   }
+  // Show @username in subtitle if cached
+  const _rDisplaySub = (_cachedRoom?.username) ? `@${_cachedRoom.username}` : _sanitizeDmPreview(r.lastMsg||'');
+  const _rLastMsg = r.lastMsg ? escHtml(_sanitizeDmPreview(r.lastMsg)) : (_cachedRoom?.username ? `@${escHtml(_cachedRoom.username)}` : '');
   div.innerHTML=`
     <div class="cl-room-icon" style="${avatarStyle};position:relative">
-      ${letter}
-      ${onlineDot}
+      ${_roomAvInner}
     </div>
     <div class="cl-room-info">
-      <div class="cl-room-name">${escHtml(r.name||'')}</div>
-      <div class="cl-room-last">${escHtml(_sanitizeDmPreview(r.lastMsg||''))}</div>
+      <div class="cl-room-name">${escHtml(_cachedRoom?.display_name||r.name||'')}</div>
+      <div class="cl-room-last">${_rLastMsg}</div>
     </div>
     <div class="cl-room-meta">
       <div class="cl-room-time">${r.time||''}</div>
@@ -5943,6 +5958,7 @@ async function loadDmInbox(){
     // Track UIDs whose conversations were deleted locally
     let _deletedConvs;
     try{ _deletedConvs = new Set(JSON.parse(localStorage.getItem('cw_deleted_convs')||'[]')); }catch(e){ _deletedConvs=new Set(); }
+    const _toPrewarm = [];
     list.forEach(item=>{
       const uid=String(item.peer_id);
       // Skip if user deleted this conversation locally
@@ -5957,12 +5973,115 @@ async function loadDmInbox(){
         time: item.time || existing.time || '',
         unread: alreadyRead ? 0 : (item.unread || 0),
       };
+      // Seed cache with what server told us (may have avatar_url)
+      if(item.display_name || item.avatar_url) {
+        _cacheUserFromMsg(uid, item.display_name||null, item.avatar_url||null);
+      }
+      if(!_userCache[uid]) _toPrewarm.push(uid);
     });
     renderChatRooms();
+    // Background: fetch full user info for uncached UIDs (staggered to avoid request storm)
+    _toPrewarm.slice(0, 20).forEach((uid, i) => {
+      setTimeout(()=> fetchUserInfo(uid).then(()=> renderChatRooms()), i * 200);
+    });
   } catch(e){ /* silent */ }
 }
 
 // openDmWith is defined below in the DM overlay section
+
+// ══════════════════════════════════════════════════════════
+// USER INFO CACHE — UID → {display_name, username, avatar_url}
+// ══════════════════════════════════════════════════════════
+const _userCache = {}; // uid(string) → {display_name, username, avatar_url}
+const _userFetching = new Set();
+
+async function fetchUserInfo(uid) {
+  const key = String(uid);
+  if(_userCache[key]) return _userCache[key];
+  if(_userFetching.has(key)) {
+    // Wait up to 3 s for ongoing fetch
+    return new Promise(resolve => {
+      const t0 = Date.now();
+      const iv = setInterval(()=>{
+        if(_userCache[key]){ clearInterval(iv); resolve(_userCache[key]); }
+        else if(Date.now()-t0 > 3000){ clearInterval(iv); resolve(null); }
+      }, 80);
+    });
+  }
+  _userFetching.add(key);
+  try {
+    const res = await apiCall('/users/search?q=%23'+key+'&limit=5');
+    const arr = Array.isArray(res) ? res : [];
+    const user = arr.find(u => String(u.id) === key) || arr[0] || null;
+    _userCache[key] = user
+      ? { display_name: user.display_name||user.username||'Пользователь',
+          username: user.username||null,
+          avatar_url: user.avatar_url||null }
+      : { display_name: 'Пользователь', username: null, avatar_url: null };
+  } catch(e) {
+    _userCache[key] = { display_name: 'Пользователь', username: null, avatar_url: null };
+  } finally { _userFetching.delete(key); }
+  return _userCache[key];
+}
+
+// Store user info coming from WS messages into cache
+function _cacheUserFromMsg(uid, display_name, avatar_url) {
+  if(!uid) return;
+  const key = String(uid);
+  if(!_userCache[key] || display_name) {
+    _userCache[key] = {
+      display_name: display_name || _userCache[key]?.display_name || 'Пользователь',
+      username: _userCache[key]?.username || null,
+      avatar_url: avatar_url || _userCache[key]?.avatar_url || null
+    };
+  }
+}
+
+// Returns the INNER content for an existing avatar container (img, emoji, or letter).
+// Sets el's innerHTML + adjusts background/fontSize.
+function _setElAvatar(el, info, size) {
+  if(!el) return;
+  size = size || 36;
+  const avColors = ['#0095F6','#e91e8c','#00C9A7','#845EC2','#F9C74F','#4CC9F0'];
+  const name = (info && info.display_name) ? info.display_name : '?';
+  const L = name[0].toUpperCase();
+  const avC = avColors[Math.abs(name.split('').reduce((a,c)=>a+c.charCodeAt(0),0)) % avColors.length];
+  const url = info && info.avatar_url;
+  if(url && (url.startsWith('http')||url.startsWith('data:'))) {
+    el.innerHTML = `<img src="${escHtml(url)}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`;
+    el.style.background = avC;
+    el.style.fontSize = '';
+    el.style.color = '';
+  } else if(url && [...url].length <= 4 && /\p{Emoji}/u.test(url)) {
+    el.textContent = url;
+    el.style.background = 'rgba(255,255,255,.07)';
+    el.style.fontSize = Math.round(size*0.5)+'px';
+  } else {
+    el.textContent = L;
+    el.style.background = avC;
+    el.style.fontSize = Math.round(size*0.43)+'px';
+    el.style.fontWeight = '700';
+    el.style.color = '#fff';
+  }
+}
+
+// Returns standalone avatar element (for inserting fresh HTML)
+function _avatarHtml(info, size) {
+  size = size || 36;
+  const avColors = ['#0095F6','#e91e8c','#00C9A7','#845EC2','#F9C74F','#4CC9F0'];
+  const name = (info && info.display_name) ? info.display_name : '?';
+  const L = name[0].toUpperCase();
+  const avC = avColors[Math.abs(name.split('').reduce((a,c)=>a+c.charCodeAt(0),0)) % avColors.length];
+  const baseStyle = `width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;`;
+  const url = info && info.avatar_url;
+  if(url && (url.startsWith('http')||url.startsWith('data:'))) {
+    return `<div style="${baseStyle}background:${avC}"><img src="${escHtml(url)}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"></div>`;
+  }
+  if(url && [...url].length <= 4 && /\p{Emoji}/u.test(url)) {
+    return `<div style="${baseStyle}background:rgba(255,255,255,.07);font-size:${Math.round(size*0.5)}px">${url}</div>`;
+  }
+  return `<div style="${baseStyle}background:${avC};font-size:${Math.round(size*0.43)}px;font-weight:700;color:#fff">${L}</div>`;
+}
 
 // ── DM polling fallback ──
 let _dmPollTimer = null;
@@ -6068,6 +6187,14 @@ function handleIncomingDm(msg, myUserId) {
   } else {
     if(store.find(x=>x.id===msg.id)) return; // already have it (poll + WS race)
     if(msg.id && _locallyDeletedIds.has(String(msg.id))) return; // locally deleted — skip
+    // Cache sender info from WS message (avoids extra API call)
+    if(msg.from_user_id || msg.sender_id) {
+      _cacheUserFromMsg(
+        String(msg.from_user_id||msg.sender_id||''),
+        msg.display_name||null,
+        msg.avatar_url||null
+      );
+    }
     const dmMType=msg.msg_type||'text';
     const dmFileUrl=(dmMType==='image'||dmMType==='video'||dmMType==='file')
       ? (msg.file_url||msg.content||'') : '';
@@ -6401,12 +6528,25 @@ function _buildDmMsg(m) {
   }
 
   // tick & expLabel already defined above for media overlay
-  const avHtml = isMe ? '' : `<div class="gco-av" style="background:${avC};font-size:13px;font-weight:700" data-uid="${m.authorId||''}" data-name="${escHtml(m.author||'')}" data-av="${avC}">${letter}</div>`;
+  // Use cached user info for avatar if available
+  const _cachedAuthor = m.authorId ? (_userCache[String(m.authorId)] || null) : null;
+  const _avInfo = _cachedAuthor || {display_name: m.author||'?', username: null, avatar_url: null};
+  // Build inner avatar content for .gco-av container (no nested div — .gco-av already has border-radius/size)
+  const _avUrl = _avInfo.avatar_url;
+  let _avInner;
+  if(_avUrl && (_avUrl.startsWith('http')||_avUrl.startsWith('data:'))) {
+    _avInner = `<img src="${escHtml(_avUrl)}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`;
+  } else if(_avUrl && [..._avUrl].length<=4 && /\p{Emoji}/u.test(_avUrl)) {
+    _avInner = _avUrl;
+  } else {
+    _avInner = letter; // letter initial
+  }
+  const avHtml = isMe ? '' : `<div class="gco-av" style="background:${avC}" data-uid="${m.authorId||''}" data-name="${escHtml(m.author||'')}" data-av="${avC}">${_avInner}</div>`;
 
   div.innerHTML = `${avHtml}
     <div class="gco-bubble-wrap" data-msgid="${m.id||''}">
       <div class="gco-bubble" id="dmbub-${m.id||'x'}">
-        ${!isMe&&m.author ? `<div class="gco-bubble-name" style="color:${avC};font-size:11px;font-weight:700;margin-bottom:3px">${escHtml(m.author)}</div>` : ''}
+        ${!isMe&&m.author ? `<div class="gco-bubble-name" style="color:${avC};font-size:11px;font-weight:700;margin-bottom:3px">${escHtml(_avInfo.display_name||m.author)}${_avInfo.username?`<span style="color:var(--text3);font-weight:400"> @${escHtml(_avInfo.username)}</span>`:''}</div>` : ''}
         ${replyHtml}
         ${bubbleContent}
         <div class="gco-bubble-time" style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:2px">${expLabel}${t}${tick}</div>
@@ -6514,15 +6654,11 @@ function openDmWith(userId, displayName) {
     localStorage.setItem('cw_read_uids', JSON.stringify([..._rs].slice(-200)));
   }catch(e){}
   _saveDmState();
-  // Update overlay header
+  // Update overlay header with initial letter avatar (instant)
   document.getElementById('dm-co-name').textContent = displayName;
-  // Letter avatar
-  const letter = (displayName||'?')[0].toUpperCase();
-  const avColors = ['#0095F6','#e91e8c','#00C9A7','#845EC2','#F9C74F','#4CC9F0'];
-  const avC = avColors[Math.abs((displayName||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0))%avColors.length];
   const avEl = document.getElementById('dm-co-av');
-  avEl.textContent = letter;
-  avEl.style.background = avC;
+  const _initInfo = _userCache[uid] || {display_name: displayName, username: null, avatar_url: null};
+  _setElAvatar(avEl, _initInfo, 38);
   // Open overlay
   document.getElementById('dm-chat-overlay').classList.add('open');
   _chatOverlayBackdrop(true);
@@ -6538,6 +6674,27 @@ function openDmWith(userId, displayName) {
   app.currentRoomId = dmKey;
   // Show cached messages immediately
   renderDmOverlay(dmKey);
+  // Fetch real user info (async) and update topbar + sidebar
+  fetchUserInfo(uid).then(info => {
+    if(!info) return;
+    // Update topbar name
+    const nameEl = document.getElementById('dm-co-name');
+    if(nameEl) nameEl.textContent = info.display_name;
+    // Update subtitle with @username if available
+    const subEl = document.getElementById('dm-co-sub');
+    if(subEl) subEl.textContent = info.username ? '@'+info.username+' · 🔐 E2E' : '🔐 личная переписка · E2E';
+    // Update topbar avatar with real photo/emoji
+    const av = document.getElementById('dm-co-av');
+    if(av) _setElAvatar(av, info, 38);
+    // Update dmConversations entry
+    if(app.dmConversations[uid]) {
+      app.dmConversations[uid].display_name = info.display_name;
+      app.dmConversations[uid].avatar_url = info.avatar_url || null;
+    }
+    // If this DM is still open, update _chatActiveDm display_name
+    if(_chatActiveDm?.user_id === uid) _chatActiveDm.display_name = info.display_name;
+    renderChatRooms();
+  });
   // Load history from server
   const myId = localStorage.getItem('cw_user_id');
   const token = localStorage.getItem('cw_access_token');
