@@ -1091,26 +1091,20 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .cm-react-popup.open{display:flex}
 .cm-react-popup span{font-size:18px;cursor:pointer;padding:3px;border-radius:5px;transition:background .1s}
 .cm-react-popup span:hover{background:rgba(255,255,255,.1)}
-/* DM message context menu */
-/* ── DM context menu sheet ── */
-#dm-ctx-overlay{position:fixed;inset:0;z-index:1990;display:none;background:rgba(0,0,0,.4);backdrop-filter:blur(4px)}
-#dm-ctx-overlay.open{display:block}
-#dm-ctx-sheet{position:fixed;bottom:0;left:0;right:0;background:#13132a;border-radius:20px 20px 0 0;z-index:1991;transform:translateY(100%);transition:transform .25s cubic-bezier(.32,0,.18,1);padding:0 0 env(safe-area-inset-bottom,16px);max-width:520px;margin:0 auto;box-shadow:0 -4px 40px rgba(0,0,0,.6)}
-#dm-ctx-overlay.open #dm-ctx-sheet{transform:translateY(0)}
-.dm-ctx-preview{padding:14px 18px 10px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;gap:8px}
-.dm-ctx-picon{font-size:18px;flex-shrink:0;margin-top:2px}
-.dm-ctx-ptext{font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;max-width:100%}
-/* Reaction quick-bar */
-.dm-ctx-reacts{display:flex;gap:4px;padding:10px 16px 2px;border-bottom:1px solid rgba(255,255,255,.07)}
-.dm-ctx-react-btn{font-size:22px;cursor:pointer;padding:4px 6px;border-radius:8px;transition:transform .12s,background .12s;line-height:1}
-.dm-ctx-react-btn:hover,.dm-ctx-react-btn:active{transform:scale(1.2);background:rgba(255,255,255,.08)}
-/* Action buttons */
-.dm-ctx-btn{display:flex;align-items:center;gap:14px;padding:12px 18px;cursor:pointer;font-size:14px;color:#e0e0f8;transition:background .12s;user-select:none}
-.dm-ctx-btn:hover,.dm-ctx-btn:active{background:rgba(255,255,255,.06)}
-.dm-ctx-btn i{font-size:17px;color:var(--text2);width:22px;text-align:center;flex-shrink:0}
-.dm-ctx-btn.danger{color:#ff5c5c}
-.dm-ctx-btn.danger i{color:#ff5c5c}
-.dm-ctx-divider{height:1px;background:rgba(255,255,255,.07);margin:4px 0}
+/* DM message context menu — Telegram-style inline popup */
+#dm-tg-menu{position:fixed;z-index:1990;display:none;flex-direction:column;background:#1a1a30;border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.85),0 2px 8px rgba(0,0,0,.5);min-width:210px;max-width:280px;backdrop-filter:blur(20px)}
+#dm-tg-menu.open{display:flex;animation:tgMenuIn .15s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes tgMenuIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+#dm-tg-backdrop{position:fixed;inset:0;z-index:1989;display:none}
+.tg-react-row{display:flex;gap:2px;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.07);justify-content:space-between}
+.tg-react-btn{font-size:24px;cursor:pointer;padding:4px;border-radius:10px;transition:transform .12s,background .12s;line-height:1;flex:1;text-align:center;user-select:none}
+.tg-react-btn:hover,.tg-react-btn:active{transform:scale(1.3);background:rgba(255,255,255,.08)}
+.tg-menu-item{display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer;font-size:14px;color:#e0e0f8;transition:background .1s;user-select:none}
+.tg-menu-item:hover,.tg-menu-item:active{background:rgba(255,255,255,.07)}
+.tg-menu-item i{font-size:16px;color:var(--text2);width:20px;text-align:center;flex-shrink:0}
+.tg-menu-item.danger{color:#ff5c5c}
+.tg-menu-item.danger i{color:#ff5c5c}
+.tg-menu-sep{height:1px;background:rgba(255,255,255,.07);margin:3px 0}
 /* DM edit bar */
 #dm-edit-bar{display:none;align-items:center;gap:8px;padding:7px 14px;background:rgba(0,149,246,.07);border-top:2px solid var(--border);border-left:3px solid #F9C74F;flex-shrink:0}
 #dm-edit-bar.visible{display:flex}
@@ -6111,7 +6105,7 @@ function _startDmPoll(userId, displayName, dmKey){
       const msgs = await r.json();
       if(!msgs||!msgs.length) return;
       const store = _dmStore(dmKey);
-      let added=false;
+      const newlyAdded=[];
       for(const m of msgs){
         if(store.find(x=>x.id===m.id)) continue; // already have it
         const isMine = String(m.from_user_id)===String(myId);
@@ -6122,7 +6116,7 @@ function _startDmPoll(userId, displayName, dmKey){
         }
         const pt=m.msg_type||'text';
         const pu=(pt==='image'||pt==='video'||pt==='file')?(m.file_url||m.content||''):'';
-        store.push({
+        const newMsg={
           id:m.id,
           sender:isMine?'me':'them',
           author:isMine?'Я':displayName,
@@ -6132,13 +6126,16 @@ function _startDmPoll(userId, displayName, dmKey){
           dateKey:_dateKey(m.created_at),
           type:pt, fileName:m.file_name, fileSize:m.file_size,
           fileUrl:pu, duration:m.duration, reactions:{}
-        });
-        added=true;
+        };
+        store.push(newMsg);
+        newlyAdded.push(newMsg);
       }
-      if(added){
+      if(newlyAdded.length){
         _saveDmState();
         const dmOverlayOpen = document.getElementById('dm-chat-overlay')?.classList.contains('open');
-        if(app.currentRoomId===dmKey && dmOverlayOpen) renderDmOverlay(dmKey);
+        if(app.currentRoomId===dmKey && dmOverlayOpen) {
+          newlyAdded.forEach(nm => _appendDmMsg(nm));
+        }
       }
     }catch(e){}
   }, 8000);
@@ -6214,7 +6211,7 @@ function handleIncomingDm(msg, myUserId) {
       // Reconnect edge-case: no pending copy → add silently (not to UI)
       const echoType=msg.msg_type||'text';
       const echoUrl=(echoType==='image'||echoType==='video'||echoType==='file')?(msg.file_url||msg.content||''):'';
-      store.push({id:msg.id, sender:'me', author:'Я', text:msg.content, time,
+      store.push({id:msg.id, sender:'me', author:'Я', authorId:String(myUserId), text:msg.content, time, dateKey,
         type:echoType, fileName:msg.file_name, fileSize:msg.file_size,
         fileUrl:echoUrl, duration:msg.duration, reactions:{}});
       addedToStore = true;
@@ -6611,9 +6608,12 @@ function _buildDmMsg(m) {
   // Long-press / right-click for context menu
   const bubble = div.querySelector('.gco-bubble');
   if(bubble) {
-    bubble.addEventListener('contextmenu', e=>{ e.preventDefault(); showDmMsgMenu(m); });
+    bubble.addEventListener('contextmenu', e=>{ e.preventDefault(); showDmMsgMenu(m, e); });
     let _lp=null;
-    bubble.addEventListener('touchstart', e=>{ _lp=setTimeout(()=>{ const sel=window.getSelection(); if(sel&&!sel.isCollapsed) return; showDmMsgMenu(m); },550); },{passive:true});
+    bubble.addEventListener('touchstart', e=>{
+      const t=e.touches[0]; const cx=t.clientX, cy=t.clientY;
+      _lp=setTimeout(()=>{ const sel=window.getSelection(); if(sel&&!sel.isCollapsed) return; showDmMsgMenu(m,{clientX:cx,clientY:cy}); },550);
+    },{passive:true});
     bubble.addEventListener('touchend', ()=>clearTimeout(_lp), {passive:true});
     bubble.addEventListener('touchmove', ()=>clearTimeout(_lp), {passive:true});
   }
@@ -6633,8 +6633,25 @@ function renderDmOverlay(dmKey) {
   let lastDk = null;
   msgs.forEach(m=>{
     const dk = m.dateKey || '';
-    if(dk && dk !== lastDk){ frag.appendChild(_makeDateSep(dk,'dm-date-sep')); lastDk=dk; }
-    frag.appendChild(_buildDmMsg(m));
+    if(dk && dk !== lastDk){
+      const sep = _makeDateSep(dk,'dm-date-sep');
+      sep.querySelector('span').dataset.dk = dk;
+      frag.appendChild(sep);
+      lastDk=dk;
+    }
+    const msgEl = _buildDmMsg(m);
+    // Add swipe-to-reply (same as _appendDmMsg)
+    const bub = msgEl.querySelector('.gco-bubble');
+    if(bub){
+      const bwrap = msgEl.querySelector('.gco-bubble-wrap');
+      if(bwrap && !bwrap.querySelector('.swipe-reply-icon')){
+        const ico=document.createElement('div');
+        ico.className='swipe-reply-icon'; ico.innerHTML='↩';
+        bwrap.style.position='relative'; bwrap.appendChild(ico);
+      }
+      _addSwipeReply(bub, m);
+    }
+    frag.appendChild(msgEl);
   });
   el.appendChild(frag);
   el.scrollTop = el.scrollHeight;
@@ -6658,10 +6675,10 @@ function _appendDmMsg(m) {
   }
   const msgEl = _buildDmMsg(m);
   // Add swipe-to-reply on mobile
-  const bub = msgEl.querySelector('.cm-bubble') || msgEl.querySelector('.gco-bubble');
+  const bub = msgEl.querySelector('.gco-bubble');
   if(bub) {
     // Add swipe reply icon placeholder
-    const bwrap = msgEl.querySelector('.gco-bubble-wrap') || msgEl.querySelector('.cm-bubble')?.parentElement;
+    const bwrap = msgEl.querySelector('.gco-bubble-wrap');
     if(bwrap && !bwrap.querySelector('.swipe-reply-icon')) {
       const ico = document.createElement('div');
       ico.className='swipe-reply-icon';
@@ -6820,8 +6837,13 @@ function sendDmOverlayMsg() {
   }
 
   inp.value=''; inp.style.height='';
+  // Reset send/mic toggle
+  const _sb3=document.getElementById('dm-co-send'), _mb3=document.getElementById('dm-mic-btn');
+  if(_sb3) _sb3.style.display='none';
+  if(_mb3) _mb3.style.display='flex';
   const time = new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-  const msgObj = {sender:'me', author:'Я', text, time, dateKey:_todayKey(), type:'text', replyTo:_dmReplyTo, expiresSecs:_dmExpireSecs, reactions:{}};
+  const _myIdSnd = localStorage.getItem('cw_user_id')||'';
+  const msgObj = {sender:'me', author:'Я', authorId:String(_myIdSnd), text, time, dateKey:_todayKey(), type:'text', replyTo:_dmReplyTo, expiresSecs:_dmExpireSecs, reactions:{}};
   const dmKey = 'dm:' + _chatActiveDm.user_id;
   addCubeRoomMsg(msgObj, dmKey);
   _appendDmMsg(msgObj);
@@ -6938,19 +6960,48 @@ document.addEventListener('selectionchange', ()=>{
 let _dmCtxMsg = null;
 let _dmEditingMsg = null; // message currently being edited
 
-function showDmMsgMenu(m) {
+function showDmMsgMenu(m, evt) {
   _dmCtxMsg = m;
-  // Preview
-  const icon = m.type==='image'?'🖼':m.type==='video'?'🎬':m.type==='file'?'📎':m.type==='sticker'?'🎭':'💬';
-  document.getElementById('dm-ctx-icon').textContent = icon;
-  document.getElementById('dm-ctx-text').textContent = m.type==='text'?(m.text||'').slice(0,120):(m.fileName||m.text||m.type);
-  // Show/hide Edit (only for own text messages)
-  const editBtn = document.getElementById('dm-ctx-edit-btn');
-  if(editBtn) editBtn.style.display = (m.sender==='me' && m.type==='text') ? 'flex' : 'none';
-  document.getElementById('dm-ctx-overlay').classList.add('open');
+  // Show/hide Edit (only own text messages)
+  const editItem = document.getElementById('dm-tg-edit');
+  if(editItem) editItem.style.display = (m.sender==='me' && m.type==='text') ? 'flex' : 'none';
+
+  const menu = document.getElementById('dm-tg-menu');
+  if(!menu) return;
+  // Reset position before measuring
+  menu.style.left='0'; menu.style.top='0'; menu.style.right=''; menu.style.bottom='';
+  menu.classList.add('open');
+
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const mw = menu.offsetWidth||240, mh = menu.offsetHeight||300;
+
+  let cx = vw/2, cy = vh/2;
+  if(evt) {
+    cx = evt.clientX !== undefined ? evt.clientX : (evt.touches?.[0]?.clientX ?? vw/2);
+    cy = evt.clientY !== undefined ? evt.clientY : (evt.touches?.[0]?.clientY ?? vh/2);
+  }
+
+  // Own messages appear on right → popup opens to the left; others open to the right
+  let x = m.sender==='me' ? cx - mw - 8 : cx + 8;
+  let y = cy - mh/2;
+
+  // Clamp inside viewport
+  x = Math.max(8, Math.min(x, vw - mw - 8));
+  y = Math.max(8, Math.min(y, vh - mh - 8));
+
+  menu.style.left = x+'px';
+  menu.style.top  = y+'px';
+
+  // Backdrop to close on outside tap
+  let bd = document.getElementById('dm-tg-backdrop');
+  if(!bd){ bd=document.createElement('div'); bd.id='dm-tg-backdrop'; document.body.appendChild(bd); }
+  bd.style.display='block';
+  bd.onclick = hideDmMsgMenu;
 }
 function hideDmMsgMenu() {
-  document.getElementById('dm-ctx-overlay')?.classList.remove('open');
+  document.getElementById('dm-tg-menu')?.classList.remove('open');
+  const bd = document.getElementById('dm-tg-backdrop');
+  if(bd) bd.style.display='none';
 }
 function dmCtxReply() {
   hideDmMsgMenu();
@@ -6979,6 +7030,10 @@ function cancelDmEdit() {
   document.getElementById('dm-edit-bar')?.classList.remove('visible');
   const inp = document.getElementById('dm-co-input');
   if(inp){ inp.value=''; inp.style.height=''; }
+  // Reset send/mic toggle
+  const _sb4=document.getElementById('dm-co-send'), _mb4=document.getElementById('dm-mic-btn');
+  if(_sb4) _sb4.style.display='none';
+  if(_mb4) _mb4.style.display='flex';
 }
 function dmCtxForward() {
   hideDmMsgMenu();
@@ -15053,33 +15108,26 @@ const _grpOvId='grp-chat-overlay';
 </div>
 
 <!-- ══ DM MESSAGE CONTEXT MENU ═══════════════════════════════════════════ -->
-<div id="dm-ctx-overlay" onclick="hideDmMsgMenu()">
-  <div id="dm-ctx-sheet" onclick="event.stopPropagation()">
-    <!-- Preview -->
-    <div class="dm-ctx-preview">
-      <div class="dm-ctx-picon" id="dm-ctx-icon">💬</div>
-      <div class="dm-ctx-ptext" id="dm-ctx-text"></div>
-    </div>
-    <!-- Quick reactions -->
-    <div class="dm-ctx-reacts">
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('👍')">👍</span>
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('❤️')">❤️</span>
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('😂')">😂</span>
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('😮')">😮</span>
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('🔥')">🔥</span>
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('💯')">💯</span>
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('🚀')">🚀</span>
-    </div>
-    <!-- Actions -->
-    <div class="dm-ctx-btn" onclick="dmCtxReply()"><i class="ti ti-arrow-back-up"></i> Ответить</div>
-    <div class="dm-ctx-btn" onclick="dmCtxCopy()"><i class="ti ti-copy"></i> Скопировать</div>
-    <div class="dm-ctx-btn" id="dm-ctx-edit-btn" onclick="dmCtxEdit()"><i class="ti ti-edit"></i> Изменить</div>
-    <div class="dm-ctx-btn" onclick="dmCtxForward()"><i class="ti ti-corner-up-right"></i> Переслать</div>
-    <div class="dm-ctx-btn" onclick="dmCtxPin()"><i class="ti ti-pin"></i> Закрепить</div>
-    <div class="dm-ctx-btn" onclick="dmCtxSave()"><i class="ti ti-star"></i> В избранное</div>
-    <div class="dm-ctx-divider"></div>
-    <div class="dm-ctx-btn danger" onclick="dmCtxDelete()"><i class="ti ti-trash"></i> Удалить</div>
+<div id="dm-tg-menu">
+  <!-- Quick reactions -->
+  <div class="tg-react-row">
+    <span class="tg-react-btn" onclick="dmCtxReact('👍')">👍</span>
+    <span class="tg-react-btn" onclick="dmCtxReact('❤️')">❤️</span>
+    <span class="tg-react-btn" onclick="dmCtxReact('😂')">😂</span>
+    <span class="tg-react-btn" onclick="dmCtxReact('😮')">😮</span>
+    <span class="tg-react-btn" onclick="dmCtxReact('🔥')">🔥</span>
+    <span class="tg-react-btn" onclick="dmCtxReact('💯')">💯</span>
+    <span class="tg-react-btn" onclick="dmCtxReact('🚀')">🚀</span>
   </div>
+  <!-- Actions -->
+  <div class="tg-menu-item" onclick="dmCtxReply()"><i class="ti ti-arrow-back-up"></i> Ответить</div>
+  <div class="tg-menu-item" onclick="dmCtxCopy()"><i class="ti ti-copy"></i> Скопировать</div>
+  <div class="tg-menu-item" id="dm-tg-edit" onclick="dmCtxEdit()"><i class="ti ti-edit"></i> Изменить</div>
+  <div class="tg-menu-item" onclick="dmCtxForward()"><i class="ti ti-corner-up-right"></i> Переслать</div>
+  <div class="tg-menu-item" onclick="dmCtxPin()"><i class="ti ti-pin"></i> Закрепить</div>
+  <div class="tg-menu-item" onclick="dmCtxSave()"><i class="ti ti-star"></i> В избранное</div>
+  <div class="tg-menu-sep"></div>
+  <div class="tg-menu-item danger" onclick="dmCtxDelete()"><i class="ti ti-trash"></i> Удалить</div>
 </div>
 
 <!-- ══ MSG ACTION BOTTOM SHEET ══════════════════════════════════════════ -->
