@@ -558,11 +558,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-bubble{position:relative;border-radius:14px 14px 14px 2px;padding:9px 13px;background:rgba(255,255,255,.07);word-break:break-word;overflow-wrap:break-word;min-width:60px;overflow:hidden}
 .gco-bubble::before{content:'';position:absolute;bottom:0;left:-7px;width:0;height:0;border-top:8px solid transparent;border-right:7px solid rgba(255,255,255,.07)}
 .gco-msg.me .gco-bubble{background:rgba(0,149,246,.25);border-radius:14px 14px 2px 14px}
-/* Media-only messages: no bubble background, media fills edge-to-edge */
-.dm-media-only .gco-bubble{padding:0!important;background:transparent!important;border:none!important;min-width:0!important;overflow:hidden;border-radius:14px!important}
+/* Media-only messages: no bubble background, media fills edge-to-edge, straight corners */
+.dm-media-only .gco-bubble{padding:0!important;background:transparent!important;border:none!important;min-width:0!important;overflow:hidden;border-radius:0!important}
 .dm-media-only .gco-bubble::before,.dm-media-only .gco-bubble::after{display:none!important}
 .dm-media-only .gco-bubble-time{display:none!important}
-.dm-media-only.me .gco-bubble{border-radius:14px!important}
+.dm-media-only.me .gco-bubble{border-radius:0!important}
 .gco-msg.me .gco-bubble::before{display:none}
 .gco-msg.me .gco-bubble::after{content:'';position:absolute;bottom:0;right:-7px;width:0;height:0;border-top:8px solid transparent;border-left:7px solid rgba(0,149,246,.25)}
 /* Date separator */
@@ -5979,9 +5979,12 @@ function _startDmPoll(userId, displayName, dmKey){
       const msgs = await r.json();
       if(!msgs||!msgs.length) return;
       const store = _dmStore(dmKey);
+      // Filter: don't re-add messages before the deletion timestamp
+      const _pollDelTs = parseInt(localStorage.getItem('cw_del_ts_'+userId)||'0');
       let added=false;
       for(const m of msgs){
         if(_locallyDeletedIds.has(String(m.id))) continue; // locally deleted — skip
+        if(_pollDelTs && new Date(m.created_at||0).getTime() < _pollDelTs) continue; // deleted chat — skip old msgs
         if(store.find(x=>x.id===m.id)) continue; // already have it
         const isMine = String(m.from_user_id)===String(myId);
         if(isMine){
@@ -6343,8 +6346,8 @@ function _buildDmMsg(m) {
   if(mtype === 'image') {
     const src = m.fileUrl||(m.fileData?`data:image/jpeg;base64,${m.fileData}`:'');
     bubbleContent = src
-      ? `<div style="max-width:300px;border-radius:14px;overflow:hidden;cursor:zoom-in;position:relative" onclick="openLightbox&&openLightbox('${escHtml(src)}','image')">
-           <img src="${escHtml(src)}" style="max-width:300px;width:100%;height:auto;display:block" loading="eager"
+      ? `<div style="width:min(300px,100%);border-radius:0;overflow:hidden;cursor:zoom-in;position:relative" onclick="openLightbox&&openLightbox('${escHtml(src)}','image')">
+           <img src="${escHtml(src)}" style="width:100%;height:auto;display:block" loading="eager"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
              onload="this.style.display='block';this.nextElementSibling.style.display='none'">
            <div style="display:none;align-items:center;justify-content:center;height:120px;font-size:36px;color:var(--text3)">🖼</div>
@@ -6355,9 +6358,9 @@ function _buildDmMsg(m) {
     const src = m.fileUrl || '';
     const vidId = 'dmv-' + (m.id||Math.random().toString(36).slice(2));
     bubbleContent = src
-      ? `<div style="max-width:300px;border-radius:14px;overflow:hidden;position:relative">
+      ? `<div style="width:min(300px,100%);border-radius:0;overflow:hidden;position:relative">
            <video id="${vidId}" src="${escHtml(src)}#t=0.001"
-             style="max-width:300px;width:100%;display:block;max-height:360px;object-fit:cover"
+             style="width:100%;display:block;max-height:360px;object-fit:cover"
              playsinline webkit-playsinline preload="metadata"
              onplay="this.parentElement.querySelector('.dmvp').style.display='none'"
              onpause="this.parentElement.querySelector('.dmvp').style.display='flex'"
@@ -7086,11 +7089,13 @@ function favCtxReact(emoji) {
   showToast(emoji+' Реакция');
 }
 function favDelMsg() {
+  const target = _favCtxMsg; // capture before hideFavMsgMenu clears it async
   hideFavMsgMenu();
-  if(!_favCtxMsg) return;
-  const ts=_favCtxMsg.savedAt; const txt=_favCtxMsg.text;
+  if(!target) return;
+  const ts = target.savedAt;
   const saved = JSON.parse(localStorage.getItem('cw_saved_msgs')||'[]');
-  const newSaved = saved.filter(x=>!(x.savedAt===ts&&x.text===txt));
+  // Match by savedAt timestamp only (unique enough; avoids undefined text for image/file msgs)
+  const newSaved = saved.filter(x => x.savedAt !== ts);
   localStorage.setItem('cw_saved_msgs', JSON.stringify(newSaved));
   renderFavChat();
   showToast('🗑 Удалено из избранного');
@@ -12058,8 +12063,8 @@ function _buildGroupMsg(m, myId){
     const fname=rawUrl.split('/').pop()||'Файл';
     const txt=parsedMsg.text?`<div class="gco-bubble-text" style="margin-top:6px">${_renderFmt(parsedMsg.text)}</div>`:'';
     if(parsedMsg.type==='image'){
-      bubbleContent=`<div style="max-width:280px;border-radius:12px;overflow:hidden;cursor:zoom-in;margin:-4px -4px 0" onclick="openLightbox('${safeUrl}','image')">
-        <img src="${safeUrl}" style="max-width:280px;width:100%;height:auto;display:block;border-radius:12px"
+      bubbleContent=`<div style="width:min(280px,100%);border-radius:0;overflow:hidden;cursor:zoom-in;margin:-4px -4px 0" onclick="openLightbox('${safeUrl}','image')">
+        <img src="${safeUrl}" style="width:100%;height:auto;display:block"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
           onload="this.style.display='block';this.nextElementSibling.style.display='none'">
         <div style="display:none;align-items:center;justify-content:center;height:120px;font-size:36px;color:var(--text3);background:rgba(255,255,255,.04);border-radius:12px">🖼</div>
@@ -12067,9 +12072,9 @@ function _buildGroupMsg(m, myId){
     } else if(parsedMsg.type==='video'){
       const vidSrc=rawUrl+(rawUrl.includes('#')?'':'#t=0.001');
       const vidId='vid-'+m.id;
-      bubbleContent=`<div style="max-width:280px;border-radius:12px;overflow:hidden;margin:-4px -4px 0;position:relative;background:#000;min-height:160px" onclick="">
+      bubbleContent=`<div style="width:min(280px,100%);border-radius:0;overflow:hidden;margin:-4px -4px 0;position:relative;background:#000;min-height:160px" onclick="">
         <video id="${vidId}" src="${escHtml(vidSrc)}"
-          style="max-width:280px;width:100%;min-height:160px;height:auto;display:block;border-radius:12px;max-height:360px;object-fit:cover"
+          style="width:100%;min-height:160px;height:auto;display:block;max-height:360px;object-fit:cover"
           playsinline webkit-playsinline preload="metadata"
           onerror="this.style.display='none';document.getElementById('ve-${m.id}').style.display='flex'"
           onplay="document.getElementById('vp-${m.id}').style.display='none'"
