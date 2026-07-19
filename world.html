@@ -5771,6 +5771,12 @@ function deleteChatForMe() {
   // Remove from local store
   if(app.chatMessages[_DM_NAMESPACE]) delete app.chatMessages[_DM_NAMESPACE][dmKey];
   if(app.dmConversations) delete app.dmConversations[uid];
+  // Persist deleted conversation UID so loadDmInbox won't restore it from server
+  try{
+    const _dc=new Set(JSON.parse(localStorage.getItem('cw_deleted_convs')||'[]'));
+    _dc.add(uid);
+    localStorage.setItem('cw_deleted_convs', JSON.stringify([..._dc].slice(-500)));
+  }catch(e){}
   _saveDmState();
   // If this chat is currently open, close it
   if(_chatActiveDm?.user_id === uid) closeDmChat();
@@ -5879,8 +5885,13 @@ async function loadDmInbox(){
     // Track UIDs we have already opened/read (stored locally)
     let _readSet;
     try{ _readSet = new Set(JSON.parse(localStorage.getItem('cw_read_uids')||'[]')); }catch(e){ _readSet=new Set(); }
+    // Track UIDs whose conversations were deleted locally
+    let _deletedConvs;
+    try{ _deletedConvs = new Set(JSON.parse(localStorage.getItem('cw_deleted_convs')||'[]')); }catch(e){ _deletedConvs=new Set(); }
     list.forEach(item=>{
       const uid=String(item.peer_id);
+      // Skip if user deleted this conversation locally
+      if(_deletedConvs.has(uid)) return;
       // merge: don't overwrite existing open conversations
       const existing=app.dmConversations[uid]||{};
       // If user already opened this chat (uid in read set OR chat currently active), force unread=0
@@ -5915,6 +5926,7 @@ function _startDmPoll(userId, displayName, dmKey){
       const store = _dmStore(dmKey);
       let added=false;
       for(const m of msgs){
+        if(_locallyDeletedIds.has(String(m.id))) continue; // locally deleted — skip
         if(store.find(x=>x.id===m.id)) continue; // already have it
         const isMine = String(m.from_user_id)===String(myId);
         if(isMine){
@@ -6268,20 +6280,20 @@ function _buildDmMsg(m) {
   if(mtype === 'image') {
     const src = m.fileUrl||(m.fileData?`data:image/jpeg;base64,${m.fileData}`:'');
     bubbleContent = src
-      ? `<div style="max-width:280px;border-radius:12px;overflow:hidden;cursor:zoom-in;margin:-4px -4px 0;min-height:120px;background:rgba(255,255,255,.04)" onclick="openLightbox&&openLightbox('${escHtml(src)}','image')">
+      ? `<div style="max-width:280px;border-radius:12px;overflow:hidden;cursor:zoom-in;margin:-8px -8px 4px" onclick="openLightbox&&openLightbox('${escHtml(src)}','image')">
            <img src="${escHtml(src)}" style="max-width:280px;width:100%;height:auto;display:block;border-radius:12px" loading="eager"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
              onload="this.style.display='block';this.nextElementSibling.style.display='none'">
-           <div style="display:none;align-items:center;justify-content:center;height:120px;font-size:36px;color:var(--text3);background:rgba(255,255,255,.04);border-radius:12px">🖼</div>
+           <div style="display:none;align-items:center;justify-content:center;height:120px;font-size:36px;color:var(--text3)">🖼</div>
          </div>`
       : `<div style="font-size:32px;padding:4px">🖼</div>`;
   } else if(mtype === 'video') {
     const src = m.fileUrl || '';
     const vidId = 'dmv-' + (m.id||Math.random().toString(36).slice(2));
     bubbleContent = src
-      ? `<div style="max-width:280px;border-radius:12px;overflow:hidden;margin:-4px -4px 0;position:relative;background:#000;min-height:160px">
+      ? `<div style="max-width:280px;border-radius:12px;overflow:hidden;margin:-8px -8px 4px;position:relative">
            <video id="${vidId}" src="${escHtml(src)}#t=0.001"
-             style="max-width:280px;width:100%;display:block;border-radius:12px;min-height:160px;max-height:360px;object-fit:cover"
+             style="max-width:280px;width:100%;display:block;border-radius:12px;max-height:360px;object-fit:cover"
              playsinline webkit-playsinline preload="metadata"
              onplay="this.parentElement.querySelector('.dmvp').style.display='none'"
              onpause="this.parentElement.querySelector('.dmvp').style.display='flex'"
@@ -6587,17 +6599,24 @@ function _dmDeleteMsg(forBoth) {
     : null;
 
   if(msgEl) {
-    msgEl.style.overflow = 'hidden';
-    msgEl.style.transition = 'transform .35s ease, opacity .35s ease, max-height .35s ease';
-    msgEl.style.maxHeight = msgEl.offsetHeight + 'px';
-    requestAnimationFrame(()=>{
-      msgEl.style.transform = 'scale(.85)';
-      msgEl.style.opacity   = '0';
-      msgEl.style.maxHeight = '0';
-      msgEl.style.margin    = '0';
-      msgEl.style.padding   = '0';
-    });
-    setTimeout(()=>msgEl.remove(), 370);
+    // Measure BEFORE any style changes
+    const h = msgEl.offsetHeight;
+    const ms = window.getComputedStyle(msgEl);
+    const mt = parseFloat(ms.marginTop)||0;
+    const mb = parseFloat(ms.marginBottom)||0;
+    // Lock current height
+    msgEl.style.overflow  = 'hidden';
+    msgEl.style.maxHeight = (h + mt + mb) + 'px';
+    msgEl.style.margin    = mt + 'px 0 ' + mb + 'px';
+    // Double rAF: first frame commits the initial state, second starts transition
+    requestAnimationFrame(()=>{ requestAnimationFrame(()=>{
+      msgEl.style.transition = 'transform .28s cubic-bezier(.4,0,.2,1), opacity .28s ease, max-height .3s ease, margin .3s ease';
+      msgEl.style.transform  = 'scaleY(0.6) translateX(' + (msgEl.classList.contains('me') ? '60px' : '-60px') + ')';
+      msgEl.style.opacity    = '0';
+      msgEl.style.maxHeight  = '0';
+      msgEl.style.margin     = '0';
+    }); });
+    setTimeout(()=>msgEl.remove(), 320);
   } else {
     renderDmOverlay(dmKey);
   }
@@ -10366,9 +10385,9 @@ function openPublicProfile(uid, name, avColor) {
   // Stats: reset, then load
   const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
   set('po-follows','…'); set('po-followers','…'); set('po-likes','…');
-  // Try per-user stats endpoint; fall back to /users/{uid} profile data
   (async ()=>{
     if(document.getElementById('portfolio-overlay').dataset.viewUid !== String(uid)) return;
+    // 1) Try /activity/stats?user_id=
     const stats = await apiCall('/activity/stats?user_id='+uid).catch(()=>null);
     if(stats && (stats.followers!==undefined || stats.following!==undefined)) {
       set('po-follows', stats.following??'—');
@@ -10376,15 +10395,28 @@ function openPublicProfile(uid, name, avColor) {
       set('po-likes', stats.reactions_received??'—');
       return;
     }
-    // Fallback: try /users/{uid}
+    // 2) Try /users/{uid}
     const user = await apiCall('/users/'+uid).catch(()=>null);
     if(user && document.getElementById('portfolio-overlay').dataset.viewUid === String(uid)) {
       set('po-follows', user.following_count??user.following??'—');
       set('po-followers', user.followers_count??user.followers??'—');
       set('po-likes', user.reactions_received??'—');
-    } else if(document.getElementById('portfolio-overlay').dataset.viewUid === String(uid)){
-      // No data available — show dashes
-      set('po-follows','—'); set('po-followers','—'); set('po-likes','—');
+      return;
+    }
+    // 3) Try GET /follow/{uid} — returns current follow status + counts
+    const token = localStorage.getItem('cw_access_token');
+    const fdata = await fetch(CUBE_API+'/follow/'+uid, {headers:{Authorization:'Bearer '+token}}).then(r=>r.ok?r.json():null).catch(()=>null);
+    if(fdata && document.getElementById('portfolio-overlay').dataset.viewUid === String(uid)) {
+      const fc = fdata.followers_count ?? fdata.follower_count ?? fdata.followers;
+      const fwc = fdata.following_count ?? fdata.following;
+      if(fc!==undefined) set('po-followers', fc);
+      if(fwc!==undefined) set('po-follows', fwc);
+      if(fdata.reactions_received!==undefined) set('po-likes', fdata.reactions_received);
+      return;
+    }
+    // 4) No data — show 0 as best guess
+    if(document.getElementById('portfolio-overlay').dataset.viewUid === String(uid)){
+      set('po-follows','0'); set('po-followers','0'); set('po-likes','0');
     }
   })();
 
