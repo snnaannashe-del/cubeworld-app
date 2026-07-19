@@ -322,7 +322,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .vf-header{display:none!important}
   /* Desktop: snap-scroll inside the 9:16 col */
   #sec-feed>.vf-container{display:none}
-  .vf-feed-col>.vf-container{flex:1;height:0}
+  .vf-feed-col>.vf-container{flex:1;height:0;display:flex;flex-direction:column}
 }
 
 /* Tabs drawer — always at top of the 9:16 column on desktop, overlay on mobile */
@@ -960,7 +960,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vf-pause-indicator.show{opacity:1}
 .vf-pause-icon{width:60px;height:60px;border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;font-size:26px}
 /* empty state */
-.vf-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,.6);gap:12px;text-align:center;padding:40px}
+.vf-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;flex:1;color:rgba(255,255,255,.6);gap:12px;text-align:center;padding:40px}
 .vf-empty-icon{font-size:52px}
 .vf-empty-text{font-size:15px;font-weight:600}
 .vf-empty-sub{font-size:13px;color:rgba(255,255,255,.4)}
@@ -12041,7 +12041,14 @@ function _fmtN(n){
 }
 
 function _vfPlaceholders(){
-  return [{id:'demo1',user_id:0,display_name:'CubeWorld',video_url:'',description:'🎬 Видео-лента CubeWorld!\n\nЗдесь появятся видео пользователей.\nНажми "+ Видео" чтобы быть первым!',music:'',likes:0,comment_count:0,content:'Добро пожаловать в TikTok-ленту CubeWorld!'}];
+  const c = document.getElementById('vf-container');
+  if(c) c.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:300px;gap:16px;padding:32px;text-align:center;color:#e0e0f8">
+    <div style="font-size:48px">🎬</div>
+    <div style="font-size:15px;font-weight:700">Лента загружается…</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.6">Сервер просыпается, подожди 20–30 сек</div>
+    <button onclick="loadVideoFeed()" style="margin-top:6px;padding:9px 22px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">🔄 Обновить</button>
+  </div>`;
+  return [];
 }
 
 async function vfLike(postId,btn){
