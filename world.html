@@ -178,7 +178,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 /* ══ INTERIOR — SOCIAL NETWORK ══════════ */
 #v-int{background:var(--bg);flex-direction:column}
-#int-layout{flex:1;min-height:0}
 #int-topbar{
   display:flex;align-items:center;gap:8px;padding:8px 14px;
   border-bottom:1px solid var(--border);
@@ -294,11 +293,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .sn-divider{height:1px;background:var(--border);margin:8px 12px}
 
 /* Main content */
-#int-main{flex:1;display:flex;overflow:hidden;background:var(--bg2);min-height:0}
-.int-section{display:none;flex:1;overflow:hidden;animation:slideIn .18s ease;background:var(--bg2);min-height:0;min-width:0}
-.int-section.active{display:flex;flex-direction:column}
-/* sections that are side-by-side layouts override to row */
-#sec-feed.active,#sec-chat.active{flex-direction:row}
+#int-main{flex:1;display:flex;overflow:hidden}
+.int-section{display:none;flex:1;overflow:hidden;animation:slideIn .18s ease}
+.int-section.active{display:flex}
 
 /* ── FEED — TikTok Style ─── */
 #sec-feed{flex-direction:column;position:relative;background:#000;overflow:hidden;height:100%;isolation:isolate}
@@ -322,7 +319,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .vf-header{display:none!important}
   /* Desktop: snap-scroll inside the 9:16 col */
   #sec-feed>.vf-container{display:none}
-  .vf-feed-col>.vf-container{flex:1;height:0;display:flex;flex-direction:column}
+  .vf-feed-col>.vf-container{flex:1;height:0}
 }
 
 /* Tabs drawer — always at top of the 9:16 column on desktop, overlay on mobile */
@@ -464,7 +461,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-msg.me{flex-direction:row-reverse}
 .gco-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(0,149,246,.5),rgba(131,58,180,.4));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
 /* gco-bubble primary styles now in telegram-style section below */
-.gco-msg.me .gco-bubble{background:linear-gradient(135deg,rgba(0,149,246,.28),rgba(0,100,220,.2));border:none;border-radius:14px 14px 3px 14px}
+.gco-msg.me .gco-bubble{background:linear-gradient(135deg,rgba(0,149,246,.28),rgba(0,100,220,.2));border:1px solid rgba(0,149,246,.25);border-radius:14px 14px 3px 14px}
 .gco-bubble-name{font-size:10px;color:var(--accent);font-weight:700;margin-bottom:3px}
 .gco-bubble-text{font-size:13px;color:#e0e0f8;line-height:1.5;white-space:pre-wrap;word-break:break-word;user-select:none;-webkit-user-select:none}
 .gco-bubble-text.selectable{user-select:text;-webkit-user-select:text}
@@ -960,7 +957,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vf-pause-indicator.show{opacity:1}
 .vf-pause-icon{width:60px;height:60px;border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;font-size:26px}
 /* empty state */
-.vf-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;flex:1;color:rgba(255,255,255,.6);gap:12px;text-align:center;padding:40px}
+.vf-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,.6);gap:12px;text-align:center;padding:40px}
 .vf-empty-icon{font-size:52px}
 .vf-empty-text{font-size:15px;font-weight:600}
 .vf-empty-sub{font-size:13px;color:rgba(255,255,255,.4)}
@@ -1069,7 +1066,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .chat-msg.me{align-self:flex-end;flex-direction:row-reverse;animation:none}
 .chat-msg.them{align-self:flex-start}
 .chat-msg.system-msg{align-self:center;max-width:90%}
-.cm-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;margin-bottom:2px;cursor:pointer;transition:opacity .12s}
+.cm-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,rgba(0,149,246,.3),rgba(131,58,180,.3));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-bottom:2px;border:1px solid rgba(255,255,255,.08)}
 .cm-body{display:flex;flex-direction:column;max-width:100%}
 .cm-author{font-size:10px;color:var(--accent);margin-bottom:3px;padding-left:3px;font-weight:600;letter-spacing:.02em}
 .cm-bubble{padding:9px 13px;border-radius:18px;font-size:13.5px;line-height:1.55;word-break:break-word;position:relative;transition:background .15s}
@@ -1094,20 +1091,26 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .cm-react-popup.open{display:flex}
 .cm-react-popup span{font-size:18px;cursor:pointer;padding:3px;border-radius:5px;transition:background .1s}
 .cm-react-popup span:hover{background:rgba(255,255,255,.1)}
-/* DM message context menu — Telegram-style inline popup */
-#dm-tg-menu{position:fixed;z-index:1990;display:none;flex-direction:column;background:#1a1a30;border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.85),0 2px 8px rgba(0,0,0,.5);min-width:210px;max-width:280px;backdrop-filter:blur(20px)}
-#dm-tg-menu.open{display:flex;animation:tgMenuIn .15s cubic-bezier(.175,.885,.32,1.275)}
-@keyframes tgMenuIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
-#dm-tg-backdrop{position:fixed;inset:0;z-index:1989;display:none}
-.tg-react-row{display:flex;gap:2px;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.07);justify-content:space-between}
-.tg-react-btn{font-size:24px;cursor:pointer;padding:4px;border-radius:10px;transition:transform .12s,background .12s;line-height:1;flex:1;text-align:center;user-select:none}
-.tg-react-btn:hover,.tg-react-btn:active{transform:scale(1.3);background:rgba(255,255,255,.08)}
-.tg-menu-item{display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer;font-size:14px;color:#e0e0f8;transition:background .1s;user-select:none}
-.tg-menu-item:hover,.tg-menu-item:active{background:rgba(255,255,255,.07)}
-.tg-menu-item i{font-size:16px;color:var(--text2);width:20px;text-align:center;flex-shrink:0}
-.tg-menu-item.danger{color:#ff5c5c}
-.tg-menu-item.danger i{color:#ff5c5c}
-.tg-menu-sep{height:1px;background:rgba(255,255,255,.07);margin:3px 0}
+/* DM message context menu */
+/* ── DM context menu sheet ── */
+#dm-ctx-overlay{position:fixed;inset:0;z-index:1990;display:none;background:rgba(0,0,0,.4);backdrop-filter:blur(4px)}
+#dm-ctx-overlay.open{display:block}
+#dm-ctx-sheet{position:fixed;bottom:0;left:0;right:0;background:#13132a;border-radius:20px 20px 0 0;z-index:1991;transform:translateY(100%);transition:transform .25s cubic-bezier(.32,0,.18,1);padding:0 0 env(safe-area-inset-bottom,16px);max-width:520px;margin:0 auto;box-shadow:0 -4px 40px rgba(0,0,0,.6)}
+#dm-ctx-overlay.open #dm-ctx-sheet{transform:translateY(0)}
+.dm-ctx-preview{padding:14px 18px 10px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;gap:8px}
+.dm-ctx-picon{font-size:18px;flex-shrink:0;margin-top:2px}
+.dm-ctx-ptext{font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;max-width:100%}
+/* Reaction quick-bar */
+.dm-ctx-reacts{display:flex;gap:4px;padding:10px 16px 2px;border-bottom:1px solid rgba(255,255,255,.07)}
+.dm-ctx-react-btn{font-size:22px;cursor:pointer;padding:4px 6px;border-radius:8px;transition:transform .12s,background .12s;line-height:1}
+.dm-ctx-react-btn:hover,.dm-ctx-react-btn:active{transform:scale(1.2);background:rgba(255,255,255,.08)}
+/* Action buttons */
+.dm-ctx-btn{display:flex;align-items:center;gap:14px;padding:12px 18px;cursor:pointer;font-size:14px;color:#e0e0f8;transition:background .12s;user-select:none}
+.dm-ctx-btn:hover,.dm-ctx-btn:active{background:rgba(255,255,255,.06)}
+.dm-ctx-btn i{font-size:17px;color:var(--text2);width:22px;text-align:center;flex-shrink:0}
+.dm-ctx-btn.danger{color:#ff5c5c}
+.dm-ctx-btn.danger i{color:#ff5c5c}
+.dm-ctx-divider{height:1px;background:rgba(255,255,255,.07);margin:4px 0}
 /* DM edit bar */
 #dm-edit-bar{display:none;align-items:center;gap:8px;padding:7px 14px;background:rgba(0,149,246,.07);border-top:2px solid var(--border);border-left:3px solid #F9C74F;flex-shrink:0}
 #dm-edit-bar.visible{display:flex}
@@ -1127,30 +1130,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   100%{transform:scale(.3) rotate(-8deg);opacity:0;filter:blur(4px);max-height:0;margin:0;padding:0}
 }
 .msg-deleting{animation:msgTear .45s cubic-bezier(.4,0,.2,1) forwards!important;overflow:hidden;pointer-events:none}
-/* ── Date separators ── */
-.dm-date-sep,.chat-date-sep{display:flex;align-items:center;gap:8px;padding:10px 0;flex-shrink:0}
-.dm-date-sep::before,.dm-date-sep::after,.chat-date-sep::before,.chat-date-sep::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08)}
-.dm-date-sep span,.chat-date-sep span{font-size:11px;color:var(--text3);background:#13132a;padding:3px 10px;border-radius:10px;white-space:nowrap;flex-shrink:0}
-/* ── User profile modal ── */
-#user-prof-modal{position:fixed;inset:0;z-index:800;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(8px)}
-#user-prof-modal.open{display:flex}
-#user-prof-sheet{background:#0d0d22;border-radius:24px 24px 0 0;width:100%;max-width:520px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.18,1)}
-#user-prof-modal.open #user-prof-sheet{transform:translateY(0)}
-.upm-header{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;border-bottom:1px solid var(--border)}
-.upm-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0}
-.upm-info{flex:1;min-width:0}
-.upm-name{font-size:16px;font-weight:700;color:#fff}
-.upm-uid{font-size:11px;color:var(--text3);margin-top:1px}
-.upm-bio{font-size:12px;color:var(--text2);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.upm-actions{display:flex;gap:8px;padding:12px 16px}
-.upm-btn-sub{flex:1;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;padding:9px 14px;cursor:pointer;transition:opacity .15s}
-.upm-btn-sub.following{background:rgba(255,255,255,.08);color:var(--text2)}
-.upm-btn-msg{width:42px;height:42px;background:rgba(255,255,255,.07);border:none;border-radius:10px;color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.upm-posts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;overflow-y:auto;flex:1}
-.upm-post-cell{aspect-ratio:1;background:rgba(255,255,255,.05);overflow:hidden;cursor:pointer;position:relative}
-.upm-post-cell img,.upm-post-cell video{width:100%;height:100%;object-fit:cover}
-.upm-post-cell .upm-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;pointer-events:none}
-.upm-empty{padding:32px;text-align:center;color:var(--text3);font-size:13px}
 
 /* ── Delete chat modal ── */
 #del-chat-modal{position:fixed;inset:0;z-index:9900;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(6px)}
@@ -2103,8 +2082,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #sec-signals,#sec-channels,#sec-analytics,
   #sec-market,#sec-earn,#sec-wallet,#sec-groups{
     align-items:center;
-    overflow-y:auto;
-    flex-direction:column;
   }
   /* Each direct child of scrollable sections gets max-width */
   #sec-wallet>*,#sec-earn>*,#sec-signals>*,
@@ -2634,192 +2611,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .modal-wrap.modal-center{align-items:center!important}
   .modal-wrap.modal-center .modal{border-radius:14px!important;width:90%!important;max-height:85vh}
 }
-
-/* ══════════════════════════════════════════════════════════════════════
-   TELEGRAM-LEVEL CHAT UPGRADE — добавлено Task #97
-   ══════════════════════════════════════════════════════════════════════ */
-
-/* ── Scroll-to-bottom floating button ── */
-.chat-scroll-btn{
-  position:absolute;bottom:70px;right:14px;
-  width:40px;height:40px;border-radius:50%;
-  background:#1a1a38;border:1px solid rgba(255,255,255,.12);
-  box-shadow:0 4px 16px rgba(0,0,0,.5);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;z-index:20;
-  color:#e0e0f8;font-size:18px;
-  opacity:0;pointer-events:none;
-  transition:opacity .2s,transform .2s;
-  transform:translateY(8px);
-}
-.chat-scroll-btn.visible{opacity:1;pointer-events:all;transform:translateY(0)}
-.chat-scroll-btn .scroll-badge{
-  position:absolute;top:-5px;right:-5px;
-  background:var(--accent);color:#fff;
-  font-size:10px;font-weight:700;
-  min-width:18px;height:18px;border-radius:9px;
-  display:none;align-items:center;justify-content:center;
-  padding:0 4px;
-}
-.chat-scroll-btn .scroll-badge.show{display:flex}
-
-/* ── DM typing indicator animated dots ── */
-.dm-typing-dots{display:inline-flex;align-items:center;gap:3px;height:14px}
-.dm-typing-dots span{
-  width:4px;height:4px;border-radius:50%;
-  background:var(--text3);display:block;
-  animation:dotBounce 1.2s infinite ease-in-out;
-}
-.dm-typing-dots span:nth-child(2){animation-delay:.2s}
-.dm-typing-dots span:nth-child(3){animation-delay:.4s}
-@keyframes dotBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
-
-/* ── Message status ticks ── */
-.msg-ticks{font-size:11px;margin-left:4px;display:inline-flex;align-items:center}
-.msg-ticks.sent{color:rgba(255,255,255,.4)}
-.msg-ticks.delivered{color:rgba(255,255,255,.6)}
-.msg-ticks.read{color:#4ade80}
-
-/* ── Swipe-to-reply visual hint ── */
-.gco-msg.swiping .gco-bubble-wrap{
-  transition:none!important;
-}
-.swipe-reply-icon{
-  position:absolute;top:50%;transform:translateY(-50%);
-  width:32px;height:32px;border-radius:50%;
-  background:rgba(0,149,246,.3);
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;color:#fff;
-  opacity:0;transition:opacity .15s;
-  pointer-events:none;
-  right:-40px;
-}
-
-/* ── DM mic/send toggle ── */
-#dm-mic-btn{
-  width:38px;height:38px;border-radius:50%;
-  background:linear-gradient(135deg,rgba(0,149,246,.8),rgba(0,100,220,.7));
-  border:none;color:#fff;font-size:17px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;flex-shrink:0;
-  transition:all .2s cubic-bezier(.32,0,.18,1);
-  box-shadow:0 2px 10px rgba(0,149,246,.25);
-}
-#dm-mic-btn:hover{transform:scale(1.1)}
-#dm-mic-btn.recording{background:linear-gradient(135deg,#ef4444,#b91c1c);animation:pulse .8s infinite}
-#dm-co-send{transition:all .2s cubic-bezier(.32,0,.18,1)}
-
-/* ── Sticker btn in DM ── */
-#dm-sticker-btn{
-  width:32px;height:32px;border-radius:50%;
-  background:none;border:none;
-  color:var(--text3);font-size:18px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;transition:color .15s;
-}
-#dm-sticker-btn:hover{color:var(--text1)}
-
-/* ── Forward modal ── */
-#forward-modal{
-  position:fixed;inset:0;z-index:3000;
-  display:none;align-items:flex-end;justify-content:center;
-  background:rgba(0,0,0,.6);backdrop-filter:blur(8px);
-}
-#forward-modal.open{display:flex}
-#forward-sheet{
-  background:#0d0d22;border-radius:24px 24px 0 0;
-  width:100%;max-width:520px;max-height:70vh;
-  display:flex;flex-direction:column;overflow:hidden;
-  transform:translateY(100%);
-  transition:transform .3s cubic-bezier(.32,0,.18,1);
-  padding-bottom:env(safe-area-inset-bottom,16px);
-}
-#forward-modal.open #forward-sheet{transform:translateY(0)}
-.fwd-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 18px 10px;border-bottom:1px solid var(--border);
-}
-.fwd-title{font-size:15px;font-weight:700;color:#e0e0f8}
-.fwd-close{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1}
-.fwd-contacts{overflow-y:auto;flex:1}
-.fwd-contact{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 18px;cursor:pointer;
-  transition:background .12s;
-}
-.fwd-contact:hover,.fwd-contact:active{background:rgba(255,255,255,.05)}
-.fwd-av{
-  width:40px;height:40px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;font-weight:700;color:#fff;flex-shrink:0;
-}
-.fwd-name{font-size:14px;color:#e0e0f8;font-weight:500}
-.fwd-sub{font-size:11px;color:var(--text3)}
-
-/* ── Online indicator dot in DM topbar ── */
-.dm-online-dot{
-  width:8px;height:8px;border-radius:50%;
-  background:#4ade80;display:inline-block;
-  margin-right:5px;flex-shrink:0;
-}
-#dm-co-sub{display:flex;align-items:center;gap:0}
-
-/* ── Chat background subtle pattern (both overlays) ── */
-#dm-chat-overlay .gco-msgs,
-#grp-chat-overlay .gco-msgs{
-  background-image:radial-gradient(rgba(0,149,246,.03) 1px, transparent 1px);
-  background-size:24px 24px;
-}
-
-/* ── Unread messages divider ── */
-.unread-divider{
-  display:flex;align-items:center;gap:8px;
-  padding:6px 0;flex-shrink:0;margin:4px 0;
-}
-.unread-divider::before,.unread-divider::after{
-  content:'';flex:1;height:1px;background:rgba(0,149,246,.25);
-}
-.unread-divider span{
-  font-size:11px;color:var(--accent);
-  background:#0d0d22;padding:2px 10px;
-  border-radius:10px;white-space:nowrap;
-  border:1px solid rgba(0,149,246,.2);
-}
-
-/* ── Message selected highlight ── */
-.gco-msg.selected .gco-bubble{
-  box-shadow:0 0 0 2px var(--accent);
-}
-
-/* ── Improved reply preview in bubble ── */
-.gco-reply-preview{
-  border-left:3px solid var(--accent);
-  padding:4px 8px;margin-bottom:6px;
-  border-radius:0 6px 6px 0;
-  background:rgba(0,149,246,.08);
-  cursor:pointer;
-}
-.gco-reply-author{font-size:11px;color:var(--accent);font-weight:700;margin-bottom:2px}
-.gco-reply-txt{font-size:12px;color:var(--text2);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-
-/* ── Quick reaction float (inline above bubble) ── */
-.quick-react-bar{
-  position:absolute;
-  background:#1e1e3a;border:1px solid rgba(255,255,255,.12);
-  border-radius:24px;padding:4px 6px;
-  display:flex;gap:2px;
-  z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.5);
-  white-space:nowrap;
-  animation:fadeUp .15s ease;
-}
-.quick-react-bar button{
-  background:none;border:none;
-  font-size:20px;cursor:pointer;
-  padding:3px 5px;border-radius:12px;
-  transition:transform .12s,background .12s;
-  line-height:1;
-}
-.quick-react-bar button:hover{transform:scale(1.25);background:rgba(255,255,255,.08)}
 </style>
 </head>
 <body>
@@ -3203,12 +2994,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       </div>
 
       <!-- ═══ GROUP FULL VIEW OVERLAY ═════════════════════════════════ -->
-      <div id="grp-chat-overlay" style="position:relative">
-        <!-- Scroll-to-bottom button for group -->
-        <div class="chat-scroll-btn" id="grp-scroll-btn" onclick="grpScrollToBottom(true)" style="position:absolute;bottom:70px;right:14px">
-          <i class="ti ti-chevron-down"></i>
-          <div class="scroll-badge" id="grp-scroll-badge"></div>
-        </div>
+      <div id="grp-chat-overlay">
         <!-- Telegram-style topbar -->
         <div class="gco-topbar">
           <button class="gco-back" onclick="closeGroupChat()" style="border:none;background:none;color:var(--accent);font-size:22px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0">
@@ -3351,12 +3137,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div id="chat-overlay-backdrop" onclick="closeDmChat();closeGrpChat();" style="display:none;opacity:0;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:599;backdrop-filter:blur(2px);transition:opacity .3s ease"></div>
 
       <!-- ═══ DM CHAT OVERLAY ══════════════════════════════════════════ -->
-      <div id="dm-chat-overlay" style="position:relative">
-        <!-- Scroll-to-bottom button -->
-        <div class="chat-scroll-btn" id="dm-scroll-btn" onclick="dmScrollToBottom(true)" style="position:absolute;bottom:70px;right:14px;z-index:20">
-          <i class="ti ti-chevron-down"></i>
-          <div class="scroll-badge" id="dm-scroll-badge"></div>
-        </div>
+      <div id="dm-chat-overlay">
         <!-- Topbar -->
         <div class="gco-topbar">
           <button onclick="closeDmChat()" style="background:none;border:none;color:var(--accent);font-size:22px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0">
@@ -3404,14 +3185,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <!-- Input row -->
         <div class="gco-input-row" id="dm-co-input-row" style="position:relative">
           <button class="gco-icon-btn" onclick="dmAttach()" title="Прикрепить" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-paperclip" style="font-size:16px"></i></button>
-          <button id="dm-sticker-btn" onclick="dmToggleStickerPicker()" title="Стикеры">🎭</button>
           <div style="position:relative;flex:1">
             <textarea class="gco-input" id="dm-co-input" placeholder="Написать…" rows="1"
               autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="true"
               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendDmOverlayMsg();}"
-              oninput="gcoAutoGrow(this);dmOnInput(this)"></textarea>
+              oninput="gcoAutoGrow(this)"></textarea>
           </div>
-          <button class="gco-icon-btn" onclick="dmToggleEmoji()" title="Эмодзи" style="width:32px;height:32px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:15px"></i></button>
+          <button class="gco-icon-btn" onclick="dmToggleEmoji()" title="Эмодзи" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:16px"></i></button>
           <!-- Timer button -->
           <button id="dm-expire-btn" onclick="toggleDmExpire(event)" title="Таймер сообщения">∞</button>
           <!-- Expire popup -->
@@ -3422,13 +3202,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
             <div class="dm-exp-opt" data-val="86400" onclick="setDmExpire(this,'86400')">⏱ 24 часа</div>
             <div class="dm-exp-opt" data-val="604800" onclick="setDmExpire(this,'604800')">⏱ 7 дней</div>
           </div>
-          <!-- Send or mic button -->
-          <button class="gco-send" id="dm-co-send" onclick="sendDmOverlayMsg()" title="Отправить" style="display:none"><i class="ti ti-send" style="font-size:15px"></i></button>
-          <button id="dm-mic-btn" title="Голосовое (держи)"
-            onmousedown="dmStartVoice()" onmouseup="dmStopVoice()"
-            ontouchstart="dmStartVoice()" ontouchend="dmStopVoice()">
-            <i class="ti ti-microphone" style="font-size:16px"></i>
-          </button>
+          <button class="gco-send" id="dm-co-send" onclick="sendDmOverlayMsg()" title="Отправить"><i class="ti ti-send" style="font-size:15px"></i></button>
         </div>
         <!-- Hidden file input -->
         <input type="file" id="dm-file-input" accept="image/*,video/*,.pdf,.doc,.docx,.zip" style="display:none" onchange="dmHandleFile(this)">
@@ -4292,14 +4066,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   <div class="po-header">
     <button class="pe-back-btn" onclick="closePortfolio()"><i class="ti ti-arrow-left"></i></button>
     <span class="pe-header-title" id="po-header-name" style="flex:1"></span>
-    <button class="po-edit-btn" id="po-edit-btn" onclick="closePortfolio();openMyProfile()">
+    <button class="po-edit-btn" onclick="closePortfolio();openMyProfile()">
       <i class="ti ti-edit" style="font-size:13px"></i> Изменить
     </button>
-    <!-- Public profile action buttons (hidden in own profile mode) -->
-    <div id="po-public-actions" style="display:none;gap:6px;align-items:center">
-      <button onclick="poPublicMsg()" style="height:34px;padding:0 12px;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:10px;color:var(--text1);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px"><i class="ti ti-message"></i> Написать</button>
-      <button id="po-sub-btn" onclick="poPublicFollow()" style="height:34px;padding:0 14px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:12px;font-weight:600;cursor:pointer">Подписаться</button>
-    </div>
   </div>
   <div class="po-scroll" id="po-scroll">
     <!-- Hero -->
@@ -4657,8 +4426,6 @@ function connectGlobalWS(){
       const msg = JSON.parse(e.data);
       const myUserId = localStorage.getItem('cw_user_id');
       if(msg.type==='dm') handleIncomingDm(msg, myUserId);
-      if(msg.type==='dm_react_update') updateMessageReactions(msg.msg_id, msg.counts);
-      if(msg.type==='dm_typing') { handleDmTyping(msg); return; }
       if(msg.type==='pong') return; // keepalive ack
       else if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
@@ -4698,7 +4465,6 @@ function openRoomWS(roomId){
       const myUserId = localStorage.getItem('cw_user_id');
       // DM and balance_update must work even outside a cube
       if(msg.type==='dm'){ handleIncomingDm(msg, myUserId); return; }
-      if(msg.type==='dm_typing'){ handleDmTyping(msg); return; }
       if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
         if(next>prev){ app.wallet.balance=next; syncWalletUI(); showToast('💰 +'+(next-prev).toLocaleString('ru')+' CUBE!'); }
@@ -4724,7 +4490,7 @@ function openRoomWS(roomId){
         if(app.currentRoomId===roomId) renderChatMsgs(roomId);
       } else if(msg.type==='typing'){
         showTypingIndicator(msg.display_name);
-      } else if(msg.type==='react'||msg.type==='dm_react_update'){
+      } else if(msg.type==='react'){
         updateMessageReactions(msg.msg_id, msg.counts);
       } else if(msg.type==='dm'){
         handleIncomingDm(msg, myUserId);
@@ -4749,9 +4515,7 @@ function openRoomWS(roomId){
             id: msg.id,
             sender: 'them',
             author: msg.display_name || 'Аноним',
-            authorId: String(msg.user_id||msg.from_user_id||''),
             text, time,
-            dateKey: msg.created_at ? _dateKey(msg.created_at) : _todayKey(),
             type: mType,
             replyTo: msg.reply_preview || null,
             fileName: msg.file_name, fileSize: msg.file_size,
@@ -6110,7 +5874,7 @@ function _startDmPoll(userId, displayName, dmKey){
       const msgs = await r.json();
       if(!msgs||!msgs.length) return;
       const store = _dmStore(dmKey);
-      const newlyAdded=[];
+      let added=false;
       for(const m of msgs){
         if(store.find(x=>x.id===m.id)) continue; // already have it
         const isMine = String(m.from_user_id)===String(myId);
@@ -6121,26 +5885,20 @@ function _startDmPoll(userId, displayName, dmKey){
         }
         const pt=m.msg_type||'text';
         const pu=(pt==='image'||pt==='video'||pt==='file')?(m.file_url||m.content||''):'';
-        const newMsg={
+        store.push({
           id:m.id,
           sender:isMine?'me':'them',
           author:isMine?'Я':displayName,
-          authorId: isMine ? String(myId) : String(userId),
-          text:m.content,
-          time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
-          dateKey:_dateKey(m.created_at),
+          text:m.content, time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
           type:pt, fileName:m.file_name, fileSize:m.file_size,
           fileUrl:pu, duration:m.duration, reactions:{}
-        };
-        store.push(newMsg);
-        newlyAdded.push(newMsg);
+        });
+        added=true;
       }
-      if(newlyAdded.length){
+      if(added){
         _saveDmState();
         const dmOverlayOpen = document.getElementById('dm-chat-overlay')?.classList.contains('open');
-        if(app.currentRoomId===dmKey && dmOverlayOpen) {
-          newlyAdded.forEach(nm => _appendDmMsg(nm));
-        }
+        if(app.currentRoomId===dmKey && dmOverlayOpen) renderDmOverlay(dmKey);
       }
     }catch(e){}
   }, 8000);
@@ -6151,28 +5909,6 @@ function _stopDmPoll(){ if(_dmPollTimer){clearInterval(_dmPollTimer);_dmPollTime
 // DMs are stored under the fixed key '__dm__' so they're consistent
 // regardless of which cube either user is currently in.
 const _DM_NAMESPACE = '__dm__';
-// ── Date helpers ─────────────────────────────────────────────────────────────
-function _todayKey(){ return new Date().toISOString().slice(0,10); }
-function _dateKey(d){ try{ return new Date(d).toISOString().slice(0,10); }catch(e){ return _todayKey(); } }
-function _dateLabelFromKey(k){
-  if(!k) return '';
-  const today = _todayKey();
-  const yest  = _dateKey(Date.now()-86400000);
-  if(k===today) return 'Сегодня';
-  if(k===yest)  return 'Вчера';
-  try{
-    const [y,m,d]=k.split('-');
-    const months=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
-    const label = (+d)+' '+months[+m-1];
-    return +y===new Date().getFullYear() ? label : label+' '+y;
-  }catch(e){ return k; }
-}
-function _makeDateSep(k, cls){
-  const div=document.createElement('div');
-  div.className=cls||'dm-date-sep';
-  div.innerHTML=`<span>${_dateLabelFromKey(k)}</span>`;
-  return div;
-}
 function _dmStore(key) {
   if(!app.chatMessages[_DM_NAMESPACE]) app.chatMessages[_DM_NAMESPACE]={};
   if(!app.chatMessages[_DM_NAMESPACE][key]) app.chatMessages[_DM_NAMESPACE][key]=[];
@@ -6192,9 +5928,8 @@ function handleIncomingDm(msg, myUserId) {
   const dmPeer = isMe ? toId : fromId;
   if(!dmPeer) return;
   const dmKey  = 'dm:' + dmPeer;
-  const time    = msg.created_at
+  const time   = msg.created_at
     ? new Date(msg.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}) : '';
-  const dateKey = msg.created_at ? _dateKey(msg.created_at) : _todayKey();
 
   const store = _dmStore(dmKey);
   let addedToStore = false;
@@ -6216,7 +5951,7 @@ function handleIncomingDm(msg, myUserId) {
       // Reconnect edge-case: no pending copy → add silently (not to UI)
       const echoType=msg.msg_type||'text';
       const echoUrl=(echoType==='image'||echoType==='video'||echoType==='file')?(msg.file_url||msg.content||''):'';
-      store.push({id:msg.id, sender:'me', author:'Я', authorId:String(myUserId), text:msg.content, time, dateKey,
+      store.push({id:msg.id, sender:'me', author:'Я', text:msg.content, time,
         type:echoType, fileName:msg.file_name, fileSize:msg.file_size,
         fileUrl:echoUrl, duration:msg.duration, reactions:{}});
       addedToStore = true;
@@ -6230,7 +5965,7 @@ function handleIncomingDm(msg, myUserId) {
       id: msg.id, sender: 'them',
       author: msg.display_name || 'Аноним',
       authorId: String(msg.from_user_id||msg.sender_id||''),
-      text: msg.content, time, dateKey,
+      text: msg.content, time,
       type: dmMType,
       fileName: msg.file_name, fileSize: msg.file_size,
       fileUrl: dmFileUrl,
@@ -6336,12 +6071,7 @@ function renderChatMsgs(roomId) {
   if(!msgs.length) {
     el.innerHTML='<div class="ca-empty">Нет сообщений. Напиши первым! 👋</div>'; return;
   }
-  let lastDkG = null;
-  msgs.forEach((m,i)=>{
-    const dkG = m.dateKey||'';
-    if(dkG && dkG!==lastDkG){ el.appendChild(_makeDateSep(dkG,'chat-date-sep')); lastDkG=dkG; }
-    const mel=buildMsgEl(m,i); if(mel) el.appendChild(mel);
-  });
+  msgs.forEach((m,i)=>{ const mel=buildMsgEl(m,i); if(mel) el.appendChild(mel); });
   el.scrollTop = el.scrollHeight;
 }
 // alias
@@ -6459,26 +6189,13 @@ function buildMsgEl(m, idx) {
   // Long-press / right-click to show DM context menu
   const bubble = wrap.querySelector('.cm-bubble');
   if(bubble && (m.type==='text'||m.type==='image'||m.type==='video'||m.type==='file')) {
-    bubble.addEventListener('contextmenu', e=>{ e.preventDefault(); showDmMsgMenu(m, e); });
+    bubble.addEventListener('contextmenu', e=>{ e.preventDefault(); showDmMsgMenu(m); });
     let _lp=null;
     bubble.addEventListener('touchstart', e=>{
-      const t=e.touches[0]; const cx=t.clientX, cy=t.clientY;
-      _lp=setTimeout(()=>{ const sel=window.getSelection(); if(sel&&!sel.isCollapsed) return; showDmMsgMenu(m,{clientX:cx,clientY:cy}); }, 550);
+      _lp=setTimeout(()=>{ const sel=window.getSelection(); if(sel&&!sel.isCollapsed) return; showDmMsgMenu(m); }, 550);
     }, {passive:true});
     bubble.addEventListener('touchend', ()=>clearTimeout(_lp), {passive:true});
     bubble.addEventListener('touchmove', ()=>clearTimeout(_lp), {passive:true});
-  }
-
-  // Avatar click/hover → mini-card / contact panel
-  const cmAv = wrap.querySelector('.cm-avatar');
-  if(cmAv && m.sender !== 'me') {
-    const uid3 = m.authorId || '';
-    const nm3  = m.author  || '';
-    const ac3  = avC;
-    const mob3 = ()=>window.innerWidth<=768;
-    cmAv.addEventListener('click', e=>{ e.stopPropagation(); showContactPanel(uid3, nm3, ac3); });
-    cmAv.addEventListener('mouseenter', ()=>{ if(!mob3()) showMiniCard(uid3, nm3, ac3, cmAv); });
-    cmAv.addEventListener('mouseleave', ()=>{ if(!mob3()) hideMiniCard(300); });
   }
 
   return wrap;
@@ -6565,7 +6282,6 @@ function _buildDmMsg(m) {
 
   const tick = isMe ? `<span style="margin-left:4px;font-size:11px;color:rgba(255,255,255,.45)">✓✓</span>` : '';
   const expLabel = m.expiresSecs ? `<span style="font-size:10px;color:var(--accent);margin-right:4px">⏱${m.expiresSecs>=86400?Math.round(m.expiresSecs/86400)+'д':m.expiresSecs>=3600?Math.round(m.expiresSecs/3600)+'ч':Math.round(m.expiresSecs/60)+'м'}</span>` : '';
-  const reactHtml = buildDmReactionsHtml(m.reactions||{}, m.id||'');
   const avHtml = isMe ? '' : `<div class="gco-av" style="background:${avC};font-size:13px;font-weight:700" data-uid="${m.authorId||''}" data-name="${escHtml(m.author||'')}" data-av="${avC}">${letter}</div>`;
 
   div.innerHTML = `${avHtml}
@@ -6574,7 +6290,6 @@ function _buildDmMsg(m) {
         ${!isMe&&m.author ? `<div class="gco-bubble-name" style="color:${avC};font-size:11px;font-weight:700;margin-bottom:3px">${escHtml(m.author)}</div>` : ''}
         ${replyHtml}
         ${bubbleContent}
-        ${reactHtml}
         <div class="gco-bubble-time" style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:2px">${expLabel}${t}${tick}</div>
       </div>
     </div>`;
@@ -6582,9 +6297,8 @@ function _buildDmMsg(m) {
   // Avatar: click / hover for contact panel / mini-card
   const avEl2 = div.querySelector('.gco-av');
   if(avEl2 && !isMe) {
-    // authorId may be absent for old cached msgs — fall back to the active DM peer
-    const uid2 = m.authorId || String(_chatActiveDm?.user_id||'');
-    const name2 = m.author || _chatActiveDm?.display_name || '';
+    const uid2 = m.authorId||'';
+    const name2 = m.author||'';
     const ac2 = avC;
     const isMobile = ()=>window.innerWidth<=768;
     avEl2.style.cursor = 'pointer';
@@ -6614,12 +6328,9 @@ function _buildDmMsg(m) {
   // Long-press / right-click for context menu
   const bubble = div.querySelector('.gco-bubble');
   if(bubble) {
-    bubble.addEventListener('contextmenu', e=>{ e.preventDefault(); showDmMsgMenu(m, e); });
+    bubble.addEventListener('contextmenu', e=>{ e.preventDefault(); showDmMsgMenu(m); });
     let _lp=null;
-    bubble.addEventListener('touchstart', e=>{
-      const t=e.touches[0]; const cx=t.clientX, cy=t.clientY;
-      _lp=setTimeout(()=>{ const sel=window.getSelection(); if(sel&&!sel.isCollapsed) return; showDmMsgMenu(m,{clientX:cx,clientY:cy}); },550);
-    },{passive:true});
+    bubble.addEventListener('touchstart', e=>{ _lp=setTimeout(()=>{ const sel=window.getSelection(); if(sel&&!sel.isCollapsed) return; showDmMsgMenu(m); },550); },{passive:true});
     bubble.addEventListener('touchend', ()=>clearTimeout(_lp), {passive:true});
     bubble.addEventListener('touchmove', ()=>clearTimeout(_lp), {passive:true});
   }
@@ -6636,29 +6347,7 @@ function renderDmOverlay(dmKey) {
   if(!msgs.length){ if(emptyEl) emptyEl.style.display='block'; return; }
   if(emptyEl) emptyEl.style.display='none';
   const frag = document.createDocumentFragment();
-  let lastDk = null;
-  msgs.forEach(m=>{
-    const dk = m.dateKey || '';
-    if(dk && dk !== lastDk){
-      const sep = _makeDateSep(dk,'dm-date-sep');
-      sep.querySelector('span').dataset.dk = dk;
-      frag.appendChild(sep);
-      lastDk=dk;
-    }
-    const msgEl = _buildDmMsg(m);
-    // Add swipe-to-reply (same as _appendDmMsg)
-    const bub = msgEl.querySelector('.gco-bubble');
-    if(bub){
-      const bwrap = msgEl.querySelector('.gco-bubble-wrap');
-      if(bwrap && !bwrap.querySelector('.swipe-reply-icon')){
-        const ico=document.createElement('div');
-        ico.className='swipe-reply-icon'; ico.innerHTML='↩';
-        bwrap.style.position='relative'; bwrap.appendChild(ico);
-      }
-      _addSwipeReply(bub, m);
-    }
-    frag.appendChild(msgEl);
-  });
+  msgs.forEach(m=>frag.appendChild(_buildDmMsg(m)));
   el.appendChild(frag);
   el.scrollTop = el.scrollHeight;
 }
@@ -6668,41 +6357,8 @@ function _appendDmMsg(m) {
   const el = document.getElementById('dm-co-msgs'); if(!el) return;
   const emptyEl = document.getElementById('dm-co-empty');
   if(emptyEl) emptyEl.style.display='none';
-  // Date separator if day changed
-  const dk = m.dateKey || '';
-  if(dk) {
-    const allSeps = el.querySelectorAll('.dm-date-sep');
-    const lastSep = allSeps.length ? allSeps[allSeps.length-1].querySelector('span') : null;
-    if(!lastSep || lastSep.dataset.dk !== dk) {
-      const sep = _makeDateSep(dk,'dm-date-sep');
-      sep.querySelector('span').dataset.dk = dk;
-      el.appendChild(sep);
-    }
-  }
-  const msgEl = _buildDmMsg(m);
-  // Add swipe-to-reply on mobile
-  const bub = msgEl.querySelector('.gco-bubble');
-  if(bub) {
-    // Add swipe reply icon placeholder
-    const bwrap = msgEl.querySelector('.gco-bubble-wrap');
-    if(bwrap && !bwrap.querySelector('.swipe-reply-icon')) {
-      const ico = document.createElement('div');
-      ico.className='swipe-reply-icon';
-      ico.innerHTML='↩';
-      bwrap.style.position='relative';
-      bwrap.appendChild(ico);
-    }
-    _addSwipeReply(bub, m);
-  }
-  el.appendChild(msgEl);
-  // Smart scroll: scroll to bottom unless user has scrolled up
-  const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
-  if(m.sender==='me' || atBottom) {
-    el.scrollTop = el.scrollHeight;
-  } else {
-    // Show new message badge
-    if(m.sender!=='me') _dmNotifyNewMsg();
-  }
+  el.appendChild(_buildDmMsg(m));
+  el.scrollTop = el.scrollHeight;
 }
 
 // Open DM overlay
@@ -6727,29 +6383,9 @@ function openDmWith(userId, displayName) {
   const avEl = document.getElementById('dm-co-av');
   avEl.textContent = letter;
   avEl.style.background = avC;
-  avEl.style.cursor = 'pointer';
-  // Wire click/hover on header avatar to contact panel / mini-card
-  avEl.onclick = null;
-  avEl.onmouseenter = null;
-  const isMob = ()=>window.innerWidth<=768;
-  avEl.addEventListener('click', e=>{ e.stopPropagation(); showContactPanel(uid, displayName, avC); }, {once:false});
-  avEl.addEventListener('mouseenter', ()=>{ if(!isMob()) showMiniCard(uid, displayName, avC, avEl); });
-  avEl.addEventListener('mouseleave', ()=>{ if(!isMob()) hideMiniCard(300); });
   // Open overlay
   document.getElementById('dm-chat-overlay').classList.add('open');
   _chatOverlayBackdrop(true);
-  // Hide mob-nav so it doesn't bleed through on mobile
-  const _mn = document.getElementById('mob-nav');
-  if(_mn && window.innerWidth<=768) _mn.style.display='none';
-  // Init scroll button + reset state
-  _dmNewMsgCount = 0;
-  setTimeout(_dmScrollBtnInit, 100);
-  // Reset send/mic toggle
-  const _dmInp = document.getElementById('dm-co-input');
-  const _hasTxt = _dmInp && _dmInp.value.trim().length > 0;
-  const _sb = document.getElementById('dm-co-send'), _mb = document.getElementById('dm-mic-btn');
-  if(_sb) _sb.style.display = _hasTxt ? 'flex' : 'none';
-  if(_mb) _mb.style.display = _hasTxt ? 'none' : 'flex';
   // Show DM in sidebar as active
   document.querySelectorAll('.cl-room').forEach(e=>e.classList.remove('active'));
   document.querySelector(`[data-chat-id="dm:${uid}"]`)?.classList.add('active');
@@ -6776,9 +6412,7 @@ function openDmWith(userId, displayName) {
             return {id:m.id, sender:isMine2?'me':'them',
               author:isMine2?'Я':displayName,
               authorId: isMine2 ? String(myId) : String(m.from_user_id||uid),
-              text:m.content,
-              time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
-              dateKey:_dateKey(m.created_at),
+              text:m.content, time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
               type:mt, fileName:m.file_name, fileSize:m.file_size, fileUrl:fu, duration:m.duration, reactions:{}};
           }), ...local
         ];
@@ -6803,13 +6437,8 @@ function closeDmChat() {
   app.currentRoomId = null;
   renderChatRooms();
   // Hide backdrop only if group chat is also closed
-  const grpOpen = document.getElementById('grp-chat-overlay')?.classList.contains('open');
-  if(!grpOpen) _chatOverlayBackdrop(false);
-  // Restore mob-nav if no overlay left
-  if(!grpOpen && window.innerWidth<=768) {
-    const _mn = document.getElementById('mob-nav');
-    if(_mn) _mn.style.display='';
-  }
+  if(!document.getElementById('grp-chat-overlay')?.classList.contains('open'))
+    _chatOverlayBackdrop(false);
 }
 
 // DM Reply (in overlay)
@@ -6851,13 +6480,8 @@ function sendDmOverlayMsg() {
   }
 
   inp.value=''; inp.style.height='';
-  // Reset send/mic toggle
-  const _sb3=document.getElementById('dm-co-send'), _mb3=document.getElementById('dm-mic-btn');
-  if(_sb3) _sb3.style.display='none';
-  if(_mb3) _mb3.style.display='flex';
   const time = new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-  const _myIdSnd = localStorage.getItem('cw_user_id')||'';
-  const msgObj = {sender:'me', author:'Я', authorId:String(_myIdSnd), text, time, dateKey:_todayKey(), type:'text', replyTo:_dmReplyTo, expiresSecs:_dmExpireSecs, reactions:{}};
+  const msgObj = {sender:'me', author:'Я', text, time, type:'text', replyTo:_dmReplyTo, expiresSecs:_dmExpireSecs, reactions:{}};
   const dmKey = 'dm:' + _chatActiveDm.user_id;
   addCubeRoomMsg(msgObj, dmKey);
   _appendDmMsg(msgObj);
@@ -6888,7 +6512,7 @@ async function dmHandleFile(input) {
   if(!url){ showToast('❌ Не удалось загрузить'); return; }
   const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
   const size=formatBytes(file.size);
-  const msgObj={sender:'me',author:'Я',authorId:String(localStorage.getItem('cw_user_id')||''),text:file.name,time,dateKey:_todayKey(),type:msgType,fileName:file.name,fileSize:size,fileUrl:url,reactions:{}};
+  const msgObj={sender:'me',author:'Я',text:file.name,time,type:msgType,fileName:file.name,fileSize:size,fileUrl:url,reactions:{}};
   const dmKey='dm:'+_chatActiveDm.user_id;
   addCubeRoomMsg(msgObj,dmKey); _appendDmMsg(msgObj);
   if(!app.dmConversations[_chatActiveDm.user_id]) app.dmConversations[_chatActiveDm.user_id]={display_name:_chatActiveDm.display_name,lastMsg:'',time:'',unread:0};
@@ -6974,48 +6598,19 @@ document.addEventListener('selectionchange', ()=>{
 let _dmCtxMsg = null;
 let _dmEditingMsg = null; // message currently being edited
 
-function showDmMsgMenu(m, evt) {
+function showDmMsgMenu(m) {
   _dmCtxMsg = m;
-  // Show/hide Edit (only own text messages)
-  const editItem = document.getElementById('dm-tg-edit');
-  if(editItem) editItem.style.display = (m.sender==='me' && m.type==='text') ? 'flex' : 'none';
-
-  const menu = document.getElementById('dm-tg-menu');
-  if(!menu) return;
-  // Reset position before measuring
-  menu.style.left='0'; menu.style.top='0'; menu.style.right=''; menu.style.bottom='';
-  menu.classList.add('open');
-
-  const vw = window.innerWidth, vh = window.innerHeight;
-  const mw = menu.offsetWidth||240, mh = menu.offsetHeight||300;
-
-  let cx = vw/2, cy = vh/2;
-  if(evt) {
-    cx = evt.clientX !== undefined ? evt.clientX : (evt.touches?.[0]?.clientX ?? vw/2);
-    cy = evt.clientY !== undefined ? evt.clientY : (evt.touches?.[0]?.clientY ?? vh/2);
-  }
-
-  // Own messages appear on right → popup opens to the left; others open to the right
-  let x = m.sender==='me' ? cx - mw - 8 : cx + 8;
-  let y = cy - mh/2;
-
-  // Clamp inside viewport
-  x = Math.max(8, Math.min(x, vw - mw - 8));
-  y = Math.max(8, Math.min(y, vh - mh - 8));
-
-  menu.style.left = x+'px';
-  menu.style.top  = y+'px';
-
-  // Backdrop to close on outside tap
-  let bd = document.getElementById('dm-tg-backdrop');
-  if(!bd){ bd=document.createElement('div'); bd.id='dm-tg-backdrop'; document.body.appendChild(bd); }
-  bd.style.display='block';
-  bd.onclick = hideDmMsgMenu;
+  // Preview
+  const icon = m.type==='image'?'🖼':m.type==='video'?'🎬':m.type==='file'?'📎':m.type==='sticker'?'🎭':'💬';
+  document.getElementById('dm-ctx-icon').textContent = icon;
+  document.getElementById('dm-ctx-text').textContent = m.type==='text'?(m.text||'').slice(0,120):(m.fileName||m.text||m.type);
+  // Show/hide Edit (only for own text messages)
+  const editBtn = document.getElementById('dm-ctx-edit-btn');
+  if(editBtn) editBtn.style.display = (m.sender==='me' && m.type==='text') ? 'flex' : 'none';
+  document.getElementById('dm-ctx-overlay').classList.add('open');
 }
 function hideDmMsgMenu() {
-  document.getElementById('dm-tg-menu')?.classList.remove('open');
-  const bd = document.getElementById('dm-tg-backdrop');
-  if(bd) bd.style.display='none';
+  document.getElementById('dm-ctx-overlay')?.classList.remove('open');
 }
 function dmCtxReply() {
   hideDmMsgMenu();
@@ -7044,10 +6639,6 @@ function cancelDmEdit() {
   document.getElementById('dm-edit-bar')?.classList.remove('visible');
   const inp = document.getElementById('dm-co-input');
   if(inp){ inp.value=''; inp.style.height=''; }
-  // Reset send/mic toggle
-  const _sb4=document.getElementById('dm-co-send'), _mb4=document.getElementById('dm-mic-btn');
-  if(_sb4) _sb4.style.display='none';
-  if(_mb4) _mb4.style.display='flex';
 }
 function dmCtxForward() {
   hideDmMsgMenu();
@@ -7143,429 +6734,14 @@ function dmCtxDelete() {
 function dmCtxReact(emoji) {
   hideDmMsgMenu();
   if(!_dmCtxMsg?.id) return;
-  // Optimistic update
-  const dmKey = 'dm:'+(_chatActiveDm?.user_id||'');
-  const store = _dmStore(dmKey);
-  const m = store.find(x=>String(x.id)===String(_dmCtxMsg.id));
-  if(m) {
-    if(!m.reactions) m.reactions={};
-    m.reactions[emoji] = (m.reactions[emoji]||0) + 1;
-    updateMessageReactions(_dmCtxMsg.id, m.reactions);
-  }
   _wsSend({type:'dm_react', msg_id:_dmCtxMsg.id, emoji});
-  showToast(emoji);
+  showToast(emoji+' Реакция');
 }
-
-// ══════════════════════════════════════════════════════════════════════════
-// TELEGRAM-LEVEL CHAT FEATURES — Task #97
-// ══════════════════════════════════════════════════════════════════════════
-
-// ── Scroll-to-bottom buttons ──────────────────────────────────────────────
-let _dmNewMsgCount = 0, _grpNewMsgCount = 0;
-
-function _initScrollBtn(msgsId, btnId, badgeId) {
-  const msgs = document.getElementById(msgsId);
-  const btn  = document.getElementById(btnId);
-  const badge= document.getElementById(badgeId);
-  if(!msgs||!btn) return;
-  msgs.addEventListener('scroll', ()=>{
-    const atBottom = msgs.scrollHeight - msgs.scrollTop - msgs.clientHeight < 60;
-    if(atBottom) {
-      btn.classList.remove('visible');
-      if(msgsId==='dm-co-msgs') _dmNewMsgCount=0;
-      else _grpNewMsgCount=0;
-      if(badge) badge.classList.remove('show');
-    } else {
-      btn.classList.add('visible');
-    }
-  }, {passive:true});
-}
-
-function dmScrollToBottom(smooth) {
-  const el = document.getElementById('dm-co-msgs');
-  if(!el) return;
-  el.scrollTo({top:el.scrollHeight, behavior: smooth?'smooth':'instant'});
-  _dmNewMsgCount=0;
-  const badge = document.getElementById('dm-scroll-badge');
-  if(badge) badge.classList.remove('show');
-  document.getElementById('dm-scroll-btn')?.classList.remove('visible');
-}
-
-function grpScrollToBottom(smooth) {
-  const el = document.getElementById('gco-msgs');
-  if(!el) return;
-  el.scrollTo({top:el.scrollHeight, behavior: smooth?'smooth':'instant'});
-  _grpNewMsgCount=0;
-  const badge = document.getElementById('grp-scroll-badge');
-  if(badge) badge.classList.remove('show');
-  document.getElementById('grp-scroll-btn')?.classList.remove('visible');
-}
-
-// Call after overlay opens
-function _dmScrollBtnInit() {
-  _initScrollBtn('dm-co-msgs','dm-scroll-btn','dm-scroll-badge');
-}
-function _grpScrollBtnInit() {
-  _initScrollBtn('gco-msgs','grp-scroll-btn','grp-scroll-badge');
-}
-
-// Show new-msg badge when not at bottom
-function _dmNotifyNewMsg() {
-  const el = document.getElementById('dm-co-msgs');
-  if(!el) return;
-  const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
-  if(atBottom) { el.scrollTop = el.scrollHeight; return; }
-  _dmNewMsgCount++;
-  const badge = document.getElementById('dm-scroll-badge');
-  if(badge) { badge.textContent=_dmNewMsgCount; badge.classList.add('show'); }
-  document.getElementById('dm-scroll-btn')?.classList.add('visible');
-}
-
-// ── Send / Mic toggle for DM ──────────────────────────────────────────────
-function dmOnInput(ta) {
-  gcoAutoGrow(ta);
-  const hasText = ta.value.trim().length > 0;
-  const sendBtn = document.getElementById('dm-co-send');
-  const micBtn  = document.getElementById('dm-mic-btn');
-  if(sendBtn) sendBtn.style.display = hasText ? 'flex' : 'none';
-  if(micBtn)  micBtn.style.display  = hasText ? 'none' : 'flex';
-  // Typing indicator
-  _dmSendTyping();
-}
-
-// ── DM Typing indicator ───────────────────────────────────────────────────
-let _dmTypingTimer = null, _dmTypingActive = false;
-function _dmSendTyping() {
-  if(!_chatActiveDm) return;
-  if(!_dmTypingActive) {
-    _dmTypingActive = true;
-    _wsSend({type:'dm_typing', to_user_id:_chatActiveDm.user_id});
-  }
-  clearTimeout(_dmTypingTimer);
-  _dmTypingTimer = setTimeout(()=>{
-    _dmTypingActive = false;
-  }, 2500);
-}
-
-function _dmShowTyping(fromName) {
-  const sub = document.getElementById('dm-co-sub');
-  if(!sub) return;
-  sub.innerHTML = `<div class="dm-typing-dots"><span></span><span></span><span></span></div>&nbsp;печатает`;
-  clearTimeout(window._dmTypingHideTimer);
-  window._dmTypingHideTimer = setTimeout(()=>{
-    if(sub) sub.innerHTML = '🔐 личная переписка · E2E';
-  }, 3500);
-}
-
-// Handle typing events from WS (call this from both WS handlers)
-function handleDmTyping(msg) {
-  if(!_chatActiveDm) return;
-  if(String(msg.from_user_id) === String(_chatActiveDm.user_id)) {
-    _dmShowTyping(msg.display_name||'');
-  }
-}
-
-// ── DM Voice: use same _sendVoiceBlob pipeline ───────────────────────────
-let _dmVoiceRecorder = null, _dmVoiceChunks = [];
-function dmStartVoice() {
-  if(_dmVoiceRecorder) return;
-  navigator.mediaDevices?.getUserMedia({audio:true}).then(stream=>{
-    _dmVoiceChunks = [];
-    _dmVoiceRecorder = new MediaRecorder(stream);
-    _dmVoiceRecorder.ondataavailable = e => _dmVoiceChunks.push(e.data);
-    _dmVoiceRecorder.onstop = ()=>{
-      const blob = new Blob(_dmVoiceChunks, {type:'audio/webm'});
-      const dur = Math.round((Date.now()-_dmVoiceStart)/1000);
-      stream.getTracks().forEach(t=>t.stop());
-      _sendVoiceBlob(blob, dur);
-    };
-    _dmVoiceStart = Date.now();
-    _dmVoiceRecorder.start();
-    document.getElementById('dm-mic-btn')?.classList.add('recording');
-  }).catch(()=>showToast('🎤 Нет доступа к микрофону'));
-}
-let _dmVoiceStart = 0;
-function dmStopVoice() {
-  if(_dmVoiceRecorder && _dmVoiceRecorder.state !== 'inactive') {
-    _dmVoiceRecorder.stop();
-    _dmVoiceRecorder = null;
-    document.getElementById('dm-mic-btn')?.classList.remove('recording');
-  }
-}
-
-// ── DM Sticker picker ────────────────────────────────────────────────────
-const DM_STICKERS = ['🚀','💎','🔥','⚡','🌊','🎯','💯','🏆','🔐','👻','💀','🤑','🐋','📈','🧠','👑','🎭','🌙','🔮','⚠️','❤️','😂','🤩','😎','🥳','🎉','😍','🤔','👍','🙏'];
-function dmToggleStickerPicker() {
-  const picker = document.getElementById('dm-sticker-picker');
-  if(!picker) return;
-  const grid = document.getElementById('dm-sticker-grid');
-  if(grid && !grid.innerHTML) {
-    grid.innerHTML = DM_STICKERS.map(s=>
-      `<button onclick="dmSendSticker('${s}')" style="font-size:26px;background:none;border:none;cursor:pointer;padding:4px;border-radius:8px;transition:transform .12s" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform=''">${s}</button>`
-    ).join('');
-  }
-  const isOpen = picker.style.display !== 'none';
-  picker.style.display = isOpen ? 'none' : 'block';
-  // Position above input row
-  const inputRow = document.getElementById('dm-co-input-row');
-  if(inputRow && !isOpen) {
-    const rect = inputRow.getBoundingClientRect();
-    picker.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
-    picker.style.left = '50%';
-    picker.style.transform = 'translateX(-50%)';
-    picker.style.position = 'fixed';
-  }
-}
-function dmSendSticker(s) {
-  document.getElementById('dm-sticker-picker').style.display = 'none';
-  if(!_chatActiveDm) return;
-  const time = new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-  const msgObj = {sender:'me',author:'Я',authorId:String(localStorage.getItem('cw_user_id')||''),
-    type:'sticker',sticker:s,text:s,time,dateKey:_todayKey(),reactions:{}};
-  const dmKey = 'dm:'+_chatActiveDm.user_id;
-  addCubeRoomMsg(msgObj, dmKey);
-  _appendDmMsg(msgObj);
-  _wsSend({type:'dm',to_user_id:_chatActiveDm.user_id,content:s,msg_type:'sticker'});
-}
-// Close sticker picker on outside click
-document.addEventListener('click', e=>{
-  const picker = document.getElementById('dm-sticker-picker');
-  const btn = document.getElementById('dm-sticker-btn');
-  if(picker && btn && !picker.contains(e.target) && !btn.contains(e.target)) {
-    picker.style.display='none';
-  }
-});
-
-// ── Forward message modal ─────────────────────────────────────────────────
-let _fwdMsg = null;
-function dmCtxForward() {
-  hideDmMsgMenu();
-  if(!_dmCtxMsg) return;
-  _fwdMsg = _dmCtxMsg;
-  openForwardModal();
-}
-function openForwardModal() {
-  const modal = document.getElementById('forward-modal');
-  if(!modal) return;
-  modal.style.display = 'flex';
-  requestAnimationFrame(()=>modal.classList.add('open'));
-  _renderForwardContacts();
-}
-function closeForwardModal() {
-  const modal = document.getElementById('forward-modal');
-  if(!modal) return;
-  modal.classList.remove('open');
-  setTimeout(()=>{ modal.style.display='none'; }, 300);
-}
-function _renderForwardContacts() {
-  const list = document.getElementById('fwd-contacts-list');
-  if(!list) return;
-  const avColors = ['#0095F6','#e91e8c','#00C9A7','#845EC2','#F9C74F','#4CC9F0'];
-  const convs = Object.entries(app.dmConversations||{});
-  if(!convs.length) {
-    list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Нет переписок</div>';
-    return;
-  }
-  list.innerHTML = convs.map(([uid, c])=>{
-    const name = c.display_name||'Аноним';
-    const letter = name[0].toUpperCase();
-    const bg = avColors[Math.abs(name.split('').reduce((a,ch)=>a+ch.charCodeAt(0),0))%avColors.length];
-    return `<div class="fwd-contact" onclick="forwardTo('${uid}','${escHtml(name)}')">
-      <div class="fwd-av" style="background:${bg}">${letter}</div>
-      <div>
-        <div class="fwd-name">${escHtml(name)}</div>
-        <div class="fwd-sub">${escHtml((c.lastMsg||'').slice(0,30))}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-function forwardTo(uid, name) {
-  closeForwardModal();
-  if(!_fwdMsg) return;
-  const text = _fwdMsg.text || _fwdMsg.fileUrl || '';
-  if(!text) { showToast('Нечего пересылать'); return; }
-  const time = new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-  const msgObj = {sender:'me',author:'Я',authorId:String(localStorage.getItem('cw_user_id')||''),
-    text:'↗️ '+text, time, dateKey:_todayKey(), type:'text', reactions:{},
-    forwarded:true, forwardFrom:_fwdMsg.author||'?'};
-  const dmKey = 'dm:'+uid;
-  addCubeRoomMsg(msgObj, dmKey);
-  // If forwarding to current open DM, append visually
-  if(_chatActiveDm && String(_chatActiveDm.user_id)===String(uid)) {
-    _appendDmMsg(msgObj);
-  }
-  // Send via WS
-  _wsSend({type:'dm', to_user_id:uid, content:'↗️ '+text, msg_type:'text'});
-  if(!app.dmConversations[uid]) app.dmConversations[uid]={display_name:name,lastMsg:'',time:'',unread:0};
-  app.dmConversations[uid].lastMsg='↗️ '+text.slice(0,20);
-  app.dmConversations[uid].time=time;
-  _saveDmState(); renderChatRooms();
-  showToast('↗️ Переслано ' + name);
-  _fwdMsg = null;
-}
-
-// ── Swipe to reply (mobile) ───────────────────────────────────────────────
-function _addSwipeReply(bubbleEl, msgObj) {
-  let startX=0, startY=0, dx=0, swiping=false;
-  const THRESHOLD = 60;
-  const wrap = bubbleEl.closest('.gco-bubble-wrap') || bubbleEl.parentElement;
-
-  bubbleEl.addEventListener('touchstart', e=>{
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    dx = 0; swiping = false;
-  }, {passive:true});
-
-  bubbleEl.addEventListener('touchmove', e=>{
-    const cx = e.touches[0].clientX;
-    const cy = e.touches[0].clientY;
-    const ddx = cx - startX;
-    const ddy = cy - startY;
-    if(!swiping && Math.abs(ddx) < 10 && Math.abs(ddy) > 10) return; // vertical scroll
-    if(ddx > 0) {
-      swiping = true;
-      dx = Math.min(ddx, 80);
-      wrap.style.transform = `translateX(${dx}px)`;
-      wrap.style.transition = 'none';
-      const icon = wrap.querySelector('.swipe-reply-icon');
-      if(icon) icon.style.opacity = dx > 30 ? '1' : '0';
-    }
-  }, {passive:true});
-
-  bubbleEl.addEventListener('touchend', ()=>{
-    wrap.style.transition = 'transform .25s cubic-bezier(.32,0,.18,1)';
-    wrap.style.transform = 'translateX(0)';
-    const icon = wrap.querySelector('.swipe-reply-icon');
-    if(icon) { icon.style.opacity='0'; }
-    if(dx >= THRESHOLD) {
-      navigator.vibrate && navigator.vibrate(30);
-      if(document.getElementById('dm-chat-overlay')?.classList.contains('open')) {
-        startDmReply(msgObj);
-      } else {
-        startReply(msgObj.id, msgObj.author||'', msgObj.text||'');
-      }
-    }
-    dx=0; swiping=false;
-  }, {passive:true});
-}
-
-// ── Message status ticks (DM only) ───────────────────────────────────────
-function _ticksHtml(status) {
-  if(status==='read')      return '<span class="msg-ticks read">✓✓</span>';
-  if(status==='delivered') return '<span class="msg-ticks delivered">✓✓</span>';
-  return '<span class="msg-ticks sent">✓</span>';
-}
-
-// ── Init scroll buttons when overlays open ───────────────────────────────
-// Hook into openDmWith + openGrpChat
-(function patchOverlayOpen(){
-  const _origOpenDmWith = window.openDmWith || function(){};
-  // We patch _appendDmMsg instead, so new messages trigger badge
-})();
-
-// ── Wire DM typing events into existing WS handlers ──────────────────────
-// (injected after WS init — we patch the message dispatcher below)
-(function patchWsTyping(){
-  // Intercept globalWs messages to catch dm_typing
-  const _origHandleGlobal = window._handleGlobalWsMsg;
-  if(typeof _origHandleGlobal === 'function') {
-    window._handleGlobalWsMsg = function(msg) {
-      if(msg.type==='dm_typing') { handleDmTyping(msg); return; }
-      _origHandleGlobal(msg);
-    };
-  }
-})();
-
-// ══════════════════════════════════════════════════════════════════════════
-// END Task #97 additions
-// ══════════════════════════════════════════════════════════════════════════
 
 // ── Contact Profile Panel ─────────────────────────────────────────────────
-// ── User Profile Modal ────────────────────────────────────────────────────
-let _upmUid = null, _upmName = null, _upmFollowing = false;
-async function openUserProfModal(uid, name, avColor) {
-  if(!uid) { showToast('UID не известен'); return; }
-  _upmUid = uid; _upmName = name;
-  // Avatar
-  const avEl = document.getElementById('upm-av');
-  const letter = (name||'?')[0].toUpperCase();
-  avEl.textContent = letter;
-  avEl.style.background = avColor || 'linear-gradient(135deg,#0095F6,#5263FF)';
-  document.getElementById('upm-name').textContent = name || '—';
-  document.getElementById('upm-uid').textContent = 'UID ' + uid;
-  document.getElementById('upm-bio').textContent = '';
-  document.getElementById('upm-posts-grid').innerHTML = '<div class="upm-empty">Загрузка…</div>';
-  // Open modal
-  const modal = document.getElementById('user-prof-modal');
-  modal.style.display = 'flex';
-  requestAnimationFrame(()=>modal.classList.add('open'));
-  // Fetch profile
-  const token = localStorage.getItem('cw_access_token');
-  try {
-    const r = await fetch(`${API_BASE}/users/${uid}`, {headers:{Authorization:'Bearer '+token}});
-    if(r.ok) {
-      const data = await r.json();
-      document.getElementById('upm-bio').textContent = data.bio || '';
-      _upmFollowing = data.is_following || false;
-      _updateUpmSubBtn();
-    }
-  } catch(e) {}
-  // Fetch posts
-  try {
-    const r2 = await fetch(`${API_BASE}/feed?user_id=${uid}&limit=12`, {headers:{Authorization:'Bearer '+token}});
-    const posts = r2.ok ? await r2.json() : [];
-    _renderUpmPosts(posts);
-  } catch(e) {
-    document.getElementById('upm-posts-grid').innerHTML = '<div class="upm-empty">Нет постов</div>';
-  }
-}
-function closeUserProfModal() {
-  const modal = document.getElementById('user-prof-modal');
-  modal.classList.remove('open');
-  setTimeout(()=>{ modal.style.display='none'; }, 300);
-}
-function _updateUpmSubBtn() {
-  const btn = document.getElementById('upm-sub-btn');
-  if(!btn) return;
-  if(_upmFollowing) { btn.textContent='Подписан ✓'; btn.classList.add('following'); }
-  else { btn.textContent='Подписаться'; btn.classList.remove('following'); }
-}
-async function toggleUserFollow() {
-  if(!_upmUid) return;
-  const token = localStorage.getItem('cw_access_token');
-  const method = _upmFollowing ? 'DELETE' : 'POST';
-  try {
-    await fetch(`${API_BASE}/follow/${_upmUid}`, {method, headers:{Authorization:'Bearer '+token}});
-    _upmFollowing = !_upmFollowing;
-    _updateUpmSubBtn();
-    showToast(_upmFollowing ? '✅ Подписался' : '✅ Отписался');
-  } catch(e) {
-    _upmFollowing = !_upmFollowing; _updateUpmSubBtn();
-    showToast(_upmFollowing ? '✅ Подписался' : '✅ Отписался');
-  }
-}
-function upmWriteMsg() {
-  closeUserProfModal();
-  closeContactPanel();
-  openDmWith(_upmUid, _upmName||'Пользователь');
-}
-function _renderUpmPosts(posts) {
-  const grid = document.getElementById('upm-posts-grid');
-  if(!posts||!posts.length){ grid.innerHTML='<div class="upm-empty">Нет публикаций</div>'; return; }
-  grid.innerHTML = posts.map(p=>{
-    const isImg = p.type==='image'||(p.media_url&&/\.(jpg|jpeg|png|gif|webp)/i.test(p.media_url||''));
-    const isVid = p.type==='video'||(p.media_url&&/\.(mp4|mov|webm)/i.test(p.media_url||''));
-    const src = p.media_url || p.image_url || '';
-    if(isImg && src) return `<div class="upm-post-cell" onclick="openLightbox&&openLightbox('${escHtml(src)}','image')"><img src="${escHtml(src)}" loading="lazy"></div>`;
-    if(isVid && src) return `<div class="upm-post-cell"><video src="${escHtml(src)}#t=0.001" preload="metadata" style="width:100%;height:100%;object-fit:cover"></video><div class="upm-play">▶</div></div>`;
-    return `<div class="upm-post-cell" style="padding:8px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3)">${escHtml((p.content||p.text||'').slice(0,40))}</div>`;
-  }).join('');
-}
-
-let _contactPanelUid = null, _contactPanelName = null;
+let _contactPanelUid = null;
 function showContactPanel(uid, name, avColor) {
   _contactPanelUid = uid;
-  _contactPanelName = name;
   // Avatar
   const avEl = document.getElementById('cp-av');
   const letter = (name||'?')[0].toUpperCase();
@@ -7613,17 +6789,14 @@ function cpAction(type) {
   if(!uid) return;
   if(type==='message') {
     closeContactPanel();
-    // dmConversations is keyed by UID
-    const convInfo = (app.dmConversations||{})[uid];
-    const dname = convInfo?.display_name || _contactPanelName || 'Пользователь';
-    openDmWith(uid, dname);
+    // Open DM with this user
+    const conv = Object.values(app.dmConversations||{}).find(c=>String(c.peerId||c.peer_id)===String(uid));
+    if(conv) openDmWith(uid, conv.name||conv.display_name||'Пользователь');
+    else showToast('💬 Начинаем чат...');
   } else if(type==='call') {
     showToast('📞 Функция звонков скоро...');
   } else if(type==='portfolio') {
-    closeContactPanel();
-    const avEl2 = document.getElementById('cp-av');
-    const avBg = avEl2?.style.background || 'linear-gradient(135deg,#0095F6,#5263FF)';
-    openPublicPortfolio(uid, _contactPanelName||'—', avBg);
+    showToast('🎨 Портфолио открывается...');
   } else if(type==='add') {
     showToast('✅ Контакт добавлен!');
   } else if(type==='mute') {
@@ -7675,10 +6848,6 @@ function cmc_open_profile() {
   hideMiniCard(0);
   if(_cmc_uid) showContactPanel(_cmc_uid, _cmc_name, _cmc_avColor);
 }
-function cmc_open_full_profile() {
-  hideMiniCard(0);
-  if(_cmc_uid) openPublicPortfolio(_cmc_uid, _cmc_name, _cmc_avColor);
-}
 
 function buildReactionsHtml(reactions, msgId) {
   const myId = localStorage.getItem('cw_user_id');
@@ -7693,41 +6862,14 @@ function buildReactionsHtml(reactions, msgId) {
 }
 
 function updateMessageReactions(msgId, counts) {
-  const rid = app.currentRoomId;
-  // DM namespace when in a DM
-  const cid = (rid && rid.startsWith('dm:')) ? _DM_NAMESPACE : app.currentCubeId;
+  const cid=app.currentCubeId, rid=app.currentRoomId;
   const msgs=(app.chatMessages[cid]||{})[rid]||[];
   const m=msgs.find(x=>String(x.id)===String(msgId));
   if(m) m.reactions=counts;
-  // Update DOM — works for both group and DM bubbles
-  const reactEl=document.querySelector(`.dm-reactions[data-msg-id="${msgId}"], .cm-reactions[data-msg-id="${msgId}"]`);
-  if(reactEl) {
-    reactEl.outerHTML = rid.startsWith('dm:')
-      ? buildDmReactionsHtml(counts, msgId)
-      : buildReactionsHtml(counts, msgId);
-  } else {
-    // Append reactions to existing bubble if not there yet
-    const bubble = document.querySelector(`#dmbub-${msgId}`);
-    if(bubble && Object.keys(counts||{}).length) {
-      const existing = bubble.querySelector('.dm-reactions');
-      if(existing) existing.remove();
-      const el = document.createElement('div');
-      el.innerHTML = buildDmReactionsHtml(counts, msgId);
-      bubble.appendChild(el.firstChild);
-    } else if(!bubble && msgs.length) {
-      renderChatMsgs(rid);
-    }
-  }
-}
-function buildDmReactionsHtml(reactions, msgId) {
-  const entries = Object.entries(reactions||{}).filter(([,v])=>v>0);
-  if(!entries.length) return '';
-  return `<div class="dm-reactions" data-msg-id="${msgId}" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">` +
-    entries.map(([emoji,cnt])=>
-      `<span onclick="dmCtxReact('${emoji}')" style="display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:2px 7px;font-size:13px;cursor:pointer">
-        ${emoji}<span style="font-size:10px;color:var(--text2)">${cnt}</span>
-      </span>`).join('') +
-    `</div>`;
+  // Update in DOM without re-rendering all
+  const reactEl=document.querySelector(`.cm-reactions[data-msg-id="${msgId}"]`);
+  if(reactEl) reactEl.outerHTML=buildReactionsHtml(counts,msgId);
+  else { const msgs2=(app.chatMessages[cid]||{})[rid]||[]; if(msgs2.length) renderChatMsgs(rid); }
 }
 
 const REACT_EMOJIS=['👍','❤️','😂','😮','😢','🔥','💯','🚀'];
@@ -7798,13 +6940,11 @@ function sendChatMsg() {
   const expSel=document.getElementById('ca-expire-sel');
   const expiresSecs=expSel?.value ? parseInt(expSel.value) : null;
 
-  const _myId = localStorage.getItem('cw_user_id')||'';
   if(_chatActiveDm) {
     // DM — send via WS (_ws or _globalWs fallback)
-    const msgObj={sender:'me',author:'Я',authorId:String(_myId),text,time,dateKey:_todayKey(),type:'text',replyTo:_chatReplyTo,reactions:{}};
+    const msgObj={sender:'me',text,time,type:'text',replyTo:_chatReplyTo,reactions:{}};
     addCubeRoomMsg(msgObj, 'dm:'+_chatActiveDm.user_id);
-    const _dmOvOpenNow = document.getElementById('dm-chat-overlay')?.classList.contains('open');
-    if(_dmOvOpenNow) _appendDmMsg(msgObj); else renderChatMsgs('dm:'+_chatActiveDm.user_id);
+    renderChatMsgs('dm:'+_chatActiveDm.user_id);
     // Update sidebar
     if(!app.dmConversations) app.dmConversations={};
     if(!app.dmConversations[_chatActiveDm.user_id]) app.dmConversations[_chatActiveDm.user_id]={display_name:_chatActiveDm.display_name,lastMsg:'',time:'',unread:0};
@@ -7822,7 +6962,7 @@ function sendChatMsg() {
       }).catch(()=>{});
     }
   } else {
-    const msgObj={sender:'me',author:'Я',authorId:String(_myId),text,time,dateKey:_todayKey(),type:'text',replyTo:_chatReplyTo,expiresSecs,reactions:{}};
+    const msgObj={sender:'me',text,time,type:'text',replyTo:_chatReplyTo,expiresSecs,reactions:{}};
     addCubeRoomMsg(msgObj);
     renderChatMsgs(app.currentRoomId);
     if(!_wsSend({type:'message', content:text, msg_type:'text',
@@ -7876,11 +7016,10 @@ function _sendVoiceBlob(blob, dur) {
   reader.onload=()=>{
     const b64=reader.result.split(',')[1];
     const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-    const msgObj={sender:'me',author:'Я',authorId:String(localStorage.getItem('cw_user_id')||''),text:'🎤 Голосовое',time,dateKey:_todayKey(),type:'voice',fileData:b64,duration:dur,reactions:{}};
+    const msgObj={sender:'me',text:'🎤 Голосовое',time,type:'voice',fileData:b64,duration:dur,reactions:{}};
     if(_chatActiveDm) {
       addCubeRoomMsg(msgObj,'dm:'+_chatActiveDm.user_id);
-      const _dmOvOpen2=document.getElementById('dm-chat-overlay')?.classList.contains('open');
-      if(_dmOvOpen2) _appendDmMsg(msgObj); else renderChatMsgs('dm:'+_chatActiveDm.user_id);
+      renderChatMsgs('dm:'+_chatActiveDm.user_id);
       _wsSend({type:'dm',to_user_id:_chatActiveDm.user_id,
         content:'🎤 Голосовое',msg_type:'voice',file_data:b64,duration:dur});
     } else {
@@ -7925,7 +7064,7 @@ async function _chatPickAndSend(accept){
     const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
     const size=formatBytes(file.size);
     // Optimistic local message
-    const msgObj={sender:'me', author:'Я', authorId:String(localStorage.getItem('cw_user_id')||''), text:file.name, time, dateKey:_todayKey(), type:msgType,
+    const msgObj={sender:'me', author:'Я', text:file.name, time, type:msgType,
       fileName:file.name, fileSize:size, fileUrl:url, reactions:{}};
     if(_chatActiveDm){
       const dmKey='dm:'+_chatActiveDm.user_id;
@@ -8004,7 +7143,7 @@ function sendSticker(s){
   if(!app.currentRoomId && !_chatActiveDm) return;
   document.getElementById('sticker-picker').classList.remove('open');
   const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-  const msgObj={sender:'me',author:'Я',authorId:String(localStorage.getItem('cw_user_id')||''),type:'sticker',sticker:s,text:s,time,dateKey:_todayKey(),reactions:{}};
+  const msgObj={sender:'me',type:'sticker',sticker:s,text:s,time,reactions:{}};
   const _dmOvOpen = !!document.getElementById('dm-chat-overlay')?.classList.contains('open');
   if(_chatActiveDm) {
     const dmKey='dm:'+_chatActiveDm.user_id;
@@ -11011,133 +10150,7 @@ function openPortfolio(){
   // ── Slide up ────────────────────────────────────
   document.getElementById('portfolio-overlay').classList.add('open');
 }
-// ── Public Portfolio (другой пользователь) ──────────────────────────────
-let _ppUid = null, _ppName = null, _ppFollowing = false;
-async function openPublicPortfolio(uid, name, avColor) {
-  if(!uid) { showToast('UID не известен'); return; }
-  _ppUid = uid; _ppName = name; _ppFollowing = false;
-  // Switch header to public mode
-  const editBtn = document.getElementById('po-edit-btn');
-  const pubActs = document.getElementById('po-public-actions');
-  if(editBtn) editBtn.style.display = 'none';
-  if(pubActs) pubActs.style.display = 'flex';
-  // Clear grid + set placeholder
-  const grid = document.getElementById('po-grid');
-  if(grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3);font-size:13px">Загрузка…</div>';
-  // Header name
-  const hdr = document.getElementById('po-header-name');
-  if(hdr) hdr.textContent = name || '—';
-  // Avatar — letter avatar
-  const av = document.getElementById('po-avatar');
-  if(av) {
-    const letter = (name||'?')[0].toUpperCase();
-    const bg = avColor || 'linear-gradient(135deg,#0095F6,#5263FF)';
-    av.innerHTML = `<span style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:${bg};border-radius:50%;font-size:32px;font-weight:700;color:#fff">${letter}</span>`;
-  }
-  const nm = document.getElementById('po-name');
-  if(nm) nm.textContent = name || '—';
-  const un = document.getElementById('po-uname');
-  if(un) un.textContent = '';
-  // Hide type badge
-  const badge = document.getElementById('po-type-badge');
-  if(badge) badge.style.display = 'none';
-  // Stats reset
-  ['po-follows','po-followers','po-likes'].forEach(id=>{ const e=document.getElementById(id); if(e) e.textContent='—'; });
-  // Slide up first, load data in background
-  document.getElementById('portfolio-overlay').classList.add('open');
-  // Fetch user profile
-  const token = localStorage.getItem('cw_access_token');
-  try {
-    const r = await fetch(`${API_BASE}/users/${uid}`, {headers:{Authorization:'Bearer '+token}});
-    if(r.ok) {
-      const data = await r.json();
-      if(data.display_name && nm) nm.textContent = data.display_name;
-      if(data.username && un) un.textContent = '@'+data.username;
-      _ppFollowing = data.is_following || false;
-      _ppUpdateSubBtn();
-      // Bio
-      const bioEl = document.getElementById('po-bio');
-      const infoBlock = document.getElementById('po-info-block');
-      if(bioEl && data.bio) {
-        bioEl.textContent = data.bio;
-        if(infoBlock) { infoBlock.style.display='block'; infoBlock.style.maxHeight='200px'; infoBlock.style.opacity='1'; }
-        if(badge) { badge.style.display=''; badge.textContent='🌐 Публичный'; }
-      } else {
-        if(infoBlock) infoBlock.style.display='none';
-      }
-      // Photo avatar
-      if(data.photo_url && av) {
-        av.innerHTML = `<img src="${data.photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
-      }
-    }
-  } catch(e) {}
-  // Fetch stats
-  try {
-    const rs = await fetch(`${API_BASE}/activity/stats?user_id=${uid}`, {headers:{Authorization:'Bearer '+token}});
-    if(rs.ok) {
-      const stats = await rs.json();
-      const setS = (id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v||0; };
-      setS('po-follows', stats.following||0);
-      setS('po-followers', stats.followers||0);
-      setS('po-likes', stats.reactions_received||0);
-    }
-  } catch(e) {}
-  // Fetch posts for grid
-  try {
-    const rf = await fetch(`${API_BASE}/feed?user_id=${uid}&limit=30`, {headers:{Authorization:'Bearer '+token}});
-    const posts = rf.ok ? await rf.json() : [];
-    _ppRenderGrid(posts);
-  } catch(e) {
-    if(grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3);font-size:13px">Нет публикаций</div>';
-  }
-}
-function _ppUpdateSubBtn() {
-  const btn = document.getElementById('po-sub-btn');
-  if(!btn) return;
-  if(_ppFollowing) { btn.textContent='Подписан ✓'; btn.style.background='rgba(255,255,255,.08)'; btn.style.color='var(--text2)'; }
-  else { btn.textContent='Подписаться'; btn.style.background='var(--accent)'; btn.style.color='#fff'; }
-}
-async function poPublicFollow() {
-  if(!_ppUid) return;
-  const token = localStorage.getItem('cw_access_token');
-  const method = _ppFollowing ? 'DELETE' : 'POST';
-  try {
-    await fetch(`${API_BASE}/follow/${_ppUid}`, {method, headers:{Authorization:'Bearer '+token}});
-  } catch(e) {}
-  _ppFollowing = !_ppFollowing;
-  _ppUpdateSubBtn();
-  showToast(_ppFollowing ? '✅ Подписался' : '✅ Отписался');
-}
-function poPublicMsg() {
-  closePortfolio();
-  closeContactPanel && closeContactPanel();
-  openDmWith(_ppUid, _ppName||'Пользователь');
-}
-function _ppRenderGrid(posts) {
-  const grid = document.getElementById('po-grid');
-  if(!grid) return;
-  if(!posts||!posts.length) { grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3);font-size:13px">Нет публикаций</div>'; return; }
-  grid.innerHTML = posts.map(p=>{
-    const isVideo = p.type==='short'||p.type==='video';
-    const thumb = p.thumbnail_url||p.media_url||p.image_url||'';
-    const bg = thumb ? `url(${thumb}) center/cover` : 'rgba(255,255,255,.04)';
-    return `<div class="upm-post-cell" style="background:${bg};aspect-ratio:1;position:relative;cursor:pointer" onclick="openFeedPost && openFeedPost(${p.id||0})">
-      ${isVideo?'<div style="position:absolute;bottom:5px;right:5px;background:rgba(0,0,0,.7);border-radius:4px;padding:2px 5px;font-size:10px;color:#fff">▶</div>':''}
-      ${!thumb?`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;padding:6px;text-align:center">${(p.text||p.content||'📝').slice(0,60)}</div>`:''}
-    </div>`;
-  }).join('');
-}
-// ── END Public Portfolio ──────────────────────────────────────────────────
-
 function closePortfolio(){
-  // Restore own-profile mode when closing
-  const editBtn = document.getElementById('po-edit-btn');
-  const pubActs = document.getElementById('po-public-actions');
-  if(editBtn) editBtn.style.display = '';
-  if(pubActs) pubActs.style.display = 'none';
-  const badge = document.getElementById('po-type-badge');
-  if(badge) badge.style.display = '';
-  _ppUid = null;
   document.getElementById('portfolio-overlay').classList.remove('open');
 }
 function poToggleInfo(){
@@ -12041,14 +11054,7 @@ function _fmtN(n){
 }
 
 function _vfPlaceholders(){
-  const c = document.getElementById('vf-container');
-  if(c) c.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:300px;gap:16px;padding:32px;text-align:center;color:#e0e0f8">
-    <div style="font-size:48px">🎬</div>
-    <div style="font-size:15px;font-weight:700">Лента загружается…</div>
-    <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.6">Сервер просыпается, подожди 20–30 сек</div>
-    <button onclick="loadVideoFeed()" style="margin-top:6px;padding:9px 22px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">🔄 Обновить</button>
-  </div>`;
-  return [];
+  return [{id:'demo1',user_id:0,display_name:'CubeWorld',video_url:'',description:'🎬 Видео-лента CubeWorld!\n\nЗдесь появятся видео пользователей.\nНажми "+ Видео" чтобы быть первым!',music:'',likes:0,comment_count:0,content:'Добро пожаловать в TikTok-ленту CubeWorld!'}];
 }
 
 async function vfLike(postId,btn){
@@ -12171,9 +11177,6 @@ async function submitVideoPost(){
 // ═══ CREATE POST (unified SHORT/BALL) ════════════════════════════
 let _cpmType = 'short';
 function openCreatePost(){
-  // Don't open while a chat/DM overlay is active
-  if(document.getElementById('dm-chat-overlay')?.classList.contains('open')) return;
-  if(document.getElementById('grp-chat-overlay')?.classList.contains('open')) return;
   _cpmType='short';
   _cpmVideoUrl=''; _cpmImageUrl='';
   document.getElementById('cpm-short').classList.add('sel');
@@ -12367,11 +11370,7 @@ async function openGroupChat(groupId, groupName, groupIcon){
   document.getElementById('grp-chat-overlay').classList.add('open');
   document.getElementById('grp-info-panel')?.classList.remove('open');
   _chatOverlayBackdrop(true);
-  // Hide mob-nav on mobile
-  if(window.innerWidth<=768){ const _mn2=document.getElementById('mob-nav'); if(_mn2) _mn2.style.display='none'; }
   gcoUpdateSendBtn();
-  _grpNewMsgCount = 0;
-  setTimeout(_grpScrollBtnInit, 200);
   // Load messages + members + group details
   await _loadGroupMsgs(true);
   _loadGrpMembers();
@@ -12402,13 +11401,8 @@ function closeGroupChat(){
   document.getElementById('grp-chat-overlay').classList.remove('open');
   _stopGrpPoll();
   _grpChatId=null;
-  const dmOpen = document.getElementById('dm-chat-overlay')?.classList.contains('open');
-  if(!dmOpen) _chatOverlayBackdrop(false);
-  // Restore mob-nav if no overlays left
-  if(!dmOpen && window.innerWidth<=768){
-    const _mn3=document.getElementById('mob-nav');
-    if(_mn3) _mn3.style.display='';
-  }
+  if(!document.getElementById('dm-chat-overlay')?.classList.contains('open'))
+    _chatOverlayBackdrop(false);
 }
 // Alias for backdrop onclick
 function closeGrpChat(){ closeGroupChat(); }
@@ -14998,47 +13992,6 @@ const _grpOvId='grp-chat-overlay';
 <!-- ══ FAB FIXED OVERLAY (outside all overflow:hidden parents) ══════════ -->
 <div id="vf-fab-overlay" style="display:none;position:fixed;z-index:500;right:14px;flex-direction:column;align-items:center;gap:10px;padding-bottom:12px"></div>
 
-<!-- ══ USER PROFILE MODAL ═════════════════════════════════════════════════ -->
-<div id="user-prof-modal" onclick="closeUserProfModal()">
-  <div id="user-prof-sheet" onclick="event.stopPropagation()">
-    <div class="upm-header">
-      <div class="upm-av" id="upm-av">👤</div>
-      <div class="upm-info">
-        <div class="upm-name" id="upm-name">—</div>
-        <div class="upm-uid" id="upm-uid"></div>
-        <div class="upm-bio" id="upm-bio"></div>
-      </div>
-      <button onclick="closeUserProfModal()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:4px">✕</button>
-    </div>
-    <div class="upm-actions">
-      <button class="upm-btn-sub" id="upm-sub-btn" onclick="toggleUserFollow()">Подписаться</button>
-      <button class="upm-btn-msg" onclick="upmWriteMsg()" title="Написать"><i class="ti ti-message-circle"></i></button>
-    </div>
-    <div class="upm-posts-grid" id="upm-posts-grid">
-      <div class="upm-empty">Загрузка…</div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ FORWARD MESSAGE MODAL ══════════════════════════════════════════════ -->
-<div id="forward-modal" onclick="closeForwardModal()">
-  <div id="forward-sheet" onclick="event.stopPropagation()">
-    <div class="fwd-header">
-      <span class="fwd-title">Переслать сообщение</span>
-      <button class="fwd-close" onclick="closeForwardModal()">✕</button>
-    </div>
-    <div class="fwd-contacts" id="fwd-contacts-list"></div>
-  </div>
-</div>
-
-<!-- ══ DM STICKER PICKER ══════════════════════════════════════════════════ -->
-<div id="dm-sticker-picker" style="display:none;position:fixed;bottom:64px;left:50%;transform:translateX(-50%);
-  background:#13132a;border:1px solid var(--border);border-radius:16px;
-  padding:10px;z-index:2000;box-shadow:0 8px 32px rgba(0,0,0,.6);
-  max-width:300px;width:90vw">
-  <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center" id="dm-sticker-grid"></div>
-</div>
-
 <!-- ══ DELETE CHAT MODAL ══════════════════════════════════════════════════ -->
 <div id="del-chat-modal" onclick="hideDelChatModal()">
   <div id="del-chat-sheet" onclick="event.stopPropagation()">
@@ -15132,33 +14085,37 @@ const _grpOvId='grp-chat-overlay';
       <div class="cmc-uid" id="cmc-uid" style="font-size:10px;color:var(--text3);margin-top:1px"></div>
     </div>
   </div>
-  <div style="display:flex;gap:6px">
-    <button onclick="cmc_open_profile()" style="flex:1;background:rgba(255,255,255,.08);border:none;border-radius:8px;color:var(--text2);font-size:12px;font-weight:600;padding:6px 8px;cursor:pointer">Профиль</button>
-    <button onclick="cmc_open_full_profile()" style="flex:1;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:600;padding:6px 8px;cursor:pointer">Портфолио</button>
-  </div>
+  <button class="cmc-btn" onclick="cmc_open_profile()" style="width:100%;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:600;padding:6px 10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px"><i class="ti ti-user" style="font-size:12px"></i> Открыть профиль</button>
 </div>
 
 <!-- ══ DM MESSAGE CONTEXT MENU ═══════════════════════════════════════════ -->
-<div id="dm-tg-menu">
-  <!-- Quick reactions -->
-  <div class="tg-react-row">
-    <span class="tg-react-btn" onclick="dmCtxReact('👍')">👍</span>
-    <span class="tg-react-btn" onclick="dmCtxReact('❤️')">❤️</span>
-    <span class="tg-react-btn" onclick="dmCtxReact('😂')">😂</span>
-    <span class="tg-react-btn" onclick="dmCtxReact('😮')">😮</span>
-    <span class="tg-react-btn" onclick="dmCtxReact('🔥')">🔥</span>
-    <span class="tg-react-btn" onclick="dmCtxReact('💯')">💯</span>
-    <span class="tg-react-btn" onclick="dmCtxReact('🚀')">🚀</span>
+<div id="dm-ctx-overlay" onclick="hideDmMsgMenu()">
+  <div id="dm-ctx-sheet" onclick="event.stopPropagation()">
+    <!-- Preview -->
+    <div class="dm-ctx-preview">
+      <div class="dm-ctx-picon" id="dm-ctx-icon">💬</div>
+      <div class="dm-ctx-ptext" id="dm-ctx-text"></div>
+    </div>
+    <!-- Quick reactions -->
+    <div class="dm-ctx-reacts">
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('👍')">👍</span>
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('❤️')">❤️</span>
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('😂')">😂</span>
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('😮')">😮</span>
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('🔥')">🔥</span>
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('💯')">💯</span>
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('🚀')">🚀</span>
+    </div>
+    <!-- Actions -->
+    <div class="dm-ctx-btn" onclick="dmCtxReply()"><i class="ti ti-arrow-back-up"></i> Ответить</div>
+    <div class="dm-ctx-btn" onclick="dmCtxCopy()"><i class="ti ti-copy"></i> Скопировать</div>
+    <div class="dm-ctx-btn" id="dm-ctx-edit-btn" onclick="dmCtxEdit()"><i class="ti ti-edit"></i> Изменить</div>
+    <div class="dm-ctx-btn" onclick="dmCtxForward()"><i class="ti ti-corner-up-right"></i> Переслать</div>
+    <div class="dm-ctx-btn" onclick="dmCtxPin()"><i class="ti ti-pin"></i> Закрепить</div>
+    <div class="dm-ctx-btn" onclick="dmCtxSave()"><i class="ti ti-star"></i> В избранное</div>
+    <div class="dm-ctx-divider"></div>
+    <div class="dm-ctx-btn danger" onclick="dmCtxDelete()"><i class="ti ti-trash"></i> Удалить</div>
   </div>
-  <!-- Actions -->
-  <div class="tg-menu-item" onclick="dmCtxReply()"><i class="ti ti-arrow-back-up"></i> Ответить</div>
-  <div class="tg-menu-item" onclick="dmCtxCopy()"><i class="ti ti-copy"></i> Скопировать</div>
-  <div class="tg-menu-item" id="dm-tg-edit" onclick="dmCtxEdit()"><i class="ti ti-edit"></i> Изменить</div>
-  <div class="tg-menu-item" onclick="dmCtxForward()"><i class="ti ti-corner-up-right"></i> Переслать</div>
-  <div class="tg-menu-item" onclick="dmCtxPin()"><i class="ti ti-pin"></i> Закрепить</div>
-  <div class="tg-menu-item" onclick="dmCtxSave()"><i class="ti ti-star"></i> В избранное</div>
-  <div class="tg-menu-sep"></div>
-  <div class="tg-menu-item danger" onclick="dmCtxDelete()"><i class="ti ti-trash"></i> Удалить</div>
 </div>
 
 <!-- ══ MSG ACTION BOTTOM SHEET ══════════════════════════════════════════ -->
