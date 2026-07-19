@@ -6476,9 +6476,11 @@ function openDmWith(userId, displayName) {
   // Register in dmConversations
   if(!app.dmConversations) app.dmConversations={};
   const uid = String(userId);
-  if(!app.dmConversations[uid]) app.dmConversations[uid]={display_name:displayName,lastMsg:'',time:'',unread:0};
-  else app.dmConversations[uid].display_name=displayName;
-  app.dmConversations[uid].unread=0;
+  // Only update existing entry — don't create empty one before first message sent
+  if(app.dmConversations[uid]) {
+    app.dmConversations[uid].display_name = displayName;
+    app.dmConversations[uid].unread = 0;
+  }
   // Persist that this UID was "read" so loadDmInbox won't restore old unread count
   try{
     const _rs=new Set(JSON.parse(localStorage.getItem('cw_read_uids')||'[]'));
@@ -6523,6 +6525,17 @@ function openDmWith(userId, displayName) {
           ? msgs.filter(m => new Date(m.created_at||0).getTime() >= delTs)
           : msgs;
         if(!filteredMsgs.length) return;
+        // Server has messages — ensure this conversation is in the sidebar
+        if(!app.dmConversations[uid]) {
+          const lastM = filteredMsgs[filteredMsgs.length-1];
+          const lastPreview = lastM.msg_type==='image'?'🖼 Фото':lastM.msg_type==='video'?'🎬 Видео':lastM.msg_type==='file'?'📎 Файл':(lastM.content||'').slice(0,30);
+          app.dmConversations[uid] = {
+            display_name: displayName, unread: 0,
+            lastMsg: lastPreview,
+            time: new Date(lastM.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})
+          };
+          renderChatRooms();
+        }
         const local = _dmStore(dmKey).filter(m=>!m.id);
         app.chatMessages[_DM_NAMESPACE][dmKey] = [
           ...filteredMsgs.map(m=>{
@@ -6967,13 +6980,18 @@ function renderFavChat() {
   [...saved].reverse().forEach(m => _renderFavMsg(m, false));
   el.scrollTop = el.scrollHeight;
 }
+let _favCtxMsg = null;
 function _renderFavMsg(m, scroll=true) {
   const el = document.getElementById('fav-msgs'); if(!el) return;
   const empty = document.getElementById('fav-empty');
   if(empty) empty.style.display = 'none';
-  // Reuse _buildDmMsg for consistent rendering
   const msgEl = _buildDmMsg({...m, sender: m.sender||'me'});
-  // Add timestamp label above
+  // Intercept context menu in capture phase — show fav-specific menu instead of DM menu
+  let _favLp;
+  msgEl.addEventListener('contextmenu', e=>{ e.stopImmediatePropagation(); e.preventDefault(); showFavMsgMenu(m); }, true);
+  msgEl.addEventListener('touchstart', ()=>{ _favLp=setTimeout(()=>{ const s=window.getSelection(); if(s&&!s.isCollapsed) return; showFavMsgMenu(m); },550); },{passive:true,capture:true});
+  msgEl.addEventListener('touchend',  ()=>clearTimeout(_favLp), {passive:true,capture:true});
+  msgEl.addEventListener('touchmove', ()=>clearTimeout(_favLp), {passive:true,capture:true});
   const wrap = document.createElement('div');
   if(m.savedAt) {
     const dt = new Date(m.savedAt);
@@ -6986,13 +7004,77 @@ function _renderFavMsg(m, scroll=true) {
   el.appendChild(wrap);
   if(scroll) el.scrollTop = el.scrollHeight;
 }
+function showFavMsgMenu(m) {
+  _favCtxMsg = m;
+  const ov = document.getElementById('fav-ctx-overlay');
+  if(!ov) return;
+  ov.style.display='block';
+  requestAnimationFrame(()=>{
+    const sh=document.getElementById('fav-ctx-sheet');
+    if(sh) { sh.style.transition='transform .22s cubic-bezier(.32,0,.18,1)'; sh.style.transform='translateY(0)'; }
+  });
+}
+function hideFavMsgMenu() {
+  const ov = document.getElementById('fav-ctx-overlay');
+  const sh = document.getElementById('fav-ctx-sheet');
+  if(sh) sh.style.transform='translateY(100%)';
+  setTimeout(()=>{ if(ov) ov.style.display='none'; _favCtxMsg=null; }, 220);
+}
+function favCtxCopy() {
+  hideFavMsgMenu();
+  if(!_favCtxMsg) return;
+  const text = _favCtxMsg.fileUrl || _favCtxMsg.text || '';
+  navigator.clipboard?.writeText(text).then(()=>showToast('📋 Скопировано'));
+}
+function favCtxReact(emoji) {
+  hideFavMsgMenu();
+  if(!_favCtxMsg) return;
+  if(!_favCtxMsg.reactions) _favCtxMsg.reactions = {};
+  _favCtxMsg.reactions[emoji] = (_favCtxMsg.reactions[emoji]||0)+1;
+  const saved = JSON.parse(localStorage.getItem('cw_saved_msgs')||'[]');
+  const idx = saved.findIndex(x=>x.savedAt===_favCtxMsg.savedAt);
+  if(idx>=0){ saved[idx].reactions=_favCtxMsg.reactions; localStorage.setItem('cw_saved_msgs',JSON.stringify(saved)); }
+  renderFavChat();
+  showToast(emoji+' Реакция');
+}
+function favDelMsg() {
+  hideFavMsgMenu();
+  if(!_favCtxMsg) return;
+  const ts=_favCtxMsg.savedAt; const txt=_favCtxMsg.text;
+  const saved = JSON.parse(localStorage.getItem('cw_saved_msgs')||'[]');
+  const newSaved = saved.filter(x=>!(x.savedAt===ts&&x.text===txt));
+  localStorage.setItem('cw_saved_msgs', JSON.stringify(newSaved));
+  renderFavChat();
+  showToast('🗑 Удалено из избранного');
+}
+async function favHandleFile(input) {
+  const file = input?.files?.[0]; if(!file) return;
+  input.value='';
+  const isImg=file.type.startsWith('image/'), isVid=file.type.startsWith('video/');
+  const msgType=isImg?'image':isVid?'video':'file';
+  showToast(isImg?'🖼 Загружаем…':isVid?'🎬 Загружаем…':'📄 Загружаем…');
+  const url = await _uploadFile(file, null);
+  if(!url){ showToast('❌ Не удалось загрузить'); return; }
+  const now = new Date();
+  const m = {
+    sender:'me', author:'Я', type:msgType,
+    text:file.name, fileName:file.name, fileSize:formatBytes(file.size), fileUrl:url,
+    time:now.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+    reactions:{}, savedAt:Date.now()
+  };
+  const saved = JSON.parse(localStorage.getItem('cw_saved_msgs')||'[]');
+  saved.unshift(m);
+  localStorage.setItem('cw_saved_msgs', JSON.stringify(saved.slice(0,500)));
+  _renderFavMsg(m);
+  showToast(isImg?'✅ Фото сохранено':isVid?'✅ Видео сохранено':'✅ Файл сохранён');
+}
 function sendFavNote() {
   const inp = document.getElementById('fav-input'); if(!inp) return;
   const text = (inp.value||'').trim(); if(!text) return;
   inp.value = ''; inp.style.height = '';
   const m = {text, sender:'me', author:'Я', type:'text',
     time: new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
-    savedAt: Date.now()};
+    reactions:{}, savedAt: Date.now()};
   const saved = JSON.parse(localStorage.getItem('cw_saved_msgs')||'[]');
   saved.unshift(m);
   localStorage.setItem('cw_saved_msgs', JSON.stringify(saved.slice(0,500)));
@@ -11517,14 +11599,29 @@ async function vfFollow(userId){
   // Refresh portfolio stats if open
   const poOverlay = document.getElementById('portfolio-overlay');
   const viewingOther = poOverlay?.dataset.viewUid;
-  const poFollowers=document.getElementById('po-followers');
+  const poFollowers = document.getElementById('po-followers');
   const _fc = data.followers_count ?? data.follower_count ?? data.followers;
-  if(poFollowers && _fc!==undefined) poFollowers.textContent=_fc;
-  // Only update "Подписки" (following) when viewing OWN profile
+  if(poFollowers) {
+    if(_fc !== undefined) {
+      poFollowers.textContent = _fc;
+    } else {
+      // Fallback: update count locally ±1 so UI always reflects the action
+      const cur = parseInt(poFollowers.textContent)||0;
+      poFollowers.textContent = Math.max(0, cur + (!isNow ? 1 : -1));
+    }
+  }
+  // Update "Подписки" (my following count) — only when viewing OWN profile
   if(!viewingOther) {
-    const poFollows=document.getElementById('po-follows');
+    const poFollows = document.getElementById('po-follows');
     const _fwc = data.following_count ?? data.following;
-    if(poFollows && _fwc!==undefined) poFollows.textContent=_fwc;
+    if(poFollows) {
+      if(_fwc !== undefined) {
+        poFollows.textContent = _fwc;
+      } else {
+        const cur2 = parseInt(poFollows.textContent)||0;
+        poFollows.textContent = Math.max(0, cur2 + (!isNow ? 1 : -1));
+      }
+    }
   }
   showToast(!isNow?'Подписались! 🔔':'Отписались');
   // Update public profile follow button if open
@@ -14533,10 +14630,29 @@ const _grpOvId='grp-chat-overlay';
   </div>
   <!-- Input -->
   <div class="fav-input-row">
+    <input type="file" id="fav-file-input" accept="image/*,video/*,*/*" style="display:none" onchange="favHandleFile(this)">
+    <button onclick="document.getElementById('fav-file-input').click()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><i class="ti ti-paperclip"></i></button>
     <textarea class="fav-input" id="fav-input" placeholder="Заметка для себя..." rows="1"
       oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendFavNote();}"></textarea>
-    <button class="fav-send-btn" onclick="sendFavNote()">➤</button>
+    <button class="fav-send-btn" onclick="sendFavNote()"><i class="ti ti-send" style="font-size:15px"></i></button>
+  </div>
+</div>
+
+<!-- Fav message context menu -->
+<div id="fav-ctx-overlay" onclick="hideFavMsgMenu()" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.45)">
+  <div id="fav-ctx-sheet" onclick="event.stopPropagation()" style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:18px 18px 0 0;padding:8px 0 max(16px,env(safe-area-inset-bottom));max-height:55vh;transform:translateY(100%)">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.18);border-radius:4px;margin:8px auto 12px"></div>
+    <div style="display:flex;justify-content:center;gap:6px;padding:8px 16px 14px;border-bottom:1px solid var(--border)">
+      <span class="dm-ctx-react-btn" onclick="favCtxReact('👍')">👍</span>
+      <span class="dm-ctx-react-btn" onclick="favCtxReact('❤️')">❤️</span>
+      <span class="dm-ctx-react-btn" onclick="favCtxReact('😂')">😂</span>
+      <span class="dm-ctx-react-btn" onclick="favCtxReact('😮')">😮</span>
+      <span class="dm-ctx-react-btn" onclick="favCtxReact('🔥')">🔥</span>
+      <span class="dm-ctx-react-btn" onclick="favCtxReact('💯')">💯</span>
+    </div>
+    <div class="dm-ctx-btn" onclick="favCtxCopy()"><i class="ti ti-copy"></i> Скопировать</div>
+    <div class="dm-ctx-btn danger" onclick="favDelMsg()"><i class="ti ti-trash"></i> Удалить из избранного</div>
   </div>
 </div>
 
