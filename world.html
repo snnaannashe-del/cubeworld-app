@@ -461,7 +461,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-msg.me{flex-direction:row-reverse}
 .gco-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(0,149,246,.5),rgba(131,58,180,.4));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
 /* gco-bubble primary styles now in telegram-style section below */
-.gco-msg.me .gco-bubble{background:linear-gradient(135deg,rgba(0,149,246,.28),rgba(0,100,220,.2));border:1px solid rgba(0,149,246,.25);border-radius:14px 14px 3px 14px}
+.gco-msg.me .gco-bubble{background:linear-gradient(135deg,rgba(0,149,246,.28),rgba(0,100,220,.2));border:none;border-radius:14px 14px 3px 14px}
 .gco-bubble-name{font-size:10px;color:var(--accent);font-weight:700;margin-bottom:3px}
 .gco-bubble-text{font-size:13px;color:#e0e0f8;line-height:1.5;white-space:pre-wrap;word-break:break-word;user-select:none;-webkit-user-select:none}
 .gco-bubble-text.selectable{user-select:text;-webkit-user-select:text}
@@ -1066,7 +1066,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .chat-msg.me{align-self:flex-end;flex-direction:row-reverse;animation:none}
 .chat-msg.them{align-self:flex-start}
 .chat-msg.system-msg{align-self:center;max-width:90%}
-.cm-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,rgba(0,149,246,.3),rgba(131,58,180,.3));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-bottom:2px;border:1px solid rgba(255,255,255,.08)}
+.cm-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;margin-bottom:2px;cursor:pointer;transition:opacity .12s}
 .cm-body{display:flex;flex-direction:column;max-width:100%}
 .cm-author{font-size:10px;color:var(--accent);margin-bottom:3px;padding-left:3px;font-weight:600;letter-spacing:.02em}
 .cm-bubble{padding:9px 13px;border-radius:18px;font-size:13.5px;line-height:1.55;word-break:break-word;position:relative;transition:background .15s}
@@ -1130,6 +1130,30 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   100%{transform:scale(.3) rotate(-8deg);opacity:0;filter:blur(4px);max-height:0;margin:0;padding:0}
 }
 .msg-deleting{animation:msgTear .45s cubic-bezier(.4,0,.2,1) forwards!important;overflow:hidden;pointer-events:none}
+/* ── Date separators ── */
+.dm-date-sep,.chat-date-sep{display:flex;align-items:center;gap:8px;padding:10px 0;flex-shrink:0}
+.dm-date-sep::before,.dm-date-sep::after,.chat-date-sep::before,.chat-date-sep::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08)}
+.dm-date-sep span,.chat-date-sep span{font-size:11px;color:var(--text3);background:#13132a;padding:3px 10px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+/* ── User profile modal ── */
+#user-prof-modal{position:fixed;inset:0;z-index:800;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(8px)}
+#user-prof-modal.open{display:flex}
+#user-prof-sheet{background:#0d0d22;border-radius:24px 24px 0 0;width:100%;max-width:520px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.18,1)}
+#user-prof-modal.open #user-prof-sheet{transform:translateY(0)}
+.upm-header{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;border-bottom:1px solid var(--border)}
+.upm-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0}
+.upm-info{flex:1;min-width:0}
+.upm-name{font-size:16px;font-weight:700;color:#fff}
+.upm-uid{font-size:11px;color:var(--text3);margin-top:1px}
+.upm-bio{font-size:12px;color:var(--text2);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.upm-actions{display:flex;gap:8px;padding:12px 16px}
+.upm-btn-sub{flex:1;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;padding:9px 14px;cursor:pointer;transition:opacity .15s}
+.upm-btn-sub.following{background:rgba(255,255,255,.08);color:var(--text2)}
+.upm-btn-msg{width:42px;height:42px;background:rgba(255,255,255,.07);border:none;border-radius:10px;color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.upm-posts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;overflow-y:auto;flex:1}
+.upm-post-cell{aspect-ratio:1;background:rgba(255,255,255,.05);overflow:hidden;cursor:pointer;position:relative}
+.upm-post-cell img,.upm-post-cell video{width:100%;height:100%;object-fit:cover}
+.upm-post-cell .upm-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;pointer-events:none}
+.upm-empty{padding:32px;text-align:center;color:var(--text3);font-size:13px}
 
 /* ── Delete chat modal ── */
 #del-chat-modal{position:fixed;inset:0;z-index:9900;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(6px)}
@@ -4516,7 +4540,9 @@ function openRoomWS(roomId){
             id: msg.id,
             sender: 'them',
             author: msg.display_name || 'Аноним',
+            authorId: String(msg.user_id||msg.from_user_id||''),
             text, time,
+            dateKey: msg.created_at ? _dateKey(msg.created_at) : _todayKey(),
             type: mType,
             replyTo: msg.reply_preview || null,
             fileName: msg.file_name, fileSize: msg.file_size,
@@ -5891,7 +5917,9 @@ function _startDmPoll(userId, displayName, dmKey){
           sender:isMine?'me':'them',
           author:isMine?'Я':displayName,
           authorId: isMine ? String(myId) : String(userId),
-          text:m.content, time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+          text:m.content,
+          time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+          dateKey:_dateKey(m.created_at),
           type:pt, fileName:m.file_name, fileSize:m.file_size,
           fileUrl:pu, duration:m.duration, reactions:{}
         });
@@ -5911,6 +5939,28 @@ function _stopDmPoll(){ if(_dmPollTimer){clearInterval(_dmPollTimer);_dmPollTime
 // DMs are stored under the fixed key '__dm__' so they're consistent
 // regardless of which cube either user is currently in.
 const _DM_NAMESPACE = '__dm__';
+// ── Date helpers ─────────────────────────────────────────────────────────────
+function _todayKey(){ return new Date().toISOString().slice(0,10); }
+function _dateKey(d){ try{ return new Date(d).toISOString().slice(0,10); }catch(e){ return _todayKey(); } }
+function _dateLabelFromKey(k){
+  if(!k) return '';
+  const today = _todayKey();
+  const yest  = _dateKey(Date.now()-86400000);
+  if(k===today) return 'Сегодня';
+  if(k===yest)  return 'Вчера';
+  try{
+    const [y,m,d]=k.split('-');
+    const months=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+    const label = (+d)+' '+months[+m-1];
+    return +y===new Date().getFullYear() ? label : label+' '+y;
+  }catch(e){ return k; }
+}
+function _makeDateSep(k, cls){
+  const div=document.createElement('div');
+  div.className=cls||'dm-date-sep';
+  div.innerHTML=`<span>${_dateLabelFromKey(k)}</span>`;
+  return div;
+}
 function _dmStore(key) {
   if(!app.chatMessages[_DM_NAMESPACE]) app.chatMessages[_DM_NAMESPACE]={};
   if(!app.chatMessages[_DM_NAMESPACE][key]) app.chatMessages[_DM_NAMESPACE][key]=[];
@@ -5930,8 +5980,9 @@ function handleIncomingDm(msg, myUserId) {
   const dmPeer = isMe ? toId : fromId;
   if(!dmPeer) return;
   const dmKey  = 'dm:' + dmPeer;
-  const time   = msg.created_at
+  const time    = msg.created_at
     ? new Date(msg.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}) : '';
+  const dateKey = msg.created_at ? _dateKey(msg.created_at) : _todayKey();
 
   const store = _dmStore(dmKey);
   let addedToStore = false;
@@ -5967,7 +6018,7 @@ function handleIncomingDm(msg, myUserId) {
       id: msg.id, sender: 'them',
       author: msg.display_name || 'Аноним',
       authorId: String(msg.from_user_id||msg.sender_id||''),
-      text: msg.content, time,
+      text: msg.content, time, dateKey,
       type: dmMType,
       fileName: msg.file_name, fileSize: msg.file_size,
       fileUrl: dmFileUrl,
@@ -6073,7 +6124,12 @@ function renderChatMsgs(roomId) {
   if(!msgs.length) {
     el.innerHTML='<div class="ca-empty">Нет сообщений. Напиши первым! 👋</div>'; return;
   }
-  msgs.forEach((m,i)=>{ const mel=buildMsgEl(m,i); if(mel) el.appendChild(mel); });
+  let lastDkG = null;
+  msgs.forEach((m,i)=>{
+    const dkG = m.dateKey||'';
+    if(dkG && dkG!==lastDkG){ el.appendChild(_makeDateSep(dkG,'chat-date-sep')); lastDkG=dkG; }
+    const mel=buildMsgEl(m,i); if(mel) el.appendChild(mel);
+  });
   el.scrollTop = el.scrollHeight;
 }
 // alias
@@ -6198,6 +6254,18 @@ function buildMsgEl(m, idx) {
     }, {passive:true});
     bubble.addEventListener('touchend', ()=>clearTimeout(_lp), {passive:true});
     bubble.addEventListener('touchmove', ()=>clearTimeout(_lp), {passive:true});
+  }
+
+  // Avatar click/hover → mini-card / contact panel
+  const cmAv = wrap.querySelector('.cm-avatar');
+  if(cmAv && m.sender !== 'me') {
+    const uid3 = m.authorId || '';
+    const nm3  = m.author  || '';
+    const ac3  = avC;
+    const mob3 = ()=>window.innerWidth<=768;
+    cmAv.addEventListener('click', e=>{ e.stopPropagation(); showContactPanel(uid3, nm3, ac3); });
+    cmAv.addEventListener('mouseenter', ()=>{ if(!mob3()) showMiniCard(uid3, nm3, ac3, cmAv); });
+    cmAv.addEventListener('mouseleave', ()=>{ if(!mob3()) hideMiniCard(300); });
   }
 
   return wrap;
@@ -6352,7 +6420,12 @@ function renderDmOverlay(dmKey) {
   if(!msgs.length){ if(emptyEl) emptyEl.style.display='block'; return; }
   if(emptyEl) emptyEl.style.display='none';
   const frag = document.createDocumentFragment();
-  msgs.forEach(m=>frag.appendChild(_buildDmMsg(m)));
+  let lastDk = null;
+  msgs.forEach(m=>{
+    const dk = m.dateKey || '';
+    if(dk && dk !== lastDk){ frag.appendChild(_makeDateSep(dk,'dm-date-sep')); lastDk=dk; }
+    frag.appendChild(_buildDmMsg(m));
+  });
   el.appendChild(frag);
   el.scrollTop = el.scrollHeight;
 }
@@ -6362,6 +6435,16 @@ function _appendDmMsg(m) {
   const el = document.getElementById('dm-co-msgs'); if(!el) return;
   const emptyEl = document.getElementById('dm-co-empty');
   if(emptyEl) emptyEl.style.display='none';
+  // Date separator if day changed
+  const dk = m.dateKey || '';
+  if(dk) {
+    const last = el.querySelector('.dm-date-sep:last-of-type span');
+    if(!last || last.dataset.dk !== dk) {
+      const sep = _makeDateSep(dk,'dm-date-sep');
+      sep.querySelector('span').dataset.dk = dk;
+      el.appendChild(sep);
+    }
+  }
   el.appendChild(_buildDmMsg(m));
   el.scrollTop = el.scrollHeight;
 }
@@ -6388,6 +6471,14 @@ function openDmWith(userId, displayName) {
   const avEl = document.getElementById('dm-co-av');
   avEl.textContent = letter;
   avEl.style.background = avC;
+  avEl.style.cursor = 'pointer';
+  // Wire click/hover on header avatar to contact panel / mini-card
+  avEl.onclick = null;
+  avEl.onmouseenter = null;
+  const isMob = ()=>window.innerWidth<=768;
+  avEl.addEventListener('click', e=>{ e.stopPropagation(); showContactPanel(uid, displayName, avC); }, {once:false});
+  avEl.addEventListener('mouseenter', ()=>{ if(!isMob()) showMiniCard(uid, displayName, avC, avEl); });
+  avEl.addEventListener('mouseleave', ()=>{ if(!isMob()) hideMiniCard(300); });
   // Open overlay
   document.getElementById('dm-chat-overlay').classList.add('open');
   _chatOverlayBackdrop(true);
@@ -6417,7 +6508,9 @@ function openDmWith(userId, displayName) {
             return {id:m.id, sender:isMine2?'me':'them',
               author:isMine2?'Я':displayName,
               authorId: isMine2 ? String(myId) : String(m.from_user_id||uid),
-              text:m.content, time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+              text:m.content,
+              time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+              dateKey:_dateKey(m.created_at),
               type:mt, fileName:m.file_name, fileSize:m.file_size, fileUrl:fu, duration:m.duration, reactions:{}};
           }), ...local
         ];
@@ -6486,7 +6579,7 @@ function sendDmOverlayMsg() {
 
   inp.value=''; inp.style.height='';
   const time = new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-  const msgObj = {sender:'me', author:'Я', text, time, type:'text', replyTo:_dmReplyTo, expiresSecs:_dmExpireSecs, reactions:{}};
+  const msgObj = {sender:'me', author:'Я', text, time, dateKey:_todayKey(), type:'text', replyTo:_dmReplyTo, expiresSecs:_dmExpireSecs, reactions:{}};
   const dmKey = 'dm:' + _chatActiveDm.user_id;
   addCubeRoomMsg(msgObj, dmKey);
   _appendDmMsg(msgObj);
@@ -6753,6 +6846,87 @@ function dmCtxReact(emoji) {
 }
 
 // ── Contact Profile Panel ─────────────────────────────────────────────────
+// ── User Profile Modal ────────────────────────────────────────────────────
+let _upmUid = null, _upmName = null, _upmFollowing = false;
+async function openUserProfModal(uid, name, avColor) {
+  if(!uid) { showToast('UID не известен'); return; }
+  _upmUid = uid; _upmName = name;
+  // Avatar
+  const avEl = document.getElementById('upm-av');
+  const letter = (name||'?')[0].toUpperCase();
+  avEl.textContent = letter;
+  avEl.style.background = avColor || 'linear-gradient(135deg,#0095F6,#5263FF)';
+  document.getElementById('upm-name').textContent = name || '—';
+  document.getElementById('upm-uid').textContent = 'UID ' + uid;
+  document.getElementById('upm-bio').textContent = '';
+  document.getElementById('upm-posts-grid').innerHTML = '<div class="upm-empty">Загрузка…</div>';
+  // Open modal
+  const modal = document.getElementById('user-prof-modal');
+  modal.style.display = 'flex';
+  requestAnimationFrame(()=>modal.classList.add('open'));
+  // Fetch profile
+  const token = localStorage.getItem('cw_access_token');
+  try {
+    const r = await fetch(`${API_BASE}/users/${uid}`, {headers:{Authorization:'Bearer '+token}});
+    if(r.ok) {
+      const data = await r.json();
+      document.getElementById('upm-bio').textContent = data.bio || '';
+      _upmFollowing = data.is_following || false;
+      _updateUpmSubBtn();
+    }
+  } catch(e) {}
+  // Fetch posts
+  try {
+    const r2 = await fetch(`${API_BASE}/feed?user_id=${uid}&limit=12`, {headers:{Authorization:'Bearer '+token}});
+    const posts = r2.ok ? await r2.json() : [];
+    _renderUpmPosts(posts);
+  } catch(e) {
+    document.getElementById('upm-posts-grid').innerHTML = '<div class="upm-empty">Нет постов</div>';
+  }
+}
+function closeUserProfModal() {
+  const modal = document.getElementById('user-prof-modal');
+  modal.classList.remove('open');
+  setTimeout(()=>{ modal.style.display='none'; }, 300);
+}
+function _updateUpmSubBtn() {
+  const btn = document.getElementById('upm-sub-btn');
+  if(!btn) return;
+  if(_upmFollowing) { btn.textContent='Подписан ✓'; btn.classList.add('following'); }
+  else { btn.textContent='Подписаться'; btn.classList.remove('following'); }
+}
+async function toggleUserFollow() {
+  if(!_upmUid) return;
+  const token = localStorage.getItem('cw_access_token');
+  const method = _upmFollowing ? 'DELETE' : 'POST';
+  try {
+    await fetch(`${API_BASE}/follow/${_upmUid}`, {method, headers:{Authorization:'Bearer '+token}});
+    _upmFollowing = !_upmFollowing;
+    _updateUpmSubBtn();
+    showToast(_upmFollowing ? '✅ Подписался' : '✅ Отписался');
+  } catch(e) {
+    _upmFollowing = !_upmFollowing; _updateUpmSubBtn();
+    showToast(_upmFollowing ? '✅ Подписался' : '✅ Отписался');
+  }
+}
+function upmWriteMsg() {
+  closeUserProfModal();
+  closeContactPanel();
+  openDmWith(_upmUid, _upmName||'Пользователь');
+}
+function _renderUpmPosts(posts) {
+  const grid = document.getElementById('upm-posts-grid');
+  if(!posts||!posts.length){ grid.innerHTML='<div class="upm-empty">Нет публикаций</div>'; return; }
+  grid.innerHTML = posts.map(p=>{
+    const isImg = p.type==='image'||(p.media_url&&/\.(jpg|jpeg|png|gif|webp)/i.test(p.media_url||''));
+    const isVid = p.type==='video'||(p.media_url&&/\.(mp4|mov|webm)/i.test(p.media_url||''));
+    const src = p.media_url || p.image_url || '';
+    if(isImg && src) return `<div class="upm-post-cell" onclick="openLightbox&&openLightbox('${escHtml(src)}','image')"><img src="${escHtml(src)}" loading="lazy"></div>`;
+    if(isVid && src) return `<div class="upm-post-cell"><video src="${escHtml(src)}#t=0.001" preload="metadata" style="width:100%;height:100%;object-fit:cover"></video><div class="upm-play">▶</div></div>`;
+    return `<div class="upm-post-cell" style="padding:8px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3)">${escHtml((p.content||p.text||'').slice(0,40))}</div>`;
+  }).join('');
+}
+
 let _contactPanelUid = null, _contactPanelName = null;
 function showContactPanel(uid, name, avColor) {
   _contactPanelUid = uid;
@@ -6811,7 +6985,10 @@ function cpAction(type) {
   } else if(type==='call') {
     showToast('📞 Функция звонков скоро...');
   } else if(type==='portfolio') {
-    showToast('🎨 Портфолио открывается...');
+    // Open full user profile modal
+    const avEl2 = document.getElementById('cp-av');
+    const avBg = avEl2?.style.background || 'linear-gradient(135deg,#0095F6,#5263FF)';
+    openUserProfModal(uid, _contactPanelName||'—', avBg);
   } else if(type==='add') {
     showToast('✅ Контакт добавлен!');
   } else if(type==='mute') {
@@ -6862,6 +7039,10 @@ function hideMiniCard(delay) {
 function cmc_open_profile() {
   hideMiniCard(0);
   if(_cmc_uid) showContactPanel(_cmc_uid, _cmc_name, _cmc_avColor);
+}
+function cmc_open_full_profile() {
+  hideMiniCard(0);
+  if(_cmc_uid) openUserProfModal(_cmc_uid, _cmc_name, _cmc_avColor);
 }
 
 function buildReactionsHtml(reactions, msgId) {
@@ -14034,6 +14215,28 @@ const _grpOvId='grp-chat-overlay';
 <!-- ══ FAB FIXED OVERLAY (outside all overflow:hidden parents) ══════════ -->
 <div id="vf-fab-overlay" style="display:none;position:fixed;z-index:500;right:14px;flex-direction:column;align-items:center;gap:10px;padding-bottom:12px"></div>
 
+<!-- ══ USER PROFILE MODAL ═════════════════════════════════════════════════ -->
+<div id="user-prof-modal" onclick="closeUserProfModal()">
+  <div id="user-prof-sheet" onclick="event.stopPropagation()">
+    <div class="upm-header">
+      <div class="upm-av" id="upm-av">👤</div>
+      <div class="upm-info">
+        <div class="upm-name" id="upm-name">—</div>
+        <div class="upm-uid" id="upm-uid"></div>
+        <div class="upm-bio" id="upm-bio"></div>
+      </div>
+      <button onclick="closeUserProfModal()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:4px">✕</button>
+    </div>
+    <div class="upm-actions">
+      <button class="upm-btn-sub" id="upm-sub-btn" onclick="toggleUserFollow()">Подписаться</button>
+      <button class="upm-btn-msg" onclick="upmWriteMsg()" title="Написать"><i class="ti ti-message-circle"></i></button>
+    </div>
+    <div class="upm-posts-grid" id="upm-posts-grid">
+      <div class="upm-empty">Загрузка…</div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ DELETE CHAT MODAL ══════════════════════════════════════════════════ -->
 <div id="del-chat-modal" onclick="hideDelChatModal()">
   <div id="del-chat-sheet" onclick="event.stopPropagation()">
@@ -14127,7 +14330,10 @@ const _grpOvId='grp-chat-overlay';
       <div class="cmc-uid" id="cmc-uid" style="font-size:10px;color:var(--text3);margin-top:1px"></div>
     </div>
   </div>
-  <button class="cmc-btn" onclick="cmc_open_profile()" style="width:100%;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:600;padding:6px 10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px"><i class="ti ti-user" style="font-size:12px"></i> Открыть профиль</button>
+  <div style="display:flex;gap:6px">
+    <button onclick="cmc_open_profile()" style="flex:1;background:rgba(255,255,255,.08);border:none;border-radius:8px;color:var(--text2);font-size:12px;font-weight:600;padding:6px 8px;cursor:pointer">Профиль</button>
+    <button onclick="cmc_open_full_profile()" style="flex:1;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:600;padding:6px 8px;cursor:pointer">Портфолио</button>
+  </div>
 </div>
 
 <!-- ══ DM MESSAGE CONTEXT MENU ═══════════════════════════════════════════ -->
