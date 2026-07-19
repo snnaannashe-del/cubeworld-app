@@ -410,6 +410,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 /* Group chat overlay */
 #grp-chat-overlay{position:fixed;inset:0;top:0;left:0;right:0;bottom:0;width:100%;max-width:100%;background:var(--bg);z-index:600;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1);overflow:hidden;overflow-x:hidden;-webkit-overflow-scrolling:touch;box-sizing:border-box}
 #grp-chat-overlay.open{transform:translateX(0)}
+/* DM chat overlay — same slide-in style as group chat */
+#dm-chat-overlay{position:fixed;inset:0;width:100%;max-width:100%;background:var(--bg);z-index:601;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1);overflow:hidden;-webkit-overflow-scrolling:touch;box-sizing:border-box}
+#dm-chat-overlay.open{transform:translateX(0)}
+#dm-chat-overlay *{max-width:100%;box-sizing:border-box}
+#dm-chat-overlay img{max-width:min(280px,100%);width:auto}
+#dm-chat-overlay video{max-width:min(280px,100%);width:100%}
+#dm-chat-overlay .gco-topbar{flex-shrink:0;position:sticky;top:0;z-index:5;width:100%}
+#dm-chat-overlay .gco-reply-bar{flex-shrink:0;width:100%}
+#dm-chat-overlay .gco-input-row{flex-shrink:0;width:100%;position:sticky;bottom:0;z-index:5}
 /* Lock all inner blocks — no movement on mobile */
 #grp-chat-overlay *{max-width:100%;box-sizing:border-box}
 /* Images/videos inside chat keep their natural max-width constraint */
@@ -3021,6 +3030,48 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <div id="gco-members-list" style="display:none"></div>
       </div>
 
+      <!-- ═══ DM CHAT OVERLAY ══════════════════════════════════════════ -->
+      <div id="dm-chat-overlay">
+        <!-- Topbar -->
+        <div class="gco-topbar">
+          <button onclick="closeDmChat()" style="background:none;border:none;color:var(--accent);font-size:22px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0">
+            <i class="ti ti-arrow-left"></i>
+          </button>
+          <div class="gco-av-circle" id="dm-co-av" style="font-size:18px">👤</div>
+          <div class="gco-tg-info">
+            <div class="gco-name" id="dm-co-name">Переписка</div>
+            <div class="gco-tg-sub" id="dm-co-sub">🔐 личная переписка · E2E</div>
+          </div>
+        </div>
+        <!-- Reply bar -->
+        <div class="gco-reply-bar" id="dm-reply-bar">
+          <div style="width:3px;height:32px;background:var(--accent);border-radius:2px;flex-shrink:0"></div>
+          <div class="gco-reply-info">
+            <div class="gco-reply-author" id="dm-reply-author"></div>
+            <div class="gco-reply-text" id="dm-reply-text"></div>
+          </div>
+          <button class="gco-reply-cancel" onclick="cancelDmReply()">✕</button>
+        </div>
+        <!-- Messages -->
+        <div class="gco-msgs" id="dm-co-msgs">
+          <div style="text-align:center;color:var(--text3);padding:32px 16px;font-size:13px" id="dm-co-empty">Нет сообщений. Напиши первым! 👋</div>
+        </div>
+        <!-- Input row -->
+        <div class="gco-input-row" id="dm-co-input-row">
+          <button class="gco-icon-btn" onclick="dmAttach()" title="Прикрепить" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-paperclip" style="font-size:16px"></i></button>
+          <div style="position:relative;flex:1">
+            <textarea class="gco-input" id="dm-co-input" placeholder="Написать…" rows="1"
+              autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="true"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendDmOverlayMsg();}"
+              oninput="gcoAutoGrow(this)"></textarea>
+          </div>
+          <button class="gco-icon-btn" onclick="dmToggleEmoji()" title="Эмодзи" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:16px"></i></button>
+          <button class="gco-send" id="dm-co-send" onclick="sendDmOverlayMsg()" title="Отправить"><i class="ti ti-send" style="font-size:15px"></i></button>
+        </div>
+        <!-- Hidden file input -->
+        <input type="file" id="dm-file-input" accept="image/*,video/*,.pdf,.doc,.docx,.zip" style="display:none" onchange="dmHandleFile(this)">
+      </div>
+
       <!-- ═══ CREATE POST MODAL (in group) ════════════════════════════ -->
       <div class="modal-backdrop" id="modal-gco-post">
         <div class="modal" style="max-width:420px">
@@ -3044,8 +3095,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           <label>Описание</label>
           <textarea class="cpm-inp cpm-inp-ta" id="gco-set-desc" placeholder="Расскажи о группе…" style="min-height:70px"></textarea>
           <label>Иконка</label>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;margin-bottom:8px">
-            ${['👥','🔥','🚀','💎','⚡','🎯','🌟','🏆','🎮','💰','📊','🧊'].map(e=>`<button onclick="gcoSetIcon('${e}')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">${e}</button>`).join('')}
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;margin-bottom:8px" id="gco-icon-picker">
+            <button onclick="gcoSetIcon('👥')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">👥</button>
+            <button onclick="gcoSetIcon('🔥')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">🔥</button>
+            <button onclick="gcoSetIcon('🚀')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">🚀</button>
+            <button onclick="gcoSetIcon('💎')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">💎</button>
+            <button onclick="gcoSetIcon('⚡')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">⚡</button>
+            <button onclick="gcoSetIcon('🎯')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">🎯</button>
+            <button onclick="gcoSetIcon('🌟')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">🌟</button>
+            <button onclick="gcoSetIcon('🏆')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">🏆</button>
+            <button onclick="gcoSetIcon('🎮')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">🎮</button>
+            <button onclick="gcoSetIcon('💰')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">💰</button>
+            <button onclick="gcoSetIcon('📊')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">📊</button>
+            <button onclick="gcoSetIcon('🧊')" style="font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer">🧊</button>
           </div>
           <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Выбрано: <span id="gco-set-icon-preview">👥</span></div>
           <div class="modal-actions">
@@ -5573,69 +5635,7 @@ async function loadDmInbox(){
   } catch(e){ /* silent */ }
 }
 
-function openDmWith(userId, displayName) {
-  _chatActiveDm = {user_id: String(userId), display_name: displayName};
-  app._lastDm = {user_id: String(userId), display_name: displayName};
-  _chatReplyTo = null;
-  cancelReply();
-  _mobOpenChat();
-  // Register in dmConversations so it shows in sidebar
-  if(!app.dmConversations) app.dmConversations={};
-  if(!app.dmConversations[userId]) app.dmConversations[userId]={display_name:displayName,lastMsg:'',time:'',unread:0};
-  else app.dmConversations[userId].display_name=displayName;
-  _saveDmState();
-  // Mark active in sidebar
-  document.querySelectorAll('.cl-room').forEach(e=>e.classList.remove('active'));
-  document.querySelector(`[data-chat-id="dm:${userId}"]`)?.classList.add('active');
-  // Clear unread for this DM
-  if(app.dmConversations&&app.dmConversations[userId]) app.dmConversations[userId].unread=0;
-  updateChatBadge();
-  document.getElementById('ca-header').style.display='flex';
-  document.getElementById('ca-icon').textContent='👤';
-  document.getElementById('ca-name').innerHTML = escHtml(displayName) + '<span class="dm-badge">DM</span>';
-  document.getElementById('ca-members').textContent = '🔐 личная переписка · E2E зашифровано';
-  document.getElementById('ca-input-panel').style.display='block';
-  // Load DM history — always use __dm__ namespace (cube-independent)
-  const dmKey = 'dm:' + userId;
-  _dmStore(dmKey); // ensure array exists
-  app.currentRoomId = dmKey;
-  renderChatMsgs(dmKey);
-  // Fetch history from server (always reload to get fresh messages)
-  const myId = localStorage.getItem('cw_user_id');
-  const token = localStorage.getItem('cw_access_token');
-  if(token && myId) {
-    fetch(CUBE_API+'/dm/'+userId, {headers:{Authorization:'Bearer '+token}})
-      .then(r=>r.ok?r.json():null).then(msgs=>{
-        if(!msgs||!msgs.length) return;
-        // Merge server messages with any locally-added ones
-        const local = _dmStore(dmKey).filter(m=>!m.id); // unsent/local-only
-        app.chatMessages[_DM_NAMESPACE][dmKey] = [
-          ...msgs.map(m=>{
-            const mtype=m.msg_type||'text';
-            const furl=(mtype==='image'||mtype==='video'||mtype==='file')
-              ?(m.file_url||m.content||''):'';
-            return {
-              id: m.id,
-              sender: String(m.from_user_id)===String(myId) ? 'me' : 'them',
-              author: String(m.from_user_id)===String(myId) ? 'Я' : displayName,
-              text: m.content,
-              time: new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
-              type: mtype,
-              fileName: m.file_name, fileSize: m.file_size,
-              fileUrl: furl,
-              duration: m.duration,
-              reactions: {}
-            };
-          }),
-          ...local
-        ];
-        _saveDmState();
-        if(app.currentRoomId===dmKey) renderChatMsgs(dmKey);
-      }).catch(()=>{});
-  }
-  // Start polling so messages never get lost if WS drops
-  _startDmPoll(userId, displayName, dmKey);
-}
+// openDmWith is defined below in the DM overlay section
 
 // ── DM polling fallback ──
 let _dmPollTimer = null;
@@ -5668,7 +5668,11 @@ function _startDmPoll(userId, displayName, dmKey){
           added=true;
         }
       }
-      if(added){ _saveDmState(); if(app.currentRoomId===dmKey) renderChatMsgs(dmKey); }
+      if(added){
+        _saveDmState();
+        const dmOverlayOpen = document.getElementById('dm-chat-overlay')?.classList.contains('open');
+        if(app.currentRoomId===dmKey && dmOverlayOpen) renderDmOverlay(dmKey);
+      }
     }catch(e){}
   }, 8000);
 }
@@ -5733,8 +5737,13 @@ function handleIncomingDm(msg, myUserId) {
 
   _saveDmState();
   renderChatRooms(); updateChatBadge();
-  if(app.currentRoomId===dmKey) renderChatMsgs(dmKey);
-  else if(!isMe){
+  const dmOverlayOpen = document.getElementById('dm-chat-overlay')?.classList.contains('open');
+  if(app.currentRoomId===dmKey && dmOverlayOpen) {
+    // Append to overlay without full re-render
+    const store = _dmStore(dmKey);
+    const newMsg = store[store.length-1];
+    if(newMsg) _appendDmMsg(newMsg);
+  } else if(!isMe){
     showToast('💬 DM от '+escHtml(msg.display_name||'кого-то'));
     pushNotification('💬','Новое сообщение от '+(msg.display_name||'пользователя'));
   }
@@ -5935,6 +5944,278 @@ function buildMsgEl(m, idx) {
   return wrap;
 }
 
+// ════════════════════════════════════════════════
+//  DM CHAT OVERLAY — Telegram-style full-screen
+// ════════════════════════════════════════════════
+let _dmReplyTo = null; // {id, author, text}
+
+// Build a single DM message element (mirrors _buildGroupMsg style)
+function _buildDmMsg(m) {
+  const isMe = m.sender === 'me';
+  const t = m.time || '';
+  const letter = (m.author||'?')[0].toUpperCase();
+  const avColors = ['#0095F6','#e91e8c','#00C9A7','#845EC2','#F9C74F','#4CC9F0'];
+  const avC = avColors[Math.abs((m.author||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0))%avColors.length];
+  const div = document.createElement('div');
+  div.className = 'gco-msg' + (isMe ? ' me' : '');
+  if(m.id) div.dataset.msgId = m.id;
+
+  let replyHtml = '';
+  if(m.replyTo) {
+    replyHtml = `<div class="gco-bubble-reply"><div class="rpl-name" style="color:var(--accent)">↩ ${escHtml(m.replyTo.author||'')}</div><div class="rpl-text">${escHtml((m.replyTo.text||'').slice(0,80))}</div></div>`;
+  }
+
+  const mtype = m.type || 'text';
+  let bubbleContent = '';
+
+  if(mtype === 'image') {
+    const src = m.fileUrl||(m.fileData?`data:image/jpeg;base64,${m.fileData}`:'');
+    bubbleContent = src
+      ? `<div style="max-width:280px;border-radius:12px;overflow:hidden;cursor:zoom-in;margin:-4px -4px 0" onclick="openLightbox&&openLightbox('${escHtml(src)}','image')">
+           <img src="${escHtml(src)}" style="max-width:280px;width:100%;height:auto;display:block;border-radius:12px" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+             onload="this.style.display='block';this.nextElementSibling.style.display='none'">
+           <div style="display:none;align-items:center;justify-content:center;height:120px;font-size:36px;color:var(--text3);background:rgba(255,255,255,.04);border-radius:12px">🖼</div>
+         </div>`
+      : `<div style="font-size:32px;padding:4px">🖼</div>`;
+  } else if(mtype === 'video') {
+    const src = m.fileUrl || '';
+    const vidId = 'dmv-' + (m.id||Math.random().toString(36).slice(2));
+    bubbleContent = src
+      ? `<div style="max-width:280px;border-radius:12px;overflow:hidden;margin:-4px -4px 0;position:relative;background:#000;min-height:160px">
+           <video id="${vidId}" src="${escHtml(src)}#t=0.001"
+             style="max-width:280px;width:100%;display:block;border-radius:12px;min-height:160px;max-height:360px;object-fit:cover"
+             playsinline webkit-playsinline preload="metadata"
+             onplay="this.parentElement.querySelector('.dmvp').style.display='none'"
+             onpause="this.parentElement.querySelector('.dmvp').style.display='flex'"
+             onended="this.parentElement.querySelector('.dmvp').style.display='flex'">
+           </video>
+           <div class="dmvp" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;border-radius:12px">
+             <div style="width:50px;height:50px;background:rgba(0,0,0,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)" onclick="event.stopPropagation();const v=document.getElementById('${vidId}');v.controls=true;v.play()">
+               <div style="width:0;height:0;border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:4px;pointer-events:all;cursor:pointer"></div>
+             </div>
+           </div>
+         </div>`
+      : `<div style="padding:8px">🎬 Видео</div>`;
+  } else if(mtype === 'file') {
+    const fileUrl = m.fileUrl || '';
+    const fname = m.fileName || 'Файл';
+    const ext = (fname.split('.').pop()||'').toLowerCase();
+    const icon = ext==='pdf'?'📕':['jpg','jpeg','png','gif','webp'].includes(ext)?'🖼':['doc','docx'].includes(ext)?'📝':ext==='zip'?'📦':'📄';
+    const onclick = fileUrl.startsWith('http') ? `window.open('${escHtml(fileUrl)}','_blank')` : '';
+    bubbleContent = `<div onclick="${onclick}" style="display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;max-width:260px">
+      <span style="font-size:28px;flex-shrink:0">${icon}</span>
+      <div style="min-width:0">
+        <div style="font-size:12px;font-weight:600;color:#e0e0f8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">${escHtml(fname)}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">${m.fileSize||''}</div>
+        <div style="font-size:10px;color:var(--accent);margin-top:1px">Нажми чтобы открыть</div>
+      </div>
+    </div>`;
+  } else if(mtype === 'sticker') {
+    bubbleContent = `<div style="font-size:52px;line-height:1;padding:6px;background:none;border:none;box-shadow:none">${escHtml(m.sticker||m.text||'⭐')}</div>`;
+  } else if(mtype === 'voice') {
+    const dur = m.duration || 0;
+    bubbleContent = `<div onclick="playVoiceMsg(this,'${m.fileData||''}')" style="display:flex;align-items:center;gap:10px;min-width:180px;cursor:pointer;padding:4px 0">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">▶</div>
+      <div><div style="font-size:11px;color:#e0e0f8;font-weight:600">🎤 Голосовое</div><div style="font-size:10px;color:var(--text3);margin-top:2px">${dur}"</div></div>
+    </div>`;
+  } else {
+    bubbleContent = `<div class="gco-bubble-text">${_renderFmt(escHtml(m.text||''))}</div>`;
+  }
+
+  const tick = isMe ? `<span style="margin-left:4px;font-size:11px;color:rgba(255,255,255,.45)">✓✓</span>` : '';
+  const avHtml = isMe ? '' : `<div class="gco-av" style="background:${avC};font-size:13px;font-weight:700">${letter}</div>`;
+
+  div.innerHTML = `${avHtml}
+    <div class="gco-bubble-wrap" data-msgid="${m.id||''}">
+      <div class="gco-bubble" id="dmbub-${m.id||'x'}">
+        ${!isMe&&m.author ? `<div class="gco-bubble-name" style="color:${avC};font-size:11px;font-weight:700;margin-bottom:3px">${escHtml(m.author)}</div>` : ''}
+        ${replyHtml}
+        ${bubbleContent}
+        <div class="gco-bubble-time" style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:2px">${t}${tick}</div>
+      </div>
+    </div>`;
+
+  // Long-press / right-click for context menu
+  const bubble = div.querySelector('.gco-bubble');
+  if(bubble) {
+    bubble.addEventListener('contextmenu', e=>{ e.preventDefault(); showDmMsgMenu(m); });
+    let _lp=null;
+    bubble.addEventListener('touchstart', e=>{ _lp=setTimeout(()=>{ const sel=window.getSelection(); if(sel&&!sel.isCollapsed) return; showDmMsgMenu(m); },550); },{passive:true});
+    bubble.addEventListener('touchend', ()=>clearTimeout(_lp), {passive:true});
+    bubble.addEventListener('touchmove', ()=>clearTimeout(_lp), {passive:true});
+  }
+  return div;
+}
+
+// Render all messages for current DM in the overlay
+function renderDmOverlay(dmKey) {
+  const el = document.getElementById('dm-co-msgs'); if(!el) return;
+  const emptyEl = document.getElementById('dm-co-empty');
+  const msgs = (app.chatMessages[_DM_NAMESPACE]||{})[dmKey] || [];
+  // Remove all message elements (keep empty div)
+  Array.from(el.children).forEach(c=>{ if(c.id!=='dm-co-empty') c.remove(); });
+  if(!msgs.length){ if(emptyEl) emptyEl.style.display='block'; return; }
+  if(emptyEl) emptyEl.style.display='none';
+  const frag = document.createDocumentFragment();
+  msgs.forEach(m=>frag.appendChild(_buildDmMsg(m)));
+  el.appendChild(frag);
+  el.scrollTop = el.scrollHeight;
+}
+
+// Append a single new message to the overlay (without full re-render)
+function _appendDmMsg(m) {
+  const el = document.getElementById('dm-co-msgs'); if(!el) return;
+  const emptyEl = document.getElementById('dm-co-empty');
+  if(emptyEl) emptyEl.style.display='none';
+  el.appendChild(_buildDmMsg(m));
+  el.scrollTop = el.scrollHeight;
+}
+
+// Open DM overlay
+function openDmWith(userId, displayName) {
+  _chatActiveDm = {user_id: String(userId), display_name: displayName};
+  app._lastDm = {user_id: String(userId), display_name: displayName};
+  _chatReplyTo = null; _dmReplyTo = null;
+  cancelDmReply();
+  // Register in dmConversations
+  if(!app.dmConversations) app.dmConversations={};
+  const uid = String(userId);
+  if(!app.dmConversations[uid]) app.dmConversations[uid]={display_name:displayName,lastMsg:'',time:'',unread:0};
+  else app.dmConversations[uid].display_name=displayName;
+  app.dmConversations[uid].unread=0;
+  _saveDmState();
+  // Update overlay header
+  document.getElementById('dm-co-name').textContent = displayName;
+  // Letter avatar
+  const letter = (displayName||'?')[0].toUpperCase();
+  const avColors = ['#0095F6','#e91e8c','#00C9A7','#845EC2','#F9C74F','#4CC9F0'];
+  const avC = avColors[Math.abs((displayName||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0))%avColors.length];
+  const avEl = document.getElementById('dm-co-av');
+  avEl.textContent = letter;
+  avEl.style.background = avC;
+  // Open overlay
+  document.getElementById('dm-chat-overlay').classList.add('open');
+  // Show DM in sidebar as active
+  document.querySelectorAll('.cl-room').forEach(e=>e.classList.remove('active'));
+  document.querySelector(`[data-chat-id="dm:${uid}"]`)?.classList.add('active');
+  updateChatBadge(); renderChatRooms();
+  // Set current room for compatibility
+  const dmKey = 'dm:' + uid;
+  _dmStore(dmKey);
+  app.currentRoomId = dmKey;
+  // Show cached messages immediately
+  renderDmOverlay(dmKey);
+  // Load history from server
+  const myId = localStorage.getItem('cw_user_id');
+  const token = localStorage.getItem('cw_access_token');
+  if(token && myId) {
+    fetch(CUBE_API+'/dm/'+uid, {headers:{Authorization:'Bearer '+token}})
+      .then(r=>r.ok?r.json():null).then(msgs=>{
+        if(!msgs||!msgs.length) return;
+        const local = _dmStore(dmKey).filter(m=>!m.id);
+        app.chatMessages[_DM_NAMESPACE][dmKey] = [
+          ...msgs.map(m=>{
+            const mt=m.msg_type||'text';
+            const fu=(mt==='image'||mt==='video'||mt==='file')?(m.file_url||m.content||''):'';
+            return {id:m.id, sender:String(m.from_user_id)===String(myId)?'me':'them',
+              author:String(m.from_user_id)===String(myId)?'Я':displayName,
+              text:m.content, time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+              type:mt, fileName:m.file_name, fileSize:m.file_size, fileUrl:fu, duration:m.duration, reactions:{}};
+          }), ...local
+        ];
+        _saveDmState();
+        if(app.currentRoomId===dmKey) renderDmOverlay(dmKey);
+      }).catch(()=>{});
+  }
+  _startDmPoll(uid, displayName, dmKey);
+}
+
+function closeDmChat() {
+  document.getElementById('dm-chat-overlay').classList.remove('open');
+  _stopDmPoll();
+  _chatActiveDm = null; _dmReplyTo = null;
+  app.currentRoomId = null;
+  renderChatRooms();
+}
+
+// DM Reply (in overlay)
+function startDmReply(m) {
+  _dmReplyTo = {id:m.id, author:m.author||'Аноним', text:m.text||''};
+  document.getElementById('dm-reply-author').textContent = _dmReplyTo.author;
+  document.getElementById('dm-reply-text').textContent = _dmReplyTo.text.slice(0,80);
+  document.getElementById('dm-reply-bar').classList.add('visible');
+  document.getElementById('dm-co-input').focus();
+}
+function cancelDmReply() {
+  _dmReplyTo = null;
+  document.getElementById('dm-reply-bar')?.classList.remove('visible');
+}
+
+// Send from DM overlay input
+function sendDmOverlayMsg() {
+  if(!_chatActiveDm) return;
+  const inp = document.getElementById('dm-co-input');
+  const text = (inp?.value||'').trim(); if(!text) return;
+  inp.value=''; inp.style.height='';
+  const time = new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  const msgObj = {sender:'me', author:'Я', text, time, type:'text', replyTo:_dmReplyTo, reactions:{}};
+  const dmKey = 'dm:' + _chatActiveDm.user_id;
+  addCubeRoomMsg(msgObj, dmKey);
+  _appendDmMsg(msgObj);
+  if(!app.dmConversations) app.dmConversations={};
+  if(!app.dmConversations[_chatActiveDm.user_id]) app.dmConversations[_chatActiveDm.user_id]={display_name:_chatActiveDm.display_name,lastMsg:'',time:'',unread:0};
+  app.dmConversations[_chatActiveDm.user_id].lastMsg=text.slice(0,30);
+  app.dmConversations[_chatActiveDm.user_id].time=time;
+  _saveDmState(); renderChatRooms();
+  if(!_wsSend({type:'dm', to_user_id:_chatActiveDm.user_id, content:text, msg_type:'text', reply_to_id:_dmReplyTo?.id||null})){
+    fetch(CUBE_API+'/dm/'+_chatActiveDm.user_id,{method:'POST',
+      headers:{'Authorization':'Bearer '+(localStorage.getItem('cw_access_token')||''),'Content-Type':'application/json'},
+      body:JSON.stringify({content:text, msg_type:'text'})}).catch(()=>{});
+  }
+  cancelDmReply();
+}
+
+// Attach file in DM overlay
+function dmAttach() { document.getElementById('dm-file-input')?.click(); }
+async function dmHandleFile(input) {
+  const file = input?.files?.[0]; if(!file||!_chatActiveDm) return;
+  input.value='';
+  const isImg=file.type.startsWith('image/'), isVid=file.type.startsWith('video/');
+  const msgType=isImg?'image':isVid?'video':'file';
+  showToast(isImg?'🖼 Загружаем…':isVid?'🎬 Загружаем…':'📄 Загружаем…');
+  const url = await _uploadFile(file, null);
+  if(!url){ showToast('❌ Не удалось загрузить'); return; }
+  const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  const size=formatBytes(file.size);
+  const msgObj={sender:'me',author:'Я',text:file.name,time,type:msgType,fileName:file.name,fileSize:size,fileUrl:url,reactions:{}};
+  const dmKey='dm:'+_chatActiveDm.user_id;
+  addCubeRoomMsg(msgObj,dmKey); _appendDmMsg(msgObj);
+  if(!app.dmConversations[_chatActiveDm.user_id]) app.dmConversations[_chatActiveDm.user_id]={display_name:_chatActiveDm.display_name,lastMsg:'',time:'',unread:0};
+  app.dmConversations[_chatActiveDm.user_id].lastMsg='📎 '+file.name.slice(0,20);
+  app.dmConversations[_chatActiveDm.user_id].time=time;
+  _saveDmState(); renderChatRooms();
+  const dmMsg={type:'dm',to_user_id:_chatActiveDm.user_id,content:url,msg_type:msgType,file_name:file.name,file_size:size,file_url:url};
+  if(!_wsSend(dmMsg)){
+    fetch(CUBE_API+'/dm/'+_chatActiveDm.user_id,{method:'POST',
+      headers:{'Authorization':'Bearer '+(localStorage.getItem('cw_access_token')||''),'Content-Type':'application/json'},
+      body:JSON.stringify({content:url,msg_type:msgType,file_name:file.name,file_size:size,file_url:url})}).catch(()=>{});
+  }
+  showToast(isImg?'✅ Фото отправлено':isVid?'✅ Видео отправлено':'✅ Файл отправлен');
+}
+
+// Emoji toggle for DM overlay (insert into dm-co-input)
+function dmToggleEmoji() {
+  const ep=document.getElementById('emoji-picker');
+  if(!ep) return;
+  if(!ep.innerHTML) ep.innerHTML=EMOJIS.map(e=>`<span class="ep-emoji" onclick="dmInsertEmoji('${e}')">${e}</span>`).join('');
+  ep.classList.toggle('open');
+  // Position near DM input
+  const row=document.getElementById('dm-co-input-row');
+  if(row){ ep.style.position='absolute'; ep.style.bottom=(row.offsetHeight+4)+'px'; ep.style.right='8px'; ep.style.left='auto'; row.style.position='relative'; row.appendChild(ep); }
+}
+function dmInsertEmoji(e){ const inp=document.getElementById('dm-co-input'); if(inp){inp.value+=e;inp.focus();} document.getElementById('emoji-picker')?.classList.remove('open'); }
+
 // ── DM message context menu ──
 let _dmCtxMsg = null;
 function showDmMsgMenu(m) {
@@ -5949,7 +6230,7 @@ function hideDmMsgMenu() {
 function dmCtxReply() {
   hideDmMsgMenu();
   if(!_dmCtxMsg) return;
-  startReply(_dmCtxMsg.id, _dmCtxMsg.author||'Аноним', _dmCtxMsg.text||'');
+  startDmReply(_dmCtxMsg);
 }
 function dmCtxCopy() {
   hideDmMsgMenu();
