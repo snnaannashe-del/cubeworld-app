@@ -558,6 +558,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-bubble{position:relative;border-radius:14px 14px 14px 2px;padding:9px 13px;background:rgba(255,255,255,.07);word-break:break-word;overflow-wrap:break-word;min-width:60px;overflow:hidden}
 .gco-bubble::before{content:'';position:absolute;bottom:0;left:-7px;width:0;height:0;border-top:8px solid transparent;border-right:7px solid rgba(255,255,255,.07)}
 .gco-msg.me .gco-bubble{background:rgba(0,149,246,.25);border-radius:14px 14px 2px 14px}
+/* Media-only messages: no bubble background, media fills edge-to-edge */
+.dm-media-only .gco-bubble{padding:0!important;background:transparent!important;border:none!important;min-width:0!important;overflow:hidden;border-radius:14px!important}
+.dm-media-only .gco-bubble::before,.dm-media-only .gco-bubble::after{display:none!important}
+.dm-media-only .gco-bubble-time{display:none!important}
+.dm-media-only.me .gco-bubble{border-radius:14px!important}
 .gco-msg.me .gco-bubble::before{display:none}
 .gco-msg.me .gco-bubble::after{content:'';position:absolute;bottom:0;right:-7px;width:0;height:0;border-top:8px solid transparent;border-left:7px solid rgba(0,149,246,.25)}
 /* Date separator */
@@ -1238,6 +1243,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .dm-exp-opt{padding:9px 16px;font-size:13px;color:#e0e0f8;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .12s}
 .dm-exp-opt:hover{background:rgba(255,255,255,.07)}
 .dm-exp-opt.active{color:var(--accent)}
+/* Fav expire timer button + popup (mirrors DM expire) */
+#fav-expire-btn{position:relative;width:32px;height:32px;border:none;border-radius:8px;background:transparent;color:var(--text2);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0}
+#fav-expire-btn:hover{background:rgba(255,255,255,.07)}
+#fav-expire-btn.active{color:var(--accent);background:rgba(0,149,246,.12)}
+#fav-expire-popup{position:absolute;bottom:48px;right:8px;background:#1a1a35;border:1px solid var(--border);border-radius:12px;padding:6px 0;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:10;min-width:140px;display:none}
+#fav-expire-popup.open{display:block}
 .ca-input-row{display:flex;gap:8px;align-items:flex-end;padding:8px 12px 10px}
 #ca-text-input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:18px;color:#e0e0f8;padding:9px 14px;font-size:13.5px;font-family:inherit;resize:none;min-height:40px;max-height:110px;outline:none;transition:border-color .18s,background .18s;line-height:1.4}
 #ca-text-input:focus{border-color:rgba(0,149,246,.45);background:rgba(255,255,255,.08)}
@@ -6319,35 +6330,45 @@ function _buildDmMsg(m) {
   }
 
   const mtype = m.type || 'text';
+  const isMediaOnly = (mtype === 'image' || mtype === 'video') && !m.replyTo;
+  if(isMediaOnly) div.classList.add('dm-media-only');
   let bubbleContent = '';
+
+  const tick = isMe ? `<span style="margin-left:4px;font-size:11px;color:rgba(255,255,255,.75)">✓✓</span>` : '';
+  const expLabel = m.expiresSecs ? `<span style="font-size:10px;color:#fff;margin-right:2px">⏱${m.expiresSecs>=86400?Math.round(m.expiresSecs/86400)+'д':m.expiresSecs>=3600?Math.round(m.expiresSecs/3600)+'ч':Math.round(m.expiresSecs/60)+'м'}</span>` : '';
+  const mediaTimeOverlay = isMediaOnly
+    ? `<div style="position:absolute;bottom:8px;right:8px;font-size:10px;color:#fff;background:rgba(0,0,0,.48);padding:2px 7px;border-radius:8px;display:flex;align-items:center;gap:2px;backdrop-filter:blur(2px)">${expLabel}${m.time||''}${tick}</div>`
+    : '';
 
   if(mtype === 'image') {
     const src = m.fileUrl||(m.fileData?`data:image/jpeg;base64,${m.fileData}`:'');
     bubbleContent = src
-      ? `<div style="max-width:280px;border-radius:12px;overflow:hidden;cursor:zoom-in;margin:-8px -8px 4px" onclick="openLightbox&&openLightbox('${escHtml(src)}','image')">
-           <img src="${escHtml(src)}" style="max-width:280px;width:100%;height:auto;display:block;border-radius:12px" loading="eager"
+      ? `<div style="max-width:300px;border-radius:14px;overflow:hidden;cursor:zoom-in;position:relative" onclick="openLightbox&&openLightbox('${escHtml(src)}','image')">
+           <img src="${escHtml(src)}" style="max-width:300px;width:100%;height:auto;display:block" loading="eager"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
              onload="this.style.display='block';this.nextElementSibling.style.display='none'">
            <div style="display:none;align-items:center;justify-content:center;height:120px;font-size:36px;color:var(--text3)">🖼</div>
+           ${mediaTimeOverlay}
          </div>`
       : `<div style="font-size:32px;padding:4px">🖼</div>`;
   } else if(mtype === 'video') {
     const src = m.fileUrl || '';
     const vidId = 'dmv-' + (m.id||Math.random().toString(36).slice(2));
     bubbleContent = src
-      ? `<div style="max-width:280px;border-radius:12px;overflow:hidden;margin:-8px -8px 4px;position:relative">
+      ? `<div style="max-width:300px;border-radius:14px;overflow:hidden;position:relative">
            <video id="${vidId}" src="${escHtml(src)}#t=0.001"
-             style="max-width:280px;width:100%;display:block;border-radius:12px;max-height:360px;object-fit:cover"
+             style="max-width:300px;width:100%;display:block;max-height:360px;object-fit:cover"
              playsinline webkit-playsinline preload="metadata"
              onplay="this.parentElement.querySelector('.dmvp').style.display='none'"
              onpause="this.parentElement.querySelector('.dmvp').style.display='flex'"
              onended="this.parentElement.querySelector('.dmvp').style.display='flex'">
            </video>
-           <div class="dmvp" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;border-radius:12px">
-             <div style="width:50px;height:50px;background:rgba(0,0,0,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)" onclick="event.stopPropagation();const v=document.getElementById('${vidId}');v.controls=true;v.play()">
-               <div style="width:0;height:0;border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:4px;pointer-events:all;cursor:pointer"></div>
+           <div class="dmvp" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+             <div style="width:52px;height:52px;background:rgba(0,0,0,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)" onclick="event.stopPropagation();const v=document.getElementById('${vidId}');v.controls=true;v.play()">
+               <div style="width:0;height:0;border-left:20px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:5px;pointer-events:all;cursor:pointer"></div>
              </div>
            </div>
+           ${mediaTimeOverlay}
          </div>`
       : `<div style="padding:8px">🎬 Видео</div>`;
   } else if(mtype === 'file') {
@@ -6376,8 +6397,7 @@ function _buildDmMsg(m) {
     bubbleContent = `<div class="gco-bubble-text">${_renderFmt(escHtml(m.text||''))}</div>`;
   }
 
-  const tick = isMe ? `<span style="margin-left:4px;font-size:11px;color:rgba(255,255,255,.45)">✓✓</span>` : '';
-  const expLabel = m.expiresSecs ? `<span style="font-size:10px;color:var(--accent);margin-right:4px">⏱${m.expiresSecs>=86400?Math.round(m.expiresSecs/86400)+'д':m.expiresSecs>=3600?Math.round(m.expiresSecs/3600)+'ч':Math.round(m.expiresSecs/60)+'м'}</span>` : '';
+  // tick & expLabel already defined above for media overlay
   const avHtml = isMe ? '' : `<div class="gco-av" style="background:${avC};font-size:13px;font-weight:700" data-uid="${m.authorId||''}" data-name="${escHtml(m.author||'')}" data-av="${avC}">${letter}</div>`;
 
   div.innerHTML = `${avHtml}
@@ -6788,10 +6808,10 @@ let _dmExpireSecs = null;
 function toggleDmExpire(e) {
   e.stopPropagation();
   document.getElementById('dm-expire-popup').classList.toggle('open');
+  document.getElementById('fav-expire-popup')?.classList.remove('open');
 }
 function setDmExpire(el, val) {
   _dmExpireSecs = val ? parseInt(val) : null;
-  // Update button label
   const btn = document.getElementById('dm-expire-btn');
   if(btn) {
     if(!_dmExpireSecs) { btn.textContent='∞'; btn.classList.remove('active'); }
@@ -6801,12 +6821,37 @@ function setDmExpire(el, val) {
       btn.classList.add('active');
     }
   }
-  // Mark active option
   document.querySelectorAll('#dm-expire-popup .dm-exp-opt').forEach(o=>o.classList.toggle('active', o===el));
   document.getElementById('dm-expire-popup').classList.remove('open');
 }
-// Close popup on outside click
-document.addEventListener('click', ()=>document.getElementById('dm-expire-popup')?.classList.remove('open'));
+
+// ── Fav expire timer (same logic, separate state) ──
+let _favExpireSecs = null;
+function toggleFavExpire(e) {
+  e.stopPropagation();
+  document.getElementById('fav-expire-popup').classList.toggle('open');
+  document.getElementById('dm-expire-popup')?.classList.remove('open');
+}
+function setFavExpire(el, val) {
+  _favExpireSecs = val ? parseInt(val) : null;
+  const btn = document.getElementById('fav-expire-btn');
+  if(btn) {
+    if(!_favExpireSecs) { btn.textContent='∞'; btn.classList.remove('active'); }
+    else {
+      const labels={300:'5м',3600:'1ч',86400:'24ч',604800:'7д'};
+      btn.textContent = '⏱'+(labels[_favExpireSecs]||'?');
+      btn.classList.add('active');
+    }
+  }
+  document.querySelectorAll('#fav-expire-popup .dm-exp-opt').forEach(o=>o.classList.toggle('active', o===el));
+  document.getElementById('fav-expire-popup').classList.remove('open');
+}
+
+// Close expire popups on outside click
+document.addEventListener('click', ()=>{
+  document.getElementById('dm-expire-popup')?.classList.remove('open');
+  document.getElementById('fav-expire-popup')?.classList.remove('open');
+});
 
 // Emoji toggle for DM overlay (insert into dm-co-input)
 function dmToggleEmoji() {
@@ -7063,6 +7108,7 @@ async function favHandleFile(input) {
     sender:'me', author:'Я', type:msgType,
     text:file.name, fileName:file.name, fileSize:formatBytes(file.size), fileUrl:url,
     time:now.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+    expiresSecs: _favExpireSecs || undefined,
     reactions:{}, savedAt:Date.now()
   };
   const saved = JSON.parse(localStorage.getItem('cw_saved_msgs')||'[]');
@@ -7115,6 +7161,7 @@ function sendFavNote() {
   const m = {text, sender:'me', author:'Я', type:'text',
     time: new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
     replyTo: _favReplyTo || undefined,
+    expiresSecs: _favExpireSecs || undefined,
     reactions:{}, savedAt: Date.now()};
   cancelFavReply();
   const saved = JSON.parse(localStorage.getItem('cw_saved_msgs')||'[]');
@@ -14697,6 +14744,15 @@ const _grpOvId='grp-chat-overlay';
     <button class="gco-icon-btn" onclick="favToggleEmoji()" title="Эмодзи" style="width:36px;height:36px;flex-shrink:0">
       <i class="ti ti-mood-smile" style="font-size:16px"></i>
     </button>
+    <!-- Timer button — same as DM -->
+    <button id="fav-expire-btn" onclick="toggleFavExpire(event)" title="Таймер сообщения">∞</button>
+    <div id="fav-expire-popup">
+      <div class="dm-exp-opt active" data-val="" onclick="setFavExpire(this,'')">∞ Навсегда</div>
+      <div class="dm-exp-opt" data-val="300" onclick="setFavExpire(this,'300')">⏱ 5 минут</div>
+      <div class="dm-exp-opt" data-val="3600" onclick="setFavExpire(this,'3600')">⏱ 1 час</div>
+      <div class="dm-exp-opt" data-val="86400" onclick="setFavExpire(this,'86400')">⏱ 24 часа</div>
+      <div class="dm-exp-opt" data-val="604800" onclick="setFavExpire(this,'604800')">⏱ 7 дней</div>
+    </div>
     <button class="gco-send" onclick="sendFavNote()" title="Отправить">
       <i class="ti ti-send" style="font-size:15px"></i>
     </button>
