@@ -408,11 +408,30 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .cpm-inp:focus{border-color:rgba(0,149,246,.5);background:rgba(255,255,255,.07)}
 .cpm-inp-ta{min-height:82px;resize:vertical;line-height:1.5}
 /* Group chat overlay */
-#grp-chat-overlay{position:fixed;inset:0;top:0;left:0;right:0;bottom:0;width:100%;max-width:100%;background:var(--bg);z-index:600;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1);overflow:hidden;overflow-x:hidden;-webkit-overflow-scrolling:touch;box-sizing:border-box}
-#grp-chat-overlay.open{transform:translateX(0)}
-/* DM chat overlay — same slide-in style as group chat */
-#dm-chat-overlay{position:fixed;inset:0;width:100%;max-width:100%;background:var(--bg);z-index:601;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1);overflow:hidden;-webkit-overflow-scrolling:touch;box-sizing:border-box}
-#dm-chat-overlay.open{transform:translateX(0)}
+/* Chat/DM overlays — mobile: full screen slide-in; desktop: centered panel */
+#grp-chat-overlay,#dm-chat-overlay{position:fixed;inset:0;width:100%;max-width:100%;background:var(--bg);display:flex;flex-direction:column;overflow:hidden;overflow-x:hidden;-webkit-overflow-scrolling:touch;box-sizing:border-box;transition:transform .3s cubic-bezier(.32,0,.18,1),opacity .25s ease}
+#grp-chat-overlay{z-index:600;transform:translateX(100%)}
+#dm-chat-overlay{z-index:601;transform:translateX(100%)}
+#grp-chat-overlay.open,#dm-chat-overlay.open{transform:translateX(0)}
+@media(min-width:769px){
+  #grp-chat-overlay,#dm-chat-overlay{
+    top:24px;bottom:24px;left:50%;right:auto;
+    width:520px;max-width:calc(100vw - 48px);
+    border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.75);
+    transform:translateX(-50%) scale(0.97) translateY(8px);
+    opacity:0;pointer-events:none;
+    transition:transform .28s cubic-bezier(.32,0,.18,1),opacity .22s ease;
+  }
+  #grp-chat-overlay.open,#dm-chat-overlay.open{
+    transform:translateX(-50%) scale(1) translateY(0);opacity:1;pointer-events:all;
+  }
+  #grp-chat-overlay .gco-msgs,#dm-chat-overlay .gco-msgs{
+    padding:16px 20px;
+  }
+}
+@media(max-width:768px){
+  #chat-overlay-backdrop{display:none!important}
+}
 #dm-chat-overlay *{max-width:100%;box-sizing:border-box}
 #dm-chat-overlay img{max-width:min(280px,100%);width:auto}
 #dm-chat-overlay video{max-width:min(280px,100%);width:100%}
@@ -3029,6 +3048,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <div id="gmp-list" style="display:none"></div>
         <div id="gco-members-list" style="display:none"></div>
       </div>
+
+      <!-- Backdrop for desktop DM/group overlays -->
+      <div id="chat-overlay-backdrop" onclick="closeDmChat();closeGrpChat();" style="display:none;opacity:0;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:599;backdrop-filter:blur(2px);transition:opacity .3s ease"></div>
 
       <!-- ═══ DM CHAT OVERLAY ══════════════════════════════════════════ -->
       <div id="dm-chat-overlay">
@@ -5654,19 +5676,24 @@ function _startDmPoll(userId, displayName, dmKey){
       const store = _dmStore(dmKey);
       let added=false;
       for(const m of msgs){
-        if(!store.find(x=>x.id===m.id)){
-          const pt=m.msg_type||'text';
-          const pu=(pt==='image'||pt==='video'||pt==='file')?(m.file_url||m.content||''):'';
-          store.push({
-            id:m.id,
-            sender:String(m.from_user_id)===String(myId)?'me':'them',
-            author:String(m.from_user_id)===String(myId)?'Я':displayName,
-            text:m.content, time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
-            type:pt, fileName:m.file_name, fileSize:m.file_size,
-            fileUrl:pu, duration:m.duration, reactions:{}
-          });
-          added=true;
+        if(store.find(x=>x.id===m.id)) continue; // already have it
+        const isMine = String(m.from_user_id)===String(myId);
+        if(isMine){
+          // Try to patch an optimistic (no-ID) copy already in UI
+          const pending=store.slice().reverse().find(x=>x.sender==='me'&&x.text===m.content&&!x.id);
+          if(pending){ pending.id=m.id; continue; }
         }
+        const pt=m.msg_type||'text';
+        const pu=(pt==='image'||pt==='video'||pt==='file')?(m.file_url||m.content||''):'';
+        store.push({
+          id:m.id,
+          sender:isMine?'me':'them',
+          author:isMine?'Я':displayName,
+          text:m.content, time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
+          type:pt, fileName:m.file_name, fileSize:m.file_size,
+          fileUrl:pu, duration:m.duration, reactions:{}
+        });
+        added=true;
       }
       if(added){
         _saveDmState();
@@ -5687,33 +5714,45 @@ function _dmStore(key) {
   if(!app.chatMessages[_DM_NAMESPACE][key]) app.chatMessages[_DM_NAMESPACE][key]=[];
   return app.chatMessages[_DM_NAMESPACE][key];
 }
+// Dedup set — prevents double-delivery when _ws + _globalWs both receive the same DM
+const _seenDmIds = new Set();
+
 function handleIncomingDm(msg, myUserId) {
+  // Deduplicate: if we already processed this server message, skip it
+  if(msg.id && _seenDmIds.has(msg.id)) return;
+  if(msg.id) { _seenDmIds.add(msg.id); if(_seenDmIds.size>200) { const first=_seenDmIds.values().next().value; _seenDmIds.delete(first); } }
+
   const fromId = String(msg.from_user_id);
-  const toId   = String(msg.to_user_id);
+  const toId   = String(msg.to_user_id||'');
   const isMe   = fromId === String(myUserId);
   const dmPeer = isMe ? toId : fromId;
+  if(!dmPeer) return;
   const dmKey  = 'dm:' + dmPeer;
   const time   = msg.created_at
     ? new Date(msg.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}) : '';
 
+  const store = _dmStore(dmKey);
+  let addedToStore = false;
+
   if(isMe) {
-    // Echo from server — just patch ID onto the locally-added optimistic copy, don't duplicate
-    const store = _dmStore(dmKey);
+    // Echo from server — patch ID onto the optimistic copy already in UI. Don't add/re-render.
     const pending = store.slice().reverse().find(m => m.sender==='me' && m.text===msg.content && !m.id);
-    if(pending){ pending.id = msg.id; }
-    else {
-      // No pending match (e.g. reconnected) — add it
+    if(pending) { pending.id = msg.id; }
+    else if(!store.find(x=>x.id===msg.id)) {
+      // Reconnect edge-case: no pending copy → add silently
       const echoType=msg.msg_type||'text';
       const echoUrl=(echoType==='image'||echoType==='video'||echoType==='file')?(msg.file_url||msg.content||''):'';
       store.push({id:msg.id, sender:'me', author:'Я', text:msg.content, time,
         type:echoType, fileName:msg.file_name, fileSize:msg.file_size,
         fileUrl:echoUrl, duration:msg.duration, reactions:{}});
+      addedToStore = true;
     }
   } else {
+    if(store.find(x=>x.id===msg.id)) return; // already have it (poll + WS race)
     const dmMType=msg.msg_type||'text';
     const dmFileUrl=(dmMType==='image'||dmMType==='video'||dmMType==='file')
       ? (msg.file_url||msg.content||'') : '';
-    _dmStore(dmKey).push({
+    store.push({
       id: msg.id, sender: 'them',
       author: msg.display_name || 'Аноним',
       text: msg.content, time,
@@ -5723,6 +5762,7 @@ function handleIncomingDm(msg, myUserId) {
       fileData: msg.file_data, duration: msg.duration,
       reactions: {}
     });
+    addedToStore = true;
   }
 
   // Update sidebar conversation entry
@@ -5737,15 +5777,19 @@ function handleIncomingDm(msg, myUserId) {
 
   _saveDmState();
   renderChatRooms(); updateChatBadge();
+
   const dmOverlayOpen = document.getElementById('dm-chat-overlay')?.classList.contains('open');
-  if(app.currentRoomId===dmKey && dmOverlayOpen) {
-    // Append to overlay without full re-render
-    const store = _dmStore(dmKey);
-    const newMsg = store[store.length-1];
-    if(newMsg) _appendDmMsg(newMsg);
-  } else if(!isMe){
-    showToast('💬 DM от '+escHtml(msg.display_name||'кого-то'));
-    pushNotification('💬','Новое сообщение от '+(msg.display_name||'пользователя'));
+  if(!isMe && addedToStore) {
+    // New message from the other person — append to overlay if open, otherwise toast
+    if(app.currentRoomId===dmKey && dmOverlayOpen) {
+      _appendDmMsg(store[store.length-1]);
+    } else {
+      showToast('💬 DM от '+escHtml(msg.display_name||'кого-то'));
+      pushNotification('💬','Новое сообщение от '+(msg.display_name||'пользователя'));
+    }
+  } else if(isMe && addedToStore && app.currentRoomId===dmKey && dmOverlayOpen) {
+    // Reconnect edge-case: we added a new 'me' message that wasn't in the UI yet
+    _appendDmMsg(store[store.length-1]);
   }
 }
 
@@ -6096,6 +6140,7 @@ function openDmWith(userId, displayName) {
   avEl.style.background = avC;
   // Open overlay
   document.getElementById('dm-chat-overlay').classList.add('open');
+  _chatOverlayBackdrop(true);
   // Show DM in sidebar as active
   document.querySelectorAll('.cl-room').forEach(e=>e.classList.remove('active'));
   document.querySelector(`[data-chat-id="dm:${uid}"]`)?.classList.add('active');
@@ -6131,12 +6176,22 @@ function openDmWith(userId, displayName) {
   _startDmPoll(uid, displayName, dmKey);
 }
 
+function _chatOverlayBackdrop(show) {
+  const bd = document.getElementById('chat-overlay-backdrop');
+  if(!bd) return;
+  if(show) { bd.style.display='block'; requestAnimationFrame(()=>bd.style.opacity='1'); }
+  else { bd.style.opacity='0'; setTimeout(()=>{ bd.style.display='none'; },300); }
+}
+
 function closeDmChat() {
   document.getElementById('dm-chat-overlay').classList.remove('open');
   _stopDmPoll();
   _chatActiveDm = null; _dmReplyTo = null;
   app.currentRoomId = null;
   renderChatRooms();
+  // Hide backdrop only if group chat is also closed
+  if(!document.getElementById('grp-chat-overlay')?.classList.contains('open'))
+    _chatOverlayBackdrop(false);
 }
 
 // DM Reply (in overlay)
@@ -10765,6 +10820,7 @@ async function openGroupChat(groupId, groupName, groupIcon){
   document.getElementById('gco-msgs').innerHTML=`<div style="text-align:center;color:var(--text3);padding:32px;font-size:13px">⏳ Загружаем сообщения…</div><div class="gco-typing-row" id="gco-typing-row"><div class="gco-av" style="width:28px;height:28px;font-size:11px">?</div><div class="gco-typing-dots"><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div><div class="gco-typing-dot"></div></div></div>`;
   document.getElementById('grp-chat-overlay').classList.add('open');
   document.getElementById('grp-info-panel')?.classList.remove('open');
+  _chatOverlayBackdrop(true);
   gcoUpdateSendBtn();
   // Load messages + members + group details
   await _loadGroupMsgs(true);
@@ -10796,7 +10852,11 @@ function closeGroupChat(){
   document.getElementById('grp-chat-overlay').classList.remove('open');
   _stopGrpPoll();
   _grpChatId=null;
+  if(!document.getElementById('dm-chat-overlay')?.classList.contains('open'))
+    _chatOverlayBackdrop(false);
 }
+// Alias for backdrop onclick
+function closeGrpChat(){ closeGroupChat(); }
 
 function toggleGrpMembersPanel(){
   document.getElementById('grp-info-panel')?.classList.toggle('open');
