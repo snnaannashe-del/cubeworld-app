@@ -456,7 +456,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .gco-online{font-size:11px;color:var(--green);margin-left:auto;flex-shrink:0}
 .gco-members-btn{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:6px 11px;font-size:12px;color:var(--text2);cursor:pointer;transition:all var(--transition)}
 .gco-members-btn:hover{background:rgba(255,255,255,.1);color:var(--text)}
-.gco-msgs{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 12px;display:flex;flex-direction:column;gap:6px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;min-height:0;width:100%;overflow-anchor:none}
+.gco-msgs{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 12px;display:flex;flex-direction:column;gap:6px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;min-height:0;width:100%;overflow-anchor:none;will-change:scroll-position;transform:translateZ(0)}
 .gco-msg{display:flex;align-items:flex-start;gap:8px;padding:2px 0;animation:fadeUp .15s ease}
 .gco-msg.me{flex-direction:row-reverse}
 .gco-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(0,149,246,.5),rgba(131,58,180,.4));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
@@ -5447,8 +5447,12 @@ function switchSection(name,el){
   if(name==='chat'){
     document.getElementById('sn-badge-chat')?.style.setProperty('display','none');
     document.getElementById('mob-badge-chat')?.style.setProperty('display','none');
-    if(!_chatActiveDm && app._lastDm)
-      setTimeout(()=>openDmWith(app._lastDm.user_id, app._lastDm.display_name), 50);
+    if(!_chatActiveDm) {
+      // Restore last open DM (persists across reload)
+      const _savedDm = (() => { try{ const s=localStorage.getItem('cw_last_open_dm'); return s?JSON.parse(s):null; }catch(e){return null;} })();
+      const _resumeDm = _savedDm || app._lastDm;
+      if(_resumeDm) setTimeout(()=>openDmWith(_resumeDm.user_id, _resumeDm.display_name), 80);
+    }
     loadDmInbox().then(()=>{ setTimeout(initChatStories, 50); });
   }
   if(name==='earn')   { loadEarnStats(); renderEarnWallets(); }
@@ -5817,6 +5821,23 @@ function _makeChatRow(r, onclickFn, opts) {
       <div class="cl-room-time">${r.time||''}</div>
       ${rightBtn}
     </div>`;
+  // Avatar click → contact card (mini-card on desktop, contact panel on mobile)
+  const avEl = div.querySelector('.cl-room-icon');
+  if(avEl) {
+    const _rUid = r.id?.startsWith('dm:') ? r.id.replace('dm:','') : r.id?.startsWith('user:') ? r.id.replace('user:','') : null;
+    const _rName = r.name||'';
+    const _rBg   = avEl.style.background||'';
+    if(_rUid) {
+      avEl.style.cursor = 'pointer';
+      avEl.addEventListener('click', e=>{
+        e.stopPropagation();
+        if(window.innerWidth<=768) showContactPanel(_rUid, _rName, _rBg);
+        else showMiniCard(_rUid, _rName, _rBg, avEl);
+      });
+      avEl.addEventListener('mouseenter', ()=>{ if(window.innerWidth>768) showMiniCard(_rUid, _rName, _rBg, avEl); });
+      avEl.addEventListener('mouseleave', ()=>{ if(window.innerWidth>768){ _cmcHideTimer=setTimeout(()=>{ const c=document.getElementById('contact-mini-card'); if(c&&!c.matches(':hover')){ c.classList.remove('visible'); setTimeout(()=>c.style.display='none',160); }},300); }});
+    }
+  }
   // Long-press to delete DM chat
   if(r.type==='dm' || (r.id && r.id.startsWith('dm:'))) {
     const peerUid = r.peerId || r.id?.replace('dm:','') || '';
@@ -5855,15 +5876,20 @@ async function loadDmInbox(){
     if(!r.ok) return;
     const list=await r.json();
     if(!app.dmConversations) app.dmConversations={};
+    // Track UIDs we have already opened/read (stored locally)
+    let _readSet;
+    try{ _readSet = new Set(JSON.parse(localStorage.getItem('cw_read_uids')||'[]')); }catch(e){ _readSet=new Set(); }
     list.forEach(item=>{
       const uid=String(item.peer_id);
       // merge: don't overwrite existing open conversations
       const existing=app.dmConversations[uid]||{};
+      // If user already opened this chat (uid in read set OR chat currently active), force unread=0
+      const alreadyRead = _readSet.has(uid) || _chatActiveDm?.user_id===uid;
       app.dmConversations[uid]={
         display_name: item.display_name || existing.display_name || '?',
         lastMsg: item.last_msg || existing.lastMsg || '',
         time: item.time || existing.time || '',
-        unread: item.unread || 0,
+        unread: alreadyRead ? 0 : (item.unread || 0),
       };
     });
     renderChatRooms();
@@ -5971,6 +5997,7 @@ function handleIncomingDm(msg, myUserId) {
     }
   } else {
     if(store.find(x=>x.id===msg.id)) return; // already have it (poll + WS race)
+    if(msg.id && _locallyDeletedIds.has(String(msg.id))) return; // locally deleted — skip
     const dmMType=msg.msg_type||'text';
     const dmFileUrl=(dmMType==='image'||dmMType==='video'||dmMType==='file')
       ? (msg.file_url||msg.content||'') : '';
@@ -6241,8 +6268,8 @@ function _buildDmMsg(m) {
   if(mtype === 'image') {
     const src = m.fileUrl||(m.fileData?`data:image/jpeg;base64,${m.fileData}`:'');
     bubbleContent = src
-      ? `<div style="max-width:280px;border-radius:12px;overflow:hidden;cursor:zoom-in;margin:-4px -4px 0" onclick="openLightbox&&openLightbox('${escHtml(src)}','image')">
-           <img src="${escHtml(src)}" style="max-width:280px;width:100%;height:auto;display:block;border-radius:12px" loading="lazy"
+      ? `<div style="max-width:280px;border-radius:12px;overflow:hidden;cursor:zoom-in;margin:-4px -4px 0;min-height:120px;background:rgba(255,255,255,.04)" onclick="openLightbox&&openLightbox('${escHtml(src)}','image')">
+           <img src="${escHtml(src)}" style="max-width:280px;width:100%;height:auto;display:block;border-radius:12px" loading="eager"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
              onload="this.style.display='block';this.nextElementSibling.style.display='none'">
            <div style="display:none;align-items:center;justify-content:center;height:120px;font-size:36px;color:var(--text3);background:rgba(255,255,255,.04);border-radius:12px">🖼</div>
@@ -6399,6 +6426,12 @@ function openDmWith(userId, displayName) {
   if(!app.dmConversations[uid]) app.dmConversations[uid]={display_name:displayName,lastMsg:'',time:'',unread:0};
   else app.dmConversations[uid].display_name=displayName;
   app.dmConversations[uid].unread=0;
+  // Persist that this UID was "read" so loadDmInbox won't restore old unread count
+  try{
+    const _rs=new Set(JSON.parse(localStorage.getItem('cw_read_uids')||'[]'));
+    _rs.add(uid);
+    localStorage.setItem('cw_read_uids', JSON.stringify([..._rs].slice(-200)));
+  }catch(e){}
   _saveDmState();
   // Update overlay header
   document.getElementById('dm-co-name').textContent = displayName;
@@ -6412,6 +6445,8 @@ function openDmWith(userId, displayName) {
   // Open overlay
   document.getElementById('dm-chat-overlay').classList.add('open');
   _chatOverlayBackdrop(true);
+  // Persist last open DM for reload restore
+  try{ localStorage.setItem('cw_last_open_dm', JSON.stringify({user_id:uid, display_name:displayName})); }catch(e){}
   // Show DM in sidebar as active
   document.querySelectorAll('.cl-room').forEach(e=>e.classList.remove('active'));
   document.querySelector(`[data-chat-id="dm:${uid}"]`)?.classList.add('active');
@@ -6462,6 +6497,7 @@ function closeDmChat() {
   _stopDmPoll();
   _chatActiveDm = null; _dmReplyTo = null;
   app.currentRoomId = null;
+  try{ localStorage.removeItem('cw_last_open_dm'); }catch(e){}
   renderChatRooms();
   // Hide backdrop only if group chat is also closed
   if(!document.getElementById('grp-chat-overlay')?.classList.contains('open'))
@@ -6534,21 +6570,41 @@ function dmDelForMe()   { hideDmDelOverlay(); _dmDeleteMsg(false); }
 function dmDelForBoth() { hideDmDelOverlay(); _dmDeleteMsg(true);  }
 function _dmDeleteMsg(forBoth) {
   if(!_dmCtxMsg) return;
+  const msgId = _dmCtxMsg.id;
+  // Block this ID from coming back via poll/WS
+  if(msgId) _locallyDeletedIds.add(String(msgId));
+
   const dmKey = 'dm:'+(_chatActiveDm?.user_id||'');
   const store = _dmStore(dmKey);
-  const idx = store.findIndex(x=>x===_dmCtxMsg||(x.id&&x.id===_dmCtxMsg.id));
+  const idx = store.findIndex(x=>x===_dmCtxMsg||(x.id&&x.id===msgId));
   if(idx>-1) store.splice(idx,1);
   _saveDmState();
-  const msgEl = _dmCtxMsg.id
-    ? document.querySelector(`[data-msgid="${_dmCtxMsg.id}"]`)?.closest('.gco-msg')
+
+  // Find DOM element — both possible selectors
+  const msgEl = msgId
+    ? (document.querySelector(`[data-msgid="${msgId}"]`)?.closest('.gco-msg') ||
+       document.querySelector(`.gco-msg[data-msg-id="${msgId}"]`))
     : null;
+
   if(msgEl) {
-    msgEl.classList.add('msg-deleting');
-    msgEl.addEventListener('animationend', ()=>msgEl.remove(), {once:true});
-  } else renderDmOverlay(dmKey);
-  if(forBoth && _dmCtxMsg.id) {
+    msgEl.style.overflow = 'hidden';
+    msgEl.style.transition = 'transform .35s ease, opacity .35s ease, max-height .35s ease';
+    msgEl.style.maxHeight = msgEl.offsetHeight + 'px';
+    requestAnimationFrame(()=>{
+      msgEl.style.transform = 'scale(.85)';
+      msgEl.style.opacity   = '0';
+      msgEl.style.maxHeight = '0';
+      msgEl.style.margin    = '0';
+      msgEl.style.padding   = '0';
+    });
+    setTimeout(()=>msgEl.remove(), 370);
+  } else {
+    renderDmOverlay(dmKey);
+  }
+
+  if(forBoth && msgId) {
     const token = localStorage.getItem('cw_access_token');
-    fetch(CUBE_API+'/dm/message/'+_dmCtxMsg.id,{method:'DELETE',headers:{Authorization:'Bearer '+token}}).catch(()=>{});
+    fetch(CUBE_API+'/dm/message/'+msgId,{method:'DELETE',headers:{Authorization:'Bearer '+token}}).catch(()=>{});
   }
   showToast('🗑 Удалено'+(forBoth?' у обоих':''));
 }
@@ -6710,6 +6766,8 @@ document.addEventListener('selectionchange', ()=>{
 
 // ── DM message context menu ──
 let _dmCtxMsg = null;
+// IDs of messages deleted "for me" — prevent poll from re-adding them
+const _locallyDeletedIds = new Set();
 let _dmEditingMsg = null; // message currently being edited
 
 function showDmMsgMenu(m) {
@@ -10308,14 +10366,27 @@ function openPublicProfile(uid, name, avColor) {
   // Stats: reset, then load
   const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
   set('po-follows','…'); set('po-followers','…'); set('po-likes','…');
-  apiCall('/activity/stats?user_id='+uid).then(stats=>{
-    if(!stats) return;
-    // Only update if still viewing the same user
+  // Try per-user stats endpoint; fall back to /users/{uid} profile data
+  (async ()=>{
     if(document.getElementById('portfolio-overlay').dataset.viewUid !== String(uid)) return;
-    set('po-follows', stats.following||0);
-    set('po-followers', stats.followers||0);
-    set('po-likes', stats.reactions_received||0);
-  });
+    const stats = await apiCall('/activity/stats?user_id='+uid).catch(()=>null);
+    if(stats && (stats.followers!==undefined || stats.following!==undefined)) {
+      set('po-follows', stats.following??'—');
+      set('po-followers', stats.followers??'—');
+      set('po-likes', stats.reactions_received??'—');
+      return;
+    }
+    // Fallback: try /users/{uid}
+    const user = await apiCall('/users/'+uid).catch(()=>null);
+    if(user && document.getElementById('portfolio-overlay').dataset.viewUid === String(uid)) {
+      set('po-follows', user.following_count??user.following??'—');
+      set('po-followers', user.followers_count??user.followers??'—');
+      set('po-likes', user.reactions_received??'—');
+    } else if(document.getElementById('portfolio-overlay').dataset.viewUid === String(uid)){
+      // No data available — show dashes
+      set('po-follows','—'); set('po-followers','—'); set('po-likes','—');
+    }
+  })();
 
   // Grid: placeholder
   const grid = document.getElementById('po-grid');
@@ -11282,14 +11353,20 @@ async function vfFollow(userId){
   const miniBtn=document.getElementById('mini-follow-btn-'+userId);
   if(miniBtn){ miniBtn.textContent=!isNow?'✓ Подписан':'➕ Подписаться'; miniBtn.style.background=!isNow?'rgba(74,222,128,.1)':''; }
   // Refresh portfolio stats if open
-  const poFollows=document.getElementById('po-follows');
-  if(poFollows && data.following_count!==undefined) poFollows.textContent=data.following_count;
+  const poOverlay = document.getElementById('portfolio-overlay');
+  const viewingOther = poOverlay?.dataset.viewUid;
   const poFollowers=document.getElementById('po-followers');
-  if(poFollowers && data.followers_count!==undefined) poFollowers.textContent=data.followers_count;
+  const _fc = data.followers_count ?? data.follower_count ?? data.followers;
+  if(poFollowers && _fc!==undefined) poFollowers.textContent=_fc;
+  // Only update "Подписки" (following) when viewing OWN profile
+  if(!viewingOther) {
+    const poFollows=document.getElementById('po-follows');
+    const _fwc = data.following_count ?? data.following;
+    if(poFollows && _fwc!==undefined) poFollows.textContent=_fwc;
+  }
   showToast(!isNow?'Подписались! 🔔':'Отписались');
   // Update public profile follow button if open
-  const poOverlay = document.getElementById('portfolio-overlay');
-  if(poOverlay && poOverlay.dataset.viewUid===String(userId)) _poUpdateFollowBtn(userId);
+  if(poOverlay && viewingOther===String(userId)) _poUpdateFollowBtn(userId);
 }
 // Load persisted follow state
 (function(){ try{ const f=localStorage.getItem('cw_following'); if(f) app.vfFollowing=JSON.parse(f); }catch(e){} })();
