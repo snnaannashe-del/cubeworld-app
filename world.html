@@ -1092,15 +1092,35 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .cm-react-popup span{font-size:18px;cursor:pointer;padding:3px;border-radius:5px;transition:background .1s}
 .cm-react-popup span:hover{background:rgba(255,255,255,.1)}
 /* DM message context menu */
-#dm-ctx-overlay{position:fixed;inset:0;z-index:1990;display:none}
+/* ── DM context menu sheet ── */
+#dm-ctx-overlay{position:fixed;inset:0;z-index:1990;display:none;background:rgba(0,0,0,.4);backdrop-filter:blur(4px)}
 #dm-ctx-overlay.open{display:block}
-#dm-ctx-sheet{position:fixed;bottom:0;left:0;right:0;background:#111128;border-radius:18px 18px 0 0;z-index:1991;transform:translateY(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);padding:0 0 20px;max-width:520px;margin:0 auto}
+#dm-ctx-sheet{position:fixed;bottom:0;left:0;right:0;background:#13132a;border-radius:20px 20px 0 0;z-index:1991;transform:translateY(100%);transition:transform .25s cubic-bezier(.32,0,.18,1);padding:0 0 env(safe-area-inset-bottom,16px);max-width:520px;margin:0 auto;box-shadow:0 -4px 40px rgba(0,0,0,.6)}
 #dm-ctx-overlay.open #dm-ctx-sheet{transform:translateY(0)}
-.dm-ctx-preview{padding:12px 16px 8px;border-bottom:1px solid rgba(255,255,255,.08)}
-.dm-ctx-ptext{font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
-.dm-ctx-btn{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;font-size:14px;color:#e0e0f8;transition:background .12s}
-.dm-ctx-btn:hover{background:rgba(255,255,255,.06)}
-.dm-ctx-btn i{font-size:16px;color:var(--text2);width:20px;text-align:center}
+.dm-ctx-preview{padding:14px 18px 10px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;gap:8px}
+.dm-ctx-picon{font-size:18px;flex-shrink:0;margin-top:2px}
+.dm-ctx-ptext{font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;max-width:100%}
+/* Reaction quick-bar */
+.dm-ctx-reacts{display:flex;gap:4px;padding:10px 16px 2px;border-bottom:1px solid rgba(255,255,255,.07)}
+.dm-ctx-react-btn{font-size:22px;cursor:pointer;padding:4px 6px;border-radius:8px;transition:transform .12s,background .12s;line-height:1}
+.dm-ctx-react-btn:hover,.dm-ctx-react-btn:active{transform:scale(1.2);background:rgba(255,255,255,.08)}
+/* Action buttons */
+.dm-ctx-btn{display:flex;align-items:center;gap:14px;padding:12px 18px;cursor:pointer;font-size:14px;color:#e0e0f8;transition:background .12s;user-select:none}
+.dm-ctx-btn:hover,.dm-ctx-btn:active{background:rgba(255,255,255,.06)}
+.dm-ctx-btn i{font-size:17px;color:var(--text2);width:22px;text-align:center;flex-shrink:0}
+.dm-ctx-btn.danger{color:#ff5c5c}
+.dm-ctx-btn.danger i{color:#ff5c5c}
+.dm-ctx-divider{height:1px;background:rgba(255,255,255,.07);margin:4px 0}
+/* DM edit bar */
+#dm-edit-bar{display:none;align-items:center;gap:8px;padding:7px 14px;background:rgba(0,149,246,.07);border-top:2px solid var(--border);border-left:3px solid #F9C74F;flex-shrink:0}
+#dm-edit-bar.visible{display:flex}
+.dm-edit-label{font-size:11px;color:#F9C74F;font-weight:700}
+.dm-edit-text{font-size:12px;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* DM fmt bar */
+#dm-fmt-bar{display:none;flex-wrap:wrap;gap:2px;padding:6px 10px;background:rgba(5,5,20,.95);border-top:1px solid var(--border);flex-shrink:0}
+#dm-fmt-bar.visible{display:flex}
+.dm-fmt-btn{padding:5px 10px;border:none;background:rgba(255,255,255,.06);border-radius:6px;color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s}
+.dm-fmt-btn:hover{background:rgba(0,149,246,.2);color:var(--accent)}
 /* File & image */
 .cm-file{display:flex;align-items:center;gap:9px;padding:8px 11px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;cursor:pointer;transition:all .15s;min-width:170px}
 .cm-file:hover{background:rgba(255,255,255,.09)}
@@ -3074,6 +3094,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
             <div class="gco-tg-sub" id="dm-co-sub">🔐 личная переписка · E2E</div>
           </div>
         </div>
+        <!-- Edit bar (when editing own message) -->
+        <div id="dm-edit-bar">
+          <span style="font-size:14px">✏️</span>
+          <div style="flex:1;min-width:0">
+            <div class="dm-edit-label">Изменение</div>
+            <div class="dm-edit-text" id="dm-edit-preview"></div>
+          </div>
+          <button style="background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:2px 4px" onclick="cancelDmEdit()">✕</button>
+        </div>
         <!-- Reply bar -->
         <div class="gco-reply-bar" id="dm-reply-bar">
           <div style="width:3px;height:32px;background:var(--accent);border-radius:2px;flex-shrink:0"></div>
@@ -3082,6 +3111,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
             <div class="gco-reply-text" id="dm-reply-text"></div>
           </div>
           <button class="gco-reply-cancel" onclick="cancelDmReply()">✕</button>
+        </div>
+        <!-- Format bar (shows when text is selected in input) -->
+        <div id="dm-fmt-bar">
+          <button class="dm-fmt-btn" onclick="dmFmt('bold')"><b>Ж</b></button>
+          <button class="dm-fmt-btn" onclick="dmFmt('italic')"><i>К</i></button>
+          <button class="dm-fmt-btn" onclick="dmFmt('strike')"><s>З</s></button>
+          <button class="dm-fmt-btn" onclick="dmFmt('under')"><u>П</u></button>
+          <button class="dm-fmt-btn" onclick="dmFmt('mono')" style="font-family:monospace">M</button>
+          <button class="dm-fmt-btn" onclick="dmFmt('quote')">❝</button>
+          <button class="dm-fmt-btn" onclick="dmFmt('spoiler')">||sp||</button>
+          <button class="dm-fmt-btn" onclick="dmFmt('link')">🔗</button>
         </div>
         <!-- Messages -->
         <div class="gco-msgs" id="dm-co-msgs">
@@ -5516,7 +5556,13 @@ function _saveDmState(){
 function _restoreDmState(){
   try{
     const convs=localStorage.getItem('cw_dm_convs');
-    if(convs) app.dmConversations=JSON.parse(convs)||{};
+    if(convs){
+      app.dmConversations=JSON.parse(convs)||{};
+      // Sanitize stored lastMsg — remove raw URLs that were saved before the fix
+      Object.values(app.dmConversations).forEach(c=>{
+        if(c.lastMsg) c.lastMsg = _sanitizeDmPreview(c.lastMsg);
+      });
+    }
     const msgs=localStorage.getItem('cw_dm_msgs');
     if(msgs){
       if(!app.chatMessages[_DM_NAMESPACE]) app.chatMessages[_DM_NAMESPACE]={};
@@ -5539,6 +5585,14 @@ function _restoreFavorites(cubeId){
 function switchChatTab(tab) {}
 
 // ── Render chat list (Telegram-style) ──
+function _sanitizeDmPreview(s){
+  // Replace raw URLs with friendly labels
+  if(!s) return s;
+  if(/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)/i.test(s)||/cloudinary\.com/.test(s)||/telegraph\.ph\/file/.test(s)||/catbox\.moe/.test(s)) return '🖼 Фото';
+  if(/^https?:\/\/.+\.(mp4|mov|webm)/i.test(s)) return '🎬 Видео';
+  if(/^https?:\/\//.test(s)&&s.length>40) return '📎 Файл';
+  return s;
+}
 function renderChatRooms(){
   const el=document.getElementById('chat-rooms-list'); if(!el) return;
   const qa=document.getElementById('chat-qa-strip');
@@ -5631,7 +5685,7 @@ function _makeChatRow(r, onclickFn, opts) {
     </div>
     <div class="cl-room-info">
       <div class="cl-room-name">${escHtml(r.name||'')}</div>
-      <div class="cl-room-last">${escHtml(r.lastMsg||'')}</div>
+      <div class="cl-room-last">${escHtml(_sanitizeDmPreview(r.lastMsg||''))}</div>
     </div>
     <div class="cl-room-meta">
       <div class="cl-room-time">${r.time||''}</div>
@@ -5798,7 +5852,10 @@ function handleIncomingDm(msg, myUserId) {
   const dmPeerName = isMe ? (_chatActiveDm?.display_name||dmPeer) : (msg.display_name||'Аноним');
   const time2 = new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
   if(!app.dmConversations[dmPeer]) app.dmConversations[dmPeer]={display_name:dmPeerName,lastMsg:'',time:'',unread:0};
-  app.dmConversations[dmPeer].lastMsg = (msg.content||'').slice(0,30);
+  // Smart preview: never show raw URL
+  const _mtype = msg.msg_type||'text';
+  const _preview = _mtype==='image'?'🖼 Фото':_mtype==='video'?'🎬 Видео':_mtype==='file'?'📎 '+(msg.file_name||'Файл').slice(0,20):_mtype==='sticker'?'🎭 Стикер':(msg.content||'').slice(0,40);
+  app.dmConversations[dmPeer].lastMsg = _preview;
   app.dmConversations[dmPeer].time    = time2;
   if(!isMe && app.currentRoomId!==dmKey)
     app.dmConversations[dmPeer].unread = (app.dmConversations[dmPeer].unread||0)+1;
@@ -6241,6 +6298,26 @@ function sendDmOverlayMsg() {
   if(!_chatActiveDm) return;
   const inp = document.getElementById('dm-co-input');
   const text = (inp?.value||'').trim(); if(!text) return;
+
+  // Edit mode — update existing message
+  if(_dmEditingMsg) {
+    const dmKey='dm:'+_chatActiveDm.user_id;
+    _dmEditingMsg.text = text;
+    _dmEditingMsg.edited = true;
+    _saveDmState();
+    // Update DOM bubble
+    if(_dmEditingMsg.id) {
+      const bub = document.querySelector(`#dmbub-${_dmEditingMsg.id} .gco-bubble-text`);
+      if(bub) bub.innerHTML = _renderFmt(escHtml(text));
+    }
+    // Tell server
+    const token=localStorage.getItem('cw_access_token');
+    if(_dmEditingMsg.id && token)
+      fetch(CUBE_API+'/dm/message/'+_dmEditingMsg.id,{method:'PATCH',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({content:text})}).catch(()=>{});
+    cancelDmEdit();
+    return;
+  }
+
   inp.value=''; inp.style.height='';
   const time = new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
   const msgObj = {sender:'me', author:'Я', text, time, type:'text', replyTo:_dmReplyTo, expiresSecs:_dmExpireSecs, reactions:{}};
@@ -6328,13 +6405,48 @@ function dmToggleEmoji() {
 }
 function dmInsertEmoji(e){ const inp=document.getElementById('dm-co-input'); if(inp){inp.value+=e;inp.focus();} document.getElementById('emoji-picker')?.classList.remove('open'); }
 
+// ── DM text formatting ──
+function dmFmt(type) {
+  const inp = document.getElementById('dm-co-input'); if(!inp) return;
+  const s=inp.selectionStart, e=inp.selectionEnd;
+  const sel=inp.value.slice(s,e);
+  const before=inp.value.slice(0,s), after=inp.value.slice(e);
+  const maps={bold:['**','**'],italic:['_','_'],strike:['~~','~~'],under:['__','__'],mono:['`','`'],quote:['> ',''],spoiler:['||','||']};
+  if(type==='link'){
+    const url=prompt('URL ссылки:','https://');
+    if(!url) return;
+    inp.value=before+'['+sel+']('+url+')'+after;
+    inp.setSelectionRange(s,s+sel.length+url.length+4);
+  } else if(maps[type]) {
+    const [o,c]=maps[type];
+    inp.value=before+o+sel+c+after;
+    inp.setSelectionRange(s+o.length, s+o.length+sel.length);
+  }
+  inp.focus();
+  document.getElementById('dm-fmt-bar')?.classList.remove('visible');
+}
+// Show/hide fmt bar when text is selected in DM input
+document.addEventListener('selectionchange', ()=>{
+  const inp=document.getElementById('dm-co-input');
+  if(!inp || document.activeElement!==inp) return;
+  const hasSel = inp.selectionStart !== inp.selectionEnd;
+  document.getElementById('dm-fmt-bar')?.classList.toggle('visible', hasSel);
+});
+
 // ── DM message context menu ──
 let _dmCtxMsg = null;
+let _dmEditingMsg = null; // message currently being edited
+
 function showDmMsgMenu(m) {
   _dmCtxMsg = m;
-  document.getElementById('dm-ctx-text').textContent = (m.text||'').slice(0,120);
-  const ov = document.getElementById('dm-ctx-overlay');
-  ov.classList.add('open');
+  // Preview
+  const icon = m.type==='image'?'🖼':m.type==='video'?'🎬':m.type==='file'?'📎':m.type==='sticker'?'🎭':'💬';
+  document.getElementById('dm-ctx-icon').textContent = icon;
+  document.getElementById('dm-ctx-text').textContent = m.type==='text'?(m.text||'').slice(0,120):(m.fileName||m.text||m.type);
+  // Show/hide Edit (only for own text messages)
+  const editBtn = document.getElementById('dm-ctx-edit-btn');
+  if(editBtn) editBtn.style.display = (m.sender==='me' && m.type==='text') ? 'flex' : 'none';
+  document.getElementById('dm-ctx-overlay').classList.add('open');
 }
 function hideDmMsgMenu() {
   document.getElementById('dm-ctx-overlay')?.classList.remove('open');
@@ -6347,17 +6459,107 @@ function dmCtxReply() {
 function dmCtxCopy() {
   hideDmMsgMenu();
   if(!_dmCtxMsg) return;
-  navigator.clipboard?.writeText(_dmCtxMsg.text||'').then(()=>showToast('📋 Скопировано')).catch(()=>{});
+  const text = _dmCtxMsg.fileUrl || _dmCtxMsg.text || '';
+  navigator.clipboard?.writeText(text).then(()=>showToast('📋 Скопировано')).catch(()=>{});
+}
+function dmCtxEdit() {
+  hideDmMsgMenu();
+  if(!_dmCtxMsg || _dmCtxMsg.sender!=='me' || _dmCtxMsg.type!=='text') return;
+  _dmEditingMsg = _dmCtxMsg;
+  const inp = document.getElementById('dm-co-input');
+  if(inp){ inp.value = _dmCtxMsg.text||''; inp.focus(); gcoAutoGrow(inp); }
+  const bar = document.getElementById('dm-edit-bar');
+  const prev = document.getElementById('dm-edit-preview');
+  if(bar){ bar.classList.add('visible'); }
+  if(prev){ prev.textContent = (_dmCtxMsg.text||'').slice(0,60); }
+}
+function cancelDmEdit() {
+  _dmEditingMsg = null;
+  document.getElementById('dm-edit-bar')?.classList.remove('visible');
+  const inp = document.getElementById('dm-co-input');
+  if(inp){ inp.value=''; inp.style.height=''; }
+}
+function dmCtxForward() {
+  hideDmMsgMenu();
+  if(!_dmCtxMsg) return;
+  // Show forward prompt — ask who to forward to
+  const text = _dmCtxMsg.text||_dmCtxMsg.fileUrl||'';
+  const name = prompt('Переслать кому? (введи UID или имя пользователя)');
+  if(!name) return;
+  showToast('↗️ Функция пересылки — скоро будет');
+}
+function dmCtxPin() {
+  hideDmMsgMenu();
+  if(!_dmCtxMsg) return;
+  // Store as pinned in conversation
+  const uid = _chatActiveDm?.user_id;
+  if(!uid) return;
+  if(!app.dmConversations[uid]) return;
+  app.dmConversations[uid].pinned = _dmCtxMsg;
+  _saveDmState();
+  showToast('📌 Закреплено');
+  // Show pin bar
+  _renderDmPin();
+}
+function _renderDmPin() {
+  const uid = _chatActiveDm?.user_id;
+  if(!uid||!app.dmConversations[uid]?.pinned) return;
+  const pinned = app.dmConversations[uid].pinned;
+  let bar = document.getElementById('dm-pin-bar');
+  if(!bar){
+    bar = document.createElement('div');
+    bar.id = 'dm-pin-bar';
+    bar.style.cssText='display:flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(0,149,246,.08);border-bottom:1px solid rgba(0,149,246,.2);font-size:12px;color:var(--text2);cursor:pointer;flex-shrink:0';
+    bar.innerHTML=`<i class="ti ti-pin" style="color:var(--accent)"></i><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="dm-pin-text"></span><button onclick="dmUnpin()" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:0 2px">✕</button>`;
+    const msgs = document.getElementById('dm-co-msgs');
+    const topbar = document.querySelector('#dm-chat-overlay .gco-topbar');
+    if(topbar && msgs) topbar.after(bar);
+  }
+  const t=document.getElementById('dm-pin-text');
+  if(t) t.textContent='📌 '+(pinned.text||pinned.fileName||pinned.type||'').slice(0,60);
+}
+function dmUnpin() {
+  const uid = _chatActiveDm?.user_id;
+  if(uid&&app.dmConversations[uid]) { delete app.dmConversations[uid].pinned; _saveDmState(); }
+  document.getElementById('dm-pin-bar')?.remove();
 }
 function dmCtxSave() {
   hideDmMsgMenu();
-  if(!_dmCtxMsg || !app.currentCubeId) return;
-  const cid = app.currentCubeId;
-  if(!app.chatMessages[cid]) app.chatMessages[cid]={};
-  if(!app.chatMessages[cid]['saved']) app.chatMessages[cid]['saved']=[];
-  app.chatMessages[cid]['saved'].push({..._dmCtxMsg, sender:'them'});
-  _saveDmState();
+  if(!_dmCtxMsg) return;
+  const saved = JSON.parse(localStorage.getItem('cw_saved_msgs')||'[]');
+  saved.unshift({..._dmCtxMsg, savedAt: Date.now()});
+  localStorage.setItem('cw_saved_msgs', JSON.stringify(saved.slice(0,200)));
   showToast('⭐ Сохранено в Избранное');
+}
+function dmCtxDelete() {
+  hideDmMsgMenu();
+  if(!_dmCtxMsg) return;
+  const confirmed = confirm('Удалить сообщение?');
+  if(!confirmed) return;
+  const dmKey = 'dm:'+(_chatActiveDm?.user_id||'');
+  const store = _dmStore(dmKey);
+  const idx = store.findIndex(x=>x===_dmCtxMsg||(x.id&&x.id===_dmCtxMsg.id));
+  if(idx>-1) store.splice(idx,1);
+  _saveDmState();
+  // Remove from DOM
+  if(_dmCtxMsg.id) {
+    const el = document.querySelector(`[data-msgid="${_dmCtxMsg.id}"]`);
+    el?.closest('.gco-msg')?.remove();
+    // Also tell server if we own it
+    if(_dmCtxMsg.sender==='me') {
+      const token=localStorage.getItem('cw_access_token');
+      fetch(CUBE_API+'/dm/message/'+_dmCtxMsg.id,{method:'DELETE',headers:{Authorization:'Bearer '+token}}).catch(()=>{});
+    }
+  } else {
+    renderDmOverlay(dmKey);
+  }
+  showToast('🗑 Сообщение удалено');
+}
+function dmCtxReact(emoji) {
+  hideDmMsgMenu();
+  if(!_dmCtxMsg?.id) return;
+  _wsSend({type:'dm_react', msg_id:_dmCtxMsg.id, emoji});
+  showToast(emoji+' Реакция');
 }
 
 function buildReactionsHtml(reactions, msgId) {
@@ -13516,12 +13718,30 @@ const _grpOvId='grp-chat-overlay';
 <!-- ══ DM MESSAGE CONTEXT MENU ═══════════════════════════════════════════ -->
 <div id="dm-ctx-overlay" onclick="hideDmMsgMenu()">
   <div id="dm-ctx-sheet" onclick="event.stopPropagation()">
+    <!-- Preview -->
     <div class="dm-ctx-preview">
+      <div class="dm-ctx-picon" id="dm-ctx-icon">💬</div>
       <div class="dm-ctx-ptext" id="dm-ctx-text"></div>
     </div>
+    <!-- Quick reactions -->
+    <div class="dm-ctx-reacts">
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('👍')">👍</span>
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('❤️')">❤️</span>
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('😂')">😂</span>
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('😮')">😮</span>
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('🔥')">🔥</span>
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('💯')">💯</span>
+      <span class="dm-ctx-react-btn" onclick="dmCtxReact('🚀')">🚀</span>
+    </div>
+    <!-- Actions -->
     <div class="dm-ctx-btn" onclick="dmCtxReply()"><i class="ti ti-arrow-back-up"></i> Ответить</div>
-    <div class="dm-ctx-btn" onclick="dmCtxCopy()"><i class="ti ti-copy"></i> Копировать</div>
+    <div class="dm-ctx-btn" onclick="dmCtxCopy()"><i class="ti ti-copy"></i> Скопировать</div>
+    <div class="dm-ctx-btn" id="dm-ctx-edit-btn" onclick="dmCtxEdit()"><i class="ti ti-edit"></i> Изменить</div>
+    <div class="dm-ctx-btn" onclick="dmCtxForward()"><i class="ti ti-corner-up-right"></i> Переслать</div>
+    <div class="dm-ctx-btn" onclick="dmCtxPin()"><i class="ti ti-pin"></i> Закрепить</div>
     <div class="dm-ctx-btn" onclick="dmCtxSave()"><i class="ti ti-star"></i> В избранное</div>
+    <div class="dm-ctx-divider"></div>
+    <div class="dm-ctx-btn danger" onclick="dmCtxDelete()"><i class="ti ti-trash"></i> Удалить</div>
   </div>
 </div>
 
