@@ -177,7 +177,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .ct-type.private{background:rgba(248,113,113,.1);color:var(--red)}
 
 /* ══ INTERIOR — SOCIAL NETWORK ══════════ */
-#v-int{background:var(--bg);flex-direction:column}
+#v-int{background:var(--bg);flex-direction:column;display:flex}
+#int-layout{flex:1;min-height:0}
 #int-topbar{
   display:flex;align-items:center;gap:8px;padding:8px 14px;
   border-bottom:1px solid var(--border);
@@ -293,8 +294,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .sn-divider{height:1px;background:var(--border);margin:8px 12px}
 
 /* Main content */
-#int-main{flex:1;display:flex;overflow:hidden}
-.int-section{display:none;flex:1;overflow:hidden;animation:slideIn .18s ease}
+#int-main{flex:1;display:flex;overflow:hidden;background:var(--bg2);min-height:0}
+.int-section{display:none;flex:1;overflow:hidden;animation:slideIn .18s ease;background:var(--bg2);min-height:0;min-width:0}
 .int-section.active{display:flex}
 
 /* ── FEED — TikTok Style ─── */
@@ -2100,6 +2101,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #sec-signals,#sec-channels,#sec-analytics,
   #sec-market,#sec-earn,#sec-wallet,#sec-groups{
     align-items:center;
+    overflow-y:auto;
+    flex-direction:column;
   }
   /* Each direct child of scrollable sections gets max-width */
   #sec-wallet>*,#sec-earn>*,#sec-signals>*,
