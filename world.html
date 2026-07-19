@@ -1133,6 +1133,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .ca-tool:hover{background:rgba(255,255,255,.09);color:var(--text);transform:scale(1.08)}
 .ca-tool.active{color:var(--accent);background:rgba(0,149,246,.15)}
 .ca-timer-sel{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text2);font-size:10px;padding:3px 6px;border-radius:6px;cursor:pointer;margin-left:auto}
+/* DM expire timer button + popup */
+#dm-expire-btn{position:relative;width:32px;height:32px;border:none;border-radius:8px;background:transparent;color:var(--text2);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0}
+#dm-expire-btn:hover{background:rgba(255,255,255,.07)}
+#dm-expire-btn.active{color:var(--accent);background:rgba(0,149,246,.12)}
+#dm-expire-popup{position:absolute;bottom:48px;right:8px;background:#1a1a35;border:1px solid var(--border);border-radius:12px;padding:6px 0;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:10;min-width:140px;display:none}
+#dm-expire-popup.open{display:block}
+.dm-exp-opt{padding:9px 16px;font-size:13px;color:#e0e0f8;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .12s}
+.dm-exp-opt:hover{background:rgba(255,255,255,.07)}
+.dm-exp-opt.active{color:var(--accent)}
 .ca-input-row{display:flex;gap:8px;align-items:flex-end;padding:8px 12px 10px}
 #ca-text-input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:18px;color:#e0e0f8;padding:9px 14px;font-size:13.5px;font-family:inherit;resize:none;min-height:40px;max-height:110px;outline:none;transition:border-color .18s,background .18s;line-height:1.4}
 #ca-text-input:focus{border-color:rgba(0,149,246,.45);background:rgba(255,255,255,.08)}
@@ -3079,7 +3088,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           <div style="text-align:center;color:var(--text3);padding:32px 16px;font-size:13px" id="dm-co-empty">Нет сообщений. Напиши первым! 👋</div>
         </div>
         <!-- Input row -->
-        <div class="gco-input-row" id="dm-co-input-row">
+        <div class="gco-input-row" id="dm-co-input-row" style="position:relative">
           <button class="gco-icon-btn" onclick="dmAttach()" title="Прикрепить" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-paperclip" style="font-size:16px"></i></button>
           <div style="position:relative;flex:1">
             <textarea class="gco-input" id="dm-co-input" placeholder="Написать…" rows="1"
@@ -3088,6 +3097,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
               oninput="gcoAutoGrow(this)"></textarea>
           </div>
           <button class="gco-icon-btn" onclick="dmToggleEmoji()" title="Эмодзи" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:16px"></i></button>
+          <!-- Timer button -->
+          <button id="dm-expire-btn" onclick="toggleDmExpire(event)" title="Таймер сообщения">∞</button>
+          <!-- Expire popup -->
+          <div id="dm-expire-popup">
+            <div class="dm-exp-opt active" data-val="" onclick="setDmExpire(this,'')">∞ Навсегда</div>
+            <div class="dm-exp-opt" data-val="300" onclick="setDmExpire(this,'300')">⏱ 5 минут</div>
+            <div class="dm-exp-opt" data-val="3600" onclick="setDmExpire(this,'3600')">⏱ 1 час</div>
+            <div class="dm-exp-opt" data-val="86400" onclick="setDmExpire(this,'86400')">⏱ 24 часа</div>
+            <div class="dm-exp-opt" data-val="604800" onclick="setDmExpire(this,'604800')">⏱ 7 дней</div>
+          </div>
           <button class="gco-send" id="dm-co-send" onclick="sendDmOverlayMsg()" title="Отправить"><i class="ti ti-send" style="font-size:15px"></i></button>
         </div>
         <!-- Hidden file input -->
@@ -5736,10 +5755,19 @@ function handleIncomingDm(msg, myUserId) {
 
   if(isMe) {
     // Echo from server — patch ID onto the optimistic copy already in UI. Don't add/re-render.
-    const pending = store.slice().reverse().find(m => m.sender==='me' && m.text===msg.content && !m.id);
+    // Match by text (text msgs), fileUrl (image/video/file), or sticker emoji
+    const mc = msg.content || '';
+    const mfu = msg.file_url || '';
+    const pending = store.slice().reverse().find(m =>
+      m.sender==='me' && !m.id && (
+        m.text === mc ||
+        (m.fileUrl && (m.fileUrl === mc || m.fileUrl === mfu)) ||
+        (m.type==='sticker' && (m.sticker||m.text) === mc)
+      )
+    );
     if(pending) { pending.id = msg.id; }
     else if(!store.find(x=>x.id===msg.id)) {
-      // Reconnect edge-case: no pending copy → add silently
+      // Reconnect edge-case: no pending copy → add silently (not to UI)
       const echoType=msg.msg_type||'text';
       const echoUrl=(echoType==='image'||echoType==='video'||echoType==='file')?(msg.file_url||msg.content||''):'';
       store.push({id:msg.id, sender:'me', author:'Я', text:msg.content, time,
@@ -6068,6 +6096,7 @@ function _buildDmMsg(m) {
   }
 
   const tick = isMe ? `<span style="margin-left:4px;font-size:11px;color:rgba(255,255,255,.45)">✓✓</span>` : '';
+  const expLabel = m.expiresSecs ? `<span style="font-size:10px;color:var(--accent);margin-right:4px">⏱${m.expiresSecs>=86400?Math.round(m.expiresSecs/86400)+'д':m.expiresSecs>=3600?Math.round(m.expiresSecs/3600)+'ч':Math.round(m.expiresSecs/60)+'м'}</span>` : '';
   const avHtml = isMe ? '' : `<div class="gco-av" style="background:${avC};font-size:13px;font-weight:700">${letter}</div>`;
 
   div.innerHTML = `${avHtml}
@@ -6076,7 +6105,7 @@ function _buildDmMsg(m) {
         ${!isMe&&m.author ? `<div class="gco-bubble-name" style="color:${avC};font-size:11px;font-weight:700;margin-bottom:3px">${escHtml(m.author)}</div>` : ''}
         ${replyHtml}
         ${bubbleContent}
-        <div class="gco-bubble-time" style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:2px">${t}${tick}</div>
+        <div class="gco-bubble-time" style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:2px">${expLabel}${t}${tick}</div>
       </div>
     </div>`;
 
@@ -6214,7 +6243,7 @@ function sendDmOverlayMsg() {
   const text = (inp?.value||'').trim(); if(!text) return;
   inp.value=''; inp.style.height='';
   const time = new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-  const msgObj = {sender:'me', author:'Я', text, time, type:'text', replyTo:_dmReplyTo, reactions:{}};
+  const msgObj = {sender:'me', author:'Я', text, time, type:'text', replyTo:_dmReplyTo, expiresSecs:_dmExpireSecs, reactions:{}};
   const dmKey = 'dm:' + _chatActiveDm.user_id;
   addCubeRoomMsg(msgObj, dmKey);
   _appendDmMsg(msgObj);
@@ -6223,10 +6252,12 @@ function sendDmOverlayMsg() {
   app.dmConversations[_chatActiveDm.user_id].lastMsg=text.slice(0,30);
   app.dmConversations[_chatActiveDm.user_id].time=time;
   _saveDmState(); renderChatRooms();
-  if(!_wsSend({type:'dm', to_user_id:_chatActiveDm.user_id, content:text, msg_type:'text', reply_to_id:_dmReplyTo?.id||null})){
+  const dmPayload={type:'dm', to_user_id:_chatActiveDm.user_id, content:text, msg_type:'text',
+    reply_to_id:_dmReplyTo?.id||null, expires_secs:_dmExpireSecs||null};
+  if(!_wsSend(dmPayload)){
     fetch(CUBE_API+'/dm/'+_chatActiveDm.user_id,{method:'POST',
       headers:{'Authorization':'Bearer '+(localStorage.getItem('cw_access_token')||''),'Content-Type':'application/json'},
-      body:JSON.stringify({content:text, msg_type:'text'})}).catch(()=>{});
+      body:JSON.stringify({content:text, msg_type:'text', expires_secs:_dmExpireSecs||null})}).catch(()=>{});
   }
   cancelDmReply();
 }
@@ -6250,14 +6281,40 @@ async function dmHandleFile(input) {
   app.dmConversations[_chatActiveDm.user_id].lastMsg='📎 '+file.name.slice(0,20);
   app.dmConversations[_chatActiveDm.user_id].time=time;
   _saveDmState(); renderChatRooms();
-  const dmMsg={type:'dm',to_user_id:_chatActiveDm.user_id,content:url,msg_type:msgType,file_name:file.name,file_size:size,file_url:url};
+  const dmMsg={type:'dm',to_user_id:_chatActiveDm.user_id,content:url,msg_type:msgType,
+    file_name:file.name,file_size:size,file_url:url,expires_secs:_dmExpireSecs||null};
   if(!_wsSend(dmMsg)){
     fetch(CUBE_API+'/dm/'+_chatActiveDm.user_id,{method:'POST',
       headers:{'Authorization':'Bearer '+(localStorage.getItem('cw_access_token')||''),'Content-Type':'application/json'},
-      body:JSON.stringify({content:url,msg_type:msgType,file_name:file.name,file_size:size,file_url:url})}).catch(()=>{});
+      body:JSON.stringify({content:url,msg_type:msgType,file_name:file.name,file_size:size,file_url:url,expires_secs:_dmExpireSecs||null})}).catch(()=>{});
   }
   showToast(isImg?'✅ Фото отправлено':isVid?'✅ Видео отправлено':'✅ Файл отправлен');
 }
+
+// ── DM expire timer ──
+let _dmExpireSecs = null;
+function toggleDmExpire(e) {
+  e.stopPropagation();
+  document.getElementById('dm-expire-popup').classList.toggle('open');
+}
+function setDmExpire(el, val) {
+  _dmExpireSecs = val ? parseInt(val) : null;
+  // Update button label
+  const btn = document.getElementById('dm-expire-btn');
+  if(btn) {
+    if(!_dmExpireSecs) { btn.textContent='∞'; btn.classList.remove('active'); }
+    else {
+      const labels={300:'5м',3600:'1ч',86400:'24ч',604800:'7д'};
+      btn.textContent = '⏱'+(labels[_dmExpireSecs]||'?');
+      btn.classList.add('active');
+    }
+  }
+  // Mark active option
+  document.querySelectorAll('#dm-expire-popup .dm-exp-opt').forEach(o=>o.classList.toggle('active', o===el));
+  document.getElementById('dm-expire-popup').classList.remove('open');
+}
+// Close popup on outside click
+document.addEventListener('click', ()=>document.getElementById('dm-expire-popup')?.classList.remove('open'));
 
 // Emoji toggle for DM overlay (insert into dm-co-input)
 function dmToggleEmoji() {
@@ -6523,7 +6580,8 @@ async function _chatPickAndSend(accept){
     if(_chatActiveDm){
       const dmKey='dm:'+_chatActiveDm.user_id;
       addCubeRoomMsg(msgObj, dmKey);
-      renderChatMsgs(dmKey);
+      const _ovOpen=!!document.getElementById('dm-chat-overlay')?.classList.contains('open');
+      if(_ovOpen) _appendDmMsg(msgObj); else renderChatMsgs(dmKey);
       // Update sidebar last message
       if(!app.dmConversations) app.dmConversations={};
       if(!app.dmConversations[_chatActiveDm.user_id]) app.dmConversations[_chatActiveDm.user_id]={display_name:_chatActiveDm.display_name,lastMsg:'',time:'',unread:0};
@@ -6596,10 +6654,12 @@ function sendSticker(s){
   if(!app.currentRoomId && !_chatActiveDm) return;
   document.getElementById('sticker-picker').classList.remove('open');
   const time=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-  const msgObj={sender:'me',type:'sticker',sticker:s,time,reactions:{}};
+  const msgObj={sender:'me',type:'sticker',sticker:s,text:s,time,reactions:{}};
+  const _dmOvOpen = !!document.getElementById('dm-chat-overlay')?.classList.contains('open');
   if(_chatActiveDm) {
-    addCubeRoomMsg(msgObj,'dm:'+_chatActiveDm.user_id);
-    renderChatMsgs('dm:'+_chatActiveDm.user_id);
+    const dmKey='dm:'+_chatActiveDm.user_id;
+    addCubeRoomMsg(msgObj, dmKey);
+    if(_dmOvOpen) _appendDmMsg(msgObj); else renderChatMsgs(dmKey);
     _wsSend({type:'dm',to_user_id:_chatActiveDm.user_id,content:s,msg_type:'sticker'});
   } else {
     addCubeRoomMsg(msgObj);
