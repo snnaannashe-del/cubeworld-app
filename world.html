@@ -1121,6 +1121,61 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #dm-fmt-bar.visible{display:flex}
 .dm-fmt-btn{padding:5px 10px;border:none;background:rgba(255,255,255,.06);border-radius:6px;color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s}
 .dm-fmt-btn:hover{background:rgba(0,149,246,.2);color:var(--accent)}
+
+/* ── Message tear/fade deletion animation ── */
+@keyframes msgTear{
+  0%{transform:scale(1) rotate(0deg);opacity:1;filter:blur(0)}
+  30%{transform:scale(1.04) rotate(-1deg);opacity:.9}
+  60%{transform:scale(.85) rotate(2deg) skewX(6deg);opacity:.5;filter:blur(1px)}
+  100%{transform:scale(.3) rotate(-8deg);opacity:0;filter:blur(4px);max-height:0;margin:0;padding:0}
+}
+.msg-deleting{animation:msgTear .45s cubic-bezier(.4,0,.2,1) forwards!important;overflow:hidden;pointer-events:none}
+
+/* ── Delete chat modal ── */
+#del-chat-modal{position:fixed;inset:0;z-index:9900;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(6px)}
+#del-chat-modal.open{display:flex}
+#del-chat-sheet{background:#13132a;border-radius:20px 20px 0 0;width:100%;max-width:520px;padding:0 0 max(16px,env(safe-area-inset-bottom));box-shadow:0 -8px 40px rgba(0,0,0,.7);transform:translateY(100%);transition:transform .28s cubic-bezier(.32,0,.18,1)}
+#del-chat-modal.open #del-chat-sheet{transform:translateY(0)}
+.del-chat-header{padding:18px 20px 10px;border-bottom:1px solid rgba(255,255,255,.07)}
+.del-chat-name{font-size:16px;font-weight:700;color:#fff;margin-bottom:3px}
+.del-chat-sub{font-size:12px;color:var(--text3)}
+.del-chat-opt{display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;font-size:14px;color:#e0e0f8;transition:background .12s}
+.del-chat-opt:hover,.del-chat-opt:active{background:rgba(255,255,255,.06)}
+.del-chat-opt i{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.del-chat-opt.danger{color:#ff5c5c}
+.del-chat-opt.danger i{color:#ff5c5c}
+.del-chat-cancel{display:flex;align-items:center;justify-content:center;padding:14px;margin:8px 16px 0;border-radius:12px;background:rgba(255,255,255,.06);cursor:pointer;font-size:14px;font-weight:600;color:var(--text2)}
+.del-chat-cancel:hover{background:rgba(255,255,255,.1)}
+
+/* ── Contact profile panel (slide in from right over DM overlay) ── */
+#contact-panel{position:fixed;top:0;right:0;bottom:0;width:320px;max-width:100%;background:#0d0d22;z-index:700;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1);display:flex;flex-direction:column;overflow:hidden;box-shadow:-8px 0 40px rgba(0,0,0,.6)}
+#contact-panel.open{transform:translateX(0)}
+@media(max-width:768px){#contact-panel{width:100%}}
+.cp-topbar{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);background:rgba(5,5,20,.97)}
+.cp-avatar-big{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;flex-shrink:0;margin:0 auto}
+.cp-name{font-size:17px;font-weight:700;color:#fff;text-align:center;margin:8px 0 2px}
+.cp-uid{font-size:11px;color:var(--text3);text-align:center;margin-bottom:12px}
+.cp-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:10px;background:rgba(0,149,246,.12);color:var(--accent)}
+.cp-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.cp-action{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;transition:background .15s}
+.cp-action:hover{background:rgba(0,149,246,.15)}
+.cp-action i{font-size:20px;color:var(--accent)}
+.cp-action-lbl{font-size:9px;color:var(--text2);text-align:center;line-height:1.2}
+.cp-section{padding:12px 16px;border-bottom:1px solid var(--border)}
+.cp-section-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.cp-media-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;border-radius:8px;overflow:hidden}
+.cp-media-thumb{aspect-ratio:1;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;overflow:hidden}
+.cp-media-thumb img{width:100%;height:100%;object-fit:cover}
+
+/* ── Mini hover card ── */
+#contact-mini-card{position:fixed;background:#1a1a35;border:1px solid var(--border);border-radius:14px;padding:12px 14px;z-index:2000;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.6);pointer-events:none;opacity:0;transition:opacity .15s ease;display:none}
+#contact-mini-card.visible{opacity:1;display:block;pointer-events:all}
+.cmc-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;margin-bottom:8px}
+.cmc-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+.cmc-uid{font-size:10px;color:var(--text3);margin-bottom:8px}
+.cmc-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;background:rgba(0,149,246,.15);color:var(--accent);font-size:11px;cursor:pointer;border:none;transition:background .15s}
+.cmc-btn:hover{background:rgba(0,149,246,.3)}
+
 /* File & image */
 .cm-file{display:flex;align-items:center;gap:9px;padding:8px 11px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;cursor:pointer;transition:all .15s;min-width:170px}
 .cm-file:hover{background:rgba(255,255,255,.09)}
@@ -5573,11 +5628,32 @@ function _restoreDmState(){
 }
 function _restoreFavorites(cubeId){
   try{
+    // Primary source: unified cw_saved_msgs (cross-cube)
+    const unified = localStorage.getItem('cw_saved_msgs');
+    if(unified){
+      const arr = JSON.parse(unified)||[];
+      if(!app.chatMessages[cubeId]) app.chatMessages[cubeId]={};
+      if(!app.chatMessages[cubeId]['saved']||!app.chatMessages[cubeId]['saved'].length)
+        app.chatMessages[cubeId]['saved'] = arr;
+    }
+    // Legacy fallback: cube-specific key
     const saved=localStorage.getItem('cw_fav_msgs_'+cubeId);
     if(saved){
       if(!app.chatMessages[cubeId]) app.chatMessages[cubeId]={};
-      if(!app.chatMessages[cubeId]['saved']) app.chatMessages[cubeId]['saved']=JSON.parse(saved)||[];
+      const arr2 = JSON.parse(saved)||[];
+      const existing = app.chatMessages[cubeId]['saved']||[];
+      // Merge (dedupe by id or text+time)
+      const merged = [...existing];
+      arr2.forEach(m=>{ if(!merged.find(x=>(x.id&&x.id===m.id)||(x.text===m.text&&x.time===m.time))) merged.push(m); });
+      app.chatMessages[cubeId]['saved'] = merged;
     }
+  }catch(e){}
+}
+function _saveFavorites(cubeId){
+  try{
+    const msgs = (app.chatMessages[cubeId]||{})['saved']||[];
+    localStorage.setItem('cw_saved_msgs', JSON.stringify(msgs.slice(-500)));
+    localStorage.setItem('cw_fav_msgs_'+cubeId, JSON.stringify(msgs.slice(-500)));
   }catch(e){}
 }
 
@@ -5658,6 +5734,43 @@ function renderChatRooms(){
   }
 }
 
+// ── Delete Chat Modal ──────────────────────────────────────────────────────
+let _delChatTarget = null; // {uid, name, dmKey}
+function showDelChatModal(uid, name) {
+  _delChatTarget = {uid, name, dmKey:'dm:'+uid};
+  document.getElementById('del-chat-modal-name').textContent = name || 'Переписка';
+  const modal = document.getElementById('del-chat-modal');
+  modal.style.display = 'flex';
+  requestAnimationFrame(()=>modal.classList.add('open'));
+}
+function hideDelChatModal() {
+  const modal = document.getElementById('del-chat-modal');
+  modal.classList.remove('open');
+  setTimeout(()=>{ modal.style.display='none'; _delChatTarget=null; }, 300);
+}
+function deleteChatForMe() {
+  if(!_delChatTarget) return;
+  const {uid, dmKey} = _delChatTarget;
+  // Remove from local store
+  if(app.chatMessages[_DM_NAMESPACE]) delete app.chatMessages[_DM_NAMESPACE][dmKey];
+  if(app.dmConversations) delete app.dmConversations[uid];
+  _saveDmState();
+  // If this chat is currently open, close it
+  if(_chatActiveDm?.user_id === uid) closeDmChat();
+  renderChatRooms();
+  hideDelChatModal();
+  showToast('🗑 Чат удалён');
+}
+async function deleteChatForBoth() {
+  if(!_delChatTarget) return;
+  const {uid, dmKey} = _delChatTarget;
+  const token = localStorage.getItem('cw_access_token');
+  try {
+    await fetch(`${API_BASE}/dm/conversation/${uid}`, {method:'DELETE', headers:{Authorization:'Bearer '+token}});
+  } catch(e) {}
+  deleteChatForMe(); // Also clears locally
+}
+
 function _makeChatRow(r, onclickFn, opts) {
   opts=opts||{};
   const div=document.createElement('div');
@@ -5691,6 +5804,20 @@ function _makeChatRow(r, onclickFn, opts) {
       <div class="cl-room-time">${r.time||''}</div>
       ${rightBtn}
     </div>`;
+  // Long-press to delete DM chat
+  if(r.type==='dm' || (r.id && r.id.startsWith('dm:'))) {
+    const peerUid = r.peerId || r.id?.replace('dm:','') || '';
+    let _lpTimer = null;
+    div.addEventListener('touchstart', ()=>{
+      _lpTimer = setTimeout(()=>{
+        navigator.vibrate && navigator.vibrate(40);
+        showDelChatModal(peerUid, r.name||'');
+      }, 600);
+    }, {passive:true});
+    div.addEventListener('touchend', ()=>clearTimeout(_lpTimer), {passive:true});
+    div.addEventListener('touchmove', ()=>clearTimeout(_lpTimer), {passive:true});
+    div.addEventListener('contextmenu', e=>{ e.preventDefault(); showDelChatModal(peerUid, r.name||''); });
+  }
   return div;
 }
 function _chatSectionLabel(text) {
@@ -5837,6 +5964,7 @@ function handleIncomingDm(msg, myUserId) {
     store.push({
       id: msg.id, sender: 'them',
       author: msg.display_name || 'Аноним',
+      authorId: String(msg.from_user_id||msg.sender_id||''),
       text: msg.content, time,
       type: dmMType,
       fileName: msg.file_name, fileSize: msg.file_size,
@@ -6154,7 +6282,7 @@ function _buildDmMsg(m) {
 
   const tick = isMe ? `<span style="margin-left:4px;font-size:11px;color:rgba(255,255,255,.45)">✓✓</span>` : '';
   const expLabel = m.expiresSecs ? `<span style="font-size:10px;color:var(--accent);margin-right:4px">⏱${m.expiresSecs>=86400?Math.round(m.expiresSecs/86400)+'д':m.expiresSecs>=3600?Math.round(m.expiresSecs/3600)+'ч':Math.round(m.expiresSecs/60)+'м'}</span>` : '';
-  const avHtml = isMe ? '' : `<div class="gco-av" style="background:${avC};font-size:13px;font-weight:700">${letter}</div>`;
+  const avHtml = isMe ? '' : `<div class="gco-av" style="background:${avC};font-size:13px;font-weight:700" data-uid="${m.authorId||''}" data-name="${escHtml(m.author||'')}" data-av="${avC}">${letter}</div>`;
 
   div.innerHTML = `${avHtml}
     <div class="gco-bubble-wrap" data-msgid="${m.id||''}">
@@ -6165,6 +6293,37 @@ function _buildDmMsg(m) {
         <div class="gco-bubble-time" style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:2px">${expLabel}${t}${tick}</div>
       </div>
     </div>`;
+
+  // Avatar: click / hover for contact panel / mini-card
+  const avEl2 = div.querySelector('.gco-av');
+  if(avEl2 && !isMe) {
+    const uid2 = m.authorId||'';
+    const name2 = m.author||'';
+    const ac2 = avC;
+    const isMobile = ()=>window.innerWidth<=768;
+    avEl2.style.cursor = 'pointer';
+    avEl2.addEventListener('click', e=>{
+      e.stopPropagation();
+      if(isMobile()) {
+        showContactPanel(uid2, name2, ac2);
+      } else {
+        showMiniCard(uid2, name2, ac2, avEl2);
+      }
+    });
+    // Desktop hover
+    avEl2.addEventListener('mouseenter', ()=>{
+      if(!isMobile()) showMiniCard(uid2, name2, ac2, avEl2);
+    });
+    avEl2.addEventListener('mouseleave', ()=>{
+      if(!isMobile()) {
+        // Delay so user can move mouse to mini-card
+        _cmcHideTimer = setTimeout(()=>{
+          const card=document.getElementById('contact-mini-card');
+          if(card&&!card.matches(':hover')){ card.classList.remove('visible'); setTimeout(()=>card.style.display='none',160); }
+        }, 300);
+      }
+    });
+  }
 
   // Long-press / right-click for context menu
   const bubble = div.querySelector('.gco-bubble');
@@ -6249,8 +6408,10 @@ function openDmWith(userId, displayName) {
           ...msgs.map(m=>{
             const mt=m.msg_type||'text';
             const fu=(mt==='image'||mt==='video'||mt==='file')?(m.file_url||m.content||''):'';
-            return {id:m.id, sender:String(m.from_user_id)===String(myId)?'me':'them',
-              author:String(m.from_user_id)===String(myId)?'Я':displayName,
+            const isMine2 = String(m.from_user_id)===String(myId);
+            return {id:m.id, sender:isMine2?'me':'them',
+              author:isMine2?'Я':displayName,
+              authorId: isMine2 ? String(myId) : String(m.from_user_id||uid),
               text:m.content, time:new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}),
               type:mt, fileName:m.file_name, fileSize:m.file_size, fileUrl:fu, duration:m.duration, reactions:{}};
           }), ...local
@@ -6527,8 +6688,20 @@ function dmCtxSave() {
   hideDmMsgMenu();
   if(!_dmCtxMsg) return;
   const saved = JSON.parse(localStorage.getItem('cw_saved_msgs')||'[]');
+  // Dedupe
+  if(saved.find(x=>(x.id&&x.id===_dmCtxMsg.id)||(x.text===_dmCtxMsg.text&&x.time===_dmCtxMsg.time))) {
+    showToast('⭐ Уже в Избранном'); return;
+  }
   saved.unshift({..._dmCtxMsg, savedAt: Date.now()});
-  localStorage.setItem('cw_saved_msgs', JSON.stringify(saved.slice(0,200)));
+  localStorage.setItem('cw_saved_msgs', JSON.stringify(saved.slice(0,500)));
+  // Also persist to cube-scoped store so openRoom('saved') can find it
+  const cid = app.currentCubeId;
+  if(cid) {
+    if(!app.chatMessages[cid]) app.chatMessages[cid]={};
+    if(!app.chatMessages[cid]['saved']) app.chatMessages[cid]['saved']=[];
+    app.chatMessages[cid]['saved'].unshift({..._dmCtxMsg, savedAt:Date.now()});
+    _saveFavorites(cid);
+  }
   showToast('⭐ Сохранено в Избранное');
 }
 function dmCtxDelete() {
@@ -6541,10 +6714,13 @@ function dmCtxDelete() {
   const idx = store.findIndex(x=>x===_dmCtxMsg||(x.id&&x.id===_dmCtxMsg.id));
   if(idx>-1) store.splice(idx,1);
   _saveDmState();
-  // Remove from DOM
-  if(_dmCtxMsg.id) {
-    const el = document.querySelector(`[data-msgid="${_dmCtxMsg.id}"]`);
-    el?.closest('.gco-msg')?.remove();
+  // Tear animation then remove from DOM
+  const msgEl = _dmCtxMsg.id
+    ? document.querySelector(`[data-msgid="${_dmCtxMsg.id}"]`)?.closest('.gco-msg')
+    : null;
+  if(msgEl) {
+    msgEl.classList.add('msg-deleting');
+    msgEl.addEventListener('animationend', ()=>msgEl.remove(), {once:true});
     // Also tell server if we own it
     if(_dmCtxMsg.sender==='me') {
       const token=localStorage.getItem('cw_access_token');
@@ -6560,6 +6736,117 @@ function dmCtxReact(emoji) {
   if(!_dmCtxMsg?.id) return;
   _wsSend({type:'dm_react', msg_id:_dmCtxMsg.id, emoji});
   showToast(emoji+' Реакция');
+}
+
+// ── Contact Profile Panel ─────────────────────────────────────────────────
+let _contactPanelUid = null;
+function showContactPanel(uid, name, avColor) {
+  _contactPanelUid = uid;
+  // Avatar
+  const avEl = document.getElementById('cp-av');
+  const letter = (name||'?')[0].toUpperCase();
+  avEl.textContent = letter;
+  avEl.style.background = avColor || 'linear-gradient(135deg,#0095F6,#5263FF)';
+  avEl.style.color = '#fff';
+  avEl.style.display = 'flex';
+  avEl.style.alignItems = 'center';
+  avEl.style.justifyContent = 'center';
+  avEl.style.borderRadius = '50%';
+  document.getElementById('cp-name').textContent = name || '—';
+  document.getElementById('cp-uid').textContent = 'UID: ' + uid;
+  document.getElementById('cp-status').textContent = '🟢 онлайн';
+  // Try to load shared media from DM history
+  const dmKey = 'dm:'+uid;
+  const msgs = (app.chatMessages[_DM_NAMESPACE]||{})[dmKey]||[];
+  const media = msgs.filter(m=>m.type==='image'||m.type==='video');
+  const mediaGrid = document.getElementById('cp-media-grid');
+  const mediaSection = document.getElementById('cp-media-section');
+  if(media.length && mediaGrid) {
+    mediaGrid.innerHTML = media.slice(-9).map(m=>`
+      <div style="width:calc(33.3% - 3px);aspect-ratio:1;background:#1a1a35;border-radius:6px;overflow:hidden;cursor:pointer"
+           onclick="openLightbox&&openLightbox('${escHtml(m.fileUrl||'')}','${m.type}')">
+        ${m.type==='image'
+          ? `<img src="${escHtml(m.fileUrl||'')}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:26px">🎬</div>`}
+      </div>`).join('');
+    mediaSection.style.display = 'block';
+  } else if(mediaSection) {
+    mediaSection.style.display = 'none';
+  }
+  // Open panel
+  const panel = document.getElementById('contact-panel');
+  panel.style.display = 'flex';
+  panel.style.flexDirection = 'column';
+  requestAnimationFrame(()=>panel.classList.add('open'));
+}
+function closeContactPanel() {
+  const panel = document.getElementById('contact-panel');
+  panel.classList.remove('open');
+  setTimeout(()=>{ panel.style.display='none'; _contactPanelUid=null; }, 320);
+}
+function cpAction(type) {
+  const uid = _contactPanelUid;
+  if(!uid) return;
+  if(type==='message') {
+    closeContactPanel();
+    // Open DM with this user
+    const conv = Object.values(app.dmConversations||{}).find(c=>String(c.peerId||c.peer_id)===String(uid));
+    if(conv) openDmWith(uid, conv.name||conv.display_name||'Пользователь');
+    else showToast('💬 Начинаем чат...');
+  } else if(type==='call') {
+    showToast('📞 Функция звонков скоро...');
+  } else if(type==='portfolio') {
+    showToast('🎨 Портфолио открывается...');
+  } else if(type==='add') {
+    showToast('✅ Контакт добавлен!');
+  } else if(type==='mute') {
+    showToast('🔕 Уведомления отключены');
+  } else if(type==='block') {
+    if(confirm('Заблокировать пользователя?')) showToast('🚫 Заблокировано');
+  }
+}
+function openContactFullProfile() {
+  showToast('👤 Полный профиль...');
+}
+
+// ── Contact Mini-Card (hover on desktop / tap on mobile) ──────────────────
+let _cmc_uid = null, _cmc_name = null, _cmc_avColor = null;
+let _cmcHideTimer = null;
+function showMiniCard(uid, name, avColor, anchorEl) {
+  _cmc_uid = uid; _cmc_name = name; _cmc_avColor = avColor;
+  clearTimeout(_cmcHideTimer);
+  const card = document.getElementById('contact-mini-card');
+  if(!card) return;
+  // Populate
+  const avEl = document.getElementById('cmc-av');
+  const letter = (name||'?')[0].toUpperCase();
+  avEl.textContent = letter;
+  avEl.style.background = avColor || 'linear-gradient(135deg,#0095F6,#5263FF)';
+  avEl.style.borderRadius = '50%';
+  avEl.style.width = '40px'; avEl.style.height = '40px';
+  avEl.style.display = 'flex'; avEl.style.alignItems = 'center'; avEl.style.justifyContent = 'center';
+  avEl.style.color = '#fff'; avEl.style.fontWeight = '700'; avEl.style.fontSize = '16px';
+  document.getElementById('cmc-name').textContent = name||'—';
+  document.getElementById('cmc-uid').textContent = 'UID '+uid;
+  // Position near anchor
+  if(anchorEl) {
+    const rect = anchorEl.getBoundingClientRect();
+    card.style.left = Math.min(rect.right + 8, window.innerWidth - 200) + 'px';
+    card.style.top = (rect.top - 10) + 'px';
+  }
+  card.style.display = 'block';
+  requestAnimationFrame(()=>card.classList.add('visible'));
+  // Auto-hide mouse-leave via events (added by caller)
+}
+function hideMiniCard(delay) {
+  _cmcHideTimer = setTimeout(()=>{
+    const card = document.getElementById('contact-mini-card');
+    if(card){ card.classList.remove('visible'); setTimeout(()=>{ card.style.display='none'; }, 160); }
+  }, delay||200);
+}
+function cmc_open_profile() {
+  hideMiniCard(0);
+  if(_cmc_uid) showContactPanel(_cmc_uid, _cmc_name, _cmc_avColor);
 }
 
 function buildReactionsHtml(reactions, msgId) {
@@ -13070,18 +13357,8 @@ let _storyAnimFrame=null;
 
 function buildStoriesBar(container){
   if(!container) return;
-  // Saved + General chat as icon-only "story ring" items at the start
-  const generalRoom=(app.chatRooms||[]).find(r=>r.id==='general'||r.name==='Общий чат'||r.id==='r0');
-  const generalId = generalRoom ? generalRoom.id : 'r0';
-  const generalUnread = generalRoom ? (generalRoom.unread||0) : 0;
-  let html=`<div class="story-item" onclick="openRoom('saved')" title="Избранное">
-    <div class="story-ring seen" style="background:linear-gradient(135deg,#FBB924,#F5820D)">
-      <div class="story-av" style="font-size:16px">⭐</div>
-    </div>
-    <div class="story-name">Избр.</div>
-  </div>
-
-  <div class="story-item" onclick="openMyStory()">
+  // Stories bar: own story + contacts only (Избранное moved to chat list)
+  let html=`<div class="story-item" onclick="openMyStory()">
     <div class="story-ring add"><div class="story-av" style="font-size:22px">+</div></div>
     <div class="story-name">Мой</div>
   </div>`;
@@ -13714,6 +13991,102 @@ const _grpOvId='grp-chat-overlay';
 
 <!-- ══ FAB FIXED OVERLAY (outside all overflow:hidden parents) ══════════ -->
 <div id="vf-fab-overlay" style="display:none;position:fixed;z-index:500;right:14px;flex-direction:column;align-items:center;gap:10px;padding-bottom:12px"></div>
+
+<!-- ══ DELETE CHAT MODAL ══════════════════════════════════════════════════ -->
+<div id="del-chat-modal" onclick="hideDelChatModal()">
+  <div id="del-chat-sheet" onclick="event.stopPropagation()">
+    <div class="del-chat-header">
+      <div class="del-chat-name" id="del-chat-modal-name">Переписка</div>
+      <div class="del-chat-sub">Выберите действие</div>
+    </div>
+    <div class="del-chat-opt" onclick="deleteChatForMe()">
+      <i class="ti ti-trash" style="color:var(--text2)"></i>
+      <div>
+        <div style="font-weight:600">Удалить только у меня</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">История переписки исчезнет только у тебя</div>
+      </div>
+    </div>
+    <div class="del-chat-opt danger" onclick="deleteChatForBoth()">
+      <i class="ti ti-trash-x"></i>
+      <div>
+        <div style="font-weight:600">Удалить у обоих</div>
+        <div style="font-size:11px;color:rgba(255,92,92,.7);margin-top:2px">Сообщения исчезнут и у тебя, и у собеседника</div>
+      </div>
+    </div>
+    <div class="del-chat-cancel" onclick="hideDelChatModal()">Отмена</div>
+  </div>
+</div>
+
+<!-- ══ CONTACT PROFILE PANEL ══════════════════════════════════════════════ -->
+<div id="contact-panel">
+  <div class="cp-topbar">
+    <button onclick="closeContactPanel()" style="background:none;border:none;color:var(--accent);font-size:22px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-arrow-left"></i></button>
+    <span style="font-size:15px;font-weight:700;color:#fff;flex:1">Профиль</span>
+    <button style="background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer" onclick="openContactFullProfile()"><i class="ti ti-dots-vertical"></i></button>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-bottom:16px">
+    <!-- Avatar + name -->
+    <div style="padding:24px 20px 12px;text-align:center;border-bottom:1px solid var(--border)">
+      <div class="cp-avatar-big" id="cp-av" style="width:72px;height:72px;font-size:28px;margin:0 auto 10px">👤</div>
+      <div class="cp-name" id="cp-name">—</div>
+      <div class="cp-uid" id="cp-uid"></div>
+      <div class="cp-status" id="cp-status" style="display:inline-flex">🟢 онлайн</div>
+    </div>
+    <!-- Quick actions -->
+    <div class="cp-actions">
+      <div class="cp-action" onclick="cpAction('message')">
+        <i class="ti ti-message-circle"></i><span class="cp-action-lbl">Написать</span>
+      </div>
+      <div class="cp-action" onclick="cpAction('call')">
+        <i class="ti ti-phone"></i><span class="cp-action-lbl">Позвонить</span>
+      </div>
+      <div class="cp-action" onclick="cpAction('portfolio')">
+        <i class="ti ti-layout-grid"></i><span class="cp-action-lbl">Портфолио</span>
+      </div>
+      <div class="cp-action" onclick="cpAction('add')">
+        <i class="ti ti-user-plus"></i><span class="cp-action-lbl">Контакт</span>
+      </div>
+    </div>
+    <!-- Stats -->
+    <div class="cp-section" id="cp-stats-section" style="display:none">
+      <div class="cp-section-title">Активность</div>
+      <div id="cp-stats" style="font-size:12px;color:var(--text2);display:flex;gap:16px"></div>
+    </div>
+    <!-- Shared media -->
+    <div class="cp-section" id="cp-media-section" style="display:none">
+      <div class="cp-section-title" style="display:flex;align-items:center;justify-content:space-between">
+        Общие медиа
+        <span style="font-size:10px;color:var(--accent);cursor:pointer" onclick="closeContactPanel()">Все</span>
+      </div>
+      <div class="cp-media-grid" id="cp-media-grid"></div>
+    </div>
+    <!-- Notification / block -->
+    <div class="cp-section">
+      <div class="del-chat-opt" onclick="cpAction('mute')" style="padding:10px 0;margin:0">
+        <i class="ti ti-bell-off" style="font-size:16px;color:var(--text2);width:22px;text-align:center"></i>
+        <span style="font-size:13px;color:var(--text2)">Уведомления</span>
+      </div>
+      <div class="del-chat-opt danger" onclick="cpAction('block')" style="padding:10px 0;margin:0">
+        <i class="ti ti-ban" style="font-size:16px;width:22px;text-align:center"></i>
+        <span style="font-size:13px">Заблокировать</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONTACT MINI HOVER CARD ════════════════════════════════════════════ -->
+<div id="contact-mini-card"
+     onmouseenter="clearTimeout(_cmcHideTimer)"
+     onmouseleave="hideMiniCard(150)">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+    <div class="cmc-av" id="cmc-av" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0095F6,#5263FF);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0">👤</div>
+    <div>
+      <div class="cmc-name" id="cmc-name" style="font-size:14px;font-weight:700;color:#fff">—</div>
+      <div class="cmc-uid" id="cmc-uid" style="font-size:10px;color:var(--text3);margin-top:1px"></div>
+    </div>
+  </div>
+  <button class="cmc-btn" onclick="cmc_open_profile()" style="width:100%;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:600;padding:6px 10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px"><i class="ti ti-user" style="font-size:12px"></i> Открыть профиль</button>
+</div>
 
 <!-- ══ DM MESSAGE CONTEXT MENU ═══════════════════════════════════════════ -->
 <div id="dm-ctx-overlay" onclick="hideDmMsgMenu()">
