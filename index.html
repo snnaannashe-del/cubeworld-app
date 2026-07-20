@@ -367,7 +367,7 @@ function setLang(l) {
     if (el) el.innerHTML = t[ELMAP[ids[i]]] || '';
   }
   // Re-render features if keygen screen active
-  if (document.getElementById('s-keygen').classList.contains('active')) {
+  if (document.getElementById('kg-features').children.length>0) {
     renderFeatures(curKeyType);
   }
   localStorage.setItem('cw_lang', l);
