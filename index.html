@@ -30,7 +30,7 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
 /* ── MAIN SCREEN ── */
 .hero{text-align:center;padding:52px 24px 40px;max-width:700px;margin:0 auto;}
 .hero-label{font-size:11px;letter-spacing:3px;color:rgba(140,200,255,0.65);text-transform:uppercase;margin-bottom:32px;}
-.hero h1{font-size:clamp(32px,5vw,56px);font-weight:800;line-height:1.05;background:linear-gradient(135deg,#ffffff 0%,#a8d8ff 55%,#4da6ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px;}
+.hero h1{font-size:clamp(32px,5vw,56px);font-weight:800;line-height:1.05;background:linear-gradient(90deg,#ffffff 0%,#ffffff 65%,#0095F6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px;}
 .hero-sub{color:var(--muted);font-size:15px;line-height:1.7;margin-bottom:16px;}
 .hero-mini{color:var(--muted);font-size:12px;font-weight:300;line-height:1.7;margin-bottom:4px;opacity:.7;}
 .hero-mini:last-of-type{margin-bottom:36px;}
@@ -635,7 +635,7 @@ async function loadStats() {
     var el_sm = document.getElementById('sm');
     if(el_sc) el_sc.textContent = fmt(data.total_cubes || data.cubes_count || 0);
     if(el_so) el_so.textContent = fmt(data.online_users || 0);
-    if(el_sm) el_sm.textContent = fmt(data.messages_today || data.total_messages || 0);
+    if(el_sm) el_sm.textContent = fmt(data.total_users || 0);
   } catch(e) {}
 }
 
