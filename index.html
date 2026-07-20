@@ -18,7 +18,7 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
 .lfi{font-size:18px;line-height:1;}
 .ldarr{font-size:10px;color:var(--muted);margin-left:2px;transition:transform .2s;}
 .ldd.open .ldarr{transform:rotate(180deg);}
-.ldm{display:none;flex-direction:column;gap:2px;background:rgba(16,20,40,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:6px;margin-top:6px;backdrop-filter:blur(12px);min-width:120px;}
+.ldm{display:none;flex-direction:column;gap:2px;background:rgba(16,20,40,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:6px;margin-top:6px;backdrop-filter:blur(12px);position:absolute;right:0;top:100%;z-index:200;min-width:120px;}
 .ldd.open .ldm{display:flex;}
 .ldm button{background:none;border:none;color:var(--text);font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;transition:background .2s;}
 .ldm button:hover,.ldm button.cur{background:rgba(124,106,255,0.2);}
@@ -35,7 +35,7 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
 .hero-mini{color:var(--muted);font-size:12px;font-weight:300;line-height:1.7;margin-bottom:4px;opacity:.7;}
 .hero-mini:last-of-type{margin-bottom:36px;}
 
-.btn-cta{background:rgba(0,160,255,0.15);color:#7dd4ff;border:1px solid rgba(0,160,255,0.4);border-radius:24px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;display:inline-flex;align-items:center;gap:8px;}
+.btn-cta{background:rgba(0,150,255,0.22);color:#5eceff;border:1px solid rgba(0,170,255,0.6);border-radius:24px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;display:inline-flex;align-items:center;gap:8px;}
 .btn-cta:hover{background:rgba(124,106,255,0.25);border-color:rgba(124,106,255,0.6);}
 
 /* Inline auth (login with existing key) */
@@ -118,14 +118,14 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
 .kg-enter{width:100%;padding:18px;background:var(--accent);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.3px;}
 .kg-enter:hover{background:#6a58f0;transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,106,255,.4);}
 .kg-enter:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-#panel{max-width:1020px;margin:0 auto;background:var(--bg);position:relative;min-height:100vh;overflow:hidden;border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);border-radius:0 0 24px 24px;}
+#panel{max-width:1020px;margin:0 auto;background:var(--bg);position:relative;min-height:100vh;overflow:visible;border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);border-radius:0 0 24px 24px;}
 #logo{display:flex;align-items:center;gap:8px;text-decoration:none;cursor:pointer;}
 #logo-box{width:26px;height:26px;background:linear-gradient(135deg,#0070ff,#00cfff);border-radius:6px;display:flex;align-items:center;justify-content:center;}
 #logo-box svg{width:14px;height:14px;}
-#logo-txt{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.2px;}
+#logo-txt{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.3px;}
 #logo-txt span{color:#00b4ff;}
 #panel{max-width:1020px;margin:0 auto;background:var(--bg);position:relative;min-height:100vh;overflow:hidden;border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);border-radius:0 0 24px 24px;}
-#topbar{position:relative;z-index:100;display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:12px 20px;border-bottom:1px solid rgba(0,150,255,0.2);background:rgba(2,3,18,0.85);backdrop-filter:blur(12px);}
+#topbar{position:relative;z-index:150;display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.07);background:rgba(4,5,20,0.9);overflow:visible;backdrop-filter:blur(12px);}
 </style>
 </head>
 <body>
@@ -419,8 +419,8 @@ document.addEventListener('click', function() {
     for (var i = 0; i < 200; i++) {
       stars.push({
         x: Math.random(), y: Math.random(),
-        r: Math.random() * 1.6 + 0.2,
-        o: Math.random() * 0.65 + 0.2,
+        r: Math.random() * 2.4 + 0.5,
+        o: Math.random() * 0.55 + 0.6,
         p: Math.random() * 6.28,
         c: starCols[Math.floor(Math.random()*starCols.length)]
       });
@@ -451,16 +451,17 @@ document.addEventListener('click', function() {
     var i, s, tw;
     for (i = 0; i < stars.length; i++) {
       s = stars[i];
-      tw = 0.65 + 0.35 * Math.sin(a * 1.8 + s.p);
+      tw = 0.82 + 0.18 * Math.sin(a * 1.8 + s.p);
       ctx.beginPath();
       ctx.arc(s.x * W, s.y * H, s.r, 0, 6.283);
-      ctx.fillStyle = 'rgba('+(s.c||[255,255,255]).join(',')+',' + (s.o * tw) + ')';
+      ctx.shadowBlur=s.r*4;ctx.shadowColor='rgba(160,220,255,0.8)';ctx.fillStyle = 'rgba('+(s.c||[255,255,255]).join(',')+',' + (s.o * tw) + ')';
       ctx.fill();
     }
     var pts = [];
     for (i = 0; i < V.length; i++) pts.push(proj(rx(ry(V[i], a), a * 0.4)));
-    ctx.strokeStyle = 'rgba(0,180,255,0.35)';
-    ctx.lineWidth = 1;
+    ctx.ctx.shadowBlur=0;ctx.shadowColor='transparent';
+    ctx.strokeStyle = 'rgba(0,190,255,0.8)';
+    ctx.lineWidth = 1.4;
     for (i = 0; i < E.length; i++) {
       ctx.beginPath();
       ctx.moveTo(pts[E[i][0]][0], pts[E[i][0]][1]);
