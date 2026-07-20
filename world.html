@@ -138,7 +138,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .wb-av-btn{position:relative;flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(0,149,246,.15);border:1.5px solid rgba(0,149,246,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all .18s;user-select:none}
 .wb-av-btn:hover{background:rgba(0,149,246,.28);border-color:rgba(0,149,246,.6)}
 .wb-acct-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:210px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none;flex-direction:column;gap:2px;z-index:2000}
-.wb-acct-menu.open{display:flex}
+.wb-acct-menu.open{display:flex;pointer-events:auto}
+@media (hover:hover){.wb-av-btn:hover .wb-acct-menu{display:flex;pointer-events:auto}}
+.wb-count-badge{font-size:11px;color:var(--text2);flex-shrink:0}
 .wb-acct-head{font-size:10px;font-weight:700;color:var(--text3);padding:5px 8px 8px;border-bottom:1px solid var(--border);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.04em}
 .wb-acct-row{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;transition:background .15s}
 .wb-acct-row:hover{background:rgba(255,255,255,.07)}
@@ -2760,16 +2762,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 <section class="view" id="v-world">
   <div id="world-bar">
-    <!-- Avatar + account switcher -->
+    <div class="wb-logo">Cube<em>World</em></div>
+    <!-- Avatar (after logo) -->
     <div class="wb-av-btn" id="wb-av-btn" onclick="toggleWbAcctMenu(event)" title="Аккаунт">
       <span id="wb-av-inner-world">👤</span>
       <div class="wb-acct-menu" id="wb-acct-menu">
-        <div class="wb-acct-head" id="wb-acct-head">—</div>
+        <div class="wb-acct-head" id="wb-acct-head"><span id="wb-acct-name">—</span><br><span id="wb-acct-uid" style="font-size:9px;opacity:.55;font-weight:400"></span></div>
         <div class="wb-acct-row" onclick="addWbAccount()"><i class="ti ti-user-plus"></i> Добавить аккаунт</div>
         <div class="wb-acct-row red" onclick="cwLogout()"><i class="ti ti-logout"></i> Выйти</div>
       </div>
     </div>
-    <div class="wb-logo">Cube<em>World</em></div>
     <div class="wb-key mono badge" id="wb-key-badge" style="cursor:pointer" onclick="cwLogout()" title="Выйти" style="font-size:10px;padding:3px 9px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;color:var(--text2)"></div>
     <span class="wb-online"><span id="wb-online">8,391</span> онлайн</span>
     <span style="font-size:11px;color:var(--text2)" id="wb-count"></span>
@@ -14102,10 +14104,17 @@ function saveUniverse(){
   }catch(e){}
 })();
 
+function _syncWbAcctHead(){
+  const nameEl=document.getElementById('wb-acct-name');
+  const uidEl=document.getElementById('wb-acct-uid');
+  if(nameEl) nameEl.textContent=(app.myProfile&&app.myProfile.displayName)||app.userKey||'—';
+  if(uidEl){const uid=app._myUID||localStorage.getItem('cw_user_id')||'';uidEl.textContent=uid?'UID '+uid:'';}
+}
 function toggleWbAcctMenu(e){
   e.stopPropagation();
   const m=document.getElementById('wb-acct-menu');
   if(!m) return;
+  _syncWbAcctHead();
   const isOpen=m.classList.contains('open');
   m.classList.toggle('open');
   if(!isOpen){
