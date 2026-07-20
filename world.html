@@ -2722,6 +2722,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 @media(max-width:600px){
   .wb-av-btn .wb-acct-menu,.wb-acct-menu{position:fixed!important;top:54px!important;bottom:auto!important;left:6px!important;right:auto!important;width:230px!important;max-width:calc(100vw - 12px)!important;border-radius:12px!important;box-shadow:0 8px 40px rgba(0,0,0,.9)!important}
 }
+
+/* portrait-fix: same specificity .wb-av-btn .wb-acct-menu.open, later position wins */
+@media(max-width:600px){
+  .wb-av-btn .wb-acct-menu.open{
+    position:fixed!important;
+    top:54px!important;
+    bottom:auto!important;
+    left:6px!important;
+    right:auto!important;
+    width:230px!important;
+    max-width:calc(100vw - 12px)!important;
+    min-width:unset!important;
+    border-radius:12px!important;
+    box-shadow:0 8px 40px rgba(0,0,0,.9)!important;
+    padding-bottom:8px!important;
+  }
+}
 </style>
 </head>
 <body>
@@ -14124,6 +14141,7 @@ const _CT_COINS=[{id:'bitcoin',sym:'BTC'},{id:'ethereum',sym:'ETH'},{id:'binance
 function _ctFmt(p){if(p>=10000)return p.toLocaleString('en',{maximumFractionDigits:0});if(p>=1)return p.toFixed(2);return p.toFixed(5);}
 async function loadCryptoTicker(){
   const track=document.getElementById('ct-track');if(!track)return;
+  if(!track.innerHTML||track.innerHTML.includes('opacity')){const _ph=[['BTC','~64k'],['ETH','~3.4k'],['BNB','~570'],['SOL','~76'],['XRP','~0.53'],['TON','~5.2'],['DOGE','~0.07'],['ADA','~0.44']];let _h=_ph.map(([s,p])=>'<div class="ct-pill"><span class="ct-sym">'+s+'</span><span class="ct-px">'+p+'</span></div>').join('');track.innerHTML=_h+_h;}
   try{
     const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+_CT_COINS.map(c=>c.id).join(',')+'&vs_currencies=usd&include_24hr_change=true',{cache:'no-store'});
     if(!r.ok)throw 0;
