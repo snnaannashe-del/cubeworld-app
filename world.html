@@ -5076,7 +5076,7 @@ function wRenderLoop(){
     if(hobj){
       const c=hobj.cube;
       document.getElementById('ct-inner').innerHTML=`<div class="ct-name" style="color:${c.colorCss||c.col||'#0095F6'}">${c.icon} ${c.name}</div><div class="ct-desc">${c.desc}</div><div class="ct-row"><span class="ct-timer">${fmtTime(c.life)}</span><span class="ct-type ${c.type}">${c.type==='public'?'PUBLIC':'PRIVATE'}</span></div>`;
-      tt.style.display='block';
+      const _rect=wrap.getBoundingClientRect();tt.style.left=Math.min(_rect.left+hobj.csx+14,window.innerWidth-220)+'px';tt.style.top=Math.max(_rect.top+hobj.csy-70,10)+'px';tt.style.display='block';
     }
   }else{tt.style.display='none';}
   // Labels drawn on canvas inside wDrawCube
@@ -5148,7 +5148,7 @@ function initWorld(){
   cv.addEventListener('touchmove',e=>{
     e.preventDefault();
     const t=e.touches[0];
-    _tDX=t.clientX-_tSX;_tDY=t.clientY-_tSY;
+    wHovId=null;_tDX=t.clientX-_tSX;_tDY=t.clientY-_tSY;
     wTarTheta=_tThD+_tDX*0.009;
     wTarPhi=Math.max(-0.75,Math.min(0.75,_tPhD-_tDY*0.007));
     const rect=wrap.getBoundingClientRect();
@@ -5310,7 +5310,8 @@ function switchUniTab(tab,btn){
   const grid=document.getElementById('uni-grid');if(!grid)return;
   if(tab==='mine'){
     const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);
-    const myCubes=(app.cubes||[]).filter(c=>c.owner_uid===myUid||c.creator===myUid||c.owner===myUid||c.uid===myUid);
+    if(!myUid){grid.innerHTML='<div style="padding:20px;text-align:center;color:var(--text2,#888)">Нет кубов</div>';return;}
+    const myCubes=(app.cubes||[]).filter(c=>(c.owner_uid&&c.owner_uid===myUid)||(c.creator&&c.creator===myUid)||(c.owner&&c.owner===myUid));
     if(!myCubes.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--text2);padding:24px">У тебя пока нет кубов</div>';return;}
     grid.innerHTML=myCubes.map(cube=>
       '<div class="uni-cube-card" style="flex-direction:column;align-items:flex-start;gap:8px">'+
@@ -14219,10 +14220,15 @@ function saveUniverse(){
 })();
 
 function cwLogout(){
-  if(!confirm('Выйти из аккаунта? Сохрани свой ключ заранее.')) return;
-  localStorage.clear();
-  window.location.replace('index.html');
+  const _em=document.getElementById('cw-logout-modal');if(_em)_em.remove();
+  const _m=document.createElement('div');_m.id='cw-logout-modal';
+  _m.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:20px';
+  _m.innerHTML='<div style="background:var(--card,#1a1a2e);border:1px solid var(--border,#2a2a4a);border-radius:20px;padding:28px 24px;max-width:320px;width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.6)"><div style="font-size:38px;margin-bottom:14px">🚪</div><div style="font-size:17px;font-weight:700;color:var(--text,#fff);margin-bottom:8px">Выйти из аккаунта?</div><div style="font-size:13px;color:var(--text2,#aaa);line-height:1.5;margin-bottom:24px">Сохрани свой ключ заранее — без него войти не получится.</div><div style="display:flex;gap:10px"><button onclick="cwLogoutClose()" style="flex:1;padding:12px;border:1px solid var(--border,#2a2a4a);border-radius:12px;background:var(--card2,#252540);color:var(--text,#fff);font-size:14px;cursor:pointer">Отмена</button><button onclick="cwLogoutDo()" style="flex:1;padding:12px;border:none;border-radius:12px;background:#ff3b30;color:#fff;font-size:14px;font-weight:600;cursor:pointer">Выйти</button></div></div>';
+  document.body.appendChild(_m);
+  _m.addEventListener('click',e=>{if(e.target===_m)_m.remove();});
 }
+function cwLogoutClose(){const _m=document.getElementById('cw-logout-modal');if(_m)_m.remove();}
+function cwLogoutDo(){cwLogoutClose();localStorage.clear();window.location.replace('index.html');}
 
 const _CT_COINS=[{id:'bitcoin',sym:'BTC'},{id:'ethereum',sym:'ETH'},{id:'binancecoin',sym:'BNB'},{id:'cardano',sym:'ADA'},{id:'solana',sym:'SOL'},{id:'dogecoin',sym:'DOGE'},{id:'ripple',sym:'XRP'},{id:'toncoin',sym:'TON'}];
 function _ctFmt(p){if(p>=10000)return p.toLocaleString('en',{maximumFractionDigits:0});if(p>=1)return p.toFixed(2);return p.toFixed(5);}
