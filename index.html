@@ -431,7 +431,7 @@ document.addEventListener('click', function() {
     var pnl=document.getElementById('panel')||document.body;
     W=c.width=pnl.offsetWidth;c.style.left=pnl.getBoundingClientRect().left+'px';
     H=c.height=innerHeight;
-    cx=W/2; cy = H * 0.44;
+    cx=W/2; cy = H * 0.44 - 25;
     sz = Math.min(W, H) * 0.27;
     mkStars();
   }
