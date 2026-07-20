@@ -134,6 +134,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #cw-splash .sp-logo em{color:#0095F6;font-style:normal}
 #cw-splash .sp-dot{width:8px;height:8px;border-radius:50%;background:#0095F6;animation:splashPulse 1s infinite}
 @keyframes splashPulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+#wb-key-badge{display:none!important;width:0!important;max-width:0!important;overflow:hidden!important;padding:0!important;margin:0!important}
 #world-bar{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);z-index:10;flex-shrink:0}
 /* World-bar avatar + account menu */
 .wb-av-btn{position:relative;flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(0,149,246,.25);border:2px solid rgba(0,149,246,.7);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all .18s;user-select:none;box-shadow:0 0 0 3px rgba(0,149,246,.15);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -5142,7 +5143,7 @@ function _addObjToWorld(cube,i){
 function addCubeToWorld(cube){_addObjToWorld(cube,undefined);}
 
 function enterWorld(){
-  document.getElementById('wb-key-badge').textContent=app.userKey.slice(0,14)+'…';
+  // wb-key-badge hidden - key not shown in topbar;
   // Update avatar in world topbar
   const wbAv=document.getElementById('wb-av-inner-world');
   if(wbAv){
