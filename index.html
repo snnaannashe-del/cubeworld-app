@@ -12,7 +12,7 @@ body{background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemF
 .amb{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(ellipse at center,rgba(124,106,255,0.07) 0%,transparent 70%);z-index:0;pointer-events:none;}
 
 /* Language dropdown */
-.ldd{position:absolute;top:20px;right:20px;z-index:100;}
+.ldd{position:relative;z-index:100;}
 .ldb{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px 12px;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s;}
 .ldb:hover{background:rgba(255,255,255,0.1);}
 .lfi{font-size:18px;line-height:1;}
@@ -28,7 +28,7 @@ body{background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemF
 .screen.active{display:block;}
 
 /* ── MAIN SCREEN ── */
-.hero{text-align:center;padding:72px 24px 48px;max-width:700px;margin:0 auto;}
+.hero{text-align:center;padding:52px 24px 40px;max-width:700px;margin:0 auto;}
 .hero-label{font-size:11px;letter-spacing:3px;color:rgba(140,200,255,0.65);text-transform:uppercase;margin-bottom:32px;}
 .hero h1{font-size:clamp(32px,5vw,56px);font-weight:800;line-height:1.05;background:linear-gradient(135deg,#ffffff 0%,#a8d8ff 55%,#4da6ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px;}
 .hero-sub{color:var(--muted);font-size:15px;line-height:1.7;margin-bottom:16px;}
@@ -119,24 +119,24 @@ body{background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemF
 .kg-enter:hover{background:#6a58f0;transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,106,255,.4);}
 .kg-enter:disabled{opacity:.5;cursor:not-allowed;transform:none;}
 #panel{max-width:1020px;margin:0 auto;background:var(--bg);position:relative;min-height:100vh;overflow:hidden;border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);border-radius:0 0 24px 24px;}
-#logo{position:absolute;top:16px;right:110px;display:flex;align-items:center;gap:8px;z-index:100;text-decoration:none;cursor:pointer;}
+#logo{display:flex;align-items:center;gap:8px;text-decoration:none;cursor:pointer;}
 #logo-box{width:26px;height:26px;background:linear-gradient(135deg,#0070ff,#00cfff);border-radius:6px;display:flex;align-items:center;justify-content:center;}
 #logo-box svg{width:14px;height:14px;}
 #logo-txt{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.2px;}
 #logo-txt span{color:#00b4ff;}
 #panel{max-width:1020px;margin:0 auto;background:var(--bg);position:relative;min-height:100vh;overflow:hidden;border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);border-radius:0 0 24px 24px;}
+#topbar{position:relative;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(0,180,255,0.13);background:rgba(8,12,24,0.75);backdrop-filter:blur(12px);}
 </style>
 </head>
 <body>
 <div id="panel">
-<a id="logo" href="#">
-  <div id="logo-txt">Cube<span>World</span></div>
-</a>
 <canvas id="cv"></canvas>
 <div class="amb"></div>
-
-<!-- Language dropdown -->
-<div class="ldd" id="ldd">
+<div id="topbar">
+  <a id="logo" href="#">
+    <div id="logo-txt">Cube<span>World</span></div>
+  </a>
+  <div class="ldd" id="ldd">
   <button class="ldb" onclick="togDD(event)">
     <span class="lfi" id="lflag">&#127468;&#127463;</span>
     <span id="lcode">EN</span>
@@ -150,6 +150,11 @@ body{background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemF
     <button onclick="pickL('fr')" id="lo-fr"><span class="lfi">&#127467;&#127479;</span> FR</button>
   </div>
 </div>
+</div>
+
+
+<!-- Language dropdown -->
+
 
 <!-- ═══════════════════════════════════════ MAIN SCREEN -->
 <div class="screen active" id="s-main">
