@@ -166,14 +166,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #world-fab button:hover{transform:scale(1.08);background:rgba(0,149,246,.85)}
 
 /* ── UNIVERSE MANAGER ── */
-#modal-universe .modal{max-width:min(560px,calc(100vw - 32px));width:100%;box-sizing:border-box;overflow:hidden;padding:20px 16px}
-@media(max-width:480px){#modal-universe .modal{padding:12px 10px}.uni-cube-card{padding:8px 10px;gap:8px}.uni-cube-name{font-size:12px}
+#modal-universe .modal{max-width:min(560px,calc(100vw - 24px));width:100%;max-height:90svh;box-sizing:border-box;overflow-y:auto;padding:20px 16px}
+@media(max-width:480px){#modal-universe .modal{padding:12px 10px;max-height:85svh}.uni-grid{max-height:calc(45vh - 80px)!important}.uni-cube-card{padding:8px 10px;gap:8px}.uni-cube-name{font-size:12px}
 .cclr{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid transparent;box-sizing:border-box;display:inline-block;transition:.15s;flex-shrink:0}
 .cclr.active{border-color:#fff}
 .uni-tabs{display:flex;gap:8px;margin-bottom:12px}
 .uni-tab{flex:1;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text2);font-size:13px;cursor:pointer;transition:.15s}
 .uni-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}.uni-grid{grid-template-columns:1fr}}}
-.uni-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;max-height:380px;overflow-y:auto;padding-right:4px}
+.uni-tabs{display:flex;gap:8px;margin-bottom:12px}
+.uni-tab{flex:1;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:14px;cursor:pointer;transition:.15s;font-weight:500;text-align:center}
+.uni-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+.uni-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;max-height:min(380px,calc(60vh - 220px));overflow-y:auto;padding-right:4px}
 .uni-cube-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .18s}
 .uni-cube-card.in-universe{border-color:rgba(0,149,246,.5);background:rgba(0,149,246,.08)}
 .uni-cube-card:hover{border-color:rgba(255,255,255,.18)}
@@ -5272,7 +5275,7 @@ async function submitCreateCube(){
   const cube={
     id:localId, backendId:null,
     name, type, life:life_hours*3600,
-    col:color, colorCss:color, icon, desc:'Создано тобой', isOwn:true
+    col:color, colorCss:color, icon, desc:'Создано тобой', isOwn:true, owner_uid:(app.myProfile&&(app.myProfile.uid||app.myProfile.id))||null
   };
   app.cubes.push(cube);
   closeModal('modal-create-cube');
@@ -5311,7 +5314,7 @@ function switchUniTab(tab,btn){
   if(tab==='mine'){
     const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);
     if(!myUid){grid.innerHTML='<div style="padding:20px;text-align:center;color:var(--text2,#888)">Нет кубов</div>';return;}
-    const myCubes=(app.cubes||[]).filter(c=>(c.owner_uid&&c.owner_uid===myUid)||(c.creator&&c.creator===myUid)||(c.owner&&c.owner===myUid));
+    const myCubes=(app.cubes||[]).filter(c=>c.isOwn===true||(c.owner_uid&&c.owner_uid===myUid)||(c.creator&&c.creator===myUid)||(c.owner&&c.owner===myUid));
     if(!myCubes.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--text2);padding:24px">У тебя пока нет кубов</div>';return;}
     grid.innerHTML=myCubes.map(cube=>
       '<div class="uni-cube-card" style="flex-direction:column;align-items:flex-start;gap:8px">'+
@@ -14933,7 +14936,7 @@ const _grpOvId='grp-chat-overlay';
 
 <!-- ══ UNIVERSE MANAGER ══════════════════════════════ -->
 <div class="modal-backdrop" id="modal-universe">
-  <div class="modal" style="max-width:560px">
+  <div class="modal">
     <h3>⬡ Моя вселенная</h3>
     <div class="uni-tabs">
       <button class="uni-tab active" id="uni-tab-all" onclick="switchUniTab('all',this)">Все кубы</button>
