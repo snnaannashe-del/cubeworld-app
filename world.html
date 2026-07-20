@@ -2844,6 +2844,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div class="sn-item" onclick="switchSection('analytics',this);renderAnalytics()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-chart-bar"></i></span></span>Аналитика</div>
       <div class="sn-item" onclick="openReferralModal()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-link"></i></span></span>Рефералы</div>
       <div class="sn-item" onclick="openPortfolio()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-user-circle"></i></span></span>Мой профиль</div>
+      <div class="sn-item" onclick="cwLogout()" style="color:#f87171"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-logout" style="color:#f87171"></i></span></span>Выйти / Сменить ключ</div>
       <div class="sn-divider"></div>
       <div style="padding:10px 12px 6px;font-size:10px;color:var(--text3);line-height:1.65">
         <div style="margin-bottom:6px;color:var(--green);font-weight:700;font-size:11px"><i class="ti ti-ghost" style="font-size:12px"></i> Ghost Mode ON</div>
@@ -14033,6 +14034,12 @@ function saveUniverse(){
     if(su) su.textContent=fmt(d.online_users||0);
   }catch(e){}
 })();
+
+function cwLogout(){
+  if(!confirm('Выйти из аккаунта? Сохрани свой ключ заранее.')) return;
+  localStorage.clear();
+  window.location.replace('index.html');
+}
 
 (async function autoLogin(){
   const key   = localStorage.getItem('cw_key');
