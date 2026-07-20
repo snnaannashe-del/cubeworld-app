@@ -160,7 +160,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .wl-inner{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:5px 9px;background:rgba(5,5,26,.85);border:1px solid var(--col,rgba(255,255,255,.08));border-radius:8px;backdrop-filter:blur(4px)}
 .wl-icon{font-size:15px;line-height:1;user-select:none}.wl-name{font-size:10px;font-weight:700;color:#e0e0f8;white-space:nowrap;user-select:none}.wl-timer{user-select:none}.wl-own{font-size:8px;font-weight:800;color:#fff;background:var(--col,#0095F6);border-radius:4px;padding:1px 5px;letter-spacing:.5px}
 .wl-timer{font-size:9px;color:var(--col,var(--text2));font-family:'Courier New',monospace;font-weight:600}
-#world-hint{display:none}
+#world-hint{position:absolute;bottom:18px;left:0;right:0;text-align:center;font:bold 36px/1 system-ui,sans-serif;pointer-events:none;z-index:100;letter-spacing:-1px}#world-hint span:first-child{color:rgba(180,200,255,.5)}#world-hint span:last-child{color:rgba(0,149,246,.6)}
 #world-fab{position:absolute;bottom:20px;right:20px;z-index:10;display:flex;flex-direction:column;gap:8px;align-items:center}
 #world-fab button{width:46px;height:46px;border-radius:50%;background:rgba(0,149,246,.65);border:1px solid rgba(0,149,246,.85);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 4px 24px rgba(0,149,246,.25)}
 #world-fab button:hover{transform:scale(1.08);background:rgba(0,149,246,.85)}
@@ -2839,7 +2839,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div id="world-overlay"></div>
     
     <div id="cube-tooltip"><div class="ct-inner" id="ct-inner"></div></div>
-    <div id="world-hint" style="display:none"></div>
+    <div id="world-hint"><span>Cube</span><span>World</span></div>
     <div id="world-fab">
       <button onclick="openUniverseManager()" title="Моя вселенная / Создать куб" style="font-size:20px">⬡</button>
       <button onclick="openModal('modal-join-key')" title="Войти по ключу куба" style="font-size:16px;background:rgba(0,149,246,.18);border-color:rgba(0,149,246,.4)">🔑</button>
