@@ -149,7 +149,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .wb-acct-row i{font-size:14px;width:16px;text-align:center}
 .wb-logo{font-size:14px;font-weight:800;letter-spacing:.03em;color:#e0e0f8}
 .wb-logo em{color:var(--accent);font-style:normal}
-.wb-online{font-size:11px;color:var(--text2)}
+.wb-online{font-size:10px;color:var(--text2)}
 .wb-online::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);margin-right:5px;animation:pulse 2s infinite}
 #world-wrap{position:relative;flex:1;overflow:hidden;cursor:grab}
 #world-wrap.dragging{cursor:grabbing}
@@ -1396,10 +1396,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .wb-wallet{display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);cursor:pointer;transition:all .18s;font-size:12px;font-weight:700;color:var(--gold)}
 .wb-wallet:hover{background:rgba(251,191,36,.2);border-color:rgba(251,191,36,.55)}
 .wb-wallet .ww-coin{font-size:14px}
-.wb-ghost{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;transition:all .18s;border:1px solid rgba(74,222,128,.3);color:var(--green);background:rgba(74,222,128,.08)}
+.wb-ghost{display:flex;align-items:center;gap:5px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;transition:all .18s;border:1px solid rgba(74,222,128,.3);color:var(--green);background:rgba(74,222,128,.08)}
 .wb-ghost:hover{background:rgba(74,222,128,.16)}
 .wb-ghost.active{color:#0a0a22;background:var(--green);border-color:var(--green)}
-.wb-games{display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid rgba(0,149,246,.4);color:var(--accent);background:rgba(0,149,246,.1);transition:all .18s}
+.wb-games{display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid rgba(0,149,246,.4);color:var(--accent);background:rgba(0,149,246,.1);transition:all .18s}
 .wb-games:hover{background:rgba(0,149,246,.22)}
 @keyframes coinPop{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
 .coin-pop{animation:coinPop .3s ease}
@@ -2765,7 +2765,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   <div id="world-bar">
     <div class="wb-logo">Cube<em>World</em></div>
     <!-- Avatar + account switcher (after logo) -->
-    <div class="wb-av-btn" id="wb-av-btn" onclick="toggleWbAcctMenu(event)" title="Аккаунт">
+    <div class="wb-av-btn" id="wb-av-btn" onclick="toggleWbAcctMenu(event)" ontouchend="toggleWbAcctMenu(event);event.preventDefault();" title="Аккаунт" style="touch-action:manipulation">
       <span id="wb-av-inner-world">👤</span>
       <div class="wb-acct-menu" id="wb-acct-menu">
         <div class="wb-acct-head" id="wb-acct-head"><span id="wb-acct-name">—</span><br><span id="wb-acct-uid" style="font-size:9px;opacity:.55;font-weight:400"></span></div>
@@ -2773,7 +2773,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <div class="wb-acct-row red" onclick="cwLogout()"><i class="ti ti-logout"></i> Выйти</div>
       </div>
     </div>
-    <div class="wb-key mono badge" id="wb-key-badge" style="font-size:10px;padding:3px 9px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;color:var(--text2);flex-shrink:0" title="Ключ аккаунта"></div>
+    <div id="wb-key-badge" style="display:none!important"></div>
     <span class="wb-online"><span id="wb-online">–</span> онлайн</span>
     <span class="wb-count-badge" id="wb-count"></span>
     <div id="crypto-ticker">
@@ -4460,8 +4460,7 @@ async function syncFromBackend(){
   if(me){
     app.displayName = me.display_name || '';
     if(me.display_name){
-      const dn = document.getElementById('wb-key-badge');
-      if(dn) dn.textContent = me.display_name;
+      // wb-key-badge always hidden
     }
     if(me.id) localStorage.setItem('cw_user_id', me.id);
     if(me.display_name) localStorage.setItem('cw_display_name', me.display_name);
@@ -5132,7 +5131,7 @@ function _addObjToWorld(cube,i){
 function addCubeToWorld(cube){_addObjToWorld(cube,undefined);}
 
 function enterWorld(){
-  document.getElementById('wb-key-badge').textContent=app.userKey.slice(0,14)+'…';
+  // wb-key-badge always hidden
   // Update avatar in world topbar
   const wbAv=document.getElementById('wb-av-inner-world');
   if(wbAv){
@@ -11056,8 +11055,7 @@ function applyPrivacyMode(){
   const p=app.myProfile;
   const isHidden=p.privacy==='hidden';
   // Update name badge in world bar
-  const badge=document.getElementById('wb-key-badge');
-  if(badge) badge.textContent=getDisplayName();
+  // wb-key-badge always hidden
   // Add/remove ghost indicator in topbar
   let ghostTag=document.getElementById('ghost-mode-tag');
   if(isHidden&&!ghostTag){
