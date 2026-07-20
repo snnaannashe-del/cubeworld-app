@@ -462,7 +462,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .wb-wallet{flex-shrink:0;padding:4px 8px;font-size:11px}
   .wb-av-btn{flex-shrink:0;width:28px;height:28px;font-size:13px}
   /* account menu: fixed so it doesn't get clipped by overflow scroll */
-  .wb-av-btn .wb-acct-menu{position:fixed;top:56px;left:8px;right:8px;min-width:unset;width:calc(100vw - 16px);max-width:none}
+  .wb-av-btn .wb-acct-menu{position:fixed;top:52px;left:8px;width:230px;max-width:calc(100vw - 16px);min-width:unset;z-index:3000}
   #world-wrap{touch-action:none}
   #world-hint{font-size:10px;padding:4px 8px;bottom:70px}
   #world-fab{bottom:16px;right:12px;gap:8px}
@@ -4453,8 +4453,7 @@ async function syncFromBackend(){
     app.wallet.balance = Math.floor(bal.balance);
     app.keyType = bal.key_type;
     localStorage.setItem('cw_cube_balance', app.wallet.balance);
-    const wb = document.getElementById('wb-balance');
-    if(wb) wb.textContent = app.wallet.balance+' CUBE';
+    syncWalletUI();
   }
   // 2. User profile
   const me = await apiCall('/me');
@@ -4806,12 +4805,7 @@ document.querySelectorAll('.modal-backdrop').forEach(b=>b.addEventListener('clic
   draw();
 })();
 (function(){
-  const t={c:1247,u:8391,m:2400000},e={c:'stat-cubes',u:'stat-users',m:'stat-msgs'};let p=0;
-  const s=()=>{p=Math.min(p+.04,1);const e2=1-Math.pow(1-p,3);
-    document.getElementById(e.c).textContent=Math.round(t.c*e2).toLocaleString('ru');
-    document.getElementById(e.u).textContent=Math.round(t.u*e2).toLocaleString('ru');
-    document.getElementById(e.m).textContent=(Math.round(t.m*e2/1e5)/10).toFixed(1)+'M';
-    if(p<1)requestAnimationFrame(s);};setTimeout(s,400);
+  // Real stats loaded via syncFromBackend
 })();
 
 // ════════════════════════════════════════════════
@@ -14121,7 +14115,7 @@ function _syncWbAcctHead(){
   const nameEl=document.getElementById('wb-acct-name');
   const uidEl=document.getElementById('wb-acct-uid');
   if(nameEl) nameEl.textContent=(app.myProfile&&app.myProfile.displayName)||'Мой аккаунт';
-  if(uidEl){const uid=app._myUID||localStorage.getItem('cw_user_id')||'';const num=parseInt(uid);const dispUid=(uid&&!isNaN(num)&&typeof _genDisplayUid==='function')?_genDisplayUid(num):uid;uidEl.textContent=dispUid?'UID · '+dispUid:'';}
+  if(uidEl){let dispUid=app._myUID||'';if(!dispUid){const rawId=parseInt(localStorage.getItem('cw_user_id')||'0');if(rawId&&typeof _genDisplayUid==='function')dispUid=_genDisplayUid(rawId);}uidEl.textContent=dispUid?'UID · '+dispUid:'';}
 }
 function toggleWbAcctMenu(e){
   e.stopPropagation();
