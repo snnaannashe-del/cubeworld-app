@@ -643,6 +643,8 @@ async function loadStats() {
 /* ── Init ── */
 (function init() {
   var saved = localStorage.getItem('cw_lang') || 'en';
+  // Wipe all session data on landing — ensures clean slate for new key
+  Object.keys(localStorage).forEach(function(k){ if(k!=='cw_lang') localStorage.removeItem(k); });
   if (saved !== 'en') pickL(saved);
   loadStats();
   setInterval(loadStats, 30000);
