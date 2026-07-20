@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CubeWorld</title>
 <style>
-:root{--bg:#080c18;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#0099ff;--gold:#f5c842;--premium:#40c4ff;--text:#e8e8f0;--muted:rgba(232,232,240,0.45);--radius:16px;}
+:root{--bg:#020211;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#0099ff;--gold:#f5c842;--premium:#40c4ff;--text:#e8e8f0;--muted:rgba(232,232,240,0.45);--radius:16px;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:#080c18;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden;}
+body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden;}
 #cv{position:fixed;inset:0;z-index:0;pointer-events:none;}
 .amb{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(ellipse at center,rgba(124,106,255,0.07) 0%,transparent 70%);z-index:0;pointer-events:none;}
 
@@ -457,7 +457,7 @@ document.addEventListener('click', function() {
       tw = 0.9 + 0.1 * Math.sin(a * 1.8 + s.p);
       ctx.beginPath();
       ctx.arc(s.x * W, s.y * H, s.r, 0, 6.283);
-      ctx.fillStyle='rgba(0,149,246,'+(s.o*tw)+')';
+      ctx.fillStyle='rgba(255,255,255,'+(s.o*tw)+')';
       ctx.fill();
     }
     var pts = [];
