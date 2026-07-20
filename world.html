@@ -457,14 +457,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #wb-key-badge{display:none!important}
   .wb-online{flex-shrink:0}
   #wb-count,.wb-count-badge{flex-shrink:0;font-size:10px}
-  #crypto-ticker{flex:1;min-width:0;max-width:unset;overflow-x:auto;-webkit-overflow-scrolling:touch;height:44px;mask-image:none;-webkit-mask-image:none;touch-action:pan-x manipulation}
+  #crypto-ticker{flex-shrink:0;min-width:160px;max-width:210px;overflow-x:auto;-webkit-overflow-scrolling:touch;height:44px;mask-image:none;-webkit-mask-image:none;touch-action:pan-x manipulation;scrollbar-width:none}
   #ct-track{animation:none!important}
   .wb-games{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-ghost{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-wallet{flex-shrink:0;padding:4px 8px;font-size:11px}
   .wb-av-btn{flex-shrink:0;width:28px;height:28px;font-size:13px}
   /* account menu: fixed so it doesn't get clipped by overflow scroll */
-  .wb-av-btn .wb-acct-menu{position:fixed;top:52px;left:8px;width:230px;max-width:calc(100vw - 16px);min-width:unset;z-index:3000}
+  .wb-acct-menu{position:fixed!important;top:54px!important;left:6px!important;bottom:auto!important;width:230px;max-width:calc(100vw - 12px);min-width:unset;z-index:3001;border-radius:12px!important;box-shadow:0 8px 40px rgba(0,0,0,.85)!important}
   #world-wrap{touch-action:none}
   #world-hint{font-size:10px;padding:4px 8px;bottom:70px}
   #world-fab{bottom:16px;right:12px;gap:8px}
@@ -2716,14 +2716,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .modal-wrap.modal-center .modal{border-radius:14px!important;width:90%!important;max-height:85vh}
 }
 
-@media (max-width:600px) and (orientation:portrait){
-  .wb-av-btn .wb-acct-menu.open{
-    position:fixed!important;top:auto!important;bottom:0!important;
-    left:0!important;right:0!important;width:100%!important;max-width:none!important;
-    border-radius:16px 16px 0 0;padding-bottom:env(safe-area-inset-bottom,12px);
-    box-shadow:0 -8px 40px rgba(0,0,0,.7);
-  }
-}
+/* portrait: dropdown at top, same as landscape */
 </style>
 </head>
 <body>
