@@ -134,7 +134,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #cw-splash .sp-logo em{color:#0095F6;font-style:normal}
 #cw-splash .sp-dot{width:8px;height:8px;border-radius:50%;background:#0095F6;animation:splashPulse 1s infinite}
 @keyframes splashPulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-#world-bar{display:flex;align-items:center;gap:12px;padding:9px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);z-index:10;flex-shrink:0}
+#world-bar{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);z-index:10;flex-shrink:0}
+.wb-av-btn{position:relative;flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(0,149,246,.15);border:1.5px solid rgba(0,149,246,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all .18s;user-select:none}
+.wb-av-btn:hover{background:rgba(0,149,246,.28);border-color:rgba(0,149,246,.6)}
+.wb-acct-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:210px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none;flex-direction:column;gap:2px;z-index:2000}
+.wb-acct-menu.open{display:flex}
+.wb-acct-head{font-size:10px;font-weight:700;color:var(--text3);padding:5px 8px 8px;border-bottom:1px solid var(--border);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.04em}
+.wb-acct-row{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;transition:background .15s}
+.wb-acct-row:hover{background:rgba(255,255,255,.07)}
+.wb-acct-row.red{color:#f87171}
+.wb-acct-row i{font-size:14px;width:16px;text-align:center}
 .wb-logo{font-size:14px;font-weight:800;letter-spacing:.03em;color:#e0e0f8}
 .wb-logo em{color:var(--accent);font-style:normal}
 .wb-online{font-size:11px;color:var(--text2)}
@@ -2680,7 +2689,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #wb-online,.wb-online{display:none!important}
   #wb-count{display:none!important}
   #crypto-ticker{display:none!important}
-  .wb-games,.wb-ghost{display:none!important}
+  .wb-games{flex-shrink:0;font-size:11px;padding:5px 9px}
+  .wb-ghost{flex-shrink:0;font-size:11px;padding:5px 9px}
+  .wb-av-btn{flex-shrink:0;width:28px;height:28px;font-size:13px}
+  .wb-av-btn .wb-acct-menu{top:auto;bottom:calc(100% + 8px);left:0}
   .wb-wallet{flex-shrink:0;padding:4px 8px;font-size:11px}
   #world-wrap{touch-action:none}
   #world-hint{font-size:10px;padding:4px 8px;bottom:70px}
@@ -2748,6 +2760,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 <section class="view" id="v-world">
   <div id="world-bar">
+    <!-- Avatar + account switcher -->
+    <div class="wb-av-btn" id="wb-av-btn" onclick="toggleWbAcctMenu(event)" title="Аккаунт">
+      <span id="wb-av-inner-world">👤</span>
+      <div class="wb-acct-menu" id="wb-acct-menu">
+        <div class="wb-acct-head" id="wb-acct-head">—</div>
+        <div class="wb-acct-row" onclick="addWbAccount()"><i class="ti ti-user-plus"></i> Добавить аккаунт</div>
+        <div class="wb-acct-row red" onclick="cwLogout()"><i class="ti ti-logout"></i> Выйти</div>
+      </div>
+    </div>
     <div class="wb-logo">Cube<em>World</em></div>
     <div class="wb-key mono badge" id="wb-key-badge" style="cursor:pointer" onclick="cwLogout()" title="Выйти" style="font-size:10px;padding:3px 9px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;color:var(--text2)"></div>
     <span class="wb-online"><span id="wb-online">8,391</span> онлайн</span>
@@ -5107,6 +5128,8 @@ function addCubeToWorld(cube){_addObjToWorld(cube,undefined);}
 
 function enterWorld(){
   document.getElementById('wb-key-badge').textContent=app.userKey.slice(0,14)+'…';
+  const _wbAv=document.getElementById('wb-av-inner-world');
+  if(_wbAv){const _dn=app.myProfile&&app.myProfile.displayName;_wbAv.textContent=_dn?_dn[0].toUpperCase():'👤';}
   document.getElementById('wb-count').textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
   try{localStorage.setItem('cw_last_view','world');}catch(e){}
   showView('v-world');
@@ -14059,6 +14082,19 @@ function saveUniverse(){
   }catch(e){}
 })();
 
+function toggleWbAcctMenu(e){
+  e.stopPropagation();
+  const m=document.getElementById('wb-acct-menu');
+  if(!m) return;
+  const isOpen=m.classList.contains('open');
+  m.classList.toggle('open');
+  if(!isOpen){
+    const h=document.getElementById('wb-acct-head');
+    if(h) h.textContent=(app.myProfile&&app.myProfile.displayName)||app.userKey||'—';
+    setTimeout(()=>document.addEventListener('click',function _c(){m.classList.remove('open');document.removeEventListener('click',_c);}),50);
+  }
+}
+function addWbAccount(){ window.location.replace('index.html'); }
 function cwLogout(){
   if(!confirm('Выйти из аккаунта? Сохрани свой ключ заранее.')) return;
   localStorage.clear();
