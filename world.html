@@ -2839,7 +2839,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div id="world-overlay"></div>
     
     <div id="cube-tooltip"><div class="ct-inner" id="ct-inner"></div></div>
-    <div id="world-hint" style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:28px;font-weight:800;letter-spacing:.06em;color:rgba(224,224,248,.3);pointer-events:none;white-space:nowrap;text-shadow:0 0 20px rgba(0,149,246,.45);z-index:1">Cube<em style="color:rgba(0,149,246,.3);font-style:normal">World</em></div>
+    <div id="world-hint" style="display:none"></div>
     <div id="world-fab">
       <button onclick="openUniverseManager()" title="Моя вселенная / Создать куб" style="font-size:20px">⬡</button>
       <button onclick="openModal('modal-join-key')" title="Войти по ключу куба" style="font-size:16px;background:rgba(0,149,246,.18);border-color:rgba(0,149,246,.4)">🔑</button>
@@ -4836,8 +4836,13 @@ document.querySelectorAll('.modal-backdrop').forEach(b=>b.addEventListener('clic
       if(d<130){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
         ctx.strokeStyle=`rgba(0,149,246,${.18*(1-d/130)})`;ctx.lineWidth=.5;ctx.stroke();}
     }
-    // CubeWorld watermark
-    ctx.save();ctx.font='900 38px system-ui,sans-serif';ctx.textAlign='center';const _cwg=ctx.createLinearGradient(W/2-70,0,W/2+70,0);_cwg.addColorStop(0,'rgba(210,210,255,.2)');_cwg.addColorStop(1,'rgba(0,149,246,.3)');ctx.fillStyle=_cwg;ctx.globalAlpha=1;ctx.fillText('CubeWorld',W/2,H-28);ctx.restore();
+    // CubeWorld watermark logo
+    ctx.save();ctx.textAlign='center';ctx.font='900 34px system-ui,sans-serif';
+    const _cw1=ctx.measureText('Cube').width;const _cw2=ctx.measureText('World').width;
+    const _cwx=W/2-(_cw1+_cw2)/2;
+    ctx.fillStyle='rgba(200,210,255,.22)';ctx.fillText('Cube',_cwx+_cw1/2,H-26);
+    ctx.fillStyle='rgba(0,149,246,.32)';ctx.fillText('World',_cwx+_cw1+_cw2/2,H-26);
+    ctx.restore();
   };
   draw();
 })();
