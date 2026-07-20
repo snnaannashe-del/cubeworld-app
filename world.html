@@ -2740,7 +2740,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   }
 }
 
-@media(max-width:600px) and (orientation:portrait){.wb-logo{order:1}.wb-av-btn{order:2}#wb-key-badge{order:3}#crypto-ticker{order:4;min-width:120px;max-width:160px;flex-shrink:0}.wb-online{order:5}.wb-count-badge{order:6}.wb-games{order:7}.wb-ghost{order:8}.wb-wallet{order:9}}
+@media(max-width:600px) and (orientation:portrait){
+  .wb-logo{order:1}.wb-av-btn{order:2}#wb-key-badge{order:3}
+  .wb-online{order:4}.wb-count-badge{order:5}
+  #crypto-ticker{order:6;min-width:200px;max-width:240px;flex-shrink:0;overflow:hidden}
+  #ct-track{animation:ctScroll 22s linear infinite!important}
+  .ct-pill{padding:3px 8px}.ct-sym{font-size:9px}.ct-px{font-size:10px}.ct-chg{font-size:8px}
+  .wb-games{order:7}.wb-ghost{order:8}.wb-wallet{order:9}
+}
 
 </style>
 </head>
