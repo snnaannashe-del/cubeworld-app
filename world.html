@@ -156,7 +156,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .wl-inner{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:5px 9px;background:rgba(5,5,26,.85);border:1px solid var(--col,rgba(255,255,255,.08));border-radius:8px;backdrop-filter:blur(4px)}
 .wl-icon{font-size:15px;line-height:1;user-select:none}.wl-name{font-size:10px;font-weight:700;color:#e0e0f8;white-space:nowrap;user-select:none}.wl-timer{user-select:none}.wl-own{font-size:8px;font-weight:800;color:#fff;background:var(--col,#0095F6);border-radius:4px;padding:1px 5px;letter-spacing:.5px}
 .wl-timer{font-size:9px;color:var(--col,var(--text2));font-family:'Courier New',monospace;font-weight:600}
-#world-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text3);pointer-events:none;white-space:nowrap}
+#world-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:16px;font-weight:800;letter-spacing:.06em;color:rgba(224,224,248,.35);pointer-events:none;white-space:nowrap;text-transform:uppercase;user-select:none}
 #world-fab{position:absolute;bottom:20px;right:20px;z-index:10;display:flex;flex-direction:column;gap:8px;align-items:center}
 #world-fab button{width:46px;height:46px;border-radius:50%;background:rgba(0,149,246,.65);border:1px solid rgba(0,149,246,.85);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 4px 24px rgba(0,149,246,.25)}
 #world-fab button:hover{transform:scale(1.08);background:rgba(0,149,246,.85)}
@@ -2695,7 +2695,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .wb-av-btn .wb-acct-menu{top:auto;bottom:calc(100% + 8px);left:0}
   .wb-wallet{flex-shrink:0;padding:4px 8px;font-size:11px}
   #world-wrap{touch-action:none}
-  #world-hint{font-size:10px;padding:4px 8px;bottom:70px}
+  #world-hint{font-size:14px;padding:4px 8px;bottom:70px}
   #world-fab{bottom:16px;right:12px;gap:8px}
   #world-fab button{width:40px;height:40px;font-size:17px}
 }
@@ -2801,7 +2801,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   <div id="world-wrap">
     <canvas id="world-canvas"></canvas>
     <div id="world-overlay"></div>
-    <div id="world-hint">Вращай мышью · Скролл для зума · Клик для входа в куб</div>
+    <div id="world-hint">Cube<em style="color:var(--accent);font-style:normal;font-weight:900">World</em></div>
     <div id="cube-tooltip"><div class="ct-inner" id="ct-inner"></div></div>
     <div id="world-fab">
       <button onclick="openUniverseManager()" title="Моя вселенная / Создать куб" style="font-size:20px">⬡</button>
@@ -10409,16 +10409,36 @@ const STATUS_OPTS=[{v:'online',l:'В сети',c:'#00b894'},{v:'busy',l:'Зан�
   setTimeout(_syncTopbarAvatar, 0);
 })();
 
-// Sync profile avatar → topbar avatar button
+// Sync profile avatar → topbar avatar button (interior + world bar)
 function _syncTopbarAvatar(){
   const inner=document.getElementById('itb-av-inner');
-  if(!inner) return;
-  const p=app.myProfile||{};
-  if(p.photoUrl){
-    inner.innerHTML=`<img src="${p.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
-  } else {
-    inner.innerHTML='';
-    inner.textContent=p.avatar||'👤';
+  if(inner){
+    const p=app.myProfile||{};
+    if(p.photoUrl){
+      inner.innerHTML=`<img src="${p.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    } else {
+      inner.innerHTML='';
+      inner.textContent=p.avatar||'👤';
+    }
+  }
+  // Also sync world-bar avatar
+  const wbAv=document.getElementById('wb-av-inner-world');
+  if(wbAv){
+    const p=app.myProfile||{};
+    if(p.photoUrl){
+      wbAv.innerHTML=`<img src="${p.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;border-radius:50%">`;
+    } else {
+      const dn=p.displayName||'';
+      wbAv.innerHTML='';
+      wbAv.textContent=dn?dn[0].toUpperCase():(p.avatar||'👤');
+    }
+  }
+  // Update UID line in world-bar account menu
+  const uid=app._myUID||localStorage.getItem('cw_user_id')||'';
+  const h=document.getElementById('wb-acct-head');
+  if(h){
+    const dn=(app.myProfile&&app.myProfile.displayName)||app.userKey||'';
+    h.innerHTML=dn?(`<b>${dn}</b><br><span style="opacity:.6;font-size:9px;font-weight:500">UID ${uid}</span>`):`UID ${uid}`;
   }
 }
 let _peUidVisible=false;
@@ -14090,7 +14110,11 @@ function toggleWbAcctMenu(e){
   m.classList.toggle('open');
   if(!isOpen){
     const h=document.getElementById('wb-acct-head');
-    if(h) h.textContent=(app.myProfile&&app.myProfile.displayName)||app.userKey||'—';
+    if(h){
+      const dn=(app.myProfile&&app.myProfile.displayName)||app.userKey||'—';
+      const uid=app._myUID||localStorage.getItem('cw_user_id')||'';
+      h.innerHTML=`<b>${dn}</b>${uid?'<br><span style="opacity:.6;font-size:9px;font-weight:500">UID '+uid+'</span>':''}`;
+    }
     setTimeout(()=>document.addEventListener('click',function _c(){m.classList.remove('open');document.removeEventListener('click',_c);}),50);
   }
 }
