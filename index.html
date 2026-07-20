@@ -652,35 +652,53 @@ async function loadStats() {
 (function(){
   var cv = document.getElementById('logo-cube');
   if(!cv) return;
+  // Hi-DPI for crisp rendering
+  var dpr = window.devicePixelRatio || 1;
+  var CSS = 36;
+  cv.style.width = CSS + 'px';
+  cv.style.height = CSS + 'px';
+  cv.width = CSS * dpr;
+  cv.height = CSS * dpr;
   var cx = cv.getContext('2d');
-  var S = 40, half = S/2;
+  cx.scale(dpr, dpr);
+  var half = CSS / 2;
   var ang = 0;
   var V2 = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
   var E2 = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
-  function pr(x,y,z){var f=60/(60+z);return[half+x*f,half+y*f];}
+  function pr(x,y,z){
+    var fov=80, d=fov/(fov+z);
+    return [half + x*d, half + y*d];
+  }
   function rot(v,a){
-    var ca=Math.cos(a),sa=Math.sin(a);
+    var ca=Math.cos(a), sa=Math.sin(a);
     var x=v[0]*ca+v[2]*sa, z=-v[0]*sa+v[2]*ca;
-    var y2=v[1]*Math.cos(0.35)-z*Math.sin(0.35);
-    var z2=v[1]*Math.sin(0.35)+z*Math.cos(0.35);
+    var tilt=0.32;
+    var y2=v[1]*Math.cos(tilt)-z*Math.sin(tilt);
+    var z2=v[1]*Math.sin(tilt)+z*Math.cos(tilt);
     return [x,y2,z2];
   }
   function drawMini(){
-    cx.clearRect(0,0,S,S);
-    var sc=13, pts=V2.map(function(v){var r=rot(v,ang);return pr(r[0]*sc,r[1]*sc,r[2]*sc);});
-    cx.strokeStyle='rgba(0,149,246,0.95)';
-    cx.lineWidth=1.6;
-    cx.shadowBlur=8;
-    cx.shadowColor='#0095F6';
+    cx.clearRect(0,0,CSS,CSS);
+    var sc=10;
+    var pts=V2.map(function(v){var r=rot(v,ang);return pr(r[0]*sc,r[1]*sc,r[2]*sc);});
+    cx.strokeStyle='rgba(0,149,246,1)';
+    cx.lineWidth=1.2;
+    cx.lineJoin='round';
+    cx.lineCap='round';
+    cx.shadowBlur=6;
+    cx.shadowColor='rgba(0,149,246,0.7)';
     cx.beginPath();
-    E2.forEach(function(e){cx.moveTo(pts[e[0]][0],pts[e[0]][1]);cx.lineTo(pts[e[1]][0],pts[e[1]][1]);});
+    E2.forEach(function(e){
+      cx.moveTo(pts[e[0]][0],pts[e[0]][1]);
+      cx.lineTo(pts[e[1]][0],pts[e[1]][1]);
+    });
     cx.stroke();
     cx.shadowBlur=0;
-    ang+=0.018;
+    ang += 0.011;
     requestAnimationFrame(drawMini);
   }
   drawMini();
-})();
+})()
 </script>
 </div>
 </div>
