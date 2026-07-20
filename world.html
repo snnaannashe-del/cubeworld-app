@@ -4668,7 +4668,7 @@ async function loadChatHistory(roomId){
 const app = {
   keyType: null, userKey: null,
   cubes: [], currentCubeId: null,
-  myUniverse: JSON.parse(localStorage.getItem('cw_universe')||'["c0","c1","c2","c3","c4","c5","c6","c7"]'),
+  myUniverse: ["c0","c1","c2","c3","c4","c5","c6","c7"],
   chatMessages: {},
   currentRoomId: null,
   feedPosts: [],
@@ -14038,15 +14038,35 @@ function saveUniverse(){
   const key = localStorage.getItem('cw_key');
   const token = localStorage.getItem('cw_access_token');
   if (key && token) {
+    // Clear stale user-specific cache so we don't bleed old account data
+    // into a new session. Auth tokens are kept; /me will repopulate the rest.
+    ['cw_user_id','cw_display_name','cw_cube_balance','cw_universe','cw_onboarded'].forEach(function(k){
+      localStorage.removeItem(k);
+    });
     app.userKey = key;
     app.keyType = localStorage.getItem('cw_key_type') || 'free';
-    const bal = localStorage.getItem('cw_cube_balance');
-    if (bal) app.wallet.balance = parseInt(bal) || 250;
-    // Fetch user_id from /me and store for WS message matching
+    // Fetch fresh user data from /me — verify token is still valid
     fetch('https://cubeworld-backend.onrender.com/me',{
       headers:{'Authorization':'Bearer '+token}
-    }).then(r=>r.ok?r.json():null).then(me=>{
-      if(me && me.id) localStorage.setItem('cw_user_id', me.id);
+    }).then(r=>{
+      if(!r.ok){ // token invalid/expired → back to login
+        localStorage.removeItem('cw_key');
+        localStorage.removeItem('cw_access_token');
+        localStorage.removeItem('cw_refresh_token');
+        window.location.replace('index.html');
+        return null;
+      }
+      return r.json();
+    }).then(me=>{
+      if(!me) return;
+      localStorage.setItem('cw_user_id', me.id);
+      if(me.display_name) localStorage.setItem('cw_display_name', me.display_name);
+      if(me.cube_balance != null) {
+        localStorage.setItem('cw_cube_balance', me.cube_balance);
+        app.wallet.balance = parseFloat(me.cube_balance) || 0;
+        const el = document.getElementById('cube-balance');
+        if(el) el.textContent = Math.floor(app.wallet.balance);
+      }
     }).catch(()=>{});
     setTimeout(function(){
       // Read restore state BEFORE enterWorld() overwrites cw_last_view
