@@ -2739,6 +2739,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     padding-bottom:8px!important;
   }
 }
+
+@media(max-width:600px) and (orientation:portrait){.wb-logo{order:1}.wb-av-btn{order:2}#wb-key-badge{order:3}#crypto-ticker{order:4;min-width:120px;max-width:160px;flex-shrink:0}.wb-online{order:5}.wb-count-badge{order:6}.wb-games{order:7}.wb-ghost{order:8}.wb-wallet{order:9}}
 </style>
 </head>
 <body>
@@ -14161,23 +14163,48 @@ function _syncWbAcctHead(){
   if(uidEl){let dispUid=app._myUID||'';if(!dispUid){const rawId=parseInt(localStorage.getItem('cw_user_id')||'0');if(rawId&&typeof _genDisplayUid==='function')dispUid=_genDisplayUid(rawId);}uidEl.textContent=dispUid?'UID · '+dispUid:'';}
 }
 function toggleWbAcctMenu(e){
-  e.stopPropagation();
+  if(e){e.stopPropagation();if(e.preventDefault&&e.type==='touchend')e.preventDefault();}
   const m=document.getElementById('wb-acct-menu');
   const btn=document.getElementById('wb-av-btn');
   if(!m||!btn)return;
+  // Move to body to escape -webkit-overflow-scrolling:touch (breaks fixed on iOS)
+  if(m.parentNode!==document.body)document.body.appendChild(m);
   const isOpen=m.classList.contains('open');
   if(isOpen){
     m.classList.remove('open');
-    m.removeAttribute('style');
-  } else {
-    m.classList.add('open');
-    const rect=btn.getBoundingClientRect();
-    const top=Math.round(rect.bottom+4);
-    const left=Math.min(Math.max(4,Math.round(rect.left)),window.innerWidth-238);
-    m.style.cssText='position:fixed;top:'+top+'px;bottom:auto;left:'+left+'px;right:auto;width:230px;max-width:calc(100vw - 8px);border-radius:12px;z-index:9999;display:block;padding-bottom:8px';
-    const _c=function(ev){if(!m.contains(ev.target)&&!btn.contains(ev.target)){m.classList.remove('open');m.removeAttribute('style');document.removeEventListener('click',_c);}};
-    setTimeout(function(){document.addEventListener('click',_c);},50);
+    m.style.cssText='display:none';
+    return;
   }
+  const rect=btn.getBoundingClientRect();
+  const top=Math.round(rect.bottom+4);
+  const left=Math.min(Math.max(4,Math.round(rect.left)),window.innerWidth-240);
+  m.style.cssText='';
+  m.style.setProperty('display','flex','important');
+  m.style.setProperty('flex-direction','column','important');
+  m.style.setProperty('position','fixed','important');
+  m.style.setProperty('top',top+'px','important');
+  m.style.setProperty('bottom','auto','important');
+  m.style.setProperty('left',left+'px','important');
+  m.style.setProperty('right','auto','important');
+  m.style.setProperty('width','230px','important');
+  m.style.setProperty('max-width','calc(100vw - 8px)','important');
+  m.style.setProperty('border-radius','12px','important');
+  m.style.setProperty('z-index','99999','important');
+  m.style.setProperty('box-shadow','0 8px 40px rgba(0,0,0,.85)','important');
+  m.style.setProperty('padding-bottom','8px','important');
+  m.classList.add('open');
+  const _c=function(ev){
+    if(!m.contains(ev.target)&&!btn.contains(ev.target)){
+      m.classList.remove('open');
+      m.style.cssText='display:none';
+      document.removeEventListener('click',_c);
+      document.removeEventListener('touchend',_c);
+    }
+  };
+  setTimeout(function(){
+    document.addEventListener('click',_c);
+    document.addEventListener('touchend',_c);
+  },150);
 }
 function addWbAccount(){
   // Go to index.html to log in with a different key
