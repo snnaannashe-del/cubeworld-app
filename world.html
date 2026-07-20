@@ -147,7 +147,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .wb-acct-row:hover{background:rgba(255,255,255,.07)}
 .wb-acct-row.red{color:#f87171}
 .wb-acct-row i{font-size:14px;width:16px;text-align:center}
-.wb-logo{font-size:13px;font-weight:800;letter-spacing:.03em;color:#e0e0f8}
+.wb-logo{font-size:14px;font-weight:800;letter-spacing:.03em;color:#e0e0f8}
 .wb-logo em{color:var(--accent);font-style:normal}
 .wb-online{font-size:11px;color:var(--text2)}
 .wb-online::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);margin-right:5px;animation:pulse 2s infinite}
@@ -159,7 +159,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .wl-inner{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:5px 9px;background:rgba(5,5,26,.85);border:1px solid var(--col,rgba(255,255,255,.08));border-radius:8px;backdrop-filter:blur(4px)}
 .wl-icon{font-size:15px;line-height:1;user-select:none}.wl-name{font-size:10px;font-weight:700;color:#e0e0f8;white-space:nowrap;user-select:none}.wl-timer{user-select:none}.wl-own{font-size:8px;font-weight:800;color:#fff;background:var(--col,#0095F6);border-radius:4px;padding:1px 5px;letter-spacing:.5px}
 .wl-timer{font-size:9px;color:var(--col,var(--text2));font-family:'Courier New',monospace;font-weight:600}
-#world-hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:18px;font-weight:800;letter-spacing:.06em;color:rgba(224,224,248,.18);pointer-events:none;white-space:nowrap;text-shadow:0 0 20px rgba(0,149,246,.15)}
+#world-hint{display:none}
 #world-fab{position:absolute;bottom:20px;right:20px;z-index:10;display:flex;flex-direction:column;gap:8px;align-items:center}
 #world-fab button{width:46px;height:46px;border-radius:50%;background:rgba(0,149,246,.65);border:1px solid rgba(0,149,246,.85);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 4px 24px rgba(0,149,246,.25)}
 #world-fab button:hover{transform:scale(1.08);background:rgba(0,149,246,.85)}
@@ -453,10 +453,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #world-bar{padding:6px 8px;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   #world-bar::-webkit-scrollbar{display:none}
   .wb-logo{font-size:13px;flex-shrink:0}
-  #wb-key-badge{max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+  #wb-key-badge{display:none!important}
   .wb-online{flex-shrink:0}
   #wb-count,.wb-count-badge{flex-shrink:0;font-size:10px}
-  #crypto-ticker{flex-shrink:0;min-width:160px;max-width:200px;height:44px}
+  #crypto-ticker{flex-shrink:0;min-width:140px;max-width:190px;height:44px}
   .wb-games{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-ghost{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-wallet{flex-shrink:0;padding:4px 8px;font-size:11px}
@@ -2814,6 +2814,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div id="world-overlay"></div>
     
     <div id="cube-tooltip"><div class="ct-inner" id="ct-inner"></div></div>
+    <div id="world-hint" style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:18px;font-weight:800;letter-spacing:.06em;color:rgba(224,224,248,.18);pointer-events:none;white-space:nowrap;text-shadow:0 0 20px rgba(0,149,246,.15);z-index:1">Cube<em style="color:rgba(0,149,246,.3);font-style:normal">World</em></div>
     <div id="world-fab">
       <button onclick="openUniverseManager()" title="Моя вселенная / Создать куб" style="font-size:20px">⬡</button>
       <button onclick="openModal('modal-join-key')" title="Войти по ключу куба" style="font-size:16px;background:rgba(0,149,246,.18);border-color:rgba(0,149,246,.4)">🔑</button>
@@ -7522,7 +7523,7 @@ function showMiniCard(uid, name, avColor, anchorEl) {
   avEl.style.display = 'flex'; avEl.style.alignItems = 'center'; avEl.style.justifyContent = 'center';
   avEl.style.color = '#fff'; avEl.style.fontWeight = '700'; avEl.style.fontSize = '16px';
   document.getElementById('cmc-name').textContent = name||'—';
-  const _cmcRawId=parseInt(uid||'0');const _cmcDisp=(_cmcRawId&&typeof _genDisplayUid==='function')?_genDisplayUid(_cmcRawId):(uid||'');document.getElementById('cmc-uid').textContent=_cmcDisp?'UID · '+_cmcDisp:'';
+  const _ri=parseInt(uid||'0');const _du=(_ri&&typeof _genDisplayUid==='function')?_genDisplayUid(_ri):(uid||'');document.getElementById('cmc-uid').textContent=_du?'UID · '+_du:'';
   // Position near anchor
   if(anchorEl) {
     const rect = anchorEl.getBoundingClientRect();
