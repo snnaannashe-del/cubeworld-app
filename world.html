@@ -457,7 +457,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #wb-key-badge{display:none!important}
   .wb-online{flex-shrink:0}
   #wb-count,.wb-count-badge{flex-shrink:0;font-size:10px}
-  #crypto-ticker{flex-shrink:0;min-width:140px;max-width:190px;height:44px}
+  #crypto-ticker{flex:1;min-width:0;max-width:unset;overflow-x:auto;-webkit-overflow-scrolling:touch;height:44px;mask-image:none;-webkit-mask-image:none;touch-action:pan-x manipulation}
+  #ct-track{animation:none!important}
   .wb-games{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-ghost{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-wallet{flex-shrink:0;padding:4px 8px;font-size:11px}
@@ -1901,9 +1902,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .ab-badge.locked{background:rgba(255,255,255,.02);border-color:var(--border);filter:grayscale(1);opacity:.3}
 
 /* ══ CRYPTO TICKER ══════════════════════════ */
-#crypto-ticker{flex:1;overflow:hidden;height:44px;position:relative;min-width:0;display:flex;align-items:center}
-#crypto-ticker .tradingview-widget-container{height:44px!important;width:100%!important}
-#crypto-ticker .tradingview-widget-container__widget{height:44px!important}
+#crypto-ticker{flex:1;min-width:0;overflow:hidden;height:44px;display:flex;align-items:center;position:relative;mask-image:linear-gradient(to right,transparent,#000 4%,#000 96%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 4%,#000 96%,transparent)}
+#ct-track{display:flex;align-items:center;gap:0;white-space:nowrap;animation:ctScroll 38s linear infinite;will-change:transform;flex-shrink:0}
+#ct-track:hover{animation-play-state:paused}
+@keyframes ctScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ct-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;flex-shrink:0;border-right:1px solid rgba(255,255,255,.06)}
+.ct-sym{color:var(--text3);font-size:10px;font-weight:700;letter-spacing:.05em}
+.ct-px{color:var(--text);font-weight:700;font-size:11px}
+.ct-chg{font-size:9px;font-weight:600}
+.ct-chg.up{color:var(--green)}
+.ct-chg.dn{color:var(--red)}
 @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .ticker-item{display:inline-flex;align-items:center;gap:5px;padding:0 14px;height:100%;font-size:11px;font-weight:700;border-right:1px solid var(--border2)}
 .ticker-sym{color:var(--text3)}
@@ -2791,21 +2799,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <span class="wb-online"><span id="wb-online">–</span></span>
     <span class="wb-count-badge" id="wb-count"></span>
     <div id="crypto-ticker">
-      <div class="tradingview-widget-container">
-        <div class="tradingview-widget-container__widget"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-        {"symbols":[
-          {"proName":"BINANCE:BTCUSDT","title":"BTC"},
-          {"proName":"BINANCE:ETHUSDT","title":"ETH"},
-          {"proName":"BINANCE:BNBUSDT","title":"BNB"},
-          {"proName":"BINANCE:ADAUSDT","title":"ADA"},
-          {"proName":"BINANCE:SOLUSDT","title":"SOL"},
-          {"proName":"BINANCE:DOGEUSDT","title":"DOGE"},
-          {"proName":"BINANCE:XRPUSDT","title":"XRP"},
-          {"proName":"BINANCE:TONUSDT","title":"TON"}
-        ],"showSymbolLogo":false,"isTransparent":true,"displayMode":"compact","colorTheme":"dark","locale":"ru"}
-        </script>
-      </div>
+      <div id="ct-track"></div>
     </div>
     <div class="wb-games" onclick="openGamesHub()">🎮 Игры</div>
     <div class="wb-ghost" id="wb-ghost-btn" onclick="openGhostMode()">👻 Ghost Mode</div>
@@ -5147,6 +5141,7 @@ function _addObjToWorld(cube,i){
 function addCubeToWorld(cube){_addObjToWorld(cube,undefined);}
 
 function enterWorld(){
+  loadCryptoTicker();
   // wb-key-badge hidden - key not shown in topbar;
   // Update avatar in world topbar
   const wbAv=document.getElementById('wb-av-inner-world');
@@ -14125,6 +14120,21 @@ function cwLogout(){
   if(!confirm('Выйти из аккаунта? Сохрани свой ключ заранее.')) return;
   localStorage.clear();
   window.location.replace('index.html');
+}
+
+const _CT_COINS=[{id:'bitcoin',sym:'BTC'},{id:'ethereum',sym:'ETH'},{id:'binancecoin',sym:'BNB'},{id:'cardano',sym:'ADA'},{id:'solana',sym:'SOL'},{id:'dogecoin',sym:'DOGE'},{id:'ripple',sym:'XRP'},{id:'toncoin',sym:'TON'}];
+function _ctFmt(p){if(p>=10000)return p.toLocaleString('en',{maximumFractionDigits:0});if(p>=1)return p.toFixed(2);return p.toFixed(5);}
+async function loadCryptoTicker(){
+  const track=document.getElementById('ct-track');if(!track)return;
+  try{
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+_CT_COINS.map(c=>c.id).join(',')+'&vs_currencies=usd&include_24hr_change=true',{cache:'no-store'});
+    if(!r.ok)throw 0;
+    const d=await r.json();
+    let h='';
+    for(const c of _CT_COINS){const i=d[c.id];if(!i)continue;const chg=(i.usd_24h_change||0).toFixed(2);const cls=parseFloat(chg)>=0?'up':'dn';h+='<div class="ct-pill"><span class="ct-sym">'+c.sym+'</span><span class="ct-px">'+_ctFmt(i.usd)+'</span><span class="ct-chg '+cls+'">'+(parseFloat(chg)>=0?'+':'')+chg+'%</span></div>';}
+    track.innerHTML=h+h;
+  }catch(e){if(!track.innerHTML)track.innerHTML='<div class="ct-pill"><span class="ct-sym" style="opacity:.4">···</span></div>';}
+  setTimeout(loadCryptoTicker,30000);
 }
 function _syncWbAcctHead(){
   const nameEl=document.getElementById('wb-acct-name');
