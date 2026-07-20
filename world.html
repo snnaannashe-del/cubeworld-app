@@ -167,7 +167,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 /* ── UNIVERSE MANAGER ── */
 #modal-universe .modal{max-width:min(560px,calc(100vw - 32px));width:100%;box-sizing:border-box;overflow:hidden;padding:20px 16px}
-@media(max-width:400px){#modal-universe .modal{padding:12px 10px}.uni-cube-card{padding:8px 10px;gap:8px}.uni-cube-name{font-size:12px}}
+@media(max-width:480px){#modal-universe .modal{padding:12px 10px}.uni-cube-card{padding:8px 10px;gap:8px}.uni-cube-name{font-size:12px}.uni-grid{grid-template-columns:1fr}}}
 .uni-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;max-height:380px;overflow-y:auto;padding-right:4px}
 .uni-cube-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .18s}
 .uni-cube-card.in-universe{border-color:rgba(0,149,246,.5);background:rgba(0,149,246,.08)}
@@ -4836,13 +4836,8 @@ document.querySelectorAll('.modal-backdrop').forEach(b=>b.addEventListener('clic
       if(d<130){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
         ctx.strokeStyle=`rgba(0,149,246,${.18*(1-d/130)})`;ctx.lineWidth=.5;ctx.stroke();}
     }
-    // CubeWorld watermark logo
-    ctx.save();ctx.textAlign='center';ctx.font='900 34px system-ui,sans-serif';
-    const _cw1=ctx.measureText('Cube').width;const _cw2=ctx.measureText('World').width;
-    const _cwx=W/2-(_cw1+_cw2)/2;
-    ctx.fillStyle='rgba(200,210,255,.22)';ctx.fillText('Cube',_cwx+_cw1/2,H-26);
-    ctx.fillStyle='rgba(0,149,246,.32)';ctx.fillText('World',_cwx+_cw1+_cw2/2,H-26);
-    ctx.restore();
+    // CubeWorld watermark
+    ctx.save();ctx.globalAlpha=1;ctx.font='bold 36px system-ui,sans-serif';ctx.textAlign='left';var _cwW=ctx.measureText('CubeWorld').width;var _cwC=ctx.measureText('Cube').width;var _cwX=Math.round((W-_cwW)/2);ctx.fillStyle='rgba(180,200,255,.45)';ctx.fillText('Cube',_cwX,H-22);ctx.fillStyle='rgba(0,149,246,.55)';ctx.fillText('World',_cwX+_cwC,H-22);ctx.restore();
   };
   draw();
 })();
