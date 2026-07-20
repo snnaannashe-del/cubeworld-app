@@ -2694,7 +2694,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .wb-games{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-ghost{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-av-btn{flex-shrink:0;width:28px;height:28px;font-size:13px}
-  .wb-av-btn .wb-acct-menu{top:auto;bottom:calc(100% + 8px);left:0}
+  .wb-av-btn .wb-acct-menu{position:fixed;top:56px;left:8px;right:8px;min-width:unset;width:calc(100vw - 16px);max-width:none}
   .wb-wallet{flex-shrink:0;padding:4px 8px;font-size:11px}
   #world-wrap{touch-action:none}
   #world-hint{font-size:14px;padding:4px 8px;bottom:70px}
@@ -14121,7 +14121,7 @@ function toggleWbAcctMenu(e){
   if(!isOpen){
     const h=document.getElementById('wb-acct-head');
     if(h){
-      const dn=(app.myProfile&&app.myProfile.displayName)||app.userKey||'—';
+      const dn=(app.myProfile&&app.myProfile.displayName)||'Мой аккаунт';
       const uid=app._myUID||localStorage.getItem('cw_user_id')||'';
       h.innerHTML=`<b>${dn}</b>${uid?'<br><span style="opacity:.6;font-size:9px;font-weight:500">UID '+uid+'</span>':''}`;
     }
