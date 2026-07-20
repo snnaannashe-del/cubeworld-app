@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CubeWorld</title>
 <style>
-:root{--bg:#020211;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#0099ff;--gold:#f5c842;--premium:#40c4ff;--text:#e8e8f0;--muted:rgba(232,232,240,0.45);--radius:16px;}
+:root{--bg:#060e1f;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#0099ff;--gold:#f5c842;--premium:#40c4ff;--text:#e8e8f0;--muted:rgba(232,232,240,0.45);--radius:16px;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden;}
+body{background:#060e1f;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden;}
 #cv{position:fixed;inset:0;z-index:0;pointer-events:none;}
 .amb{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(ellipse at center,rgba(124,106,255,0.07) 0%,transparent 70%);z-index:0;pointer-events:none;}
 
@@ -419,8 +419,8 @@ document.addEventListener('click', function() {
     for (var i = 0; i < 200; i++) {
       stars.push({
         x: Math.random(), y: Math.random(),
-        r: Math.random() * 2.4 + 0.5,
-        o: Math.random() * 0.5 + 0.7,
+        r: Math.random() * 1.0 + 0.3,
+        o: Math.random() * 0.55 + 0.5,
         p: Math.random() * 6.28,
         c: starCols[Math.floor(Math.random()*starCols.length)]
       });
@@ -447,6 +447,9 @@ document.addEventListener('click', function() {
 
   (function draw() {
     ctx.clearRect(0, 0, W, H);
+    var bg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.7);
+    bg.addColorStop(0,'rgba(8,22,55,0.55)');bg.addColorStop(1,'rgba(2,5,12,0)');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
     a += 0.003;
     var i, s, tw;
     for (i = 0; i < stars.length; i++) {
