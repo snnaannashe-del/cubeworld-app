@@ -106,7 +106,13 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
 .kg-warn{font-size:13px;color:rgba(245,200,66,.85);background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.18);border-radius:10px;padding:14px 16px;margin-bottom:28px;line-height:1.6;}
 
 /* Features grid */
-.kg-features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:32px;}
+/* feat-text-new */
+.feat-text{font-size:13px;color:rgba(255,255,255,0.7);margin-left:8px;}
+.kg-feat.on .feat-text{color:rgba(255,255,255,0.9);}
+.kg-features{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0;}
+.kg-feat{display:flex;align-items:center;padding:10px 14px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.06);}
+.kg-feat.on{border-color:rgba(0,149,246,0.3);background:rgba(0,149,246,0.06);}
+.kg-features_OLD{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:32px;}
 @media(max-width:480px){.kg-features{grid-template-columns:1fr;}}
 .kg-feat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 14px;font-size:13px;display:flex;align-items:center;gap:10px;color:var(--muted);}
 .kg-feat.on{color:var(--text);}
@@ -177,6 +183,540 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
   <section id="auth">
     <div class="apanel">
       <div class="smsg" id="login-status"></div>
+      <div class="ig">
+        <label id="el-sl">CUBE Key</label>
+        <input type="text" id="key-input" placeholder="CUBE-XXXX-XXXX-XXXX"
+               maxlength="19" oninput="fmtKey(this)" onkeydown="if(event.key==='Enter')loginKey()">
+      </div>
+      <button class="btn btn-p" id="btn-login" onclick="loginKey()">
+        <span id="el-eb">Enter</span> &rsaquo;
+      </button>
+    </div>
+  </section>
+
+  <!-- Key cards -->
+  <div class="kc">
+    <div class="card" onclick="startKeygen('free')">
+      <span class="ci">&#128273;</span>
+      <div class="cbadge f">FREE KEY</div>
+      <h3 id="el-ft">Basic Access</h3>
+      <p id="el-fd">Chats &middot; Feed &middot; Public cubes &middot; 3 groups</p>
+      <span class="card-link" onclick="event.stopPropagation();startKeygen('free')" id="el-gk">Get key &rarr;</span>
+    </div>
+    <div class="card pr" onclick="startKeygen('premium')">
+      <span class="ci">&#128142;</span>
+      <div class="cbadge p">PREMIUM KEY</div>
+      <h3 id="el-pt">Full Access</h3>
+      <p id="el-pd">E2E encryption &middot; Unlimited &middot; Signals &middot; Files &middot; Video</p>
+      <span class="card-link" onclick="event.stopPropagation();startKeygen('premium')" id="el-pk">Get key &rarr;</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div>
+      <div class="sv" id="sc">–</div>
+      <div class="slab" id="el-sc">active cubes</div>
+    </div>
+    <div>
+      <div class="sv" id="sm">–</div>
+      <div class="slab" id="el-sm">users</div>
+    </div>
+    <div>
+      <div class="sv" id="so">–</div>
+      <div class="slab" id="el-so">online</div>
+    </div>
+  </div>
+
+</div><!-- /s-main -->
+
+<!-- ═══════════════════════════════════════ KEYGEN SCREEN -->
+<div class="screen" id="s-keygen">
+
+  <div class="kg-back" id="el-bk" onclick="showMain()">&#8592; Back</div>
+
+  <div class="kg-badge-wrap">
+    <span class="kg-badge f" id="kg-badge">FREE KEY</span>
+  </div>
+  <h2 class="kg-title" id="el-kgt">Key Generated</h2>
+  <p class="kg-sub" id="el-kgs">This key is your anonymous identity in CubeWorld.</p>
+
+  <!-- Loading -->
+  <div class="kg-loading" id="kg-loading">
+    <span class="sp"></span>
+  </div>
+
+  <!-- Key box (hidden until generated) -->
+  <div id="kg-keybox-wrap" style="display:none">
+    <div class="kg-keybox">
+      <div class="kg-keyinner">
+        <div class="kg-keylabel" id="el-kak">YOUR ACCESS KEY &middot; SAVE IT</div>
+        <div class="kg-keyval" id="kg-keyval">CUBE-XXXX-XXXX-XXXX</div>
+      </div>
+      <button class="kg-copybtn" onclick="copyKeyNew()" id="el-kcp">Copy</button>
+    </div>
+    <div class="kg-warn" id="el-kw">&#9888; Nobody knows who you are. The key is not tied to your identity, email or phone. Loss of key = loss of access.</div>
+    <div class="kg-features" id="kg-features"></div>
+    <button class="kg-enter" id="el-wc" onclick="enterWorld()">Enter CubeWorld &rarr;</button>
+  </div>
+
+  <!-- Error -->
+  <div class="smsg err" id="kg-error" style="display:none"></div>
+
+</div><!-- /s-keygen -->
+
+<script id="tr" type="application/json">
+{
+  "en":{
+    "lbl":"CUBEWORLD · LAND PROTOCOL",
+    "h1":"Digital Universe<br>Social Network",
+    "tag":"Temporary encrypted spaces in a three-dimensional world. Each cube is a land, use it wisely.",
+    "s1":"No email. No phone. No IP. Only a key = Anonymity online.",
+    "s2":"",
+    "ab":"Key Authorization",
+    "sc":"active cubes","so":"online","sm":"users",
+    "ft":"Basic","pt":"Full Access",
+    "fk":"Free Key","pk":"Get Premium Key",
+    "fa":"Basic Access","pa":"Full Access",
+    "fd":"Chats · Feed · Public cubes · 3 groups","pd":"E2E encryption · Unlimited · Signals · Files · Video",
+    "fg":"Get key →","gk":"Get free key →","pg":"Get key →",
+    "s_users":"Users","s_cubes":"Cubes","s_keys":"Keys","kf1":"Anonymous chats","kf2":"Feed & public cubes","kf3":"E2E encryption","kf4":"Unlimited groups","kf5":"Signals & Files","kf6":"Video calls"
+  },
+  "ru":{
+    "lbl":"CUBEWORLD · ПРОТОКОЛ ЗЕМЛИ",
+    "h1":"Цифровая Вселенная<br>Социальная Сеть",
+    "tag":"Временные зашифрованные пространства в трёхмерном мире. Каждый куб — земля, используй мудро.",
+    "s1":"Без почты. Без телефона. Без IP. Только ключ = Анонимность онлайн.",
+    "s2":"",
+    "ab":"Авторизация ключом",
+    "sc":"активных кубов","so":"онлайн","sm":"пользователей",
+    "ft":"Базовый","pt":"Полный доступ",
+    "fk":"Бесплатный ключ","pk":"Получить Премиум",
+    "fa":"Базовый доступ","pa":"Полный доступ",
+    "fd":"Чаты · Лента · Публичные кубы · 3 группы","pd":"E2E шифрование · Безлимит · Сигналы · Файлы · Видео",
+    "fg":"Получить ключ →","gk":"Получить бесплатно →","pg":"Получить ключ →",
+    "s_users":"Пользователи","s_cubes":"Кубы","s_keys":"Ключи","kf1":"Анонимные чаты","kf2":"Лента и публичные кубы","kf3":"E2E шифрование","kf4":"Безлимит групп","kf5":"Сигналы и файлы","kf6":"Видеозвонки"
+  },
+  "es":{
+    "lbl":"CUBEWORLD · PROTOCOLO TIERRA",
+    "h1":"Universo Digital<br>Red Social",
+    "tag":"Espacios cifrados temporales en un mundo 3D. Cada cubo es tierra, úsala con sabiduría.",
+    "s1":"Sin email. Sin teléfono. Sin IP. Solo una clave = Anonimato online.",
+    "s2":"",
+    "ab":"Autorización de clave",
+    "sc":"cubos activos","so":"en línea","sm":"usuarios",
+    "ft":"Básico","pt":"Acceso completo",
+    "fk":"Clave gratuita","pk":"Obtener Premium",
+    "fa":"Acceso básico","pa":"Acceso completo",
+    "fd":"Chats · Feed · Cubos públicos · 3 grupos","pd":"Cifrado E2E · Ilimitado · Señales · Archivos · Vídeo",
+    "fg":"Obtener clave →","gk":"Obtener gratis →","pg":"Obtener clave →",
+    "s_users":"Usuarios","s_cubes":"Cubos","s_keys":"Claves","kf1":"Chats anónimos","kf2":"Feed y cubos públicos","kf3":"Cifrado E2E","kf4":"Grupos ilimitados","kf5":"Señales y archivos","kf6":"Videollamadas"
+  },
+  "zh":{
+    "lbl":"CUBEWORLD · 土地协议",
+    "h1":"数字宇宙<br>社交网络",
+    "tag":"三维世界中的临时加密空间。每个方块都是地块，请善用。",
+    "s1":"无邮箱。无电话。无IP。只有密钥 = 在线匿名。",
+    "s2":"",
+    "ab":"密钥授权",
+    "sc":"活跃方块","so":"在线","sm":"用户",
+    "ft":"基础","pt":"完整访问",
+    "fk":"免费密钥","pk":"获取高级版",
+    "fa":"基础访问","pa":"完整访问",
+    "fd":"聊天 · 动态 · 公共方块 · 3个群组","pd":"E2E加密 · 无限制 · 信号 · 文件 · 视频",
+    "fg":"获取密钥 →","gk":"免费获取 →","pg":"获取密钥 →",
+    "s_users":"用户","s_cubes":"方块","s_keys":"密钥","kf1":"匿名聊天","kf2":"动态和公共方块","kf3":"E2E加密","kf4":"无限群组","kf5":"信号和文件","kf6":"视频通话"
+  },
+  "fr":{
+    "lbl":"CUBEWORLD · PROTOCOLE TERRE",
+    "h1":"Univers Numérique<br>Réseau Social",
+    "tag":"Espaces chiffrés temporaires dans un monde 3D. Chaque cube est une terre, utilise-la avec sagesse.",
+    "s1":"Sans email. Sans téléphone. Sans IP. Seule une clé = Anonymat en ligne.",
+    "s2":"",
+    "ab":"Autorisation par clé",
+    "sc":"cubes actifs","so":"en ligne","sm":"utilisateurs",
+    "ft":"Basique","pt":"Accès complet",
+    "fk":"Clé gratuite","pk":"Obtenir Premium",
+    "fa":"Accès basique","pa":"Accès complet",
+    "fd":"Chats · Fil · Cubes publics · 3 groupes","pd":"Chiffrement E2E · Illimité · Signaux · Fichiers · Vidéo",
+    "fg":"Obtenir la clé →","gk":"Obtenir gratuitement →","pg":"Obtenir la clé →",
+    "s_users":"Utilisateurs","s_cubes":"Cubes","s_keys":"Clés","kf1":"Chats anonymes","kf2":"Fil et cubes publics","kf3":"Chiffrement E2E","kf4":"Groupes illimités","kf5":"Signaux et fichiers","kf6":"Appels vidéo"
+  }
+}</script>
+
+<script>
+var API = 'https://cubeworld-backend.onrender.com';
+var LANGS = JSON.parse(document.getElementById('tr').textContent);
+var FLAGS = {en:'&#127468;&#127463;',ru:'&#127479;&#127482;',es:'&#127466;&#127480;',zh:'&#127464;&#127475;',fr:'&#127467;&#127479;'};
+var CODES = {en:'EN',ru:'RU',es:'ES',zh:'ZH',fr:'FR'};
+var lang = 'en';
+var ddOpen = false;
+var gKey = null;
+var curKeyType = 'free';
+
+var ELMAP = {
+  'el-lbl':'lbl','el-h1':'h1','el-s1':'s1','el-s2':'s2','el-tag':'tag','el-ab':'ab',
+  'el-ft':'ft','el-fd':'fd','el-pt':'pt','el-pd':'pd',
+  'el-gk':'gk','el-pk':'pk',
+  'el-sc':'sc','el-so':'so','el-sm':'sm',
+  'el-sl':'sl','el-eb':'eb',
+  'el-bk':'bk',
+  'el-kgt':'kgt','el-kgs':'kgs','el-kak':'kak','el-kw':'kw','el-kcp':'kcp','el-wc':'wc'
+};
+
+function setLang(l) {
+  lang = l;
+  var t = LANGS[l]; if (!t) return;
+  var ids = Object.keys(ELMAP);
+  for (var i = 0; i < ids.length; i++) {
+    var el = document.getElementById(ids[i]);
+    if (el) el.innerHTML = t[ELMAP[ids[i]]] || '';
+  }
+  // Re-render features if keygen screen active
+  if (document.getElementById('s-keygen').classList.contains('active')) {
+    renderFeatures(curKeyType);
+  }
+  localStorage.setItem('cw_lang', l);
+}
+
+function togDD(e) {
+  if (e) e.stopPropagation();
+  ddOpen = !ddOpen;
+  document.getElementById('ldd').classList.toggle('open', ddOpen);
+}
+
+function pickL(l) {
+  document.getElementById('lflag').innerHTML = FLAGS[l];
+  document.getElementById('lcode').textContent = CODES[l];
+  ddOpen = false;
+  document.getElementById('ldd').classList.remove('open');
+  var ls = ['en','ru','es','zh','fr'];
+  for (var i = 0; i < ls.length; i++) {
+    document.getElementById('lo-' + ls[i]).classList.toggle('cur', ls[i] === l);
+  }
+  setLang(l);
+}
+
+document.addEventListener('click', function() {
+  if (ddOpen) { ddOpen = false; document.getElementById('ldd').classList.remove('open'); }
+});
+
+/* ── Canvas: twinkling stars + rotating 3D cube ── */
+(function() {
+  var c = document.getElementById('cv');
+  var ctx = c.getContext('2d');
+  var W, H, cx, cy, sz, a = 0;
+  var stars = [];
+
+  function mkStars() {
+    stars = [];
+    var starCols=[[255,255,255],[240,248,255],[230,242,255],[255,255,255],[248,252,255]];
+    for (var i = 0; i < 200; i++) {
+      stars.push({
+        x: Math.random(), y: Math.random(),
+        r: 1.2,
+        o: Math.random() * 0.4 + 0.4,
+        p: Math.random() * 6.28,
+        c: starCols[Math.floor(Math.random()*starCols.length)]
+      });
+    }
+  }
+
+  function rs() {
+    var pnl=document.getElementById('panel')||document.body;
+    W=c.width=pnl.offsetWidth;c.style.left=pnl.getBoundingClientRect().left+'px';
+    H=c.height=innerHeight;
+    cx=W/2; cy = H * 0.44 - 25;
+    sz = Math.min(W, H) * 0.27;
+    mkStars();
+  }
+  rs();
+  window.addEventListener('resize', rs);
+
+  var V = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+  var E = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+
+  function ry(v,t){return[v[0]*Math.cos(t)+v[2]*Math.sin(t),v[1],-v[0]*Math.sin(t)+v[2]*Math.cos(t)];}
+  function rx(v,t){return[v[0],v[1]*Math.cos(t)-v[2]*Math.sin(t),v[1]*Math.sin(t)+v[2]*Math.cos(t)];}
+  function proj(v){var f=sz/(v[2]+3);return[cx+v[0]*f,cy+v[1]*f];}
+
+  (function draw() {
+    ctx.clearRect(0,0,W,H);
+    var bg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*.65);
+    bg.addColorStop(0,'rgba(0,149,246,.07)');bg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    a += 0.003;
+    var i, s, tw;
+    for (i = 0; i < stars.length; i++) {
+      s = stars[i];
+      tw = 0.9 + 0.1 * Math.sin(a * 1.8 + s.p);
+      ctx.beginPath();
+      ctx.arc(s.x * W, s.y * H, s.r, 0, 6.283);
+      ctx.fillStyle='rgba(255,255,255,'+(s.o*tw)+')';
+      ctx.fill();
+    }
+  requestAnimationFrame(draw);
+  })();
+})();
+
+/* ── Auth (login with existing key) ── */
+function openAuth() {
+  var auth = document.getElementById('auth');
+  var isOpen = auth.classList.contains('open');
+  if (isOpen) {
+    auth.classList.remove('open');
+    setTimeout(function() { auth.style.display = 'none'; }, 300);
+  } else {
+    auth.style.display = 'block';
+    auth.classList.add('open');
+    setTimeout(function() { auth.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 50);
+  }
+}
+
+/* ── Key formatter ── */
+function fmtKey(el) {
+  var v = el.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+  if (v.slice(0,4) === 'CUBE') v = v.slice(4);
+  var parts = [];
+  if (v.length > 0) parts.push(v.slice(0,4));
+  if (v.length > 4) parts.push(v.slice(4,8));
+  if (v.length > 8) parts.push(v.slice(8,12));
+  el.value = 'CUBE-' + parts.filter(Boolean).join('-');
+  if (el.value.length <= 5) el.value = 'CUBE-';
+}
+
+/* ── Keygen screen ── */
+function startKeygen(type) {
+  curKeyType = type;
+  var sm = document.getElementById('s-main');
+  var sk = document.getElementById('s-keygen');
+
+  // Setup badge
+  var badge = document.getElementById('kg-badge');
+  badge.className = 'kg-badge ' + (type === 'free' ? 'f' : 'p');
+  badge.textContent = type === 'free' ? 'FREE KEY' : 'PREMIUM KEY';
+
+  // Switch screen
+  sm.classList.remove('active');
+  sk.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+
+  // Show loading, hide key box
+  document.getElementById('kg-loading').style.display = 'block';
+  document.getElementById('kg-keybox-wrap').style.display = 'none';
+  document.getElementById('kg-error').style.display = 'none';
+
+  if (type === 'free') {
+    generateKeyKeygen();
+  } else {
+    // Premium: show coming soon message
+    document.getElementById('kg-loading').style.display = 'none';
+    var err = document.getElementById('kg-error');
+    err.style.display = 'block';
+    err.textContent = 'Premium access coming soon. Join waitlist.';
+  }
+}
+
+function showMain() {
+  document.getElementById('s-keygen').classList.remove('active');
+  document.getElementById('s-main').classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function renderFeatures(type) {
+  var t = LANGS[lang];
+  var feats;
+  if (type === 'free') {
+    feats = [
+      {key:'ff1',ok:true},{key:'ff2',ok:true},
+      {key:'ff3',ok:false},{key:'ff4',ok:false},
+      {key:'ff5',ok:false},{key:'ff6',ok:false}
+    ];
+  } else {
+    feats = [
+      {key:'pf1',ok:true},{key:'pf2',ok:true},
+      {key:'pf3',ok:true},{key:'pf4',ok:true},
+      {key:'pf5',ok:true},{key:'pf6',ok:true}
+    ];
+  }
+  var html = '';
+  for (var i = 0; i < feats.length; i++) {
+    var f = feats[i];
+    html += '<div class="kg-feat' + (f.ok?' on':'') + '">'
+          + '<span class="feat-icon ' + (f.ok?'yes':'no') + '">' + (f.ok?'&#10003;':'&#10007;') + '</span>'
+          + (t[f.key] || '') + '</div>';
+  }
+  document.getElementById('kg-features').innerHTML = html;
+}
+
+async function generateKeyKeygen() {
+  try {
+    var res  = await fetch(API + '/auth/generate', {method:'POST'});
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Error generating key');
+
+    gKey = data.key;
+    document.getElementById('kg-keyval').textContent = data.key;
+
+    // Store session
+    localStorage.setItem('cw_key', data.key);
+    localStorage.setItem('cw_access_token', data.access_token);
+    localStorage.setItem('cw_refresh_token', data.refresh_token);
+    localStorage.setItem('cw_key_type', data.key_type);
+
+    // Show key box
+    document.getElementById('kg-loading').style.display = 'none';
+    document.getElementById('kg-keybox-wrap').style.display = 'block';
+    renderFeatures('free');
+
+  } catch(e) {
+    document.getElementById('kg-loading').style.display = 'none';
+    var err = document.getElementById('kg-error');
+    err.style.display = 'block';
+    err.textContent = e.message;
+  }
+}
+
+function copyKeyNew() {
+  if (!gKey) return;
+  navigator.clipboard.writeText(gKey).then(function() {
+    var btn = document.getElementById('el-kcp');
+    var prev = btn.textContent;
+    btn.textContent = '✓';
+    setTimeout(function() { btn.innerHTML = prev; }, 1500);
+  });
+}
+
+function enterWorld() { window.location.href = 'world.html'; }
+
+/* ── Login (Key Authorization) ── */
+async function loginKey() {
+  var key = document.getElementById('key-input').value.trim().toUpperCase();
+  var btn = document.getElementById('btn-login');
+  var st  = document.getElementById('login-status');
+  if (key.length < 19) {
+    st.className = 'smsg err'; st.textContent = 'Enter full key: CUBE-XXXX-XXXX-XXXX'; return;
+  }
+  btn.disabled = true;
+  btn.innerHTML = '<span class="sp"></span>';
+  st.className = 'smsg ld'; st.textContent = 'Connecting...';
+  // Add timeout for Render cold start
+  var loginCtrl = new AbortController();
+  var loginTid = setTimeout(function(){
+    st.textContent = 'Backend waking up (~30s)...';
+  }, 5000);
+  try {
+    var res  = await fetch(API + '/auth/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({key:key}),
+      signal: loginCtrl.signal
+    });
+    clearTimeout(loginTid);
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Key not found');
+    localStorage.setItem('cw_key', key);
+    localStorage.setItem('cw_access_token', data.access_token);
+    localStorage.setItem('cw_refresh_token', data.refresh_token);
+    localStorage.setItem('cw_key_type', data.key_type);
+    st.className = 'smsg ok'; st.textContent = 'OK!';
+    setTimeout(function() { window.location.href = 'world.html'; }, 600);
+  } catch(e) {
+    st.className = 'smsg err'; st.textContent = e.message;
+    var t = LANGS[lang];
+    btn.innerHTML = (t.eb || 'Enter') + ' &#8250;'; btn.disabled = false;
+  }
+}
+
+/* ── Stats ── */
+async function loadStats() {
+  try {
+    var ctrl = new AbortController();
+    var tid = setTimeout(function(){ctrl.abort();}, 8000);
+    var res  = await fetch(API + '/stats', {signal: ctrl.signal});
+    clearTimeout(tid);
+    var data = await res.json();
+    var fmt  = function(n){return n>=1000?(n/1000).toFixed(1)+'K':String(n);};
+    var el_sc = document.getElementById('sc');
+    var el_so = document.getElementById('so');
+    var el_sm = document.getElementById('sm');
+    if(el_sc) el_sc.textContent = fmt(data.total_cubes || data.cubes_count || 0);
+    if(el_so) el_so.textContent = fmt(data.online_users || 0);
+    if(el_sm) el_sm.textContent = fmt(data.total_users || 0);
+  } catch(e) {}
+}
+
+/* ── Init ── */
+(function init() {
+  var saved = localStorage.getItem('cw_lang') || 'en';
+  // Wipe all session data on landing — ensures clean slate for new key
+  Object.keys(localStorage).forEach(function(k){ if(k!=='cw_lang') localStorage.removeItem(k); });
+  if (saved !== 'en') pickL(saved);
+  loadStats();
+  setInterval(loadStats, 30000);
+})();
+
+(function(){
+  var cv = document.getElementById('logo-cube');
+  if(!cv) return;
+  // Hi-DPI for crisp rendering
+  var dpr = window.devicePixelRatio || 1;
+  var CSS = 36;
+  cv.style.width = CSS + 'px';
+  cv.style.height = CSS + 'px';
+  cv.width = CSS * dpr;
+  cv.height = CSS * dpr;
+  var cx = cv.getContext('2d');
+  cx.scale(dpr, dpr);
+  var half = CSS / 2;
+  var ang = 0;
+  var V2 = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+  var E2 = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  function pr(x,y,z){
+    var fov=80, d=fov/(fov+z);
+    return [half + x*d, half + y*d];
+  }
+  function rot(v,a){
+    var ca=Math.cos(a), sa=Math.sin(a);
+    var x=v[0]*ca+v[2]*sa, z=-v[0]*sa+v[2]*ca;
+    var tilt=0.32;
+    var y2=v[1]*Math.cos(tilt)-z*Math.sin(tilt);
+    var z2=v[1]*Math.sin(tilt)+z*Math.cos(tilt);
+    return [x,y2,z2];
+  }
+  function drawMini(){
+    cx.clearRect(0,0,CSS,CSS);
+    var sc=10;
+    var pts=V2.map(function(v){var r=rot(v,ang);return pr(r[0]*sc,r[1]*sc,r[2]*sc);});
+    cx.strokeStyle='rgba(0,149,246,1)';
+    cx.lineWidth=1.2;
+    cx.lineJoin='round';
+    cx.lineCap='round';
+    cx.shadowBlur=6;
+    cx.shadowColor='rgba(0,149,246,0.7)';
+    cx.beginPath();
+    E2.forEach(function(e){
+      cx.moveTo(pts[e[0]][0],pts[e[0]][1]);
+      cx.lineTo(pts[e[1]][0],pts[e[1]][1]);
+    });
+    cx.stroke();
+    cx.shadowBlur=0;
+    ang += 0.011;
+    requestAnimationFrame(drawMini);
+  }
+  drawMini();
+})()
+</script>
+</div>
+</div>
+</body>
+</html><div id="kg-features" class="kg-features">
+        <div class="kg-feat on"><span class="feat-icon yes">✓</span><span class="feat-text" id="el-kf1">Anonymous chats</span></div>
+        <div class="kg-feat on"><span class="feat-icon yes">✓</span><span class="feat-text" id="el-kf2">Feed & public cubes</span></div>
+        <div class="kg-feat"><span class="feat-icon no">✗</span><span class="feat-text" id="el-kf3">E2E encryption</span></div>
+        <div class="kg-feat"><span class="feat-icon no">✗</span><span class="feat-text" id="el-kf4">Unlimited groups</span></div>
+        <div class="kg-feat"><span class="feat-icon no">✗</span><span class="feat-text" id="el-kf5">Signals & Files</span></div>
+        <div class="kg-feat"><span class="feat-icon no">✗</span><span class="feat-text" id="el-kf6">Video calls</span></div>
+      </div>
       <div class="ig">
         <label id="el-sl">CUBE Key</label>
         <input type="text" id="key-input" placeholder="CUBE-XXXX-XXXX-XXXX"
