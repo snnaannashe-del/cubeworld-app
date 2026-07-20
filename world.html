@@ -135,8 +135,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #cw-splash .sp-dot{width:8px;height:8px;border-radius:50%;background:#0095F6;animation:splashPulse 1s infinite}
 @keyframes splashPulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
 #world-bar{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);z-index:10;flex-shrink:0}
-.wb-av-btn{position:relative;flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(0,149,246,.15);border:1.5px solid rgba(0,149,246,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all .18s;user-select:none}
-.wb-av-btn:hover{background:rgba(0,149,246,.28);border-color:rgba(0,149,246,.6)}
+.wb-av-btn{position:relative;flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(0,149,246,.25);border:2px solid rgba(0,149,246,.7);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all .18s;user-select:none;box-shadow:0 0 0 3px rgba(0,149,246,.15)}
+.wb-av-btn:hover{background:rgba(0,149,246,.38);border-color:#0095F6;box-shadow:0 0 0 4px rgba(0,149,246,.25)}
 .wb-acct-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:210px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none;flex-direction:column;gap:2px;z-index:2000}
 .wb-acct-menu.open{display:flex;pointer-events:auto}
 @media (hover:hover){.wb-av-btn:hover .wb-acct-menu{display:flex;pointer-events:auto}}
@@ -14108,7 +14108,7 @@ function saveUniverse(){
 function _syncWbAcctHead(){
   const nameEl=document.getElementById('wb-acct-name');
   const uidEl=document.getElementById('wb-acct-uid');
-  if(nameEl) nameEl.textContent=(app.myProfile&&app.myProfile.displayName)||app.userKey||'—';
+  if(nameEl) nameEl.textContent=(app.myProfile&&app.myProfile.displayName)||'Мой аккаунт';
   if(uidEl){const uid=app._myUID||localStorage.getItem('cw_user_id')||'';const num=parseInt(uid);const dispUid=(uid&&!isNaN(num)&&typeof _genDisplayUid==='function')?_genDisplayUid(num):uid;uidEl.textContent=dispUid?'UID · '+dispUid:'';}
 }
 function toggleWbAcctMenu(e){
