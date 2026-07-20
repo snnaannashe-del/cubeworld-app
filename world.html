@@ -2690,7 +2690,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #wb-key-badge{max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #wb-online,.wb-online{display:none!important}
   #wb-count{display:none!important}
-  #crypto-ticker{display:none!important}
+  #crypto-ticker{flex-shrink:0;min-width:200px;max-width:280px}
   .wb-games{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-ghost{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-av-btn{flex-shrink:0;width:28px;height:28px;font-size:13px}
@@ -2772,7 +2772,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <div class="wb-acct-row red" onclick="cwLogout()"><i class="ti ti-logout"></i> Выйти</div>
       </div>
     </div>
-    <div class="wb-key mono badge" id="wb-key-badge" style="cursor:pointer" onclick="cwLogout()" title="Выйти" style="font-size:10px;padding:3px 9px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;color:var(--text2)"></div>
+    
     <span class="wb-online"><span id="wb-online">8,391</span> онлайн</span>
     <span style="font-size:11px;color:var(--text2)" id="wb-count"></span>
     <div id="crypto-ticker">
@@ -2798,7 +2798,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <span class="ww-coin cube-coin-svg"><svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#fbbf24"/><path d="M8 3.5L12 6v4L8 12.5 4 10V6L8 3.5z" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="1" stroke-linejoin="round"/><path d="M4 6l4 2.5L12 6" stroke="rgba(0,0,0,0.3)" stroke-width=".8" fill="none"/><path d="M8 8.5v4" stroke="rgba(0,0,0,0.3)" stroke-width=".8"/></svg></span>
       <span id="wb-cube-balance">0</span> CUBE
     </div>
-    <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid rgba(248,113,113,.35);color:#f87171;background:rgba(248,113,113,.08);flex-shrink:0" onclick="cwLogout()" title="Выйти"><i class="ti ti-logout"></i></div>
+    
   </div>
   <div id="world-wrap">
     <canvas id="world-canvas"></canvas>
