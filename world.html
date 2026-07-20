@@ -128,6 +128,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 /* ══ WORLD ══════════════════════════════ */
 #v-world{background:var(--bg)}
+#cw-splash{position:fixed;inset:0;z-index:99999;background:#05051a;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;transition:opacity .35s}
+#cw-splash.hide{opacity:0;pointer-events:none}
+#cw-splash .sp-logo{font-size:28px;font-weight:900;color:#e0e0f8}
+#cw-splash .sp-logo em{color:#0095F6;font-style:normal}
+#cw-splash .sp-dot{width:8px;height:8px;border-radius:50%;background:#0095F6;animation:splashPulse 1s infinite}
+@keyframes splashPulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
 #world-bar{display:flex;align-items:center;gap:12px;padding:9px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);z-index:10;flex-shrink:0}
 .wb-logo{font-size:14px;font-weight:800;letter-spacing:.03em;color:#e0e0f8}
 .wb-logo em{color:var(--accent);font-style:normal}
@@ -2666,6 +2672,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .modal-wrap.modal-center{align-items:center!important}
   .modal-wrap.modal-center .modal{border-radius:14px!important;width:90%!important;max-height:85vh}
 }
+@media(max-width:768px){
+  #world-bar{padding:6px 10px;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
+  #world-bar::-webkit-scrollbar{display:none}
+  .wb-logo{font-size:13px;flex-shrink:0}
+  #wb-key-badge{max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #wb-online,.wb-online{display:none!important}
+  #wb-count{display:none!important}
+  #crypto-ticker{display:none!important}
+  .wb-games,.wb-ghost{display:none!important}
+  .wb-wallet{flex-shrink:0;padding:4px 8px;font-size:11px}
+  #world-wrap{touch-action:none}
+  #world-hint{font-size:10px;padding:4px 8px;bottom:70px}
+  #world-fab{bottom:16px;right:12px;gap:8px}
+  #world-fab button{width:40px;height:40px;font-size:17px}
+}
 </style>
 </head>
 <body>
@@ -2723,10 +2744,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 </section>
 
 <!-- ══════════ WORLD ══════════ -->
+<div id="cw-splash"><div class="sp-logo">Cube<em>World</em></div><div class="sp-dot"></div></div>
+
 <section class="view" id="v-world">
   <div id="world-bar">
     <div class="wb-logo">Cube<em>World</em></div>
-    <div class="wb-key mono badge" id="wb-key-badge" style="font-size:10px;padding:3px 9px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;color:var(--text2)"></div>
+    <div class="wb-key mono badge" id="wb-key-badge" style="cursor:pointer" onclick="cwLogout()" title="Выйти" style="font-size:10px;padding:3px 9px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;color:var(--text2)"></div>
     <span class="wb-online"><span id="wb-online">8,391</span> онлайн</span>
     <span style="font-size:11px;color:var(--text2)" id="wb-count"></span>
     <div id="crypto-ticker">
@@ -2750,8 +2773,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div class="wb-ghost" id="wb-ghost-btn" onclick="openGhostMode()">👻 Ghost Mode</div>
     <div class="wb-wallet" id="wb-wallet-btn" onclick="openWalletModal()">
       <span class="ww-coin cube-coin-svg"><svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#fbbf24"/><path d="M8 3.5L12 6v4L8 12.5 4 10V6L8 3.5z" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="1" stroke-linejoin="round"/><path d="M4 6l4 2.5L12 6" stroke="rgba(0,0,0,0.3)" stroke-width=".8" fill="none"/><path d="M8 8.5v4" stroke="rgba(0,0,0,0.3)" stroke-width=".8"/></svg></span>
-      <span id="wb-cube-balance">250</span> CUBE
+      <span id="wb-cube-balance">0</span> CUBE
     </div>
+    <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid rgba(248,113,113,.35);color:#f87171;background:rgba(248,113,113,.08);flex-shrink:0" onclick="cwLogout()" title="Выйти"><i class="ti ti-logout"></i></div>
   </div>
   <div id="world-wrap">
     <canvas id="world-canvas"></canvas>
@@ -4675,7 +4699,7 @@ const app = {
   feedPosts: [],
   channels: [], groups: [], signals: [],
   wallet: {
-    balance: 250, level: 5, xp: 3420, xpNext: 5000,
+    balance: 0, level: 5, xp: 3420, xpNext: 5000,
     dailyEarned: 12.4, totalEarned: 1847,
     txs: [
       {dir:'in', icon:'<span class="gi gi-36 g-mine"><i class="ti ti-pickaxe"></i></span>',desc:'Майнинг награда',        time:'2м назад', amount:'+3'},
@@ -4989,7 +5013,7 @@ function initWorld(){
   const ov=document.getElementById('world-overlay');ov.innerHTML='';
   app.cubes.forEach((cube,i)=>{if(cube.life<=0)return;if(!app.myUniverse.includes(cube.id))return;_addObjToWorld(cube,i);});
   // Size canvas
-  const rsz=()=>{wW=cv.width=wrap.clientWidth||window.innerWidth;wH=cv.height=wrap.clientHeight||(window.innerHeight-44);};
+  const rsz=()=>{const dpr=window.devicePixelRatio||1;const cw=wrap.clientWidth||window.innerWidth;const ch=wrap.clientHeight||(window.innerHeight-60);wW=cw;wH=ch;cv.width=cw*dpr;cv.height=ch*dpr;cv.style.width=cw+"px";cv.style.height=ch+"px";wCtx.setTransform(dpr,0,0,dpr,0,0);};
   rsz();new ResizeObserver(rsz).observe(wrap);
   // ── Mouse ───────────────────────────────────────
   cv.addEventListener('mousedown',e=>{
@@ -14041,6 +14065,8 @@ function cwLogout(){
   window.location.replace('index.html');
 }
 
+function cwLogout(){if(!confirm("Выйти из аккаунта? Сохрани ключ заранее.")) return;localStorage.clear();window.location.replace("index.html");}
+
 (async function autoLogin(){
   const key   = localStorage.getItem('cw_key');
   const token = localStorage.getItem('cw_access_token');
@@ -14096,6 +14122,7 @@ function cwLogout(){
   enterWorld();
   if (_lastView === 'interior' && _lastCube) enterInterior(_lastCube);
 
+  const _spl=document.getElementById('cw-splash');if(_spl){_spl.classList.add('hide');setTimeout(()=>_spl.remove(),400);}
   if (!localStorage.getItem('cw_onboarded')){
     setTimeout(openOnboarding, 1200);
   }
