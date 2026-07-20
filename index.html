@@ -364,7 +364,7 @@ function setLang(l) {
   var ids = Object.keys(ELMAP);
   for (var i = 0; i < ids.length; i++) {
     var el = document.getElementById(ids[i]);
-    if (el) el.innerHTML = t[ELMAP[ids[i]]] || '';
+    if (el) { var _v=t[ELMAP[ids[i]]]; if(_v!==undefined)el.innerHTML=_v; }
   }
   // Re-render features if keygen screen active
   if (document.getElementById('kg-features').children.length>0) {
