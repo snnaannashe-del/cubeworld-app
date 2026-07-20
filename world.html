@@ -130,14 +130,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #v-world{background:var(--bg)}
 #cw-splash{position:fixed;inset:0;z-index:99999;background:#05051a;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;transition:opacity .35s}
 #cw-splash.hide{opacity:0;pointer-events:none}
-#cw-splash .sp-logo{font-size:28px;font-weight:900;color:#e0e0f8}
+#cw-splash .sp-logo{font-size:28px;font-weight:900;color:#e0e0f8;letter-spacing:.04em}
 #cw-splash .sp-logo em{color:#0095F6;font-style:normal}
 #cw-splash .sp-dot{width:8px;height:8px;border-radius:50%;background:#0095F6;animation:splashPulse 1s infinite}
 @keyframes splashPulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
 #world-bar{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);z-index:10;flex-shrink:0}
+/* World-bar avatar + account menu */
 .wb-av-btn{position:relative;flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(0,149,246,.25);border:2px solid rgba(0,149,246,.7);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all .18s;user-select:none;box-shadow:0 0 0 3px rgba(0,149,246,.15)}
 .wb-av-btn:hover{background:rgba(0,149,246,.38);border-color:#0095F6;box-shadow:0 0 0 4px rgba(0,149,246,.25)}
-.wb-acct-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:210px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none;flex-direction:column;gap:2px;z-index:2000}
+.wb-acct-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:210px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:none;flex-direction:column;gap:2px;z-index:2000;pointer-events:none}
 .wb-acct-menu.open{display:flex;pointer-events:auto}
 @media (hover:hover){.wb-av-btn:hover .wb-acct-menu{display:flex;pointer-events:auto}}
 .wb-count-badge{font-size:11px;color:var(--text2);flex-shrink:0}
@@ -158,7 +159,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .wl-inner{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:5px 9px;background:rgba(5,5,26,.85);border:1px solid var(--col,rgba(255,255,255,.08));border-radius:8px;backdrop-filter:blur(4px)}
 .wl-icon{font-size:15px;line-height:1;user-select:none}.wl-name{font-size:10px;font-weight:700;color:#e0e0f8;white-space:nowrap;user-select:none}.wl-timer{user-select:none}.wl-own{font-size:8px;font-weight:800;color:#fff;background:var(--col,#0095F6);border-radius:4px;padding:1px 5px;letter-spacing:.5px}
 .wl-timer{font-size:9px;color:var(--col,var(--text2));font-family:'Courier New',monospace;font-weight:600}
-#world-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:16px;font-weight:800;letter-spacing:.06em;color:rgba(224,224,248,.35);pointer-events:none;white-space:nowrap;text-transform:uppercase;user-select:none}
+#world-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text3);pointer-events:none;white-space:nowrap}
 #world-fab{position:absolute;bottom:20px;right:20px;z-index:10;display:flex;flex-direction:column;gap:8px;align-items:center}
 #world-fab button{width:46px;height:46px;border-radius:50%;background:rgba(0,149,246,.65);border:1px solid rgba(0,149,246,.85);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 4px 24px rgba(0,149,246,.25)}
 #world-fab button:hover{transform:scale(1.08);background:rgba(0,149,246,.85)}
@@ -448,6 +449,24 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 }
 @media(max-width:768px){
   #chat-overlay-backdrop{display:none!important}
+  /* ── World Map mobile ── */
+  #world-bar{padding:6px 8px;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  #world-bar::-webkit-scrollbar{display:none}
+  .wb-logo{font-size:13px;flex-shrink:0}
+  #wb-key-badge{max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+  .wb-online{flex-shrink:0}
+  #wb-count,.wb-count-badge{flex-shrink:0;font-size:10px}
+  #crypto-ticker{display:none!important}
+  .wb-games{flex-shrink:0;font-size:11px;padding:5px 9px}
+  .wb-ghost{flex-shrink:0;font-size:11px;padding:5px 9px}
+  .wb-wallet{flex-shrink:0;padding:4px 8px;font-size:11px}
+  .wb-av-btn{flex-shrink:0;width:28px;height:28px;font-size:13px}
+  /* account menu: fixed so it doesn't get clipped by overflow scroll */
+  .wb-av-btn .wb-acct-menu{position:fixed;top:56px;left:8px;right:8px;min-width:unset;width:calc(100vw - 16px);max-width:none}
+  #world-wrap{touch-action:none}
+  #world-hint{font-size:10px;padding:4px 8px;bottom:70px}
+  #world-fab{bottom:16px;right:12px;gap:8px}
+  #world-fab button{width:40px;height:40px;font-size:17px}
 }
 #dm-chat-overlay *{max-width:100%;box-sizing:border-box}
 #dm-chat-overlay img{max-width:min(280px,100%);width:auto}
@@ -2683,24 +2702,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .modal-wrap.modal-center{align-items:center!important}
   .modal-wrap.modal-center .modal{border-radius:14px!important;width:90%!important;max-height:85vh}
 }
-@media(max-width:768px){
-  #world-bar{padding:6px 10px;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
-  #world-bar::-webkit-scrollbar{display:none}
-  .wb-logo{font-size:13px;flex-shrink:0}
-  #wb-key-badge{max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  #wb-online,.wb-online{display:none!important}
-  #wb-count{display:none!important}
-  #crypto-ticker{flex-shrink:0;min-width:200px;max-width:280px}
-  .wb-games{flex-shrink:0;font-size:11px;padding:5px 9px}
-  .wb-ghost{flex-shrink:0;font-size:11px;padding:5px 9px}
-  .wb-av-btn{flex-shrink:0;width:28px;height:28px;font-size:13px}
-  .wb-av-btn .wb-acct-menu{position:fixed;top:56px;left:8px;right:8px;min-width:unset;width:calc(100vw - 16px);max-width:none}
-  .wb-wallet{flex-shrink:0;padding:4px 8px;font-size:11px}
-  #world-wrap{touch-action:none}
-  #world-hint{font-size:14px;padding:4px 8px;bottom:70px}
-  #world-fab{bottom:16px;right:12px;gap:8px}
-  #world-fab button{width:40px;height:40px;font-size:17px}
-}
 </style>
 </head>
 <body>
@@ -2763,8 +2764,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 <section class="view" id="v-world">
   <div id="world-bar">
     <div class="wb-logo">Cube<em>World</em></div>
-    <!-- Avatar (after logo) -->
-    <div id="wb-key-badge" style="display:none"></div>
+    <!-- Avatar + account switcher (after logo) -->
     <div class="wb-av-btn" id="wb-av-btn" onclick="toggleWbAcctMenu(event)" title="Аккаунт">
       <span id="wb-av-inner-world">👤</span>
       <div class="wb-acct-menu" id="wb-acct-menu">
@@ -2773,9 +2773,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <div class="wb-acct-row red" onclick="cwLogout()"><i class="ti ti-logout"></i> Выйти</div>
       </div>
     </div>
-    
-    <span class="wb-online"><span id="wb-online">8,391</span> онлайн</span>
-    <span style="font-size:11px;color:var(--text2)" id="wb-count"></span>
+    <div class="wb-key mono badge" id="wb-key-badge" style="font-size:10px;padding:3px 9px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;color:var(--text2);flex-shrink:0" title="Ключ аккаунта"></div>
+    <span class="wb-online"><span id="wb-online">–</span> онлайн</span>
+    <span class="wb-count-badge" id="wb-count"></span>
     <div id="crypto-ticker">
       <div class="tradingview-widget-container">
         <div class="tradingview-widget-container__widget"></div>
@@ -2799,12 +2799,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <span class="ww-coin cube-coin-svg"><svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#fbbf24"/><path d="M8 3.5L12 6v4L8 12.5 4 10V6L8 3.5z" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="1" stroke-linejoin="round"/><path d="M4 6l4 2.5L12 6" stroke="rgba(0,0,0,0.3)" stroke-width=".8" fill="none"/><path d="M8 8.5v4" stroke="rgba(0,0,0,0.3)" stroke-width=".8"/></svg></span>
       <span id="wb-cube-balance">0</span> CUBE
     </div>
-    
   </div>
   <div id="world-wrap">
     <canvas id="world-canvas"></canvas>
     <div id="world-overlay"></div>
-    <div id="world-hint">Cube<em style="color:var(--accent);font-style:normal;font-weight:900">World</em></div>
+    <div id="world-hint">Вращай мышью · Скролл для зума · Клик для входа в куб</div>
     <div id="cube-tooltip"><div class="ct-inner" id="ct-inner"></div></div>
     <div id="world-fab">
       <button onclick="openUniverseManager()" title="Моя вселенная / Создать куб" style="font-size:20px">⬡</button>
@@ -5037,7 +5036,16 @@ function initWorld(){
   const ov=document.getElementById('world-overlay');ov.innerHTML='';
   app.cubes.forEach((cube,i)=>{if(cube.life<=0)return;if(!app.myUniverse.includes(cube.id))return;_addObjToWorld(cube,i);});
   // Size canvas
-  const rsz=()=>{const dpr=window.devicePixelRatio||1;const cw=wrap.clientWidth||window.innerWidth;const ch=wrap.clientHeight||(window.innerHeight-60);wW=cw;wH=ch;cv.width=cw*dpr;cv.height=ch*dpr;cv.style.width=cw+"px";cv.style.height=ch+"px";wCtx.setTransform(dpr,0,0,dpr,0,0);};
+  const rsz=()=>{
+    const dpr=window.devicePixelRatio||1;
+    const cw=wrap.clientWidth||window.innerWidth;
+    const ch=wrap.clientHeight||(window.innerHeight-60);
+    wW=cw;wH=ch;
+    cv.width=cw*dpr;cv.height=ch*dpr;
+    cv.style.width=cw+'px';cv.style.height=ch+'px';
+    wCtx.setTransform(dpr,0,0,dpr,0,0);
+    wCtx.imageSmoothingEnabled=false;
+  };
   rsz();new ResizeObserver(rsz).observe(wrap);
   // ── Mouse ───────────────────────────────────────
   cv.addEventListener('mousedown',e=>{
@@ -5131,8 +5139,12 @@ function addCubeToWorld(cube){_addObjToWorld(cube,undefined);}
 
 function enterWorld(){
   document.getElementById('wb-key-badge').textContent=app.userKey.slice(0,14)+'…';
-  const _wbAv=document.getElementById('wb-av-inner-world');
-  if(_wbAv){const _dn=app.myProfile&&app.myProfile.displayName;_wbAv.textContent=_dn?_dn[0].toUpperCase():'👤';}
+  // Update avatar in world topbar
+  const wbAv=document.getElementById('wb-av-inner-world');
+  if(wbAv){
+    const dn=app.myProfile&&app.myProfile.displayName;
+    wbAv.textContent=dn?dn[0].toUpperCase():'👤';
+  }
   document.getElementById('wb-count').textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
   try{localStorage.setItem('cw_last_view','world');}catch(e){}
   showView('v-world');
@@ -10412,8 +10424,9 @@ const STATUS_OPTS=[{v:'online',l:'В сети',c:'#00b894'},{v:'busy',l:'Зан�
   setTimeout(_syncTopbarAvatar, 0);
 })();
 
-// Sync profile avatar → topbar avatar button (interior + world bar)
+// Sync profile avatar → topbar avatar button
 function _syncTopbarAvatar(){
+  // Interior topbar avatar
   const inner=document.getElementById('itb-av-inner');
   if(inner){
     const p=app.myProfile||{};
@@ -10424,25 +10437,19 @@ function _syncTopbarAvatar(){
       inner.textContent=p.avatar||'👤';
     }
   }
-  // Also sync world-bar avatar
+  // World-bar avatar button
   const wbAv=document.getElementById('wb-av-inner-world');
   if(wbAv){
     const p=app.myProfile||{};
     if(p.photoUrl){
-      wbAv.innerHTML=`<img src="${p.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;border-radius:50%">`;
+      wbAv.innerHTML=`<img src="${p.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
     } else {
-      const dn=p.displayName||'';
-      wbAv.innerHTML='';
-      wbAv.textContent=dn?dn[0].toUpperCase():(p.avatar||'👤');
+      const dn=(p.displayName||app.userKey||'?').trim();
+      wbAv.textContent=dn[0]?dn[0].toUpperCase():'👤';
     }
   }
-  // Update UID line in world-bar account menu
-  const uid=app._myUID||localStorage.getItem('cw_user_id')||'';
-  const h=document.getElementById('wb-acct-head');
-  if(h){
-    const dn=(app.myProfile&&app.myProfile.displayName)||app.userKey||'';
-    h.innerHTML=dn?(`<b>${dn}</b><br><span style="opacity:.6;font-size:9px;font-weight:500">UID ${uid}</span>`):`UID ${uid}`;
-  }
+  // Also update the account head
+  _syncWbAcctHead();
 }
 let _peUidVisible=false;
 let _peStatusDropOpen=false;
@@ -14105,6 +14112,11 @@ function saveUniverse(){
   }catch(e){}
 })();
 
+function cwLogout(){
+  if(!confirm('Выйти из аккаунта? Сохрани свой ключ заранее.')) return;
+  localStorage.clear();
+  window.location.replace('index.html');
+}
 function _syncWbAcctHead(){
   const nameEl=document.getElementById('wb-acct-name');
   const uidEl=document.getElementById('wb-acct-uid');
@@ -14119,23 +14131,13 @@ function toggleWbAcctMenu(e){
   const isOpen=m.classList.contains('open');
   m.classList.toggle('open');
   if(!isOpen){
-    const h=document.getElementById('wb-acct-head');
-    if(h){
-      const dn=(app.myProfile&&app.myProfile.displayName)||'Мой аккаунт';
-      const uid=app._myUID||localStorage.getItem('cw_user_id')||'';
-      h.innerHTML=`<b>${dn}</b>${uid?'<br><span style="opacity:.6;font-size:9px;font-weight:500">UID '+uid+'</span>':''}`;
-    }
     setTimeout(()=>document.addEventListener('click',function _c(){m.classList.remove('open');document.removeEventListener('click',_c);}),50);
   }
 }
-function addWbAccount(){ window.location.replace('index.html'); }
-function cwLogout(){
-  if(!confirm('Выйти из аккаунта? Сохрани свой ключ заранее.')) return;
-  localStorage.clear();
+function addWbAccount(){
+  // Go to index.html to log in with a different key
   window.location.replace('index.html');
 }
-
-function cwLogout(){if(!confirm("Выйти из аккаунта? Сохрани ключ заранее.")) return;localStorage.clear();window.location.replace("index.html");}
 
 (async function autoLogin(){
   const key   = localStorage.getItem('cw_key');
@@ -14192,7 +14194,10 @@ function cwLogout(){if(!confirm("Выйти из аккаунта? Сохран�
   enterWorld();
   if (_lastView === 'interior' && _lastCube) enterInterior(_lastCube);
 
-  const _spl=document.getElementById('cw-splash');if(_spl){_spl.classList.add('hide');setTimeout(()=>_spl.remove(),400);}
+  // Hide splash overlay now that auth is done
+  const splash = document.getElementById('cw-splash');
+  if(splash){ splash.classList.add('hide'); setTimeout(()=>splash.remove(), 400); }
+
   if (!localStorage.getItem('cw_onboarded')){
     setTimeout(openOnboarding, 1200);
   }
