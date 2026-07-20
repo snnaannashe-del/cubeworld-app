@@ -29,7 +29,7 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
 
 /* ── MAIN SCREEN ── */
 .hero{text-align:center;padding:52px 24px 40px;max-width:700px;margin:0 auto;}
-.hero-label{font-size:11px;letter-spacing:3px;color:rgba(140,200,255,0.65);text-transform:uppercase;margin-bottom:32px;}
+.hero-label{color:#0095F6;font-size:11px;letter-spacing:3px;color:rgba(140,200,255,0.65);text-transform:uppercase;margin-bottom:32px;}
 .hero h1{font-size:clamp(32px,5vw,56px);font-weight:800;line-height:1.05;background:linear-gradient(90deg,#ffffff 0%,#ffffff 65%,#0095F6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px;}
 .hero-sub{color:var(--muted);font-size:15px;line-height:1.7;margin-bottom:16px;}
 .hero-mini{color:var(--muted);font-size:12px;font-weight:300;line-height:1.7;margin-bottom:4px;opacity:.7;}
@@ -119,21 +119,27 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
 .kg-enter:hover{background:#6a58f0;transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,106,255,.4);}
 .kg-enter:disabled{opacity:.5;cursor:not-allowed;transform:none;}
 #panel{max-width:1020px;margin:0 auto;background:var(--bg);position:relative;min-height:100vh;overflow:hidden;border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);border-radius:0 0 24px 24px;}
-#logo{display:flex;align-items:center;gap:8px;text-decoration:none;cursor:pointer;}
+#logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none;cursor:pointer;}
 #logo-box{width:26px;height:26px;background:linear-gradient(135deg,#0070ff,#00cfff);border-radius:6px;display:flex;align-items:center;justify-content:center;}
 #logo-box svg{width:14px;height:14px;}
 #logo-txt{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.3px;}
 #logo-txt span{color:#00b4ff;}
 #panel{max-width:1020px;margin:0 auto;background:var(--bg);position:relative;min-height:100vh;overflow:hidden;border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);border-radius:0 0 24px 24px;}
-#topbar{position:relative;z-index:150;display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.07);background:rgba(4,5,20,0.9);overflow:visible;backdrop-filter:blur(12px);}
-</style>
+#topbar{position:relative;z-index:150;display:flex;align-items:center;justify-content:space-between;align-items:center;padding:8px 20px;border-bottom:1px solid rgba(255,255,255,0.07);background:rgba(4,5,20,0.9);overflow:visible;backdrop-filter:blur(12px);}
+
+#logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none;}
+#logo-cube{width:38px;height:38px;display:block;}
+#logo-txt{font-size:17px;font-weight:700;letter-spacing:-.3px;color:#fff;}
+#logo-txt span{color:#0095F6;}
+@media(max-width:480px){#logo-cube{width:28px;height:28px;}#logo-txt{font-size:14px;}}</style>
 </head>
 <body>
 <div id="panel">
 <canvas id="cv"></canvas>
 <div class="amb"></div>
 <div id="topbar">
-  <a id="logo" href="#">
+  <a id="logo-wrap" href="#">
+    <canvas id="logo-cube" width="38" height="38"></canvas>
     <div id="logo-txt">Cube<span>World</span></div>
   </a>
   <div class="ldd" id="ldd">
@@ -443,18 +449,7 @@ document.addEventListener('click', function() {
       ctx.fillStyle='rgba(255,255,255,'+(s.o*tw)+')';
       ctx.fill();
     }
-    var pts = [];
-    for (i = 0; i < V.length; i++) pts.push(proj(rx(ry(V[i], a), a * 0.4)));
-    ctx.shadowBlur=0;ctx.shadowColor='transparent';
-    ctx.strokeStyle = 'rgba(0,190,255,0.8)';
-    ctx.lineWidth = 1.4;
-    for (i = 0; i < E.length; i++) {
-      ctx.beginPath();
-      ctx.moveTo(pts[E[i][0]][0], pts[E[i][0]][1]);
-      ctx.lineTo(pts[E[i][1]][0], pts[E[i][1]][1]);
-      ctx.stroke();
-    }
-    requestAnimationFrame(draw);
+  requestAnimationFrame(draw);
   })();
 })();
 
@@ -652,6 +647,39 @@ async function loadStats() {
   if (saved !== 'en') pickL(saved);
   loadStats();
   setInterval(loadStats, 30000);
+})();
+
+(function(){
+  var cv = document.getElementById('logo-cube');
+  if(!cv) return;
+  var cx = cv.getContext('2d');
+  var S = 40, half = S/2;
+  var ang = 0;
+  var V2 = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+  var E2 = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  function pr(x,y,z){var f=60/(60+z);return[half+x*f,half+y*f];}
+  function rot(v,a){
+    var ca=Math.cos(a),sa=Math.sin(a);
+    var x=v[0]*ca+v[2]*sa, z=-v[0]*sa+v[2]*ca;
+    var y2=v[1]*Math.cos(0.35)-z*Math.sin(0.35);
+    var z2=v[1]*Math.sin(0.35)+z*Math.cos(0.35);
+    return [x,y2,z2];
+  }
+  function drawMini(){
+    cx.clearRect(0,0,S,S);
+    var sc=13, pts=V2.map(function(v){var r=rot(v,ang);return pr(r[0]*sc,r[1]*sc,r[2]*sc);});
+    cx.strokeStyle='rgba(0,149,246,0.95)';
+    cx.lineWidth=1.6;
+    cx.shadowBlur=8;
+    cx.shadowColor='#0095F6';
+    cx.beginPath();
+    E2.forEach(function(e){cx.moveTo(pts[e[0]][0],pts[e[0]][1]);cx.lineTo(pts[e[1]][0],pts[e[1]][1]);});
+    cx.stroke();
+    cx.shadowBlur=0;
+    ang+=0.018;
+    requestAnimationFrame(drawMini);
+  }
+  drawMini();
 })();
 </script>
 </div>
