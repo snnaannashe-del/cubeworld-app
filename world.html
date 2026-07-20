@@ -166,7 +166,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #world-fab button:hover{transform:scale(1.08);background:rgba(0,149,246,.85)}
 
 /* ── UNIVERSE MANAGER ── */
-#modal-universe .modal{max-width:min(560px,calc(100vw - 32px));width:100%;box-sizing:border-box;overflow:hidden}
+#modal-universe .modal{max-width:min(560px,calc(100vw - 32px));width:100%;box-sizing:border-box;overflow:hidden;padding:20px 16px}
+@media(max-width:400px){#modal-universe .modal{padding:12px 10px}.uni-cube-card{padding:8px 10px;gap:8px}.uni-cube-name{font-size:12px}}
 .uni-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;max-height:380px;overflow-y:auto;padding-right:4px}
 .uni-cube-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .18s}
 .uni-cube-card.in-universe{border-color:rgba(0,149,246,.5);background:rgba(0,149,246,.08)}
@@ -5171,8 +5172,14 @@ function enterWorld(){
   // Update avatar in world topbar
   const wbAv=document.getElementById('wb-av-inner-world');
   if(wbAv){
-    const dn=app.myProfile&&app.myProfile.displayName;
-    wbAv.textContent=dn?dn[0].toUpperCase():'👤';
+    const pu=app.myProfile&&app.myProfile.photoUrl;
+    const av=(app.myProfile&&app.myProfile.avatar)||'👤';
+    if(pu){
+      const im=document.createElement('img');
+      im.style.cssText='width:26px;height:26px;border-radius:50%;object-fit:cover;display:block';
+      im.onerror=function(){wbAv.textContent=av;};
+      wbAv.innerHTML='';im.src=pu;wbAv.appendChild(im);
+    } else {wbAv.textContent=av;}
   }
   document.getElementById('wb-count').textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
   try{localStorage.setItem('cw_last_view','world');}catch(e){}
@@ -14168,7 +14175,11 @@ function _syncWbAcctHead(){
   const nameEl=document.getElementById('wb-acct-name');
   const uidEl=document.getElementById('wb-acct-uid');
   const avEl=document.getElementById('wb-av-inner-world');
-  if(avEl) avEl.textContent=(app.myProfile&&app.myProfile.avatar)||'👤';
+  if(avEl){
+    const pu2=app.myProfile&&app.myProfile.photoUrl;
+    const av2=(app.myProfile&&app.myProfile.avatar)||'👤';
+    if(pu2){const im2=document.createElement('img');im2.style.cssText='width:26px;height:26px;border-radius:50%;object-fit:cover;display:block';im2.onerror=function(){avEl.textContent=av2;};avEl.innerHTML='';im2.src=pu2;avEl.appendChild(im2);}else{avEl.textContent=av2;}
+  }
   if(nameEl) nameEl.textContent=(app.myProfile&&app.myProfile.displayName)||'Мой аккаунт';
   if(uidEl){let dispUid=app._myUID||'';if(!dispUid){const rawId=parseInt(localStorage.getItem('cw_user_id')||'0');if(rawId&&typeof _genDisplayUid==='function')dispUid=_genDisplayUid(rawId);}uidEl.textContent=dispUid?'UID · '+dispUid:'';}
 }
