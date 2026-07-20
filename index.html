@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CubeWorld</title>
 <style>
-:root{--bg:#080c18;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#7c6aff;--gold:#f5c842;--premium:#7ad4ff;--text:#e8e8f0;--muted:rgba(232,232,240,0.45);--radius:16px;}
+:root{--bg:#080c18;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#0099ff;--gold:#f5c842;--premium:#40c4ff;--text:#e8e8f0;--muted:rgba(232,232,240,0.45);--radius:16px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden;}
 #cv{position:fixed;inset:0;z-index:0;pointer-events:none;}
@@ -119,10 +119,20 @@ body{background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemF
 .kg-enter:hover{background:#6a58f0;transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,106,255,.4);}
 .kg-enter:disabled{opacity:.5;cursor:not-allowed;transform:none;}
 #panel{max-width:1020px;margin:0 auto;background:var(--bg);position:relative;min-height:100vh;overflow:hidden;border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);border-radius:0 0 24px 24px;}
+#logo{position:absolute;top:16px;left:20px;display:flex;align-items:center;gap:8px;z-index:100;text-decoration:none;cursor:pointer;}
+#logo-box{width:26px;height:26px;background:linear-gradient(135deg,#0070ff,#00cfff);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+#logo-box svg{width:14px;height:14px;}
+#logo-txt{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.2px;}
+#logo-txt span{color:#00b4ff;}
+#panel{max-width:1020px;margin:0 auto;background:var(--bg);position:relative;min-height:100vh;overflow:hidden;border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);border-radius:0 0 24px 24px;}
 </style>
 </head>
 <body>
 <div id="panel">
+<a id="logo" href="#">
+  <div id="logo-box"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1L13 4.5V9.5L7 13L1 9.5V4.5L7 1Z" stroke="#fff" stroke-width="1.5"/><path d="M7 1V13M1 4.5L13 9.5M13 4.5L1 9.5" stroke="rgba(255,255,255,0.4)" stroke-width="1"/></svg></div>
+  <div id="logo-txt">Cube<span>World</span></div>
+</a>
 <canvas id="cv"></canvas>
 <div class="amb"></div>
 
@@ -147,8 +157,7 @@ body{background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemF
 
   <section class="hero">
     <div class="hero-label" id="el-lbl">CubeWorld &middot; Digital Land Protocol</div>
-    <h1 id="el-h1">Digital Universe
-Social Network</h1>
+    <h1 id="el-h1">Digital Universe<br>Social Network</h1>
     <p class="hero-sub" id="el-tag">Every cube is land. Yours.</p>
     <p class="hero-mini" id="el-s1">No email. No phone. No IP.</p>
     <p class="hero-mini" id="el-s2">Only a key &mdash; that is you.</p>
@@ -262,7 +271,7 @@ Social Network</h1>
     "pf1":"Unlimited cubes","pf2":"Text chats","pf3":"E2E encryption","pf4":"Files & media","pf5":"Priority signals","pf6":"Timer unlimited"
   },
   "ru":{
-    "lbl":"CubeWorld · Digital Land Protocol","h1":"Your Digital Universe",
+    "lbl":"CUBEWORLD · PROTOCOL LAND","h1":"Your Digital Universe",
     "tag":"Временные зашифрованные пространства в трёхмерном мире. Каждый куб — это земля. Используй её с умом.",
     "s1":"Никакой почты. Никакого телефона. Никакого IP.",
     "s2":"Только ключ — он и есть ты.",
@@ -653,6 +662,7 @@ async function loadStats() {
   setInterval(loadStats, 30000);
 })();
 </script>
+</div>
 </div>
 </body>
 </html>
