@@ -166,7 +166,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #world-fab button:hover{transform:scale(1.08);background:rgba(0,149,246,.85)}
 
 /* ── UNIVERSE MANAGER ── */
-#modal-universe .modal{max-width:560px;width:95%}
+#modal-universe .modal{max-width:min(560px,calc(100vw - 32px));width:100%;box-sizing:border-box;overflow:hidden}
 .uni-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;max-height:380px;overflow-y:auto;padding-right:4px}
 .uni-cube-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .18s}
 .uni-cube-card.in-universe{border-color:rgba(0,149,246,.5);background:rgba(0,149,246,.08)}
@@ -2838,7 +2838,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <div id="world-overlay"></div>
     
     <div id="cube-tooltip"><div class="ct-inner" id="ct-inner"></div></div>
-    <div id="world-hint" style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:18px;font-weight:800;letter-spacing:.06em;color:rgba(224,224,248,.18);pointer-events:none;white-space:nowrap;text-shadow:0 0 20px rgba(0,149,246,.15);z-index:1">Cube<em style="color:rgba(0,149,246,.3);font-style:normal">World</em></div>
+    <div id="world-hint" style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:28px;font-weight:800;letter-spacing:.06em;color:rgba(224,224,248,.3);pointer-events:none;white-space:nowrap;text-shadow:0 0 20px rgba(0,149,246,.45);z-index:1">Cube<em style="color:rgba(0,149,246,.3);font-style:normal">World</em></div>
     <div id="world-fab">
       <button onclick="openUniverseManager()" title="Моя вселенная / Создать куб" style="font-size:20px">⬡</button>
       <button onclick="openModal('modal-join-key')" title="Войти по ключу куба" style="font-size:16px;background:rgba(0,149,246,.18);border-color:rgba(0,149,246,.4)">🔑</button>
@@ -14167,6 +14167,8 @@ async function loadCryptoTicker(){
 function _syncWbAcctHead(){
   const nameEl=document.getElementById('wb-acct-name');
   const uidEl=document.getElementById('wb-acct-uid');
+  const avEl=document.getElementById('wb-av-inner-world');
+  if(avEl) avEl.textContent=(app.myProfile&&app.myProfile.avatar)||'👤';
   if(nameEl) nameEl.textContent=(app.myProfile&&app.myProfile.displayName)||'Мой аккаунт';
   if(uidEl){let dispUid=app._myUID||'';if(!dispUid){const rawId=parseInt(localStorage.getItem('cw_user_id')||'0');if(rawId&&typeof _genDisplayUid==='function')dispUid=_genDisplayUid(rawId);}uidEl.textContent=dispUid?'UID · '+dispUid:'';}
 }
