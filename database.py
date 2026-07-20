@@ -68,7 +68,7 @@ def init_db():
         owner_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
         name TEXT NOT NULL,
         description TEXT DEFAULT '',
-        icon TEXT DEFAULT '📦',
+        icon TEXT DEFAULT 'ð¦',
         color TEXT DEFAULT '#7c6fcd',
         type TEXT NOT NULL DEFAULT 'public',
         life_hours INTEGER NOT NULL DEFAULT 24,
@@ -156,7 +156,7 @@ def init_db():
         created_at TEXT NOT NULL DEFAULT (datetime('now'))
     )""")
 
-    # ── Activity tracking ─────────────────────────────────────────────────────
+    # ââ Activity tracking âââââââââââââââââââââââââââââââââââââââââââââââââââââ
     c.execute("""CREATE TABLE IF NOT EXISTS user_activity (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -171,7 +171,7 @@ def init_db():
         UNIQUE(user_id, date)
     )""")
 
-    # ── Premium subscriptions ─────────────────────────────────────────────────
+    # ââ Premium subscriptions âââââââââââââââââââââââââââââââââââââââââââââââââ
     c.execute("""CREATE TABLE IF NOT EXISTS premium_subscriptions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -183,7 +183,7 @@ def init_db():
         status TEXT NOT NULL DEFAULT 'active'
     )""")
 
-    # ── Reward pool & claims ──────────────────────────────────────────────────
+    # ââ Reward pool & claims ââââââââââââââââââââââââââââââââââââââââââââââââââ
     c.execute("""CREATE TABLE IF NOT EXISTS reward_pool (
         id INTEGER PRIMARY KEY,
         total_usd REAL NOT NULL DEFAULT 1000000,
@@ -213,10 +213,25 @@ def init_db():
         try: c.execute(col_sql)
         except Exception: pass
 
+    # ── Seed cubes (8 default world cubes on fresh DB) ───────────────────────
+    if c.execute("SELECT COUNT(*) FROM cubes").fetchone()[0] == 0:
+        _seeds = [
+            (None,'Genesis Cube','The first cube of CubeWorld','🌍','#0095F6','public',999999,"2099-01-01 00:00:00"),
+            (None,'Crypto Hub','Trade and discuss crypto','₿','#F7931A','public',999999,"2099-01-01 00:00:00"),
+            (None,'Tech Lab','Build and hack together','⚡','#00D4AA','public',999999,"2099-01-01 00:00:00"),
+            (None,'Art Space','Creative expressions','🎨','#FF6B6B','public',999999,"2099-01-01 00:00:00"),
+            (None,'Game Zone','Gaming community','🎮','#9B59B6','public',999999,"2099-01-01 00:00:00"),
+            (None,'Music','Beats and vibes','🎵','#1DB954','public',999999,"2099-01-01 00:00:00"),
+            (None,'Science','Explore the unknown','🔬','#E74C3C','public',999999,"2099-01-01 00:00:00"),
+            (None,'Social Hub','Meet new people','🌐','#F39C12','public',999999,"2099-01-01 00:00:00"),
+        ]
+        for s in _seeds:
+            c.execute("INSERT INTO cubes (owner_id,name,description,icon,color,type,life_hours,expires_at) VALUES (?,?,?,?,?,?,?,?)", s)
+
     conn.commit()
     conn.close()
 
-# ── Auth ──────────────────────────────────────────────────────────────────────
+# ââ Auth ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 def hash_key(raw_key):
     return hashlib.sha256(raw_key.encode()).hexdigest()
@@ -306,7 +321,7 @@ def get_stats():
     conn.close()
     return {"total_users":total_users,"premium_users":premium,"online_users":online,"total_cubes":total_cubes}
 
-# ── Cubes ─────────────────────────────────────────────────────────────────────
+# ââ Cubes âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 def create_cube(owner_id, name, description, icon, color, cube_type, life_hours):
     conn = get_db(); c = conn.cursor()
@@ -330,7 +345,7 @@ def list_cubes():
            ORDER BY created_at DESC LIMIT 100""").fetchall()
     conn.close(); return [dict(r) for r in rows]
 
-# ── Messages ──────────────────────────────────────────────────────────────────
+# ââ Messages ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 def save_message(cube_id, user_id, display_name, content,
                  msg_type='text', reply_to_id=None, expires_at=None,
@@ -366,7 +381,7 @@ def delete_expired_messages():
     conn.execute("DELETE FROM direct_messages WHERE expires_at IS NOT NULL AND expires_at<=datetime('now')")
     conn.commit(); conn.close()
 
-# ── Reactions ─────────────────────────────────────────────────────────────────
+# ââ Reactions âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 def toggle_reaction(message_id, user_id, display_name, emoji):
     conn = get_db()
@@ -396,7 +411,7 @@ def get_reactions(message_id):
     conn.close()
     return {r["emoji"]: r["cnt"] for r in rows}
 
-# ── Direct Messages ────────────────────────────────────────────────────────────
+# ââ Direct Messages ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 def save_dm(from_user_id, to_user_id, content, msg_type='text',
             file_name=None, file_size=None, file_data=None, duration=None,
@@ -428,7 +443,7 @@ def mark_dm_read(from_user_id, to_user_id):
         (from_user_id, to_user_id))
     conn.commit(); conn.close()
 
-# ── Posts ─────────────────────────────────────────────────────────────────────
+# ââ Posts âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 def create_post(cube_id, user_id, display_name, content):
     conn = get_db(); c = conn.cursor()
@@ -453,7 +468,7 @@ def like_post(post_id, user_id):
     row = conn.execute("SELECT likes FROM posts WHERE id=?",(post_id,)).fetchone()
     conn.close(); return (row["likes"] if row else 0, liked)
 
-# ── Signals ───────────────────────────────────────────────────────────────────
+# ââ Signals âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 def create_signal(cube_id, user_id, display_name, ticker, direction, entry_price, tp_price, sl_price, content):
     conn = get_db(); c = conn.cursor()
@@ -471,7 +486,7 @@ def get_signals(cube_id, limit=30):
         (cube_id,limit)).fetchall()
     conn.close(); return [dict(r) for r in rows]
 
-# ── Premium ───────────────────────────────────────────────────────────────────
+# ââ Premium âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 def is_premium(user_id):
     conn = get_db()
@@ -498,19 +513,19 @@ def get_premium_info(user_id):
         "SELECT * FROM premium_subscriptions WHERE user_id=? ORDER BY id DESC LIMIT 1",(user_id,)).fetchone()
     conn.close(); return dict(row) if row else None
 
-# ── Activity tracking ─────────────────────────────────────────────────────────
+# ââ Activity tracking âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 SCORE_WEIGHTS = {
-    # 🗨️ Chatting
-    'online_minutes':     1.0,   # passive — being present
+    # ð¨ï¸ Chatting
+    'online_minutes':     1.0,   # passive â being present
     'messages_sent':      3.0,   # active chat
     'voice_messages':     10.0,  # voice > text
-    # 🎨 Art / Content
+    # ð¨ Art / Content
     'posts_created':      25.0,  # original content
     'reactions_received': 6.0,   # audience engagement on your content
-    # 💻 Coding / Signals (tracked via posts_created for signals & API)
-    # 📢 Advertising / Referrals
-    'invites_converted':  250.0, # highest value — bringing real users
+    # ð» Coding / Signals (tracked via posts_created for signals & API)
+    # ð¢ Advertising / Referrals
+    'invites_converted':  250.0, # highest value â bringing real users
 }
 
 def _calc_score(row):
@@ -606,7 +621,7 @@ def estimate_reward(user_id, month=None):
     conn.close()
     if total_score <= 0 or my_score <= 0:
         return {'eligible': True, 'usd': 0, 'score': 0, 'rank_pct': 0,
-                'pool_month': monthly, 'message': 'Набери очки активности'}
+                'pool_month': monthly, 'message': 'ÐÐ°Ð±ÐµÑÐ¸ Ð¾ÑÐºÐ¸ Ð°ÐºÑÐ¸Ð²Ð½Ð¾ÑÑÐ¸'}
     share = my_score / total_score
     raw_usd = share * monthly
     # Cap: $5000 max, $1 min threshold (score > 500)
@@ -617,15 +632,15 @@ def estimate_reward(user_id, month=None):
         'total_score': round(total_score, 0),
         'share_pct': round(share * 100, 4),
         'pool_month': monthly,
-        'message': f'Твоя доля пула: {share*100:.3f}%'
+        'message': f'Ð¢Ð²Ð¾Ñ Ð´Ð¾Ð»Ñ Ð¿ÑÐ»Ð°: {share*100:.3f}%'
     }
 
 def claim_reward(user_id, month, wallet_address):
     if not is_premium(user_id):
-        return None, "Требуется Premium"
+        return None, "Ð¢ÑÐµÐ±ÑÐµÑÑÑ Premium"
     est = estimate_reward(user_id, month)
     if not est['eligible'] or est['usd'] < 1:
-        return None, "Минимальная выплата $1"
+        return None, "ÐÐ¸Ð½Ð¸Ð¼Ð°Ð»ÑÐ½Ð°Ñ Ð²ÑÐ¿Ð»Ð°ÑÐ° $1"
     conn = get_db()
     try:
         conn.execute(
@@ -637,4 +652,4 @@ def claim_reward(user_id, month, wallet_address):
         return est['usd'], None
     except Exception as e:
         conn.close()
-        return None, "Награда уже запрошена за этот месяц"
+        return None, "ÐÐ°Ð³ÑÐ°Ð´Ð° ÑÐ¶Ðµ Ð·Ð°Ð¿ÑÐ¾ÑÐµÐ½Ð° Ð·Ð° ÑÑÐ¾Ñ Ð¼ÐµÑÑÑ"
