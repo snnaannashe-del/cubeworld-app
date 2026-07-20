@@ -2717,6 +2717,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 }
 
 /* portrait: dropdown at top, same as landscape */
+
+/* Force dropdown to top on ALL mobile, ALL orientations */
+@media(max-width:600px){
+  .wb-av-btn .wb-acct-menu,.wb-acct-menu{position:fixed!important;top:54px!important;bottom:auto!important;left:6px!important;right:auto!important;width:230px!important;max-width:calc(100vw - 12px)!important;border-radius:12px!important;box-shadow:0 8px 40px rgba(0,0,0,.9)!important}
+}
 </style>
 </head>
 <body>
