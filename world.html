@@ -14109,7 +14109,7 @@ function _syncWbAcctHead(){
   const nameEl=document.getElementById('wb-acct-name');
   const uidEl=document.getElementById('wb-acct-uid');
   if(nameEl) nameEl.textContent=(app.myProfile&&app.myProfile.displayName)||app.userKey||'—';
-  if(uidEl){const uid=app._myUID||localStorage.getItem('cw_user_id')||'';uidEl.textContent=uid?'UID '+uid:'';}
+  if(uidEl){const uid=app._myUID||localStorage.getItem('cw_user_id')||'';const num=parseInt(uid);const dispUid=(uid&&!isNaN(num)&&typeof _genDisplayUid==='function')?_genDisplayUid(num):uid;uidEl.textContent=dispUid?'UID · '+dispUid:'';}
 }
 function toggleWbAcctMenu(e){
   e.stopPropagation();
