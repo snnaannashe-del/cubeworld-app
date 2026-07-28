@@ -8,7 +8,11 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;line-height:1.7;min-height:100vh}
   .hero{background:linear-gradient(135deg,#0d1117 0%,#1a1f2e 50%,#0d1117 100%);border-bottom:1px solid #1e2535;padding:60px 24px 40px;text-align:center}
-  .logo-wrap{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px}
+  
+#hero-logo-wrap{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px;text-decoration:none;}
+#hero-logo-cube{width:38px;height:38px;display:block;}
+#hero-logo-txt{font-size:22px;font-weight:800;letter-spacing:-.3px;color:#fff;}
+#hero-logo-txt span{color:#0095F6;}
   .logo{font-size:28px;font-weight:800;background:linear-gradient(90deg,#4f9cf9,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px;margin-bottom:12px}
   .hero h1{font-size:clamp(24px,5vw,38px);font-weight:700;color:#fff;margin-bottom:8px}
   .hero .updated{color:#64748b;font-size:14px}
@@ -41,7 +45,7 @@
 </head>
 <body>
 <div class="hero">
-  <div class="logo-wrap"><svg viewBox="0 0 48 48" width="42" height="42" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 8px rgba(79,156,249,0.7));flex-shrink:0"><path d="M24 4 L44 16 L24 28 L4 16 Z" stroke="#4f9cf9" stroke-width="2.2" stroke-linejoin="round"/><path d="M4 16 L24 28 L24 44 L4 32 Z" stroke="#4f9cf9" stroke-width="2.2" stroke-linejoin="round" opacity="0.8"/><path d="M44 16 L44 32 L24 44 L24 28 Z" stroke="#93c5fd" stroke-width="2.2" stroke-linejoin="round" opacity="0.8"/></svg><span class="logo">CubeWorld</span></div>
+  <div id="hero-logo-wrap"><canvas id="hero-logo-cube" width="38" height="38"></canvas><div id="hero-logo-txt">Cube<span>World</span></div></div>
   <h1>Terms of Service</h1>
   <p class="updated">Last updated: July 29, 2026 · Effective immediately</p>
 </div>
@@ -222,5 +226,36 @@
 <footer>
   <p>© 2026 CubeWorld. All rights reserved. &nbsp;·&nbsp; <a href="./terms.html">Terms of Service</a> &nbsp;·&nbsp; <a href="./privacy.html">Privacy Policy</a></p>
 </footer>
+<script>(function(){
+  var cv=document.getElementById('hero-logo-cube');
+  if(!cv)return;
+  var dpr=window.devicePixelRatio||1,CSS=38;
+  cv.style.width=CSS+'px';cv.style.height=CSS+'px';
+  cv.width=CSS*dpr;cv.height=CSS*dpr;
+  var cx=cv.getContext('2d');cx.scale(dpr,dpr);
+  var cx2=CSS/2,cy2=CSS/2,ang=0,s=11;
+  var V=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+  var E=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  function proj(v,a){
+    var x=v[0]*Math.cos(a)-v[2]*Math.sin(a);
+    var z=v[0]*Math.sin(a)+v[2]*Math.cos(a);
+    var y=v[1];
+    var tilt=0.3;
+    var y2=y*Math.cos(tilt)-z*Math.sin(tilt);
+    var z2=y*Math.sin(tilt)+z*Math.cos(tilt);
+    var f=3.5,sc=f/(f+z2);
+    return[cx2+x*s*sc,cy2+y2*s*sc];
+  }
+  function draw(){
+    cx.clearRect(0,0,CSS,CSS);
+    cx.strokeStyle='#4f9cf9';cx.lineWidth=1.5;cx.lineCap='round';
+    for(var i=0;i<E.length;i++){
+      var p1=proj(V[E[i][0]],ang),p2=proj(V[E[i][1]],ang);
+      cx.beginPath();cx.moveTo(p1[0],p1[1]);cx.lineTo(p2[0],p2[1]);cx.stroke();
+    }
+    ang+=0.022;requestAnimationFrame(draw);
+  }
+  draw();
+})();</script>
 </body>
 </html>
