@@ -8326,7 +8326,9 @@ async function submitSignal(){
 // ââââââââââââââââââââââââââââââââââââââââââââââââ
 function fmtTime(s){
   if(s<=0)return'EXPIRED';
-  return`${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+  s=Math.round(s||0);
+  if(s>604800)return'∞';
+  return`${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 }
 setInterval(()=>{
   app.cubes.forEach(c=>{if(c.life>0)c.life--;});
