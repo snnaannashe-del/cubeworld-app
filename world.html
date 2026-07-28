@@ -9162,7 +9162,7 @@ app.cryptoBalances = { btc:0.00012, eth:0.042, usdt:18.50, bnb:0.15, trx:240 };
 function _coinLogo(sym, size=24){
   const s=(sym||'btc').toLowerCase().split('/')[0];
   const fb=`<span style="width:${size}px;height:${size}px;border-radius:50%;background:rgba(255,255,255,.12);display:inline-flex;align-items:center;justify-content:center;font-size:${Math.round(size*.45)}px;font-weight:800;color:#fff;flex-shrink:0">${s.slice(0,2).toUpperCase()}</span>`;
-  return `<img src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/svg/color/${s}.svg" class="coin-logo" width="${size}" height="${size}" onerror="this.outerHTML='${fb}'" loading="lazy">`;
+  return `<img src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/svg/color/${s}.svg" class="coin-logo" width="${size}" height="${size}" onerror="this.outerHTML='${fb.replace(/\"/g,'&quot;')}'" loading="lazy">`;
 }
 // Exchange logo (Google favicon service — very stable CDN)
 function _exchLogo(domain, size=36){
