@@ -5079,7 +5079,7 @@ function wRenderLoop(){
     if(hobj){
       const c=hobj.cube;
       document.getElementById('ct-inner').innerHTML=`<div class="ct-name" style="color:${c.colorCss||c.col||'#0095F6'}">${c.icon} ${c.name}</div><div class="ct-desc">${c.desc}</div><div class="ct-row"><span class="ct-timer">${fmtTime(c.life)}</span><span class="ct-type ${c.type}">${c.type==='public'?'PUBLIC':'PRIVATE'}</span></div>`;
-      const _rect=wrap.getBoundingClientRect();tt.style.left=Math.min(_rect.left+hobj.csx+14,window.innerWidth-220)+'px';tt.style.top=Math.max(_rect.top+hobj.csy-70,10)+'px';tt.style.display='block';
+      const _rect=(document.getElementById('world-wrap')||document.body).getBoundingClientRect();tt.style.left=Math.min(_rect.left+hobj.csx+14,window.innerWidth-220)+'px';tt.style.top=Math.max(_rect.top+hobj.csy-70,10)+'px';tt.style.display='block';
     }
   }else{tt.style.display='none';}
   // Labels drawn on canvas inside wDrawCube
@@ -5113,7 +5113,7 @@ function initWorld(){
     wrap.classList.add('dragging');
   });
   window.addEventListener('mousemove',e=>{
-    const rect=wrap.getBoundingClientRect();
+    const rect=(document.getElementById('world-wrap')||document.body).getBoundingClientRect();
     wMouseX=e.clientX-rect.left;wMouseY=e.clientY-rect.top;
     if(wDrag){wDragDX=e.clientX-wDragSX;wDragDY=e.clientY-wDragSY;
       wTarTheta=wThetaD+wDragDX*0.009;
@@ -5125,7 +5125,7 @@ function initWorld(){
     if(!wDrag)return;wDrag=false;wrap.classList.remove('dragging');
     if(Math.abs(wDragDX)+Math.abs(wDragDY)<8){
       // Re-detect hover at mouseup position to avoid timing gaps
-      const rect=wrap.getBoundingClientRect();
+      const rect=(document.getElementById('world-wrap')||document.body).getBoundingClientRect();
       const mx=e.clientX-rect.left,my=e.clientY-rect.top;
       wMouseX=mx;wMouseY=my;
       wHovId=null;let hovDist=9999;
@@ -5145,7 +5145,7 @@ function initWorld(){
     wDrag=true;wAutoRot=false;
     _tSX=t.clientX;_tSY=t.clientY;_tDX=_tDY=0;
     _tThD=wTarTheta;_tPhD=wTarPhi;
-    const rect=wrap.getBoundingClientRect();
+    const rect=(document.getElementById('world-wrap')||document.body).getBoundingClientRect();
     wMouseX=t.clientX-rect.left;wMouseY=t.clientY-rect.top;
   },{passive:false});
   cv.addEventListener('touchmove',e=>{
@@ -5154,7 +5154,7 @@ function initWorld(){
     wHovId=null;_tDX=t.clientX-_tSX;_tDY=t.clientY-_tSY;
     wTarTheta=_tThD+_tDX*0.009;
     wTarPhi=Math.max(-0.75,Math.min(0.75,_tPhD-_tDY*0.007));
-    const rect=wrap.getBoundingClientRect();
+    const rect=(document.getElementById('world-wrap')||document.body).getBoundingClientRect();
     wMouseX=t.clientX-rect.left;wMouseY=t.clientY-rect.top;
   },{passive:false});
   cv.addEventListener('touchend',e=>{
@@ -5163,7 +5163,7 @@ function initWorld(){
     // Tap = minimal movement → enter cube
     if(Math.abs(_tDX)+Math.abs(_tDY)<12){
       // Force hover detection from touch-start position (don't wait for RAF)
-      const rect=wrap.getBoundingClientRect();
+      const rect=(document.getElementById('world-wrap')||document.body).getBoundingClientRect();
       const tx=_tSX-rect.left,ty=_tSY-rect.top;
       wMouseX=tx;wMouseY=ty;
       wHovId=null;let hovDist=9999;
