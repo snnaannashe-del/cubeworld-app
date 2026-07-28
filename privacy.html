@@ -146,7 +146,7 @@ body.leaving{animation:pageOut .25s ease forwards;}
 // ── Stars ────────────────────────────────────────────────────────────────────
 (function(){
   var cv=document.getElementById('cv');
-  var W=cv.width=window.innerWidth,I=cv.height=window.innerHeight;
+  var W=cv.width=window.innerWidth,H=cv.height=window.innerHeight;
   var ctx=cv.getContext('2d');
   var stars=[];
   for(var i=0;i<120;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*.8+.2,a:Math.random()});
@@ -221,8 +221,9 @@ var SECTIONS = {
     {id:'s2',h:'2. Данные которые мы собираем',p:'Мы собираем только необходимое: ваш Cube Key (анонимный идентификатор), публичный контент кубов, сообщения чатов, взаимодействия в группах и агрегированную статистику. Мы <strong>не</strong> собираем имя, email, телефон или IP-адрес.'},
     {id:'s3',h:'3. Как мы используем данные',p:'Данные используются для: работы платформы CubeWorld, общения между кубами в реальном времени, отображения публичного контента и начисления токенов CUBE. Мы не продаём ваши данные третьим лицам.'},
     {id:'s4',h:'4. Анонимные ключи',p:'Cube Key — ваша единственная идентичность в CubeWorld. Он генерируется на стороне клиента и не связан ни с какой личной информацией. При потере ключа восстановление невозможно.'},
-    {id:'s5',h:'5. Владение кубом',p:'Каждый куб связан с Cube Key. Контент, название и настройки куба хранятся на наших серверах. Вы сохраняете право собственности на созданный вами контент.'},
-    {id:'s6',h:'6. Токен CUBE',p:'CUBE — внутриплатформенный утилитарный токен. Балансы токенов хранятся на наших серверах. Привязка блокчейн-кошелька опциональна и регулируется политикой конфиденциальности стороннего провайдера.'},
+    {id:'s5',h:'5. Владение кубом',p:'Каждый куб связан E�ube Key. Контент, название и настройки куба хранятся на наших серверовев. Вы сохраняете право собственности на созданный вам контент.'},
+    {id:'s6',h:'6. Токен CUBE',p:'CUBE — внутриплатформенный утилитарный токен. Балансы токенов хранятся на наших серверовев. В привязка блокчейной колшелени стороннего провайдера.'},
+ �икой конфиденциальности стороннего провайдера.'},
     {id:'s7',h:'7. Сторонние сервисы',p:'Мы используем Render.com для бэкенда и GitHub Pages для фронтенда. У этих провайдеров есть собственные политики конфиденциальности. Мы не передаём данные рекламодателям.'},
     {id:'s8',h:'8. Хранение данных',p:'Контент и сообщения хранятся пока куб активен. Вы можете удалить куб и связанные данные через настройки профиля. Удалённые данные очищаются в течение 30 дней.'},
     {id:'s9',h:'9. Конфиденциальность детей',p:'CubeWorld не предназначен для пользователей младше 13 лет. Если вы считаете, что ребёнок предоставил нам данные, немедленно свяжитесь с нами.'},
@@ -254,7 +255,7 @@ var SECTIONS = {
     {id:'s7',h:'7. 第三方服务',p:'我们使用 Render.com 进行后端托管，使用 GitHub Pages 进行前端托管。这些提供商有各自的隐私政策。我们不与广告商或数据经纪商共享您的数据。'},
     {id:'s8',h:'8. 数据保留',p:'方块内容和消息在您的方块活跃期间保留。您可以随时通过个人资料设置删除您的方块和相关数据。已删除数据将在30天内清除。'},
     {id:'s9',h:'9. 儿童隐私',p:'CubeWorld 不适用于13岁以下的用户。如果您认为儿童向我们提供了数据，请立即联系我们。'},
-    {id:'s10',h:'10. 安全性',p:'我们对所有传输数据使用行$��标准加密（HTTPS/TLS）。E2E 加密聊天在客户端进行加密。我们定期进行安全审查。'},
+    {id:'s10',h:'10. 安全性',p:'我们对所有传输数据使用行业标准加密（HTTPS/TLS）。E2E 加密聊天在客户端进行加密。我们定期进行安全审查。'},
     {id:'s11',h:'11. 您的权利',p:'您有权：访问您的数据（通过 Cube Key）、删除您的账户和所有相关数据、退出分析以及请求数据可携带性。请联系 privacy@cubeworld.app。'},
     {id:'s12',h:'12. 政策变更',p:'我们可能会定期更新本政策。重大变更将在应用内公告。您继续使用 CubeWorld 即表示接受更新后的政策。'}
   ],
@@ -276,7 +277,7 @@ var SECTIONS = {
 
 var STRINGS = {
   en:{title:'Privacy Policy',updated:'Last updated: July 29, 2026 · Effective immediately',back:'Back',toc_title:'TABLE OF CONTENTS',contact_text:'Questions? Contact us at <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Terms of Service',home_link:'Home'},
-  ru:{title:'Политика конфиденциальности',updated:'Обновлено: 29 июля 2026 · Вступает в силу немедленно',back:'Назад',toc_title:'СОДЕРЖАНИЕ',contact_text:'Вопросы? Напишите нам на <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Условия использования',home_link:'Главная'},
+  ru:{title:'Политика конфиденциальности',updated:'Обновлено: 29 июля 2026 · Вступает в силу немедленно',back:'Назад',toc_title:'СОДЕРЖАНИЕ',contact_text:'Вопросы? Напишите нам на <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Условия использования',home_link:'ѓлавная'},
   es:{title:'Política de Privacidad',updated:'Actualizado: 29 de julio de 2026 · Efectivo inmediatamente',back:'Volver',toc_title:'TABLA DE CONTENIDOS',contact_text:'¿Preguntas? Contáctenos en <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Términos de Servicio',home_link:'Inicio'},
   zh:{title:'隐私政策',updated:'最后更新：2026年7月29日 · 即时生效',back:'返回',toc_title:'目录',contact_text:'有问题？请联系 <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'服务条款',home_link:'主页'},
   fr:{title:'Politique de Confidentialité',updated:'Mis à jour : 29 juillet 2026 · Effectif immédiatement',back:'Retour',toc_title:'TABLE DES MATIÈRES',contact_text:'Des questions ? Contactez-nous à <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Conditions d\'utilisation',home_link:'Accueil'}
