@@ -5722,7 +5722,7 @@ function reactPost(id,key,btn){
   btn.innerHTML=`<span>${reactionEmoji(key)}</span> ${p.reactions[key]}`;btn.classList.add('liked');
   // Sync to server
   if(app.userKey && !String(id).startsWith('u'))
-    apiCall('/feed/'++id+'/react'+'/like','POST');
+    apiCall('/feed/'+id+'/react/like','POST');
 }
 function switchFeedTab(tab,el){
   document.querySelectorAll('.feed-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
