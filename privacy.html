@@ -13,18 +13,15 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 @keyframes pageOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-10px)}}
 body.leaving{animation:pageOut .25s ease forwards;}
 
-/* Stars */
 #cv{position:fixed;inset:0;z-index:0;pointer-events:none;}
 .amb{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(ellipse at center,rgba(124,106,255,0.06) 0%,transparent 70%);z-index:0;pointer-events:none;}
 
-/* Desktop clipping */
 @media(min-width:880px){
   body{max-width:880px;margin:0 auto;box-shadow:0 0 0 1px var(--border),0 24px 80px rgba(0,0,0,.6);border-radius:0 0 24px 24px;min-height:100vh;position:relative;}
   #cv{position:absolute;}
   #topbar{left:0;right:0;}
 }
 
-/* Topbar */
 #topbar{position:fixed;top:0;left:0;right:0;z-index:150;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:rgba(8,12,24,0.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
 #logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer;}
 #logo-cube{width:38px;height:38px;display:block;flex-shrink:0;}
@@ -32,7 +29,6 @@ body.leaving{animation:pageOut .25s ease forwards;}
 #logo-txt span{color:#0095F6;}
 @media(max-width:480px){#logo-cube{width:30px;height:30px;}}
 
-/* Language dropdown */
 .ldd{position:relative;z-index:100;}
 .ldb{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:7px 12px;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s;}
 .ldb:hover{background:rgba(255,255,255,.1);}
@@ -44,10 +40,8 @@ body.leaving{animation:pageOut .25s ease forwards;}
 .ldm button{background:none;border:none;color:var(--text);font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;transition:background .2s;}
 .ldm button:hover,.ldm button.cur{background:rgba(0,149,246,.2);}
 
-/* Page content */
 #page{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:80px 24px 60px;}
 
-/* Hero */
 .hero{text-align:center;padding:36px 0 28px;}
 .hero-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;}
 #hero-cube{display:block;flex-shrink:0;}
@@ -56,29 +50,24 @@ body.leaving{animation:pageOut .25s ease forwards;}
 .hero h1{font-size:clamp(28px,5vw,42px);font-weight:800;color:#fff;margin-bottom:10px;line-height:1.1;}
 .hero .updated{color:var(--muted);font-size:13px;}
 
-/* Back button */
 .back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;padding:8px 0;margin-bottom:24px;transition:color .2s;background:none;border:none;}
 .back-btn:hover{color:var(--text);}
 
-/* TOC */
 .toc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:32px;}
-.toc h2{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.toc h2{font-size:13px;font-weight:701;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
 .toc ol{padding-left:20px;display:flex;flex-direction:column;gap:6px;}
 .toc ol li a{color:#4f9cf9;text-decoration:none;font-size:14px;transition:color .2s;}
 .toc ol li a:hover{color:#fff;}
 
-/* Sections */
 .section{margin-bottom:32px;}
 .section h3{font-size:17px;font-weight:700;color:#fff;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
 .section p,.section ul{color:var(--muted);font-size:14px;line-height:1.75;}
 .section ul{padding-left:20px;margin-top:8px;display:flex;flex-direction:column;gap:6px;}
 
-/* Contact box */
 .contact-box{background:rgba(0,149,246,.08);border:1px solid rgba(0,149,246,.25);border-radius:var(--radius);padding:20px 24px;margin-top:32px;text-align:center;}
 .contact-box p{color:var(--muted);font-size:14px;line-height:1.7;}
 .contact-box a{color:#4f9cf9;}
 
-/* Footer links */
 .page-footer{text-align:center;padding:24px 0 8px;font-size:12px;color:var(--muted);}
 .page-footer a{color:#4f9cf9;text-decoration:none;margin:0 8px;}
 </style>
@@ -87,7 +76,6 @@ body.leaving{animation:pageOut .25s ease forwards;}
 <canvas id="cv"></canvas>
 <div class="amb"></div>
 
-<!-- Topbar -->
 <div id="topbar">
   <a id="logo-wrap" href="./index.html" onclick="navTo(event,'./index.html')">
     <canvas id="logo-cube" width="38" height="38"></canvas>
@@ -109,7 +97,6 @@ body.leaving{animation:pageOut .25s ease forwards;}
   </div>
 </div>
 
-<!-- Page -->
 <div id="page">
   <button class="back-btn" onclick="goBack()">&#8592; <span data-i18n="back">Back</span></button>
 
@@ -143,7 +130,6 @@ body.leaving{animation:pageOut .25s ease forwards;}
 </div>
 
 <script>
-// ── Stars ────────────────────────────────────────────────────────────────────
 (function(){
   var cv=document.getElementById('cv');
   var W=cv.width=window.innerWidth,H=cv.height=window.innerHeight;
@@ -164,7 +150,6 @@ body.leaving{animation:pageOut .25s ease forwards;}
   window.addEventListener('resize',function(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;});
 })();
 
-// ── Spinning cube (topbar) ───────────────────────────────────────────────────
 function initCube(id,CSS,sz){
   var cv=document.getElementById(id);
   if(!cv)return;
@@ -200,87 +185,90 @@ function initCube(id,CSS,sz){
 initCube('logo-cube',38,10);
 initCube('hero-cube',64,17);
 
-// ── i18n ─────────────────────────────────────────────────────────────────────
-var SECTIONS = {
+var SECTIONS={
   en:[
-    {id:'s1',h:'1. Who We Are',p:'CubeWorld is an anonymous social platform where users interact through 3D virtual cubes. We are committed to protecting your anonymity and personal data.'},
-    {id:'s2',h:'2. Data We Collect',p:'We collect only what is necessary: your Cube Key (an anonymous identifier), public cube content you create, chat messages, group interactions, and aggregate usage statistics. We do <strong>not</strong> collect your name, email, phone number, or IP address.'},
-    {id:'s3',h:'3. How We Use Your Data',p:'Your data is used to: provide and improve the CubeWorld platform, enable real-time communication between cubes, display public content in the feed, and calculate CUBE token rewards. We do not sell your data to third parties.'},
-    {id:'s4',h:'4. Anonymous Keys',p:'Your Cube Key is your only identity in CubeWorld. It is generated client-side and we do not link it to any personal information. If you lose your key, we cannot recover it.'},
-    {id:'s5',h:'5. Cube Ownership',p:'Each cube is associated with a Cube Key. Cube content, name, and settings are stored on our servers and linked to your key. You retain ownership of content you create within your cube.'},
-    {id:'s6',h:'6. CUBE Token',p:'CUBE is an in-app utility token. Token balances are stored on our servers linked to your Cube Key. Blockchain wallet linking is optional and governed by the third-party wallet provider\'s privacy policy.'},
-    {id:'s7',h:'7. Third-Party Services',p:'We use Render.com for backend hosting and GitHub Pages for frontend hosting. These providers have their own privacy policies. We do not share your data with advertisers or data brokers.'},
-    {id:'s8',h:'8. Data Retention',p:'Cube content and messages are retained while your cube is active. You may delete your cube and associated data at any time via the profile settings. Deleted data is purged within 30 days.'},
-    {id:'s9',h:'9. Children\'s Privacy',p:'CubeWorld is not intended for users under 13 years of age. We do not knowingly collect data from children. If you believe a child has provided us with data, please contact us immediately.'},
-    {id:'s10',h:'10. Security',p:'We use industry-standard encryption (HTTPS/TLS) for all data in transit. End-to-end encrypted chats are encrypted client-side. We conduct regular security reviews but cannot guarantee absolute security.'},
-    {id:'s11',h:'11. Your Rights',p:'You have the right to: access your data (via your Cube Key), delete your account and all associated data, opt out of analytics, and request data portability. Contact us at privacy@cubeworld.app.'},
-    {id:'s12',h:'12. Changes to This Policy',p:'We may update this policy periodically. Significant changes will be announced in the app. Your continued use of CubeWorld after changes constitutes acceptance of the updated policy.'}
+    {id:'s1',h:'1. Introduction',p:'CubeWorld is an anonymous social platform. We are committed to protecting your privacy. This policy explains what information we collect, how we use it, and your rights regarding your data.'},
+    {id:'s2',h:'2. Information We Collect',p:'We collect only what is necessary: your Cube Key (anonymous identifier), cube content and posts you create, messages sent within the platform, usage data (session timestamps, activity), and optional wallet addresses if connected.'},
+    {id:'s3',h:'3. How We Use Your Data',p:'Your data is used to: operate and improve the platform, provide real-time communication features, display your cube and content to other users, maintain session continuity, and ensure platform security and abuse prevention.'},
+    {id:'s4',h:'4. Anonymous Keys',p:'Your Cube Key is your only identifier on CubeWorld. We do not collect names, email addresses, phone numbers, or government IDs. Your identity remains anonymous. Losing your Cube Key means losing access — we cannot recover it.'},
+    {id:'s5',h:'5. Cube Ownership',p:'Each cube is associated with a Cube Key. Content you post within your cube remains tied to your anonymous key. You retain ownership of your content. CubeWorld does not claim ownership of user-generated content.'},
+    {id:'s6',h:'6. CUBE Token',p:'CUBE tokens are in-app utility tokens. Wallet addresses are only stored if you voluntarily connect a wallet. We do not share wallet data with third parties. Token transactions occur on the Polygon blockchain and are publicly visible.'},
+    {id:'s7',h:'7. Third-Party Services',p:'We use Render.com for backend hosting and GitHub Pages for frontend delivery. These services may collect standard server logs. We do not use advertising trackers, analytics SDKs, or third-party data brokers.'},
+    {id:'s8',h:'8. Data Storage and Retention',p:'Content and messages are stored while your cube is active. Deleted cubes may result in permanent data loss. We retain platform logs for up to 30 days for security purposes. You may request deletion at any time.'},
+    {id:'s9',h:'9. Children\'s Privacy',p:'CubeWorld is not intended for users under 13 years of age. We do not knowingly collect data from children. If you believe a minor has created an account, please contact us at privacy@cubeworld.app.'},
+    {id:'s10',h:'10. Security',p:'We use HTTPS/TLS for all data in transit. Cube Keys are cryptographically generated and never stored in plaintext. We implement rate limiting, input validation, and monitoring to protect the platform from unauthorized access.'},
+    {id:'s11',h:'11. Your Rights',p:'You have the right to: access your data (via your Cube Key), delete your account and associated content, opt out of optional features, and request information about how your data is used. Contact privacy@cubeworld.app for any requests.'},
+    {id:'s12',h:'12. Changes to This Policy',p:'We may update this privacy policy periodically. Continued use of CubeWorld after changes constitutes acceptance. We will notify users of significant changes within the app. The effective date at the top reflects the most recent update.'},
+    {id:'s13',h:'13. Contact Us',p:'For privacy questions or data requests, contact us at privacy@cubeworld.app. For legal matters, contact legal@cubeworld.app. We aim to respond to all privacy inquiries within 30 days.'}
   ],
   ru:[
-    {id:'s1',h:'1. О нас',p:'CubeWorld — анонимная социальная платформа, где пользователи взаимодействуют через 3D-кубы. Мы защищаем вашу анонимность и персональные данные.'},
-    {id:'s2',h:'2. Данные которые мы собираем',p:'Мы собираем только необходимое: ваш Cube Key (анонимный идентификатор), публичный контент кубов, сообщения чатов, взаимодействия в группах и агрегированную статистику. Мы <strong>не</strong> собираем имя, email, телефон или IP-адрес.'},
-    {id:'s3',h:'3. Как мы используем данные',p:'Данные используются для: работы платформы CubeWorld, общения между кубами в реальном времени, отображения публичного контента и начисления токенов CUBE. Мы не продаём ваши данные третьим лицам.'},
-    {id:'s4',h:'4. Анонимные ключи',p:'Cube Key — ваша единственная идентичность в CubeWorld. Он генерируется на стороне клиента и не связан ни с какой личной информацией. При потере ключа восстановление невозможно.'},
-    {id:'s5',h:'5. Владение кубом',p:'Каждый куб связан E�ube Key. Контент, название и настройки куба хранятся на наших серверовев. Вы сохраняете право собственности на созданный вам контент.'},
-    {id:'s6',h:'6. Токен CUBE',p:'CUBE — внутриплатформенный утилитарный токен. Балансы токенов хранятся на наших серверовев. В привязка блокчейной колшелени стороннего провайдера.'},
- �икой конфиденциальности стороннего провайдера.'},
-    {id:'s7',h:'7. Сторонние сервисы',p:'Мы используем Render.com для бэкенда и GitHub Pages для фронтенда. У этих провайдеров есть собственные политики конфиденциальности. Мы не передаём данные рекламодателям.'},
-    {id:'s8',h:'8. Хранение данных',p:'Контент и сообщения хранятся пока куб активен. Вы можете удалить куб и связанные данные через настройки профиля. Удалённые данные очищаются в течение 30 дней.'},
-    {id:'s9',h:'9. Конфиденциальность детей',p:'CubeWorld не предназначен для пользователей младше 13 лет. Если вы считаете, что ребёнок предоставил нам данные, немедленно свяжитесь с нами.'},
-    {id:'s10',h:'10. Безопасность',p:'Мы используем HTTPS/TLS для всех данных при передаче. E2E-зашифрованные чаты шифруются на стороне клиента. Мы проводим регулярные проверки безопасности.'},
-    {id:'s11',h:'11. Ваши права',p:'Вы имеете право: получить доступ к данным (по Cube Key), удалить аккаунт и все связанные данные, отказаться от аналитики, запросить переносимость данных. Напишите на privacy@cubeworld.app.'},
-    {id:'s12',h:'12. Изменения в политике',p:'Мы можем периодически обновлять эту политику. О значительных изменениях будет сообщено в приложении. Продолжение использования CubeWorld означает принятие обновлённой политики.'}
+    {id:'s1',h:'1. Введение',p:'CubeWorld — анонимная социальная платформа. Мы обязуемся защищать вашу конфиденциальность. Эта политика объясняет, какие данные мы собираем, как их используем и каковы ваши права.'},
+    {id:'s2',h:'2. Данные которые мы собираем',p:'Мы собираем только необходимое: ваш Cube Key (анонимный идентификатор), контент куба и публикации, сообщения внутри платформы, данные об использовании (временные метки, активность) и адреса кошельков при ихПодключении.'},
+    {id:'s3',h:'3. Как мы используем данные',p:'Данные используются для: работы и улучшения платформы, обеспечения коммуникации в реальном времени, отображения куба и контента другим пользователям, поддержания сессий и обеспечения безопасности платформы.'},
+    {id:'s4',h:'4. Анонимные ключи',p:'Cube Key — ваша единственная идентичность Х� CubeWorld. Мы не собираем имена, электронные адреса, телефоны или документы. Ваша личность остаётся анонимной. Потеря Cube Key означает потерю доступа — мы не можем его восстановить.'},
+    {id:'s5',h:'5. Владение кубом',p:'Каждый куб связан с Cube Key. Контент, назначенный вашему кубу, остаётся привязанным к вашему анонимному ключу. Вы сохраняете право собственности на свой контент. CubeWorld не претендует на владение пользовательским контентом.'},
+    {id:'s6',h:'6. Токен CUBE',p:'CUBE — внутриплатформенный утилитарный токен. Адреса кошельков хранятся только при добровольном подключении. Мы не передаём данные кошельков третьим лицам. Транзакции происходят в блокчейне Polygon и публично видны.'},
+    {id:'s7',h:'7. Сторонние сервисы',p:'Мы используем Render.com для бэкенда и GitHub Pages для фронтенда. Эти сервисы могут собирать стандартные серверные логи. Мы не используем рекламные трекеры, аналитические SDK или брокеры данных.'},
+    {id:'s8',h:'8. Хранение данных',p:'Контент и сообщения хранятся пока куб активен. Удаление куба может привести к безвозвратной потере данных. Логи платформы хранятся до 30 дней в целях безопасности. Вы можете запросить удаление в любое время.'},
+    {id:'s9',h:'9. Конфиденциальность детей',p:'CubeWorld не предназначен для пользователей младше 13 лет. Мы намеренно не собираем данные детей. Если вы считаете, что несовершеннолетний создал аккаунт, свяжитесь с нами по адресу privacy@cubeworld.app.'},
+    {id:'s10',h:'10. Безопасность',p:'Мы используем HTTPS/TLS для всех данных при передаче. Cube Key генерируется криптографически и никогда не хранится в открытом виде. Мы применяем ограничение запросов, валидацию ввода и мониторинг для защиты платформы.'},
+    {id:'s11',h:'11. Ваши права',p:'Вы имеете право: получить доступ к данным (через Cube Key), удалить аккаунт и контент, отказаться от опциональных функций и запросить информацию об использовании ваших данных. Пишите на privacy@cubeworld.app.'},
+    {id:'s12',h:'12. Изменения политики',p:'Мы можем периодически обновлять эту политику конфиденциальности. Продолжение использования CubeWorld после изменений означает принятие. Мы уведомим пользователей о существенных изменениях внутри приложения.'},
+    {id:'s13',h:'13. Контакты',p:'По вопросам конфиденциальности пишите на privacy@cubeworld.app. По юридическим вопросам — legal@cubeworld.app. Мы стараемся отвечать на все запросы в течение 30 дней.'}
   ],
   es:[
-    {id:'s1',h:'1. Quiénes Somos',p:'CubeWorld es una plataforma social anónima donde los usuarios interactúan a través de cubos virtuales 3D. Nos comprometemos a proteger su anonimato y datos personales.'},
-    {id:'s2',h:'2. Datos que Recopilamos',p:'Recopilamos solo lo necesario: su Cube Key (identificador anónimo), contenido público de cubos, mensajes de chat, interacciones de grupos y estadísticas de uso agregadas. <strong>No</strong> recopilamos nombre, email, teléfono ni dirección IP.'},
-    {id:'s3',h:'3. Cómo Usamos sus Datos',p:'Sus datos se utilizan para: proporcionar y mejorar CubeWorld, habilitar comunicación en tiempo real, mostrar contenido público y calcular recompensas de tokens CUBE. No vendemos sus datos a terceros.'},
-    {id:'s4',h:'4. Claves Anónimas',p:'Su Cube Key es su única identidad en CubeWorld. Se genera en el lado del cliente y no la vinculamos a ninguna información personal. Si pierde su clave, no podemos recuperarla.'},
-    {id:'s5',h:'5. Propiedad del Cubo',p:'Cada cubo está asociado con una Cube Key. El contenido, nombre y configuración del cubo se almacenan en nuestros servidores. Usted conserva la propiedad del contenido que crea.'},
-    {id:'s6',h:'6. Token CUBE',p:'CUBE es un token utilitario dentro de la aplicación. Los balances de tokens se almacenan en nuestros servidores. La vinculación de billeteras blockchain es opcional.'},
-    {id:'s7',h:'7. Servicios de Terceros',p:'Usamos Render.com para el backend y GitHub Pages para el frontend. Estos proveedores tienen sus propias políticas de privacidad. No compartimos sus datos con anunciantes.'},
-    {id:'s8',h:'8. Retención de Datos',p:'El contenido y los mensajes se retienen mientras su cubo esté activo. Puede eliminar su cubo y datos asociados en cualquier momento. Los datos eliminados se purgan en 30 días.'},
-    {id:'s9',h:'9. Privacidad de Menores',p:'CubeWorld no está destinado a usuarios menores de 13 años. Si cree que un niño nos ha proporcionado datos, contáctenos de inmediato.'},
-    {id:'s10',h:'10. Seguridad',p:'Utilizamos HTTPS/TLS para todos los datos en tránsito. Los chats cifrados E2E se cifran en el lado del cliente. Realizamos revisiones de seguridad periódicas.'},
-    {id:'s11',h:'11. Sus Derechos',p:'Tiene derecho a: acceder a sus datos, eliminar su cuenta y todos los datos asociados, optar por no participar en análisis y solicitar portabilidad de datos. Contáctenos en privacy@cubeworld.app.'},
-    {id:'s12',h:'12. Cambios en esta Política',p:'Podemos actualizar esta política periódicamente. Los cambios significativos se anunciarán en la aplicación. El uso continuado de CubeWorld constituye aceptación de la política actualizada.'}
+    {id:'s1',h:'1. Introducción',p:'CubeWorld es una plataforma social anónima. Estamos comprometidos a proteger su privacidad. Esta política explica qué información recopilamos, cómo la usamos y sus derechos sobre sus datos.'},
+    {id:'s2',h:'2. Información que Recopilamos',p:'Solo recopilamos lo necesario: su Cube Key (identificador anónimo), contenido del cubo y publicaciones, mensajes dentro de la plataforma, datos de uso (marcas de tiempo, actividad) y direcciones de billetera si se conecta.'},
+    {id:'s3',h:'3. Cómo Usamos sus Datos',p:'Sus datos se usan para: operar y mejorar la plataforma, proporcionar comunicación en tiempo real, mostrar su cubo y contenido, mantener la continuidad de sesión y garantizar la seguridad de la plataforma.'},
+    {id:'s4',h:'4. Claves Anónimas',p:'Su Cube Key es su único identificador en CubeWorld. No recopilamos nombres, correos, teléfonos ni documentos de identidad. Su identidad permanece anónima. Perder su Cube Key significa perder el acceso — no podemos recuperarla.'},
+    {id:'s5',h:'5. Propiedad del Cubo',p:'Cada cubo está asociado a una Cube Key. El contenido que publica en su cubo permanece vinculado a su clave anónima. Usted conserva la propiedad de su contenido. CubeWorld no reclama propiedad sobre el contenido generado por usuarios.'},
+    {id:'s6',h:'6. Token CUBE',p:'Los tokens CUBE son tokens utilitarios dentro de la aplicación. Las direcciones de billetera solo se almacenan si conecta voluntariamente una billetera. No compartimos datos de billetera con terceros. Las transacciones ocurren en la blockchain de Polygon.'},
+    {id:'s7',h:'7. Servicios de Terceros',p:'Usamos Render.com para el backend y GitHub Pages para el frontend. Estos servicios pueden recopilar registros estándar. No usamos rastreadores publicitarios, SDK de análisis ni intermediarios de datos.'},
+    {id:'s8',h:'8. Almacenamiento de Datos',p:'El contenido y los mensajes se almacenan mientras el cubo esté activo. Eliminar un cubo puede resultar en pérdida permanente de datos. Los registros se conservan hasta 30 días por seguridad. Puede solicitar la eliminación en cualquier momento.'},
+    {id:'s9',h:'9. Privacidad de Menores',p:'CubeWorld no está destinado a menores de 13 años. No recopilamos datos de menores a sabiendas. Si cree que un menor ha creado una cuenta, contáctenos en privacy@cubeworld.app.'},
+    {id:'s10',h:'10. Seguridad',p:'Usamos HTTPS/TLS para todos los datos en tránsito. Las Cube Keys se generan criptográficamente y nunca se almacenan en texto plano. Implementamos limitación de solicitudes, validación de entrada y monitoreo de seguridad.'},
+    {id:'s11',h:'11. Sus Derechos',p:'Tiene derecho a: acceder a sus datos (mediante su Cube Key), eliminar su cuenta y contenido, optar por no usar funciones opcionales y solicitar información sobre el uso de sus datos. Contacte privacy@cubeworld.app.'},
+    {id:'s12',h:'12. Cambios en esta Política',p:'Podemos actualizar esta política periódicamente. El uso continuado de CubeWorld tras los cambios constituye aceptación. Notificaremos a los usuarios sobre cambios significativos dentro de la aplicación.'},
+    {id:'s13',h:'13. Contacto',p:'Para preguntas de privacidad: privacy@cubeworld.app. Para asuntos legales: legal@cubeworld.app. Intentamos responder todas las consultas en un plazo de 30 días.'}
   ],
   zh:[
-    {id:'s1',h:'1. 关于我们',p:'CubeWorld 是一个匿名社交平台，用户通过3D虚拟立方体进行互动。我们致力于保护您的匿名性和个人数据。'},
-    {id:'s2',h:'2. 我们收集的数据',p:'我们只收集必要的信息：您的 Cube Key（匿名标识符）、您创建的公开方块内容、聊天消息、群组互动和汇总使用统计数据。我们<strong>不</strong>收集您的姓名、电子邮件、电话号码或IP地址。'},
-    {id:'s3',h:'3. 我们如何使用您的数据',p:'您的数据用于：提供和改进 CubeWorld 平台、实现方块间实时通信、显示公开内容以及计算 CUBE 代币奖励。我们不会将您的数据出售给第三方。'},
-    {id:'s4',h:'4. 匿名密钥',p:'您的 Cube Key 是您在 CubeWorld 中的唯一身份标识。它在客户端生成，我们不会将其与任何个人信息关联。如果您丢失密钥，我们无法恢复。'},
-    {id:'s5',h:'5. 方块所有权',p:'每个方块都与一个 Cube Key 关联。方块内容、名称和设置存储在我们的服务器上。您保留对所创建内容的所有权。'},
-    {id:'s6',h:'6. CUBE 代币',p:'CUBE 是应用内实用代币。代币余额存储在我们的服务器上。区块链钱包关联是可选的，受第三方钱包提供商隐私政策的约束。'},
-    {id:'s7',h:'7. 第三方服务',p:'我们使用 Render.com 进行后端托管，使用 GitHub Pages 进行前端托管。这些提供商有各自的隐私政策。我们不与广告商或数据经纪商共享您的数据。'},
-    {id:'s8',h:'8. 数据保留',p:'方块内容和消息在您的方块活跃期间保留。您可以随时通过个人资料设置删除您的方块和相关数据。已删除数据将在30天内清除。'},
-    {id:'s9',h:'9. 儿童隐私',p:'CubeWorld 不适用于13岁以下的用户。如果您认为儿童向我们提供了数据，请立即联系我们。'},
-    {id:'s10',h:'10. 安全性',p:'我们对所有传输数据使用行业标准加密（HTTPS/TLS）。E2E 加密聊天在客户端进行加密。我们定期进行安全审查。'},
-    {id:'s11',h:'11. 您的权利',p:'您有权：访问您的数据（通过 Cube Key）、删除您的账户和所有相关数据、退出分析以及请求数据可携带性。请联系 privacy@cubeworld.app。'},
-    {id:'s12',h:'12. 政策变更',p:'我们可能会定期更新本政策。重大变更将在应用内公告。您继续使用 CubeWorld 即表示接受更新后的政策。'}
+    {id:'s1',h:'1. 简介',p:'CubeWorld是一个匿名社交平台。我们致力于保护您的隐私。本政策说明我们收集哪些信息、如何使用这些信息以及您对数据的权利。'},
+    {id:'s2',h:'2. 我们收集的信息',p:'我们只收集必要的信息：您的Cube Key（匿名标识符）、方块内容和帖子、平台内的消息、使用数据（会话时间戳、活动记录）以及连接时的可选钱包地址。'},
+    {id:'s3',h:'3. 我们如何使用您的数据',p:'您的数据用于：运营和改进平台、提供实时通信功能、向其他用户展示您的方块和内容、保持会话连续性以及确保平台安全。'},
+    {id:'s4',h:'4. 匿名密钥',p:'Cube Key是您在CubeWorld上的唯一标识符。我们不收集姓名、电子邮件地址、电话号码或身份证件。您的身份保持匿名。丢失Cube Key意味着失去访问权限——我们无法恢复它。'},
+    {id:'s5',h:'5. 方块所有权',p:'每个方块都与Cube Key关联。您在方块中发布的内容与您的匿名密钥绑定。您保留对内容的所有权。CubeWorld不对用户生成的内容主张所有权。'},
+    {id:'s6',h:'6. CUBE代币',p:'CUBE代币是应用内实用代币。仅在您自愿连接钱包时存储钱包地址。我们不与第三方共享钱包数据。交易在Polygon区块链上进行，公开可见。'},
+    {id:'s7',h:'7. 第三方服务',p:'我们使用Render.com提供后端托管服务，使用GitHub Pages提供前端服务。这些服务可能收集标准服务器日志。我们不使用广告追踪器、分析SDK或第三方数据经纪商。'},
+    {id:'s8',h:'8. 数据存储与保留',p:'内容和消息在方块活跃期间存储。删除方块可能导致永久数据丢失。出于安全目的，平台日志最多保留30天。您可以随时请求删除数据。'},
+    {id:'s9',h:'9. 儿童隐私',p:'CubeWorld不适合13岁以下用户使用。我们不会有意收集儿童数据。如果您认为未成年人创建了账户，请通过privacy@cubeworld.app联系我们。'},
+    {id:'s10',h:'10. 安全性',p:'我们对所有传输中的数据使用HTTPS/TLS加密。Cube Key通过密码学方式生成，从不以明文形式存储。我们实施速率限制、输入验证和监控以保护平台免受未授权访问。'},
+    {id:'s11',h:'11. 您的权利',p:'您有权：访问您的数据（通过Cube Key）、删除账户和相关内容、选择退出可选功能以及请求了解数据使用情况。请联系privacy@cubeworld.app提交任何请求。'},
+    {id:'s12',h:'12. 政策变更',p:'我们可能会定期更新本隐私政策。在变更后继续使用CubeWorld即表示接受。我们将在应用内通知用户重大变更。顶部的生效日期反映最近一次更新。'},
+    {id:'s13',h:'13. 联系我们',p:'隐私问题或数据请求：privacy@cubeworld.app。法律事务：legal@cubeworld.app。我们力争在30天内回复所有隐私咨询。'}
   ],
   fr:[
-    {id:'s1',h:'1. Qui Nous Sommes',p:'CubeWorld est une plateforme sociale anonyme où les utilisateurs interagissent via des cubes virtuels 3D. Nous nous engageons à protéger votre anonymat et vos données personnelles.'},
-    {id:'s2',h:'2. Données que Nous Collectons',p:'Nous collectons uniquement le nécessaire : votre Cube Key (identifiant anonyme), le contenu public de vos cubes, les messages de chat, les interactions de groupe et les statistiques d\'utilisation agrégées. Nous ne collectons <strong>pas</strong> votre nom, email, téléphone ou adresse IP.'},
-    {id:'s3',h:'3. Utilisation de vos Données',p:'Vos données sont utilisées pour : fournir et améliorer CubeWorld, permettre la communication en temps réel, afficher le contenu public et calculer les récompenses en tokens CUBE. Nous ne vendons pas vos données à des tiers.'},
-    {id:'s4',h:'4. Clés Anonymes',p:'Votre Cube Key est votre seule identité sur CubeWorld. Elle est générée côté client et nous ne la lions à aucune information personnelle. En cas de perte de votre clé, nous ne pouvons pas la récupérer.'},
-    {id:'s5',h:'5. Propriété du Cube',p:'Chaque cube est associé à une Cube Key. Le contenu, le nom et les paramètres du cube sont stockés sur nos serveurs. Vous conservez la propriété du contenu que vous créez.'},
-    {id:'s6',h:'6. Token CUBE',p:'CUBE est un token utilitaire dans l\'application. Les soldes de tokens sont stockés sur nos serveurs. La liaison de portefeuille blockchain est optionnelle et régie par la politique de confidentialité du fournisseur tiers.'},
-    {id:'s7',h:'7. Services Tiers',p:'Nous utilisons Render.com pour l\'hébergement backend et GitHub Pages pour le frontend. Ces fournisseurs ont leurs propres politiques de confidentialité. Nous ne partageons pas vos données avec des annonceurs.'},
-    {id:'s8',h:'8. Conservation des Données',p:'Le contenu et les messages sont conservés tant que votre cube est actif. Vous pouvez supprimer votre cube et les données associées à tout moment. Les données supprimées sont purgées dans les 30 jours.'},
-    {id:'s9',h:'9. Confidentialité des Enfants',p:'CubeWorld n\'est pas destiné aux utilisateurs de moins de 13 ans. Si vous pensez qu\'un enfant nous a fourni des données, veuillez nous contacter immédiatement.'},
-    {id:'s10',h:'10. Sécurité',p:'Nous utilisons HTTPS/TLS pour toutes les données en transit. Les chats chiffrés E2E sont chiffrés côté client. Nous effectuons des examens de sécurité réguliers.'},
-    {id:'s11',h:'11. Vos Droits',p:'Vous avez le droit de : accéder à vos données, supprimer votre compte et toutes les données associées, refuser l\'analyse et demander la portabilité des données. Contactez-nous à privacy@cubeworld.app.'},
-    {id:'s12',h:'12. Modifications de cette Politique',p:'Nous pouvons mettre à jour cette politique périodiquement. Les changements importants seront annoncés dans l\'application. L\'utilisation continue de CubeWorld constitue une acceptation de la politique mise à jour.'}
+    {id:'s1',h:'1. Introduction',p:'CubeWorld est une plateforme sociale anonyme. Nous nous engageons à protéger votre vie privée. Cette politique explique quelles informations nous collectons, comment nous les utilisons et vos droits concernant vos données.'},
+    {id:'s2',h:'2. Informations que nous collectons',p:'Nous collectons uniquement le nécessaire : votre Cube Key (identifiant anonyme), le contenu et les publications de votre cube, les messages au sein de la plateforme, les données d\'utilisation et les adresses de portefeuille si connecté.'},
+    {id:'s3',h:'3. Comment nous utilisons vos données',p:'Vos données sont utilisées pour : exploiter et améliorer la plateforme, fournir des fonctionnalités de communication en temps réel, afficher votre cube et votre contenu, maintenir la continuité des sessions et assurer la sécurité.'},
+    {id:'s4',h:'4. Clés anonymes',p:'Votre Cube Key est votre seul identifiant sur CubeWorld. Nous ne collectons pas de noms, d\'adresses e-mail, de numéros de téléphone ni de pièces d\'identité. Votre identité reste anonyme. Perdre votre Cube Key signifie perdre l\'accès — nous ne pouvons pas la récupérer.'},
+    {id:'s5',h:'5. Propriété du cube',p:'Chaque cube est associé à une Cube Key. Le contenu que vous publiez dans votre cube reste lié à votre clé anonyme. Vous conservez la propriété de votre contenu. CubeWorld ne revendique pas la propriété du contenu généré par les utilisateurs.'},
+    {id:'s6',h:'6. Token CUBE',p:'Les tokens CUBE sont des tokens utilitaires intégrés à l\'application. Les adresses de portefeuille ne sont stockées que si vous connectez volontairement un portefeuille. Nous ne partageons pas les données de portefeuille avec des tiers. Les transactions ont lieu sur la blockchain Polygon.'},
+    {id:'s7',h:'7. Services tiers',p:'Nous utilisons Render.com pour l\'hébergement backend et GitHub Pages pour la livraison frontend. Ces services peuvent collecter des journaux serveur standard. Nous n\'utilisons pas de trackers publicitaires, de SDK analytiques ou de courtiers en données.'},
+    {id:'s8',h:'8. Stockage des données',p:'Le contenu et les messages sont stockés tant que votre cube est actif. La suppression d\'un cube peut entraîner une perte permanente de données. Les journaux de la plateforme sont conservés jusqu\'à 30 jours pour des raisons de sécurité.'},
+    {id:'s9',h:'9. Confidentialité des enfants',p:'CubeWorld n\'est pas destiné aux utilisateurs de moins de 13 ans. Nous ne collectons pas sciemment les données des enfants. Si vous pensez qu\'un mineur a créé un compte, contactez-nous à privacy@cubeworld.app.'},
+    {id:'s10',h:'10. Sécurité',p:'Nous utilisons HTTPS/TLS pour toutes les données en transit. Les Cube Keys sont générées cryptographiquement et ne sont jamais stockées en texte clair. Nous mettons en œuvre une limitation de débit, une validation des entrées et une surveillance pour protéger la plateforme.'},
+    {id:'s11',h:'11. Vos droits',p:'Vous avez le droit de : accéder à vos données (via votre Cube Key), supprimer votre compte et votre contenu, refuser les fonctionnalités optionnelles et demander des informations sur l\'utilisation de vos données. Contactez privacy@cubeworld.app.'},
+    {id:'s12',h:'12. Modifications de cette politique',p:'Nous pouvons mettre à jour cette politique périodiquement. L\'utilisation continue de CubeWorld après les modifications constitue une acceptation. Nous notifierons les utilisateurs des changements significatifs dans l\'application.'},
+    {id:'s13',h:'13. Nous contacter',p:'Pour les questions de confidentialité : privacy@cubeworld.app. Pour les questions juridiques : legal@cubeworld.app. Nous nous efforçons de répondre à toutes les demandes dans un délai de 30 jours.'}
   ]
 };
 
-var STRINGS = {
-  en:{title:'Privacy Policy',updated:'Last updated: July 29, 2026 · Effective immediately',back:'Back',toc_title:'TABLE OF CONTENTS',contact_text:'Questions? Contact us at <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Terms of Service',home_link:'Home'},
-  ru:{title:'Политика конфиденциальности',updated:'Обновлено: 29 июля 2026 · Вступает в силу немедленно',back:'Назад',toc_title:'СОДЕРЖАНИЕ',contact_text:'Вопросы? Напишите нам на <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Условия использования',home_link:'ѓлавная'},
+var STRINGS={
+  en:{title:'Privacy Policy',updated:'Last updated: July 29, 2026 · Effective immediately',back:'Back',toc_title:'TABLE OF CONTENTS',contact_text:'Questions about this policy? Contact us at <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Terms of Service',home_link:'Home'},
+  ru:{title:'Политика конфиденциальности',updated:'Обновлено: 29 июля 2026 · Вступает в силу немедленно',back:'Назад',toc_title:'СОДЕРЖАНИЕ',contact_text:'Вопросы? Напишите нам на <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Условия использования',home_link:'Главная'},
   es:{title:'Política de Privacidad',updated:'Actualizado: 29 de julio de 2026 · Efectivo inmediatamente',back:'Volver',toc_title:'TABLA DE CONTENIDOS',contact_text:'¿Preguntas? Contáctenos en <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Términos de Servicio',home_link:'Inicio'},
-  zh:{title:'隐私政策',updated:'最后更新：2026年7月29日 · 即时生效',back:'返回',toc_title:'目录',contact_text:'有问题？请联系 <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'服务条款',home_link:'主页'},
-  fr:{title:'Politique de Confidentialité',updated:'Mis à jour : 29 juillet 2026 · Effectif immédiatement',back:'Retour',toc_title:'TABLE DES MATIÈRES',contact_text:'Des questions ? Contactez-nous à <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Conditions d\'utilisation',home_link:'Accueil'}
+  zh:{title:'隐私政策',updated:'更新日期：2026年7月29日 · 立即生效',back:'返回',toc_title:'目录',contact_text:'有问题？请联系我们 <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'服务条款',home_link:'首页'},
+  fr:{title:'Politique de Confidentialité',updated:'Mis à jour : 29 juillet 2026 · Effectif immédiatement',back:'Retour',toc_title:'TABLE DES MATIÈRES',contact_text:'Des questions ? Contactez-nous à <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Conditions d\'utilisation',home_link:'Accueil'}
 };
 
 var FLAGS={en:'&#127468;&#127463;',ru:'&#127479;&#127482;',es:'&#127466;&#127480;',zh:'&#127464;&#127475;',fr:'&#127467;&#127479;'};
@@ -290,39 +278,32 @@ var curLang='en';
 function setLang(l){
   curLang=l;
   var s=STRINGS[l],secs=SECTIONS[l];
-  // Update i18n elements
   document.querySelectorAll('[data-i18n]').forEach(function(el){
     var key=el.getAttribute('data-i18n');
     if(s[key]!==undefined)el.innerHTML=s[key];
   });
-  // Rebuild TOC
   var tocList=document.getElementById('toc-list');
   tocList.innerHTML=secs.map(function(sec){
     return '<li><a href="#'+sec.id+'">'+sec.h+'</a></li>';
   }).join('');
-  // Rebuild sections
   var wrap=document.getElementById('sections-wrap');
   wrap.innerHTML=secs.map(function(sec){
     return '<div class="section" id="'+sec.id+'"><h3>'+sec.h+'</h3><p>'+sec.p+'</p></div>';
   }).join('');
-  // Flag/code
   document.getElementById('lflag').innerHTML=FLAGS[l];
   document.getElementById('lcode').textContent=CODES[l];
   document.querySelectorAll('.ldm button').forEach(function(btn){btn.classList.remove('cur');});
   var btn=document.getElementById('lo-'+l);
   if(btn)btn.classList.add('cur');
-  // html lang
   document.documentElement.lang=l;
   try{localStorage.setItem('cw_lang',l);}catch(e){}
 }
 
-// ── Language dropdown ─────────────────────────────────────────────────────────
 var ddOpen=false;
 function togDD(e){e.stopPropagation();ddOpen=!ddOpen;document.getElementById('ldd').classList.toggle('open',ddOpen);}
 function pickL(l){ddOpen=false;document.getElementById('ldd').classList.remove('open');setLang(l);}
 document.addEventListener('click',function(){if(ddOpen){ddOpen=false;document.getElementById('ldd').classList.remove('open');}});
 
-// ── Navigation ────────────────────────────────────────────────────────────────
 function goBack(){
   document.body.classList.add('leaving');
   setTimeout(function(){window.history.back();},220);
@@ -333,7 +314,6 @@ function navTo(e,url){
   setTimeout(function(){window.location.href=url;},220);
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
 (function(){
   var saved='en';
   try{saved=localStorage.getItem('cw_lang')||'en';}catch(e){}
