@@ -132,7 +132,7 @@ body.leaving{animation:pageOut .25s ease forwards;}
 <script>
 (function(){
   var cv=document.getElementById('cv');
-  var W=cv.width=window.innerWidth,I=cv.height=window.innerHeight;
+  var W=cv.width=window.innerWidth,H=cv.height=window.innerHeight;
   var ctx=cv.getContext('2d');
   var stars=[];
   for(var i=0;i<120;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*.8+.2,a:Math.random()});
@@ -204,16 +204,15 @@ var SECTIONS={
   ],
   ru:[
     {id:'s1',h:'1. Принятие условий',p:'Используя CubeWorld, вы соглашаетесь с настоящими Условиями использования. Если вы не согласны, пожалуйста, не используйте платформу.'},
-    {id:'s2',h:'2. Описание сервиса',p:'CubeWorld — анонимная социальная платформа с 3D-кубами, чатами в реальном времени, лентой, групповыми чатами и экосистемой токена СубE. Сервисы предоставляются «как есть».'},
+    {id:'s2',h:'2. Описание сервиса',p:'CubeWorld — анонимная социальная платформа с 3D-кубами, чатами в реальном времени, лентой, групповыми чатами и экосистемой токена Субк.'},
     {id:'s3',h:'3. Возрастные ограничения',p:'Вам должно быть не менее 13 лет для использования CubeWorld. Используя платформу, вы подтверждаете соответствие этому требованию.'},
-    {id:'s4',h:'4. Cube Key',p:'Ваш Cube Key — уникальный анонимный идентификатор. Вы несёте ответственность за его сохранность. CubeWorld не может восстановить утерянные ключи. Все действия, совершённые с вашим ключом, — ваша ответственность.'},
+    {id:'s4',h:'4. Cube Key',p:'Ваш Cube Key — уникальныйs4',h:'4. Cube Key',p:'Ваш Cube Key — уникальный анонимный идентификатор. Вы несёте ответственность за его сохранность. CubeWorld не может восстановить утерянные ключи. Все действия, совершённые с вашим ключом, — ваша ответственность.'},
     {id:'s5',h:'5. Пользовательский контент',p:'Вы сохраняете право собственности на созданный контент. Публикуя его, вы предоставляете CubeWorld неисключительную лицензию на его отображение. Вы несёте единоличную ответственность за свой контент.'},
     {id:'s6',h:'6. Токен CUBE',p:'Токены CUBE — внутриплатформенные утилитарные токены без гарантированной реальной денежной ценности. Награды могут быть изменены или отменены в любое время.'},
     {id:'s7',h:'7. Запрещённые действия',p:'Запрещается: спам и преследование пользователей, публикация незаконного контента, взлом или нарушение работы платформы, использование ботов без разрешения, выдача себя за других пользователей.'},
     {id:'s8',h:'8. Интеллектуальная собственность',p:'Дизайн, код и брендинг платформы принадлежат CubeWorld. Контент пользователей остаётся в собственности создателей. Копирование или коммерциализация материалов CubeWorld без разрешения запрещены.'},
-    {id:'s9',h:'9. Отказ от гарантий',p:'CubeWorld предоставляется «как есть» без каких-либо гарантий. Мы не гарантируем бесперебойную работу, сохранность данных или отсутствие ошибок. Использование платформы — на ваш риск.'},
-    {id:'s10',h:'10. Ограничение ответственности',p:'CubeWorld не несёт ответственности за косвенные, случайные или последующие убытки, включая потерю данных, токенов CUBE или деловых возможностей.'},
-    {id:'s11',h:'11. Прекращение использования',p:'CubeWorld вправе приостановить или удалить аккаунты, нарушающие условия. Вы можете удалить свой аккаунт в любое время. Прекращение не освобождает от ранее возникших обязательств.'},
+    {id:'s9',h:'9. Отказ от гарантий',p:'CubeWorld предоставляется «как есть» без каких-либо гарантий. Мы не гарантируем бесперебойную работу, сохраннность данных или отсутствие ошибок Использование платформы — на ваш риск.'},
+    {id:'s10',h:'10. Ограничение ответственности',p:'CubeWorld не несёт ответственности за косвенны�, �лучайные или последующие Ճбытки, включая потерю данныє��FB�B�B�B�B�BȁU	�B�B�B��B�B�B�B�B�F/F�B�B�B�B�B�B�B�B�FFB�B丝��(����������Ĝ����ĸ�BFB�B�FB�F'B�B�B�BԃB�FB�B�B�F3B�B�B�B�B�B�F<����Չ�]�ɱ��B�B�FB�B�BԃB�FB�B�FFB�B�B�B�B�FF0�B�B�B��FB�B�B�B�FF0�B�B�B�B�FB�FF,��B�B�FFF#B�F;F'B�BԃFFB�B�B�B�F<��BKF,�B�B�B�B�FBԃFB�B�B�B�FF0�FB�B�B�B�B�Bаунт в любое время. Прекращение не освобождает от ранее возникших обязательств.'},
     {id:'s12',h:'12. Применимое право',p:'Настоящие условия регулируются применимым международным интернет-правом. Споры разрешаются путём обязательного арбитража. Вы отказываетесь от участия в коллективных исках.'},
     {id:'s13',h:'13. Изменения условий',p:'Мы можем периодически обновлять условия. Продолжение использования CubeWorld означает принятие изменений. Об значительных изменениях уведомим в приложении.'},
     {id:'s14',h:'14. Контакты',p:'По вопросам об условиях использования: legal@cubeworld.app. По вопросам конфиденциальности: privacy@cubeworld.app.'}
@@ -224,7 +223,7 @@ var SECTIONS={
     {id:'s3',h:'3. Elegibilidad',p:'Debe tener al menos 13 años para usar CubeWorld. Al usar la plataforma, usted declara cumplir con este requisito de edad.'},
     {id:'s4',h:'4. Cube Keys',p:'Su Cube Key es su identificador anónimo único. Usted es responsable de mantenerla segura. CubeWorld no puede recuperar claves perdidas. Todas las acciones realizadas con su clave son su responsabilidad.'},
     {id:'s5',h:'5. Contenido del Usuario',p:'Usted conserva la propiedad del contenido que crea. Al publicar contenido, otorga a CubeWorld una licencia no exclusiva para mostrarlo. Usted es el único responsable de su contenido.'},
-    {id:'s6',h:'6. Token CUBE',p:'Los tokens CUBE son tokens utilitarios dentro de la aplicación sin valor moario real garantizado. Las recompensas pueden modificarse o discontinuarse en cualquier momento.'},
+    {id:'s6',h:'6. Token CUBE',p:'Los tokens CUBE son tokens utilitarios dentro de la aplicación sin valor monetario real garantizado. Las recompensas pueden modificarse o discontinuarse en cualquier momento.'},
     {id:'s7',h:'7. Actividades Prohibidas',p:'No puede: enviar spam o acosar usuarios, publicar contenido ilegal, intentar hackear la plataforma, usar bots sin permiso, o suplantar a otros usuarios.'},
     {id:'s8',h:'8. Propiedad Intelectual',p:'El diseño, código y marca de CubeWorld son propiedad de CubeWorld. El contenido generado por usuarios permanece en propiedad de sus creadores.'},
     {id:'s9',h:'9. Exenciones de Responsabilidad',p:'CubeWorld se proporciona "tal cual" sin garantías de ningún tipo. No garantizamos servicio ininterrumpido, preservación de datos o ausencia de errores.'},
@@ -241,8 +240,8 @@ var SECTIONS={
     {id:'s4',h:'4. Cube Key',p:'您的 Cube Key 是您唯一的匿名标识符。您有责任保管好您的密钥。CubeWorld 无法恢复丢失的密钥。使用您密钥执行的所有操作均由您负责。'},
     {id:'s5',h:'5. 用户内容',p:'您保留所创建内容的所有权。发布内容即表示您授予 CubeWorld 在平台内展示和分发该内容的非独家许可。您对您的内容负全责。'},
     {id:'s6',h:'6. CUBE 代币',p:'CUBE 代币是应用内实用代币，不保证具有实际货币价值。代币奖励可能随时修改或停止。'},
-    {id:'s7',h:'7. 禁止行为',p:'您同意不得：向其他用户发送垃圾信息或骚扰他们、发布非法或有害内容、尝试攻击或破坏平台、未经许可使用机器人、或冒充其他用户。'},
-    {id:'s8',h:'8. 知识产权',p:'CubeWorld 的平台设计、代码和品牌归 CubeWorld 所有。璨户生成的内容归其创作者所有。未经许可，您不得复制或商业化使用 CubeWorld 的专有材料。'},
+    {id:'s7',h:'7. 禁止行$��',p:'您同意不得：向其他用户发送垃圾信息或骚扰他们、发布非法或有害内容、尝试攻击或破坏平台、未经许可使用机器人、或冒充其他用户。'},
+    {id:'s8',h:'8. 知识产权',p:'CubeWorld 的平台设计、代码和品牌归 CubeWorld 所有。用户生成的内容归其创作者所有。未经许可，您不得复制或商业化使用 CubeWorld 的专有材料。'},
     {id:'s9',h:'9. 免责声明',p:'CubeWorld 按"原样"提供，不提供任何形式的保证。我们不保证服务不中断、数据保全或无错误。使用本平台风险自担。'},
     {id:'s10',h:'10. 责任限制',p:'CubeWorld 对因使用平台而产生的间接、偶然、特殊或后果性损害不承担责任，包括数据、CUBE 代币或商业机会的损失。'},
     {id:'s11',h:'11. 终止',p:'CubeWorld 保留暂停或终止违反本条款账户的权利。您可随时删除您的账户。终止不影响终止前已产生的任何义务。'},
@@ -270,7 +269,7 @@ var SECTIONS={
 
 var STRINGS={
   en:{title:'Terms of Service',updated:'Last updated: July 29, 2026 · Effective immediately',back:'Back',toc_title:'TABLE OF CONTENTS',contact_text:'Questions? Contact us at <a href="mailto:legal@cubeworld.app">legal@cubeworld.app</a>',privacy_link:'Privacy Policy',home_link:'Home'},
-  ru:{title:'Условия использования',updated:'Обновлено: 29 июля 2026 · Вступает в силу немедленно',back:'Назад',toc_title:'СОДЕРЖАНИЕ',contact_text:'Вопросы? Напишите нам на <a href="mailto:legal@cubeworld.app">legal@cubeworld.app</a>',privacy_link:'Политика конфиденциальности',home_link:'Главная'},
+  ru:{title:'Условия использования',updated:'Обновленп: 29 июля 2026 · Вступает в силу немедленно',back:'Назад',toc_title:'СОДЕРЖАНИЕ',contact_text:'Вопросы? Напишите нам на <a href="mailto:legal@cubeworld.app">legal@cubeworld.app</a>',privacy_link:'Политика конфиденциальности',home_link:'Главная'},
   es:{title:'Términos de Servicio',updated:'Actualizado: 29 de julio de 2026 · Efectivo inmediatamente',back:'Volver',toc_title:'TABLA DE CONTENIDOS',contact_text:'¿Preguntas? Contáctenos en <a href="mailto:legal@cubeworld.app">legal@cubeworld.app</a>',privacy_link:'Política de Privacidad',home_link:'Inicio'},
   zh:{title:'服务条款',updated:'最后更新：2026年7月29日 · 即时生效',back:'返回',toc_title:'目录',contact_text:'有问题？请联系 <a href="mailto:legal@cubeworld.app">legal@cubeworld.app</a>',privacy_link:'隐私政策',home_link:'主页'},
   fr:{title:'Conditions d\'utilisation',updated:'Mis à jour : 29 juillet 2026 · Effectif immédiatement',back:'Retour',toc_title:'TABLE DES MATIÈRES',contact_text:'Des questions ? Contactez-nous à <a href="mailto:legal@cubeworld.app">legal@cubeworld.app</a>',privacy_link:'Politique de Confidentialité',home_link:'Accueil'}
@@ -281,7 +280,7 @@ var CODES={en:'EN',ru:'RU',es:'ES',zh:'ZH',fr:'FR'};
 var curLang='en';
 
 function setLang(l){
-  curLand=l;
+  curLang=l;
   var s=STRINGS[l],secs=SECTIONS[l];
   document.querySelectorAll('[data-i18n]').forEach(function(el){
     var key=el.getAttribute('data-i18n');
