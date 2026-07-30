@@ -4,155 +4,154 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Privacy Policy — CubeWorld</title>
+<meta name="theme-color" content="#0a0a0f">
 <style>
-:root{--bg:#080c18;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#0095F6;--text:#e8e8f0;--muted:rgba(232,232,240,0.45);--radius:16px;}
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{min-height:100vh;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;overflow-x:hidden;animation:pageIn .35s ease;}
-@keyframes pageIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pageOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-10px)}}
-body.leaving{animation:pageOut .25s ease forwards;}
-
-#cv{position:fixed;inset:0;z-index:0;pointer-events:none;}
-.amb{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(ellipse at center,rgba(124,106,255,0.06) 0%,transparent 70%);z-index:0;pointer-events:none;}
-
-@media(min-width:880px){
-  body{max-width:880px;margin:0 auto;box-shadow:0 0 0 1px var(--border),0 24px 80px rgba(0,0,0,.6);border-radius:0 0 24px 24px;min-height:100vh;position:relative;}
-  #cv{position:absolute;}
-  #topbar{left:0;right:0;}
-}
-
-#topbar{position:fixed;top:0;left:0;right:0;z-index:150;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:rgba(8,12,24,0.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
-#logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer;}
-#logo-cube{width:38px;height:38px;display:block;flex-shrink:0;}
-#logo-txt{font-size:17px;font-weight:700;letter-spacing:-.3px;color:#fff;}
-#logo-txt span{color:#0095F6;}
-@media(max-width:480px){#logo-cube{width:30px;height:30px;}}
-
-.ldd{position:relative;z-index:100;}
-.ldb{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:7px 12px;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s;}
-.ldb:hover{background:rgba(255,255,255,.1);}
-.lfi{font-size:18px;line-height:1;}
-.ldarr{font-size:10px;color:var(--muted);margin-left:2px;transition:transform .2s;}
-.ldd.open .ldarr{transform:rotate(180deg);}
-.ldm{display:none;flex-direction:column;gap:2px;position:absolute;right:0;top:calc(100% + 6px);background:rgba(16,20,40,0.97);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:6px;backdrop-filter:blur(12px);min-width:120px;}
-.ldd.open .ldm{display:flex;}
-.ldm button{background:none;border:none;color:var(--text);font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;transition:background .2s;}
-.ldm button:hover,.ldm button.cur{background:rgba(0,149,246,.2);}
-
-#page{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:80px 24px 60px;}
-
-.hero{text-align:center;padding:36px 0 28px;}
-.hero-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;}
-#hero-cube{display:block;flex-shrink:0;}
-.hero-brand{font-size:26px;font-weight:800;letter-spacing:-.5px;color:#fff;}
-.hero-brand span{color:#0095F6;}
-.hero h1{font-size:clamp(28px,5vw,42px);font-weight:800;color:#fff;margin-bottom:10px;line-height:1.1;}
-.hero .updated{color:var(--muted);font-size:13px;}
-
-.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;padding:8px 0;margin-bottom:24px;transition:color .2s;background:none;border:none;}
-.back-btn:hover{color:var(--text);}
-
-.toc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:32px;}
-.toc h2{font-size:13px;font-weight:701;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
-.toc ol{padding-left:20px;display:flex;flex-direction:column;gap:6px;}
-.toc ol li a{color:#4f9cf9;text-decoration:none;font-size:14px;transition:color .2s;}
-.toc ol li a:hover{color:#fff;}
-
-.section{margin-bottom:32px;}
-.section h3{font-size:17px;font-weight:700;color:#fff;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
-.section p,.section ul{color:var(--muted);font-size:14px;line-height:1.75;}
-.section ul{padding-left:20px;margin-top:8px;display:flex;flex-direction:column;gap:6px;}
-
-.contact-box{background:rgba(0,149,246,.08);border:1px solid rgba(0,149,246,.25);border-radius:var(--radius);padding:20px 24px;margin-top:32px;text-align:center;}
-.contact-box p{color:var(--muted);font-size:14px;line-height:1.7;}
-.contact-box a{color:#4f9cf9;}
-
-.page-footer{text-align:center;padding:24px 0 8px;font-size:12px;color:var(--muted);}
-.page-footer a{color:#4f9cf9;text-decoration:none;margin:0 8px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#0a0a0f;color:#e8eaf0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden;transition:opacity .22s ease,transform .22s ease}
+body.leaving{opacity:0;transform:translateY(-10px)}
+#cv-stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:rgba(10,10,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,212,255,.12)}
+.top-left{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none}
+.logo-wrap{width:32px;height:32px;position:relative;flex-shrink:0}
+canvas.logo-cube{position:absolute;top:0;left:0}
+.logo-text{font-size:18px;font-weight:700;background:linear-gradient(135deg,#00d4ff,#0080ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.top-right{display:flex;align-items:center;gap:10px}
+.back-btn{display:flex;align-items:center;gap:6px;color:#00d4ff;font-size:13px;font-weight:600;cursor:pointer;padding:6px 14px;border:1px solid rgba(0,212,255,.3);border-radius:20px;transition:all .2s;text-decoration:none;background:rgba(0,212,255,.06)}
+.back-btn:hover{background:rgba(0,212,255,.18);border-color:rgba(0,212,255,.7)}
+.back-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5}
+.lang-wrap{position:relative}
+.lang-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:6px 14px;cursor:pointer;color:#e8eaf0;font-size:13px;font-weight:600;transition:all .2s;user-select:none}
+.lang-btn:hover{background:rgba(255,255,255,.13)}
+.lang-arrow{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;transition:transform .2s;flex-shrink:0}
+.ldm.open .lang-arrow{transform:rotate(180deg)}
+.ldm-drop{position:absolute;top:calc(100%+8px);right:0;background:#13131e;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:6px;min-width:155px;box-shadow:0 20px 60px rgba(0,0,0,.7);opacity:0;transform:translateY(-10px);pointer-events:none;transition:all .18s ease;z-index:200}
+.ldm.open .ldm-drop{opacity:1;transform:none;pointer-events:all}
+.ldm-drop button{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;background:none;border:none;color:#e8eaf0;font-size:13.5px;cursor:pointer;border-radius:9px;transition:background .15s;text-align:left}
+.ldm-drop button:hover{background:rgba(255,255,255,.08)}
+.ldm-drop button.cur{background:rgba(0,212,255,.1);color:#00d4ff;font-weight:600}
+.ldm-drop button .dflag{font-size:18px;width:24px;text-align:center;line-height:1}
+.hero{position:relative;z-index:1;min-height:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:110px 24px 56px}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 30%,rgba(0,212,255,.07) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);border-radius:20px;padding:5px 16px;font-size:11px;color:#00d4ff;font-weight:700;letter-spacing:.1em;margin-bottom:20px;text-transform:uppercase}
+.hero-badge::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#00d4ff;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+.hero-cube-wrap{margin-bottom:20px;filter:drop-shadow(0 0 24px rgba(0,212,255,.4))}
+.hero-title{font-size:clamp(32px,5vw,58px);font-weight:800;line-height:1.12;letter-spacing:-.03em;background:linear-gradient(135deg,#fff 40%,#00d4ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:14px}
+.hero-sub{font-size:15px;color:rgba(232,234,240,.5);max-width:500px;line-height:1.65;margin:0 auto}
+.hero-date{font-size:12px;color:rgba(0,212,255,.55);margin-top:14px;font-weight:500;letter-spacing:.03em}
+.page-body{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:0 24px 100px;display:grid;grid-template-columns:250px 1fr;gap:40px;align-items:start}
+@media(max-width:800px){.page-body{grid-template-columns:1fr;gap:0}.toc-sidebar{display:none}}
+.toc-sidebar{position:sticky;top:76px}
+.toc-inner{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:20px;backdrop-filter:blur(10px)}
+.toc-header{font-size:10px;font-weight:800;letter-spacing:.15em;color:rgba(0,212,255,.65);text-transform:uppercase;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+#toc-list{list-style:none}
+#toc-list li{margin-bottom:1px}
+#toc-list a{display:block;padding:7px 10px;border-radius:8px;font-size:12.5px;color:rgba(232,234,240,.55);text-decoration:none;transition:all .18s;line-height:1.4}
+#toc-list a:hover{color:#00d4ff;background:rgba(0,212,255,.09);padding-left:14px}
+.mob-toc{display:none;position:sticky;top:60px;z-index:50;background:rgba(10,10,15,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.07)}
+.mob-toc summary{font-size:12.5px;color:#00d4ff;font-weight:700;cursor:pointer;user-select:none;list-style:none;padding:11px 20px;letter-spacing:.05em}
+.mob-toc summary::marker,.mob-toc summary::-webkit-details-marker{display:none}
+.mob-toc-list{padding:6px 20px 14px;list-style:none;max-height:240px;overflow-y:auto}
+.mob-toc-list a{display:block;padding:6px 0;font-size:13px;color:rgba(232,234,240,.6);text-decoration:none}
+@media(max-width:800px){.mob-toc{display:block}}
+.section{background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.065);border-radius:20px;padding:28px 32px;margin-bottom:12px;transition:all .25s;position:relative;overflow:hidden;scroll-margin-top:80px}
+.section::after{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent 0%,rgba(0,212,255,.35) 50%,transparent 100%);opacity:0;transition:opacity .3s}
+.section:hover{border-color:rgba(0,212,255,.18);transform:translateY(-2px);background:rgba(255,255,255,.035)}
+.section:hover::after{opacity:1}
+.section h3{font-size:16.5px;font-weight:700;color:#fff;margin-bottom:11px;display:flex;align-items:center;gap:10px;line-height:1.3}
+.sec-icon{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,rgba(0,212,255,.18),rgba(0,100,255,.12));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;border:1px solid rgba(0,212,255,.18)}
+.section p{font-size:14px;color:rgba(232,234,240,.6);line-height:1.78}
+.contact-banner{background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(0,100,255,.05));border:1px solid rgba(0,212,255,.18);border-radius:20px;padding:28px 32px;margin-top:16px;text-align:center}
+.contact-banner p{font-size:14px;color:rgba(232,234,240,.65);line-height:1.7}
+.contact-banner a{color:#00d4ff;text-decoration:none;font-weight:600;transition:opacity .2s}
+.contact-banner a:hover{opacity:.8}
+.footer{position:relative;z-index:1;text-align:center;padding:20px 24px 32px;border-top:1px solid rgba(255,255,255,.05);margin-top:20px}
+.footer-links{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:8px}
+.footer-links a{font-size:13px;color:rgba(232,234,240,.35);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:#00d4ff}
+.footer-copy{font-size:12px;color:rgba(232,234,240,.22)}
 </style>
 </head>
 <body>
-<canvas id="cv"></canvas>
-<div class="amb"></div>
+<canvas id="cv-stars"></canvas>
 
-<div id="topbar">
-  <a id="logo-wrap" href="./index.html" onclick="navTo(event,'./index.html')">
-    <canvas id="logo-cube" width="38" height="38"></canvas>
-    <div id="logo-txt">Cube<span>World</span></div>
+<nav class="topbar">
+  <a class="top-left" onclick="goBack()" href="#">
+    <div class="logo-wrap"><canvas class="logo-cube" id="logo-cube" width="32" height="32"></canvas></div>
+    <span class="logo-text">CubeWorld</span>
   </a>
-  <div class="ldd" id="ldd">
-    <button class="ldb" onclick="togDD(event)">
-      <span class="lfi" id="lflag">&#127468;&#127463;</span>
-      <span id="lcode">EN</span>
-      <span class="ldarr">&#9660;</span>
-    </button>
-    <div class="ldm" id="ldm">
-      <button onclick="pickL('en')" id="lo-en" class="cur"><span class="lfi">&#127468;&#127463;</span> EN</button>
-      <button onclick="pickL('ru')" id="lo-ru"><span class="lfi">&#127479;&#127482;</span> RU</button>
-      <button onclick="pickL('es')" id="lo-es"><span class="lfi">&#127466;&#127480;</span> ES</button>
-      <button onclick="pickL('zh')" id="lo-zh"><span class="lfi">&#127464;&#127475;</span> ZH</button>
-      <button onclick="pickL('fr')" id="lo-fr"><span class="lfi">&#127467;&#127479;</span> FR</button>
+  <div class="top-right">
+    <a class="back-btn" onclick="goBack()" href="#">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      <span data-i18n="back">Back</span>
+    </a>
+    <div class="lang-wrap ldm" id="ldd">
+      <div class="lang-btn" onclick="togDD(event)">
+        <span id="lflag">&#127468;&#127463;</span>
+        <span id="lcode">EN</span>
+        <svg class="lang-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ldm-drop">
+        <button id="lo-en" onclick="pickL('en')"><span class="dflag">&#127468;&#127463;</span>English</button>
+        <button id="lo-ru" onclick="pickL('ru')"><span class="dflag">&#127479;&#127482;</span>&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</button>
+        <button id="lo-es" onclick="pickL('es')"><span class="dflag">&#127466;&#127480;</span>Espa&#241;ol</button>
+        <button id="lo-zh" onclick="pickL('zh')"><span class="dflag">&#127464;&#127475;</span>&#20013;&#25991;</button>
+        <button id="lo-fr" onclick="pickL('fr')"><span class="dflag">&#127467;&#127479;</span>Fran&#231;ais</button>
+      </div>
     </div>
   </div>
-</div>
+</nav>
 
-<div id="page">
-  <button class="back-btn" onclick="goBack()">&#8592; <span data-i18n="back">Back</span></button>
+<header class="hero">
+  <div class="hero-badge">Legal &#183; Privacy</div>
+  <div class="hero-cube-wrap"><canvas id="hero-cube" width="110" height="110"></canvas></div>
+  <h1 class="hero-title" data-i18n="title">Privacy Policy</h1>
+  <p class="hero-sub" data-i18n="hero_sub">CubeWorld is an anonymous social platform. This policy explains how we protect and handle your data.</p>
+  <p class="hero-date" data-i18n="updated">Last updated: July 29, 2026 &#183; Effective immediately</p>
+</header>
 
-  <div class="hero">
-    <div class="hero-logo">
-      <canvas id="hero-cube" width="64" height="64"></canvas>
-      <div class="hero-brand">Cube<span>World</span></div>
+<details class="mob-toc">
+  <summary data-i18n="toc_title">TABLE OF CONTENTS &#9660;</summary>
+  <ul class="mob-toc-list" id="mob-toc-list"></ul>
+</details>
+
+<div class="page-body">
+  <aside class="toc-sidebar">
+    <div class="toc-inner">
+      <div class="toc-header" data-i18n="toc_title">TABLE OF CONTENTS</div>
+      <ul id="toc-list"></ul>
     </div>
-    <h1 data-i18n="title">Privacy Policy</h1>
-    <p class="updated" data-i18n="updated">Last updated: July 29, 2026 &middot; Effective immediately</p>
-  </div>
-
-  <div class="toc">
-    <h2 data-i18n="toc_title">TABLE OF CONTENTS</h2>
-    <ol id="toc-list"></ol>
-  </div>
-
-  <div id="sections-wrap"></div>
-
-  <div class="contact-box">
-    <p data-i18n="contact_text">Questions about this policy? Contact us at <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a></p>
-  </div>
-
-  <div class="page-footer">
-    <a href="./privacy.html">Privacy Policy</a>
-    <span>&middot;</span>
-    <a href="./terms.html" onclick="navTo(event,'./terms.html')" data-i18n="terms_link">Terms of Service</a>
-    <span>&middot;</span>
-    <a href="./index.html" onclick="navTo(event,'./index.html')" data-i18n="home_link">Home</a>
-  </div>
+  </aside>
+  <main>
+    <div id="sections-wrap"></div>
+    <div class="contact-banner">
+      <p data-i18n="contact_text">Questions about this policy? Contact us at <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a></p>
+      <p style="margin-top:8px"><a href="terms.html" onclick="navTo(event,'terms.html')" data-i18n="terms_link" style="font-size:13px;opacity:.65">Terms of Service</a></p>
+    </div>
+  </main>
 </div>
+
+<footer class="footer">
+  <p class="footer-copy">&#169; 2026 CubeWorld. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="index.html" onclick="navTo(event,'index.html')" data-i18n="home_link">Home</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html" onclick="navTo(event,'terms.html')" data-i18n="terms_link">Terms of Service</a>
+  </div>
+</footer>
 
 <script>
 (function(){
-  var cv=document.getElementById('cv');
-  var W=cv.width=window.innerWidth,H=cv.height=window.innerHeight;
-  var ctx=cv.getContext('2d');
-  var stars=[];
-  for(var i=0;i<120;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*.8+.2,a:Math.random()});
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-    stars.forEach(function(s){
-      s.a+=0.003*(Math.random()-.5);
-      if(s.a<.1)s.a=.1;if(s.a>.8)s.a=.8;
-      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-      ctx.fillStyle='rgba(255,255,255,'+s.a+')';ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  }
-  draw();
-  window.addEventListener('resize',function(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;});
+  var cv=document.getElementById('cv-stars'),cx=cv.getContext('2d');
+  function rs(){cv.width=innerWidth;cv.height=innerHeight;}rs();
+  addEventListener('resize',rs);
+  var S=Array.from({length:140},function(){return{x:Math.random(),y:Math.random(),r:Math.random()*1.2+.2,a:Math.random(),d:Math.random()*.004+.0008};});
+  function dr(){cx.clearRect(0,0,cv.width,cv.height);S.forEach(function(s){s.a+=s.d;if(s.a>1||s.a<0)s.d=-s.d;cx.globalAlpha=s.a*.55;cx.fillStyle='#fff';cx.beginPath();cx.arc(s.x*cv.width,s.y*cv.height,s.r,0,6.28);cx.fill();});cx.globalAlpha=1;requestAnimationFrame(dr);}dr();
 })();
 
 function initCube(id,CSS,sz){
-  var cv=document.getElementById(id);
-  if(!cv)return;
+  var cv=document.getElementById(id);if(!cv)return;
   var dpr=window.devicePixelRatio||1;
   cv.style.width=CSS+'px';cv.style.height=CSS+'px';
   cv.width=CSS*dpr;cv.height=CSS*dpr;
@@ -160,30 +159,25 @@ function initCube(id,CSS,sz){
   var cx2=CSS/2,cy2=CSS/2,ang=0;
   var V=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
   var E=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
-  function proj(v,a){
-    var x=v[0]*Math.cos(a)-v[2]*Math.sin(a);
-    var z=v[0]*Math.sin(a)+v[2]*Math.cos(a);
-    var y=v[1],tilt=0.28;
-    var y2=y*Math.cos(tilt)-z*Math.sin(tilt);
-    var z2=y*Math.sin(tilt)+z*Math.cos(tilt);
-    var f=3.5,sc=f/(f+z2);
+  function pr(v,a){
+    var x=v[0]*Math.cos(a)-v[2]*Math.sin(a),z=v[0]*Math.sin(a)+v[2]*Math.cos(a),y=v[1],t=.28;
+    var y2=y*Math.cos(t)-z*Math.sin(t),z2=y*Math.sin(t)+z*Math.cos(t),f=3.5,sc=f/(f+z2);
     return[cx2+x*sz*sc,cy2+y2*sz*sc];
   }
   function draw(){
     cx.clearRect(0,0,CSS,CSS);
-    var isHero=id==='hero-cube';
-    cx.shadowColor='#00cfff';cx.shadowBlur=isHero?10:6;
-    cx.strokeStyle='#00d4ff';cx.lineWidth=isHero?2:1.5;cx.lineCap='round';
-    E.forEach(function(e){
-      var p1=proj(V[e[0]],ang),p2=proj(V[e[1]],ang);
-      cx.beginPath();cx.moveTo(p1[0],p1[1]);cx.lineTo(p2[0],p2[1]);cx.stroke();
-    });
-    ang+=0.010;requestAnimationFrame(draw);
+    var h=id==='hero-cube';
+    cx.shadowColor='#00cfff';cx.shadowBlur=h?16:7;
+    cx.strokeStyle='#00d4ff';cx.lineWidth=h?2:1.5;cx.lineCap='round';
+    E.forEach(function(e){var p1=pr(V[e[0]],ang),p2=pr(V[e[1]],ang);cx.beginPath();cx.moveTo(p1[0],p1[1]);cx.lineTo(p2[0],p2[1]);cx.stroke();});
+    ang+=.010;requestAnimationFrame(draw);
   }
   draw();
 }
-initCube('logo-cube',38,10);
-initCube('hero-cube',64,17);
+initCube('logo-cube',32,8);
+initCube('hero-cube',110,28);
+
+var ICONS=['&#128737;&#65039;','&#128203;','&#9881;&#65039;','&#128273;','&#128230;','&#129689;','&#128279;','&#128190;','&#128118;','&#128274;','&#9878;&#65039;','&#128260;','&#128235;'];
 
 var SECTIONS={
   en:[
@@ -203,17 +197,17 @@ var SECTIONS={
   ],
   ru:[
     {id:'s1',h:'1. Введение',p:'CubeWorld — анонимная социальная платформа. Мы обязуемся защищать вашу конфиденциальность. Эта политика объясняет, какие данные мы собираем, как их используем и каковы ваши права.'},
-    {id:'s2',h:'2. Данные которые мы собираем',p:'Мы собираем только необходимое: ваш Cube Key (анонимный идентификатор), контент куба и публикации, сообщения внутри платформы, данные об использовании (временные метки, активность) и адреса кошельков при ихПодключении.'},
-    {id:'s3',h:'3. Как мы используем данные',p:'Данные используются для: работы и улучшения платформы, обеспечения коммуникации в реальном времени, отображения куба и контента другим пользователям, поддержания сессий и обеспечения безопасности платформы.'},
-    {id:'s4',h:'4. Анонимные ключи',p:'Cube Key — ваша единственная идентичность Х� CubeWorld. Мы не собираем имена, электронные адреса, телефоны или документы. Ваша личность остаётся анонимной. Потеря Cube Key означает потерю доступа — мы не можем его восстановить.'},
+    {id:'s2',h:'2. Данные которые мы собираем',p:'Мы собираем только необходимое: ваш Cube Key (анонимный идентификатор), контент и публикации, сообщения внутри платформы, данные об использовании (временные метки, активность) и адреса кошельков при подключении.'},
+    {id:'s3',h:'3. Как мы используем данные',p:'Данные используются для: работы и улучшения платформы, обеспечения коммуникации в реальном времени, отображения куба другим пользователям, поддержания сессий и обеспечения безопасности платформы.'},
+    {id:'s4',h:'4. Анонимные ключи',p:'Cube Key — ваша единственная идентичность в CubeWorld. Мы не собираем имена, электронные адреса, телефоны или документы. Ваша личность остаётся анонимной. Потеря Cube Key означает потерю доступа — мы не можем его восстановить.'},
     {id:'s5',h:'5. Владение кубом',p:'Каждый куб связан с Cube Key. Контент, назначенный вашему кубу, остаётся привязанным к вашему анонимному ключу. Вы сохраняете право собственности на свой контент. CubeWorld не претендует на владение пользовательским контентом.'},
-    {id:'s6',h:'6. Токен CUBE',p:'CUBE — внутриплатформенный утилитарный токен. Адреса кошельков хранятся только при добровольном подключении. Мы не передаём данные кошельков третьим лицам. Транзакции происходят в блокчейне Polygon и публично видны.'},
+    {id:'s6',h:'6. Токен CUBE',p:'CUBE — внутриплатформенный утилитарный токен. Адреса кошельков хранятся только при добровольном подключении. Мы не делимся данными кошельков с третьими лицами. Транзакции происходят в блокчейне Polygon и публично видны.'},
     {id:'s7',h:'7. Сторонние сервисы',p:'Мы используем Render.com для бэкенда и GitHub Pages для фронтенда. Эти сервисы могут собирать стандартные серверные логи. Мы не используем рекламные трекеры, аналитические SDK или брокеры данных.'},
-    {id:'s8',h:'8. Хранение данных',p:'Контент и сообщения хранятся пока куб активен. Удаление куба может привести к безвозвратной потере данных. Логи платформы хранятся до 30 дней в целях безопасности. Вы можете запросить удаление в любое время.'},
-    {id:'s9',h:'9. Конфиденциальность детей',p:'CubeWorld не предназначен для пользователей младше 13 лет. Мы намеренно не собираем данные детей. Если вы считаете, что несовершеннолетний создал аккаунт, свяжитесь с нами по адресу privacy@cubeworld.app.'},
+    {id:'s8',h:'8. Хранение данных',p:'Контент и сообщения хранятся пока куб активен. Удалённые кубы могут привести к безвозвратной потере данных. Логи хранятся до 30 дней в целях безопасности. Вы можете запросить удаление в любое время.'},
+    {id:'s9',h:'9. Конфиденциальность детей',p:'CubeWorld не предназначен для пользователей младше 13 лет. Мы не собираем данные детей преднамеренно. Если вы считаете, что несовершеннолетний создал аккаунт, свяжитесь с нами по адресу privacy@cubeworld.app.'},
     {id:'s10',h:'10. Безопасность',p:'Мы используем HTTPS/TLS для всех данных при передаче. Cube Key генерируется криптографически и никогда не хранится в открытом виде. Мы применяем ограничение запросов, валидацию ввода и мониторинг для защиты платформы.'},
     {id:'s11',h:'11. Ваши права',p:'Вы имеете право: получить доступ к данным (через Cube Key), удалить аккаунт и контент, отказаться от опциональных функций и запросить информацию об использовании ваших данных. Пишите на privacy@cubeworld.app.'},
-    {id:'s12',h:'12. Изменения политики',p:'Мы можем периодически обновлять эту политику конфиденциальности. Продолжение использования CubeWorld после изменений означает принятие. Мы уведомим пользователей о существенных изменениях внутри приложения.'},
+    {id:'s12',h:'12. Изменения политики',p:'Мы можем периодически обновлять эту политику. Продолжение использования CubeWorld после изменений означает принятие. Мы уведомим пользователей о существенных изменениях внутри приложения.'},
     {id:'s13',h:'13. Контакты',p:'По вопросам конфиденциальности пишите на privacy@cubeworld.app. По юридическим вопросам — legal@cubeworld.app. Мы стараемся отвечать на все запросы в течение 30 дней.'}
   ],
   es:[
@@ -224,7 +218,7 @@ var SECTIONS={
     {id:'s5',h:'5. Propiedad del Cubo',p:'Cada cubo está asociado a una Cube Key. El contenido que publica en su cubo permanece vinculado a su clave anónima. Usted conserva la propiedad de su contenido. CubeWorld no reclama propiedad sobre el contenido generado por usuarios.'},
     {id:'s6',h:'6. Token CUBE',p:'Los tokens CUBE son tokens utilitarios dentro de la aplicación. Las direcciones de billetera solo se almacenan si conecta voluntariamente una billetera. No compartimos datos de billetera con terceros. Las transacciones ocurren en la blockchain de Polygon.'},
     {id:'s7',h:'7. Servicios de Terceros',p:'Usamos Render.com para el backend y GitHub Pages para el frontend. Estos servicios pueden recopilar registros estándar. No usamos rastreadores publicitarios, SDK de análisis ni intermediarios de datos.'},
-    {id:'s8',h:'8. Almacenamiento de Datos',p:'El contenido y los mensajes se almacenan mientras el cubo esté activo. Eliminar un cubo puede resultar en pérdida permanente de datos. Los registros se conservan hasta 30 días por seguridad. Puede solicitar la eliminación en cualquier momento.'},
+    {id:'s8',h:'8. Almacenamiento de Datos',p:'El contenido y los mensajes se almacenan mientras el cubo está activo. Eliminar un cubo puede resultar en pérdida permanente de datos. Los registros se conservan hasta 30 días por seguridad. Puede solicitar la eliminación en cualquier momento.'},
     {id:'s9',h:'9. Privacidad de Menores',p:'CubeWorld no está destinado a menores de 13 años. No recopilamos datos de menores a sabiendas. Si cree que un menor ha creado una cuenta, contáctenos en privacy@cubeworld.app.'},
     {id:'s10',h:'10. Seguridad',p:'Usamos HTTPS/TLS para todos los datos en tránsito. Las Cube Keys se generan criptográficamente y nunca se almacenan en texto plano. Implementamos limitación de solicitudes, validación de entrada y monitoreo de seguridad.'},
     {id:'s11',h:'11. Sus Derechos',p:'Tiene derecho a: acceder a sus datos (mediante su Cube Key), eliminar su cuenta y contenido, optar por no usar funciones opcionales y solicitar información sobre el uso de sus datos. Contacte privacy@cubeworld.app.'},
@@ -232,43 +226,43 @@ var SECTIONS={
     {id:'s13',h:'13. Contacto',p:'Para preguntas de privacidad: privacy@cubeworld.app. Para asuntos legales: legal@cubeworld.app. Intentamos responder todas las consultas en un plazo de 30 días.'}
   ],
   zh:[
-    {id:'s1',h:'1. 简介',p:'CubeWorld是一个匿名社交平台。我们致力于保护您的隐私。本政策说明我们收集哪些信息、如何使用这些信息以及您对数据的权利。'},
-    {id:'s2',h:'2. 我们收集的信息',p:'我们只收集必要的信息：您的Cube Key（匿名标识符）、方块内容和帖子、平台内的消息、使用数据（会话时间戳、活动记录）以及连接时的可选钱包地址。'},
-    {id:'s3',h:'3. 我们如何使用您的数据',p:'您的数据用于：运营和改进平台、提供实时通信功能、向其他用户展示您的方块和内容、保持会话连续性以及确保平台安全。'},
-    {id:'s4',h:'4. 匿名密钥',p:'Cube Key是您在CubeWorld上的唯一标识符。我们不收集姓名、电子邮件地址、电话号码或身份证件。您的身份保持匿名。丢失Cube Key意味着失去访问权限——我们无法恢复它。'},
-    {id:'s5',h:'5. 方块所有权',p:'每个方块都与Cube Key关联。您在方块中发布的内容与您的匿名密钥绑定。您保留对内容的所有权。CubeWorld不对用户生成的内容主张所有权。'},
-    {id:'s6',h:'6. CUBE代币',p:'CUBE代币是应用内实用代币。仅在您自愿连接钱包时存储钱包地址。我们不与第三方共享钱包数据。交易在Polygon区块链上进行，公开可见。'},
-    {id:'s7',h:'7. 第三方服务',p:'我们使用Render.com提供后端托管服务，使用GitHub Pages提供前端服务。这些服务可能收集标准服务器日志。我们不使用广告追踪器、分析SDK或第三方数据经纪商。'},
-    {id:'s8',h:'8. 数据存储与保留',p:'内容和消息在方块活跃期间存储。删除方块可能导致永久数据丢失。出于安全目的，平台日志最多保留30天。您可以随时请求删除数据。'},
-    {id:'s9',h:'9. 儿童隐私',p:'CubeWorld不适合13岁以下用户使用。我们不会有意收集儿童数据。如果您认为未成年人创建了账户，请通过privacy@cubeworld.app联系我们。'},
-    {id:'s10',h:'10. 安全性',p:'我们对所有传输中的数据使用HTTPS/TLS加密。Cube Key通过密码学方式生成，从不以明文形式存储。我们实施速率限制、输入验证和监控以保护平台免受未授权访问。'},
-    {id:'s11',h:'11. 您的权利',p:'您有权：访问您的数据（通过Cube Key）、删除账户和相关内容、选择退出可选功能以及请求了解数据使用情况。请联系privacy@cubeworld.app提交任何请求。'},
+    {id:'s1',h:'1. 简介',p:'CubeWorld是一个匹名社交平台。我们致力于保护您的隐私。本政策说明我们收集哪些信息、如何使用以及您关于数据的权利。'},
+    {id:'s2',h:'2. 我们收集的信息',p:'我们仅收集必要信息：您的Cube Key（匹名标识符）、立方体内容和帖子、平台内的消息、使用数据（会话时间戳、活动）以及可选的錢包地址（如已连接）。'},
+    {id:'s3',h:'3. 我们如何使用您的数据',p:'您的数据用于：运营和改进平台、提供实时通信功能、向其他用户展示您的立方体和内容、维持会话连续性，以及确保平台安全和防止滥用。'},
+    {id:'s4',h:'4. 匹名密鑰',p:'Cube Key是您在CubeWorld上的唯一标识符。我们不收集姓名、电子邮件、电话号码或身份证件。您的身份保持匹名。丢失Cube Key意味着失去访问权限——我们无法恢复它。'},
+    {id:'s5',h:'5. 立方体所有权',p:'每个立方体都与一个Cube Key关联。您在立方体中发布的内容与您的匹名密鑰绑定。您保留对内容的所有权。CubeWorld不主张对用户生成内容的所有权。'},
+    {id:'s6',h:'6. CUBE代币',p:'CUBE代币是应用内实用代币。錢包地址只有在您主动连接錢包时才会存储。我们不与第三方共享錢包数据。代币交易在Polygon区块链上进行，可公开查看。'},
+    {id:'s7',h:'7. 第三方服务',p:'我们使用Render.com提供后端托管，使用GitHub Pages提供前端交付。这些服务可能收集标准服务器日志。我们不使用广告追踪器、分析SDK或第三方数据代理。'},
+    {id:'s8',h:'8. 数据存储和保留',p:'内容和消息在您的立方体活跃时存储。删除立方体可能导致数据永久丢失。我们出于安全目的保留平台日志最夐30天。您可以随时请求删除。'},
+    {id:'s9',h:'9. 儿童隐私',p:'CubeWorld不面向13岁以下用户。我们不会有意收集儿童数据。如果您认为未成年人创建了帐户，请通过privacy@cubeworld.app联系我们。'},
+    {id:'s10',h:'10. 安全性',p:'我们对传输中的所有数据使用HTTPS/TLS。Cube Keys经过加密生成，绝不以明文存储。我们实施速率限制、输入验证和监控，以保护平台免受未经授权的访问。'},
+    {id:'s11',h:'11. 您的权利',p:'您有权：访问您的数据（通过您的Cube Key）、删除您的帐户和相关内容、退出可选功能，以及请求有关您数据使用方式的信息。请联系 privacy@cubeworld.app。'},
     {id:'s12',h:'12. 政策变更',p:'我们可能会定期更新本隐私政策。在变更后继续使用CubeWorld即表示接受。我们将在应用内通知用户重大变更。顶部的生效日期反映最近一次更新。'},
-    {id:'s13',h:'13. 联系我们',p:'隐私问题或数据请求：privacy@cubeworld.app。法律事务：legal@cubeworld.app。我们力争在30天内回复所有隐私咨询。'}
+    {id:'s13',h:'13. 联系我们',p:'如有隐私问题或数据请求，请联系 privacy@cubeworld.app。如有法律事项，请联系 legal@cubeworld.app。我们力求在 30天内回复所有隐私查询。'}
   ],
   fr:[
-    {id:'s1',h:'1. Introduction',p:'CubeWorld est une plateforme sociale anonyme. Nous nous engageons à protéger votre vie privée. Cette politique explique quelles informations nous collectons, comment nous les utilisons et vos droits concernant vos données.'},
-    {id:'s2',h:'2. Informations que nous collectons',p:'Nous collectons uniquement le nécessaire : votre Cube Key (identifiant anonyme), le contenu et les publications de votre cube, les messages au sein de la plateforme, les données d\'utilisation et les adresses de portefeuille si connecté.'},
-    {id:'s3',h:'3. Comment nous utilisons vos données',p:'Vos données sont utilisées pour : exploiter et améliorer la plateforme, fournir des fonctionnalités de communication en temps réel, afficher votre cube et votre contenu, maintenir la continuité des sessions et assurer la sécurité.'},
+    {id:'s1',h:'1. Introduction',p:'CubeWorld est une plateforme sociale anonyme. Nous nous engageons à protéger votre vie privée. Cette politique explique quelles informations nous collectons, comment nous les utilisons et vos droits.'},
+    {id:'s2',h:'2. Informations que nous collectons',p:'Nous collectons uniquement le nécessaire : votre Cube Key (identifiant anonyme), le contenu et les publications de votre cube, les messages au sein de la plateforme, les données d\'utilisation et les adresses de portefeuille si connecté.'},
+    {id:'s3',h:'3. Comment nous utilisons vos données',p:'Vos données sont utilisées pour : exploiter et améliorer la plateforme, fournir des fonctionnalités de communication en temps réel, afficher votre cube, maintenir la continuité des sessions et assurer la sécurité.'},
     {id:'s4',h:'4. Clés anonymes',p:'Votre Cube Key est votre seul identifiant sur CubeWorld. Nous ne collectons pas de noms, d\'adresses e-mail, de numéros de téléphone ni de pièces d\'identité. Votre identité reste anonyme. Perdre votre Cube Key signifie perdre l\'accès — nous ne pouvons pas la récupérer.'},
-    {id:'s5',h:'5. Propriété du cube',p:'Chaque cube est associé à une Cube Key. Le contenu que vous publiez dans votre cube reste lié à votre clé anonyme. Vous conservez la propriété de votre contenu. CubeWorld ne revendique pas la propriété du contenu généré par les utilisateurs.'},
+    {id:'s5',h:'5. Propriété du cube',p:'Chaque cube est associé à une Cube Key. Le contenu que vous publiez reste lié à votre clé anonyme. Vous conservez la propriété de votre contenu. CubeWorld ne revendique pas la propriété du contenu généré par les utilisateurs.'},
     {id:'s6',h:'6. Token CUBE',p:'Les tokens CUBE sont des tokens utilitaires intégrés à l\'application. Les adresses de portefeuille ne sont stockées que si vous connectez volontairement un portefeuille. Nous ne partageons pas les données de portefeuille avec des tiers. Les transactions ont lieu sur la blockchain Polygon.'},
     {id:'s7',h:'7. Services tiers',p:'Nous utilisons Render.com pour l\'hébergement backend et GitHub Pages pour la livraison frontend. Ces services peuvent collecter des journaux serveur standard. Nous n\'utilisons pas de trackers publicitaires, de SDK analytiques ou de courtiers en données.'},
-    {id:'s8',h:'8. Stockage des données',p:'Le contenu et les messages sont stockés tant que votre cube est actif. La suppression d\'un cube peut entraîner une perte permanente de données. Les journaux de la plateforme sont conservés jusqu\'à 30 jours pour des raisons de sécurité.'},
+    {id:'s8',h:'8. Stockage des données',p:'Le contenu et les messages sont stockés tant que votre cube est actif. La suppression d\'un cube peut entraîner une perte permanente de données. Les journaux sont conservés jusqu\'à 30 jours pour des raisons de sécurité.'},
     {id:'s9',h:'9. Confidentialité des enfants',p:'CubeWorld n\'est pas destiné aux utilisateurs de moins de 13 ans. Nous ne collectons pas sciemment les données des enfants. Si vous pensez qu\'un mineur a créé un compte, contactez-nous à privacy@cubeworld.app.'},
     {id:'s10',h:'10. Sécurité',p:'Nous utilisons HTTPS/TLS pour toutes les données en transit. Les Cube Keys sont générées cryptographiquement et ne sont jamais stockées en texte clair. Nous mettons en œuvre une limitation de débit, une validation des entrées et une surveillance pour protéger la plateforme.'},
-    {id:'s11',h:'11. Vos droits',p:'Vous avez le droit de : accéder à vos données (via votre Cube Key), supprimer votre compte et votre contenu, refuser les fonctionnalités optionnelles et demander des informations sur l\'utilisation de vos données. Contactez privacy@cubeworld.app.'},
+    {id:'s11',h:'11. Vos droits',p:'Vous avez le droit de : accéder à vos données (via votre Cube Key), supprimer votre compte et votre contenu, refuser les fonctionnalités optionnelles et demander des informations sur l\'utilisation de vos données. Contactez privacy@cubeworld.app.'},
     {id:'s12',h:'12. Modifications de cette politique',p:'Nous pouvons mettre à jour cette politique périodiquement. L\'utilisation continue de CubeWorld après les modifications constitue une acceptation. Nous notifierons les utilisateurs des changements significatifs dans l\'application.'},
-    {id:'s13',h:'13. Nous contacter',p:'Pour les questions de confidentialité : privacy@cubeworld.app. Pour les questions juridiques : legal@cubeworld.app. Nous nous efforçons de répondre à toutes les demandes dans un délai de 30 jours.'}
+    {id:'s13',h:'13. Nous contacter',p:'Pour les questions de confidentialité : privacy@cubeworld.app. Pour les questions juridiques : legal@cubeworld.app. Nous nous efforçons de répondre à toutes les demandes dans un délai de 30 jours.'}
   ]
 };
 
 var STRINGS={
-  en:{title:'Privacy Policy',updated:'Last updated: July 29, 2026 · Effective immediately',back:'Back',toc_title:'TABLE OF CONTENTS',contact_text:'Questions about this policy? Contact us at <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Terms of Service',home_link:'Home'},
-  ru:{title:'Политика конфиденциальности',updated:'Обновлено: 29 июля 2026 · Вступает в силу немедленно',back:'Назад',toc_title:'СОДЕРЖАНИЕ',contact_text:'Вопросы? Напишите нам на <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Условия использования',home_link:'Главная'},
-  es:{title:'Política de Privacidad',updated:'Actualizado: 29 de julio de 2026 · Efectivo inmediatamente',back:'Volver',toc_title:'TABLA DE CONTENIDOS',contact_text:'¿Preguntas? Contáctenos en <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Términos de Servicio',home_link:'Inicio'},
-  zh:{title:'隐私政策',updated:'更新日期：2026年7月29日 · 立即生效',back:'返回',toc_title:'目录',contact_text:'有问题？请联系我们 <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'服务条款',home_link:'首页'},
-  fr:{title:'Politique de Confidentialité',updated:'Mis à jour : 29 juillet 2026 · Effectif immédiatement',back:'Retour',toc_title:'TABLE DES MATIÈRES',contact_text:'Des questions ? Contactez-nous à <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Conditions d\'utilisation',home_link:'Accueil'}
+  en:{title:'Privacy Policy',hero_sub:'CubeWorld is an anonymous social platform. This policy explains how we protect and handle your data.',updated:'Last updated: July 29, 2026 · Effective immediately',back:'Back',toc_title:'TABLE OF CONTENTS',contact_text:'Questions about this policy? Contact us at <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Terms of Service',home_link:'Home'},
+  ru:{title:'Политика конфиденциальности',hero_sub:'CubeWorld — анонимная социальная платформа. Эта политика объясняет, как мы защищаем ваши данные.',updated:'Обновлено: 29 июля 2026 · Вступает в силу немедленно',back:'Назад',toc_title:'СОДЕРЖАНИЕ',contact_text:'Вопросы? Напишите на <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Условия использования',home_link:'Главная'},
+  es:{title:'Política de Privacidad',hero_sub:'CubeWorld es una plataforma social anónima. Esta política explica cómo protegemos y manejamos sus datos.',updated:'Actualizado: 29 de julio de 2026 · Efectivo inmediatamente',back:'Volver',toc_title:'TABLA DE CONTENIDOS',contact_text:'¿Preguntas? Contáctenos en <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Términos de Servicio',home_link:'Inicio'},
+  zh:{title:'隐私政策',hero_sub:'CubeWorld是一个匹名社交平台。本政策说明我们如何保护和处理您的数据。',updated:'更新日期：2026年7月29日 · 即时生效',back:'返回',toc_title:'目录',contact_text:'有问题？联系我们 <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'服务条款',home_link:'首页'},
+  fr:{title:'Politique de Confidentialité',hero_sub:'CubeWorld est une plateforme sociale anonyme. Cette politique explique comment nous protégeons vos données.',updated:'Mis à jour : 29 juillet 2026 · Effectif immédiatement',back:'Retour',toc_title:'TABLE DES MATIÈRES',contact_text:'Des questions ? Contactez-nous à <a href="mailto:privacy@cubeworld.app">privacy@cubeworld.app</a>',terms_link:'Conditions d\'utilisation',home_link:'Accueil'}
 };
 
 var FLAGS={en:'&#127468;&#127463;',ru:'&#127479;&#127482;',es:'&#127466;&#127480;',zh:'&#127464;&#127475;',fr:'&#127467;&#127479;'};
@@ -279,20 +273,20 @@ function setLang(l){
   curLang=l;
   var s=STRINGS[l],secs=SECTIONS[l];
   document.querySelectorAll('[data-i18n]').forEach(function(el){
-    var key=el.getAttribute('data-i18n');
-    if(s[key]!==undefined)el.innerHTML=s[key];
+    var k=el.getAttribute('data-i18n');
+    if(s[k]!==undefined)el.innerHTML=s[k];
   });
-  var tocList=document.getElementById('toc-list');
-  tocList.innerHTML=secs.map(function(sec){
-    return '<li><a href="#'+sec.id+'">'+sec.h+'</a></li>';
-  }).join('');
+  var tocHtml=secs.map(function(sec){return '<li><a href="#'+sec.id+'">'+sec.h+'</a></li>';}).join('');
+  var tl=document.getElementById('toc-list'),ml=document.getElementById('mob-toc-list');
+  if(tl)tl.innerHTML=tocHtml;
+  if(ml)ml.innerHTML=tocHtml;
   var wrap=document.getElementById('sections-wrap');
-  wrap.innerHTML=secs.map(function(sec){
-    return '<div class="section" id="'+sec.id+'"><h3>'+sec.h+'</h3><p>'+sec.p+'</p></div>';
+  if(wrap)wrap.innerHTML=secs.map(function(sec,i){
+    return '<div class="section" id="'+sec.id+'"><h3><span class="sec-icon">'+ICONS[i]+'</span>'+sec.h+'</h3><p>'+sec.p+'</p></div>';
   }).join('');
   document.getElementById('lflag').innerHTML=FLAGS[l];
   document.getElementById('lcode').textContent=CODES[l];
-  document.querySelectorAll('.ldm button').forEach(function(btn){btn.classList.remove('cur');});
+  document.querySelectorAll('.ldm button').forEach(function(b){b.classList.remove('cur');});
   var btn=document.getElementById('lo-'+l);
   if(btn)btn.classList.add('cur');
   document.documentElement.lang=l;
@@ -304,21 +298,10 @@ function togDD(e){e.stopPropagation();ddOpen=!ddOpen;document.getElementById('ld
 function pickL(l){ddOpen=false;document.getElementById('ldd').classList.remove('open');setLang(l);}
 document.addEventListener('click',function(){if(ddOpen){ddOpen=false;document.getElementById('ldd').classList.remove('open');}});
 
-function goBack(){
-  document.body.classList.add('leaving');
-  setTimeout(function(){window.history.back();},220);
-}
-function navTo(e,url){
-  e.preventDefault();
-  document.body.classList.add('leaving');
-  setTimeout(function(){window.location.href=url;},220);
-}
+function goBack(){document.body.classList.add('leaving');setTimeout(function(){window.history.back();},220);}
+function navTo(e,url){e.preventDefault();document.body.classList.add('leaving');setTimeout(function(){window.location.href=url;},220);}
 
-(function(){
-  var saved='en';
-  try{saved=localStorage.getItem('cw_lang')||'en';}catch(e){}
-  setLang(saved);
-})();
+(function(){var s='en';try{s=localStorage.getItem('cw_lang')||'en';}catch(e){}setLang(s);})();
 </script>
 </body>
 </html>
