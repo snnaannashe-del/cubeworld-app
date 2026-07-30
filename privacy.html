@@ -7,14 +7,25 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;line-height:1.7;min-height:100vh}
-.hero{background:linear-gradient(135deg,#0d1117 0%,#1a1f2e 50%,#0d1117 100%);border-bottom:1px solid #1e2535;padding:60px 24px 40px;text-align:center}
-.logo{font-size:28px;font-weight:800;background:linear-gradient(90deg,#4f9cf9,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px;margin-bottom:12px}
-.hero h1{font-size:clamp(24px,5vw,38px);font-weight:700;color:#fff;margin-bottom:8px}
-.hero .updated{color:#64748b;font-size:14px}
-.lang-bar{display:flex;justify-content:center;gap:8px;padding:16px 24px;background:#0d1117;border-bottom:1px solid #1e2535;flex-wrap:wrap}
-.lang-btn{background:#111827;border:1px solid #1e2535;color:#94a3b8;padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;transition:all .2s}
-.lang-btn.active,.lang-btn:hover{background:#4f9cf9;border-color:#4f9cf9;color:#fff}
-.container{max-width:780px;margin:0 auto;padding:48px 24px 80px}
+#cv{position:fixed;inset:0;z-index:0;pointer-events:none}
+.amb{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(ellipse at center,rgba(79,156,249,0.05) 0%,transparent 70%);z-index:0;pointer-events:none}
+.cw-topnav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;background:rgba(10,10,15,0.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07)}
+.cw-logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:#e0e0e0;font-size:15px;font-weight:800;letter-spacing:.02em}
+.cw-logo em{color:#4f9cf9;font-style:normal}
+.ldd{position:relative}
+.ldb{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:7px 12px;color:#e0e0e0;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s}
+.ldb:hover{background:rgba(255,255,255,0.1)}
+.lfi{font-size:18px;line-height:1}
+.ldarr{font-size:10px;color:rgba(232,232,240,0.45);margin-left:2px;transition:transform .2s}
+.ldd.open .ldarr{transform:rotate(180deg)}
+.ldm{display:none;position:absolute;right:0;top:calc(100% + 6px);flex-direction:column;gap:2px;background:rgba(14,18,36,0.97);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:6px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);min-width:110px;z-index:200}
+.ldd.open .ldm{display:flex}
+.ldm button{background:none;border:none;color:#e0e0e0;font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;transition:background .2s;white-space:nowrap;width:100%}
+.ldm button:hover,.ldm button.cur{background:rgba(79,156,249,0.15)}
+.page-hero{position:relative;z-index:1;text-align:center;padding:44px 24px 32px}
+.page-hero h1{font-size:clamp(22px,5vw,36px);font-weight:700;color:#fff;margin-bottom:8px}
+.page-hero .updated{color:#64748b;font-size:13px}
+.container{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:48px 24px 80px}
 .toc{background:#111827;border:1px solid #1e2535;border-radius:12px;padding:24px;margin-bottom:40px}
 .toc h2{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:16px}
 .toc ol{padding-left:20px}
@@ -41,24 +52,38 @@ tr:hover td{background:#0f172a}
 .contact-icon{font-size:32px;flex-shrink:0}
 .contact-card h3{color:#fff;font-size:16px;margin-bottom:6px}
 .contact-card a{color:#4f9cf9;text-decoration:none}
-footer{text-align:center;padding:32px 24px;border-top:1px solid #1e2535;color:#334155;font-size:13px}
+footer{position:relative;z-index:1;text-align:center;padding:32px 24px;border-top:1px solid #1e2535;color:#334155;font-size:13px}
 footer a{color:#4f9cf9;text-decoration:none}
-@media(max-width:600px){.hero{padding:40px 16px 28px}.container{padding:32px 16px 60px}}
+@media(max-width:600px){.cw-topnav{padding:0 16px}.page-hero{padding:32px 16px 24px}.container{padding:32px 16px 60px}}
 </style>
 </head>
 <body>
-<div class="hero">
-  <div class="logo">&#9632; CubeWorld</div>
-  <h1 id="page-title">Privacy Policy</h1>
-  <p class="updated" id="page-updated">Last updated: July 29, 2026 &middot; Effective immediately</p>
-</div>
+<canvas id="cv"></canvas>
+<div class="amb"></div>
 
-<div class="lang-bar">
-  <button class="lang-btn active" onclick="setLang('en')">&#127468;&#127463; English</button>
-  <button class="lang-btn" onclick="setLang('ru')">&#127479;&#127482; Русский</button>
-  <button class="lang-btn" onclick="setLang('es')">&#127466;&#127480; Español</button>
-  <button class="lang-btn" onclick="setLang('zh')">&#127464;&#127475; 中文</button>
-  <button class="lang-btn" onclick="setLang('fr')">&#127467;&#127479; Français</button>
+<nav class="cw-topnav">
+  <a href="./index.html" class="cw-logo">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4f9cf9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+    Cube<em>World</em>
+  </a>
+  <div class="ldd" id="ldd">
+    <button class="ldb" onclick="togDD(event)">
+      <span class="lfi" id="lflag">&#127468;&#127463;</span>
+      <span id="lcode">EN</span>
+      <span class="ldarr">&#9660;</span>
+    </button>
+    <div class="ldm" id="ldm">
+      <button onclick="pickL('en')" id="lo-en" class="cur"><span class="lfi">&#127468;&#127463;</span> EN</button>
+      <button onclick="pickL('ru')" id="lo-ru"><span class="lfi">&#127479;&#127482;</span> RU</button>
+      <button onclick="pickL('es')" id="lo-es"><span class="lfi">&#127466;&#127480;</span> ES</button>
+      <button onclick="pickL('zh')" id="lo-zh"><span class="lfi">&#127464;&#127475;</span> ZH</button>
+      <button onclick="pickL('fr')" id="lo-fr"><span class="lfi">&#127467;&#127479;</span> FR</button>
+    </div>
+  </div>
+</nav>
+<div class="page-hero">
+  <h1 id="page-title">Privacy Policy</h1>
+  <p class="updated" id="page-updated">Last updated: July 29, 2026 · Effective immediately</p>
 </div>
 
 <div class="container">
@@ -245,6 +270,10 @@ fr: {
 
 var currentLang = 'en';
 
+var FLAGS={en:'&#127468;&#127463;',ru:'&#127479;&#127482;',es:'&#127466;&#127480;',zh:'&#127464;&#127475;',fr:'&#127467;&#127479;'};
+var CODES={en:'EN',ru:'RU',es:'ES',zh:'ZH',fr:'FR'};
+var ddOpen=false;
+
 function setLang(lang) {
   currentLang = lang;
   var d = T[lang];
@@ -253,22 +282,47 @@ function setLang(lang) {
   document.getElementById('toc-title').textContent = d.toc;
   document.getElementById('footer-terms').textContent = d.footer_terms;
   document.getElementById('highlight-top-text').innerHTML = d.highlight;
-  // TOC
   var tocHtml = '';
   d.sections.forEach(function(s,i){ tocHtml += '<li><a href="#'+s.id+'">'+(i+1)+'. '+s.h+'</a></li>'; });
   document.getElementById('toc-list').innerHTML = tocHtml;
-  // Sections
   var html = '';
   d.sections.forEach(function(s,i){
     html += '<section id="'+s.id+'"><h2><span class="num">'+(i+1)+'.</span> '+s.h+'</h2>'+s.body+'</section>';
   });
   document.getElementById('sections-container').innerHTML = html;
-  // Active button
-  document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.remove('active'); });
-  event && event.target && event.target.classList.add('active');
 }
 
-setLang('en');
+function togDD(e){if(e)e.stopPropagation();ddOpen=!ddOpen;document.getElementById('ldd').classList.toggle('open',ddOpen);}
+function pickL(l){
+  document.getElementById('lflag').innerHTML=FLAGS[l];
+  document.getElementById('lcode').textContent=CODES[l];
+  ddOpen=false;document.getElementById('ldd').classList.remove('open');
+  ['en','ru','es','zh','fr'].forEach(function(x){document.getElementById('lo-'+x).classList.toggle('cur',x===l);});
+  setLang(l);
+}
+document.addEventListener('click',function(){if(ddOpen){ddOpen=false;document.getElementById('ldd').classList.remove('open');}});
+
+(function(){
+  var c=document.getElementById('cv'),ctx=c.getContext('2d'),W,H,cx,cy,sz,a=0,stars=[];
+  function mkS(){stars=[];for(var i=0;i<120;i++)stars.push({x:Math.random(),y:Math.random(),r:Math.random()*1.2+0.2,o:Math.random()*0.45+0.1,p:Math.random()*6.28});}
+  function rs(){W=c.width=innerWidth;H=c.height=innerHeight;cx=W/2;cy=H*0.44;sz=Math.min(W,H)*0.22;mkS();}
+  rs();window.addEventListener('resize',rs);
+  var V=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+  var E=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  function ry(v,t){return[v[0]*Math.cos(t)+v[2]*Math.sin(t),v[1],-v[0]*Math.sin(t)+v[2]*Math.cos(t)];}
+  function rx(v,t){return[v[0],v[1]*Math.cos(t)-v[2]*Math.sin(t),v[1]*Math.sin(t)+v[2]*Math.cos(t)];}
+  function proj(v){var f=sz/(v[2]+3);return[cx+v[0]*f,cy+v[1]*f];}
+  (function draw(){
+    ctx.clearRect(0,0,W,H);a+=0.003;var i,s,tw;
+    for(i=0;i<stars.length;i++){s=stars[i];tw=0.65+0.35*Math.sin(a*1.8+s.p);ctx.beginPath();ctx.arc(s.x*W,s.y*H,s.r,0,6.283);ctx.fillStyle='rgba(255,255,255,'+(s.o*tw)+')';ctx.fill();}
+    var pts=[];for(i=0;i<V.length;i++)pts.push(proj(rx(ry(V[i],a),a*0.4)));
+    ctx.strokeStyle='rgba(79,156,249,0.28)';ctx.lineWidth=1;
+    for(i=0;i<E.length;i++){ctx.beginPath();ctx.moveTo(pts[E[i][0]][0],pts[E[i][0]][1]);ctx.lineTo(pts[E[i][1]][0],pts[E[i][1]][1]);ctx.stroke();}
+    requestAnimationFrame(draw);
+  })();
+})();
+
+pickL('en');
 </script>
 </body>
 </html>
