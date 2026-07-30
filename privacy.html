@@ -9,9 +9,8 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;line-height:1.7;min-height:100vh}
 #cv{position:fixed;inset:0;z-index:0;pointer-events:none}
 .amb{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(ellipse at center,rgba(79,156,249,0.05) 0%,transparent 70%);z-index:0;pointer-events:none}
-.cw-panel{max-width:1020px;margin:0 auto;position:relative;z-index:1}
-.cw-topnav{position:sticky;top:0;z-index:100;background:rgba(4,5,20,0.90);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07)}
-.cw-nav-inner{max-width:1020px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:53px}
+.cw-panel{max-width:1020px;margin:0 auto;position:relative;z-index:1;border-left:1px solid rgba(255,255,255,0.07);border-right:1px solid rgba(255,255,255,0.07)}
+.cw-topnav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:53px;background:rgba(4,5,20,0.90);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07)}
 .cw-logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:.01em}
 .cw-logo span{color:#e0e0e0}
 .cw-logo em{color:#4f9cf9;font-style:normal}
@@ -57,35 +56,33 @@ tr:hover td{background:#0f172a}
 .contact-card a{color:#4f9cf9;text-decoration:none}
 footer{position:relative;z-index:1;text-align:center;padding:32px 24px;border-top:1px solid #1e2535;color:#334155;font-size:13px}
 footer a{color:#4f9cf9;text-decoration:none}
-@media(max-width:600px){.cw-nav-inner{padding:0 16px}.page-hero{padding:32px 16px 24px}.container{padding:32px 16px 60px}}
+@media(max-width:600px){.cw-topnav{padding:0 16px}.page-hero{padding:32px 16px 24px}.container{padding:32px 16px 60px}}
 </style>
 </head>
 <body>
 <canvas id="cv"></canvas>
 <div class="amb"></div>
 
+<div class="cw-panel">
 <nav class="cw-topnav">
-  <div class="cw-nav-inner">
-    <a href="./index.html" class="cw-logo">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4f9cf9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg><span>Cube<em>World</em></span>
-    </a>
-    <div class="ldd" id="ldd">
-      <button class="ldb" onclick="togDD(event)">
-        <span class="lfi" id="lflag">&#127468;&#127463;</span>
-        <span id="lcode">EN</span>
-        <span class="ldarr">&#9660;</span>
-      </button>
-      <div class="ldm" id="ldm">
-        <button onclick="pickL('en')" id="lo-en" class="cur"><span class="lfi">&#127468;&#127463;</span> EN</button>
-        <button onclick="pickL('ru')" id="lo-ru"><span class="lfi">&#127479;&#127482;</span> RU</button>
-        <button onclick="pickL('es')" id="lo-es"><span class="lfi">&#127466;&#127480;</span> ES</button>
-        <button onclick="pickL('zh')" id="lo-zh"><span class="lfi">&#127464;&#127475;</span> ZH</button>
-        <button onclick="pickL('fr')" id="lo-fr"><span class="lfi">&#127467;&#127479;</span> FR</button>
-      </div>
+  <a href="./index.html" class="cw-logo">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4f9cf9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg><span>Cube<em>World</em></span>
+  </a>
+  <div class="ldd" id="ldd">
+    <button class="ldb" onclick="togDD(event)">
+      <span class="lfi" id="lflag">&#127468;&#127463;</span>
+      <span id="lcode">EN</span>
+      <span class="ldarr">&#9660;</span>
+    </button>
+    <div class="ldm" id="ldm">
+      <button onclick="pickL('en')" id="lo-en" class="cur"><span class="lfi">&#127468;&#127463;</span> EN</button>
+      <button onclick="pickL('ru')" id="lo-ru"><span class="lfi">&#127479;&#127482;</span> RU</button>
+      <button onclick="pickL('es')" id="lo-es"><span class="lfi">&#127466;&#127480;</span> ES</button>
+      <button onclick="pickL('zh')" id="lo-zh"><span class="lfi">&#127464;&#127475;</span> ZH</button>
+      <button onclick="pickL('fr')" id="lo-fr"><span class="lfi">&#127467;&#127479;</span> FR</button>
     </div>
   </div>
 </nav>
-<div class="cw-panel">
 <div class="page-hero">
   <h1 id="page-title">Privacy Policy</h1>
   <p class="updated" id="page-updated">Last updated: July 29, 2026 · Effective immediately</p>
