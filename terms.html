@@ -2,224 +2,279 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Terms of Service — CubeWorld</title>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;line-height:1.7;min-height:100vh}
-  .hero{background:linear-gradient(135deg,#0d1117 0%,#1a1f2e 50%,#0d1117 100%);border-bottom:1px solid #1e2535;padding:60px 24px 40px;text-align:center}
-  .logo{font-size:28px;font-weight:800;background:linear-gradient(90deg,#4f9cf9,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px;margin-bottom:12px}
-  .hero h1{font-size:clamp(24px,5vw,38px);font-weight:700;color:#fff;margin-bottom:8px}
-  .hero .updated{color:#64748b;font-size:14px}
-  .container{max-width:780px;margin:0 auto;padding:48px 24px 80px}
-  .toc{background:#111827;border:1px solid #1e2535;border-radius:12px;padding:24px;margin-bottom:40px}
-  .toc h2{font-size:14px;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:16px}
-  .toc ol{padding-left:20px}
-  .toc li{margin-bottom:8px}
-  .toc a{color:#4f9cf9;text-decoration:none;font-size:15px}
-  .toc a:hover{text-decoration:underline}
-  section{margin-bottom:44px}
-  section h2{font-size:20px;font-weight:700;color:#fff;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #1e2535;display:flex;align-items:center;gap:10px}
-  section h2 .num{background:linear-gradient(135deg,#4f9cf9,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:13px;font-weight:800;min-width:22px}
-  p{color:#94a3b8;margin-bottom:14px;font-size:15px}
-  ul,ol{padding-left:20px;margin-bottom:14px}
-  li{color:#94a3b8;margin-bottom:8px;font-size:15px}
-  .highlight{background:#0f172a;border:1px solid #1e2535;border-left:3px solid #a78bfa;border-radius:0 8px 8px 0;padding:16px 20px;margin:20px 0}
-  .highlight p{margin:0;font-size:14px}
-  .warn{background:#1a0a0a;border:1px solid #2a1515;border-left:3px solid #ef4444;border-radius:0 8px 8px 0;padding:16px 20px;margin:20px 0}
-  .warn p{margin:0;font-size:14px;color:#fca5a5}
-  .contact-card{background:#111827;border:1px solid #1e2535;border-radius:12px;padding:24px;margin-top:24px;display:flex;align-items:flex-start;gap:16px}
-  .contact-icon{font-size:32px;flex-shrink:0}
-  .contact-card h3{color:#fff;font-size:16px;margin-bottom:6px}
-  .contact-card a{color:#4f9cf9;text-decoration:none}
-  footer{text-align:center;padding:32px 24px;border-top:1px solid #1e2535;color:#334155;font-size:13px}
-  footer a{color:#4f9cf9;text-decoration:none}
-  strong.w{color:#e0e0e0}
-  @media(max-width:600px){.hero{padding:40px 16px 28px}.container{padding:32px 16px 60px}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;line-height:1.7;min-height:100vh}
+.hero{background:linear-gradient(135deg,#0d1117 0%,#1a1f2e 50%,#0d1117 100%);border-bottom:1px solid #1e2535;padding:60px 24px 40px;text-align:center}
+.logo{font-size:28px;font-weight:800;background:linear-gradient(90deg,#4f9cf9,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px;margin-bottom:12px}
+.hero h1{font-size:clamp(24px,5vw,38px);font-weight:700;color:#fff;margin-bottom:8px}
+.hero .updated{color:#64748b;font-size:14px}
+.lang-bar{display:flex;justify-content:center;gap:8px;padding:16px 24px;background:#0d1117;border-bottom:1px solid #1e2535;flex-wrap:wrap}
+.lang-btn{background:#111827;border:1px solid #1e2535;color:#94a3b8;padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;transition:all .2s}
+.lang-btn.active,.lang-btn:hover{background:#a78bfa;border-color:#a78bfa;color:#fff}
+.container{max-width:780px;margin:0 auto;padding:48px 24px 80px}
+.toc{background:#111827;border:1px solid #1e2535;border-radius:12px;padding:24px;margin-bottom:40px}
+.toc h2{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:16px}
+.toc ol{padding-left:20px}
+.toc li{margin-bottom:8px}
+.toc a{color:#a78bfa;text-decoration:none;font-size:15px}
+.toc a:hover{text-decoration:underline}
+section{margin-bottom:44px}
+section h2{font-size:20px;font-weight:700;color:#fff;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #1e2535;display:flex;align-items:center;gap:10px}
+section h2 .num{background:linear-gradient(135deg,#a78bfa,#4f9cf9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:13px;font-weight:800;min-width:22px}
+p{color:#94a3b8;margin-bottom:14px;font-size:15px}
+ul,ol.content-list{padding-left:20px;margin-bottom:14px}
+li.content-li{color:#94a3b8;margin-bottom:8px;font-size:15px}
+.highlight{background:#0f172a;border:1px solid #1e2535;border-left:3px solid #a78bfa;border-radius:0 8px 8px 0;padding:16px 20px;margin:20px 0}
+.highlight p{margin:0;font-size:14px}
+.warn{background:#1a0a0a;border:1px solid #2a1515;border-left:3px solid #ef4444;border-radius:0 8px 8px 0;padding:16px 20px;margin:20px 0}
+.warn p{margin:0;font-size:14px;color:#fca5a5}
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}
+th{background:#111827;color:#94a3b8;text-align:left;padding:12px 16px;border-bottom:1px solid #1e2535;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.5px}
+td{padding:12px 16px;border-bottom:1px solid #0f172a;color:#94a3b8;vertical-align:top}
+tr:hover td{background:#0f172a}
+code{background:#111827;padding:2px 8px;border-radius:4px;color:#a78bfa;font-size:13px}
+.contact-card{background:#111827;border:1px solid #1e2535;border-radius:12px;padding:24px;margin-top:24px;display:flex;align-items:flex-start;gap:16px}
+.contact-icon{font-size:32px;flex-shrink:0}
+.contact-card h3{color:#fff;font-size:16px;margin-bottom:6px}
+.contact-card a{color:#a78bfa;text-decoration:none}
+footer{text-align:center;padding:32px 24px;border-top:1px solid #1e2535;color:#334155;font-size:13px}
+footer a{color:#a78bfa;text-decoration:none}
+@media(max-width:600px){.hero{padding:40px 16px 28px}.container{padding:32px 16px 60px}}
 </style>
 </head>
 <body>
 <div class="hero">
-  <div class="logo">&#x25A0; CubeWorld</div>
-  <h1>Terms of Service</h1>
-  <p class="updated">Last updated: July 29, 2026 &middot; Effective immediately</p>
+  <div class="logo">&#9632; CubeWorld</div>
+  <h1 id="page-title">Terms of Service</h1>
+  <p class="updated" id="page-updated">Last updated: July 29, 2026 &middot; Effective immediately</p>
+</div>
+
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('en',this)">&#127468;&#127463; English</button>
+  <button class="lang-btn" onclick="setLang('ru',this)">&#127479;&#127482; Русский</button>
+  <button class="lang-btn" onclick="setLang('es',this)">&#127466;&#127480; Español</button>
+  <button class="lang-btn" onclick="setLang('zh',this)">&#127464;&#127475; 中文</button>
+  <button class="lang-btn" onclick="setLang('fr',this)">&#127467;&#127479; Français</button>
 </div>
 
 <div class="container">
-
   <div class="toc">
-    <h2>Table of Contents</h2>
-    <ol>
-      <li><a href="#s1">Acceptance of Terms</a></li>
-      <li><a href="#s2">Description of Service</a></li>
-      <li><a href="#s3">Eligibility</a></li>
-      <li><a href="#s4">Account &amp; Access Keys</a></li>
-      <li><a href="#s5">User Content</a></li>
-      <li><a href="#s6">Prohibited Conduct</a></li>
-      <li><a href="#s7">CUBE Token &amp; Virtual Currency</a></li>
-      <li><a href="#s8">Intellectual Property</a></li>
-      <li><a href="#s9">Disclaimers</a></li>
-      <li><a href="#s10">Limitation of Liability</a></li>
-      <li><a href="#s11">Termination</a></li>
-      <li><a href="#s12">Governing Law</a></li>
-      <li><a href="#s13">Changes to Terms</a></li>
-      <li><a href="#s14">Contact</a></li>
-    </ol>
+    <h2 id="toc-title">Table of Contents</h2>
+    <ol id="toc-list"></ol>
   </div>
-
-  <section id="s1">
-    <h2><span class="num">1.</span> Acceptance of Terms</h2>
-    <p>By accessing or using CubeWorld (the "Platform", "Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, do not use the Platform.</p>
-    <p>These Terms constitute a legally binding agreement between you and <strong class="w">CubeWorld LLC</strong> ("Company", "we", "us", "our").</p>
-  </section>
-
-  <section id="s2">
-    <h2><span class="num">2.</span> Description of Service</h2>
-    <p>CubeWorld is an anonymous decentralized social platform built around "cubes" &mdash; collaborative digital spaces where users can post content, send messages, trade CUBE tokens, and interact in real time. Key features include:</p>
-    <ul>
-      <li>Anonymous access via key-based authentication (no email or real name required)</li>
-      <li>Cube creation, joining, and content publishing</li>
-      <li>Real-time messaging via WebSocket connections</li>
-      <li>CUBE in-platform token system with balances and transactions</li>
-      <li>Optional cryptocurrency wallet integration (read-only public address)</li>
-      <li>Portfolio tracking for major cryptocurrencies</li>
-    </ul>
-  </section>
-
-  <section id="s3">
-    <h2><span class="num">3.</span> Eligibility</h2>
-    <p>You must be at least <strong class="w">13 years old</strong> to use CubeWorld. By using the Platform, you represent that you meet this age requirement.</p>
-    <p>Users under 18 must have parental or guardian consent, particularly before engaging with CUBE token transactions or cryptocurrency-related features.</p>
-    <p>The Platform is not available where prohibited by applicable law.</p>
-  </section>
-
-  <section id="s4">
-    <h2><span class="num">4.</span> Account &amp; Access Keys</h2>
-    <p>CubeWorld uses a key-based authentication system. Upon registration you receive a unique Access Key (e.g. <code style="background:#111827;padding:2px 8px;border-radius:4px;color:#a78bfa;font-size:13px">CUBE-XXXX-XXXX-XXXX</code>) that serves as your account identifier.</p>
-    <div class="highlight">
-      <p>&#x26A0;&#xFE0F; <strong style="color:#e0e0e0">Your Access Key is your account.</strong> You are solely responsible for keeping it safe. We cannot recover lost keys &mdash; there is no email-based reset. If you lose your key, access to your account and its contents is permanently lost.</p>
-    </div>
-    <ul>
-      <li>Do not share your Access Key with others</li>
-      <li>You are responsible for all activity that occurs under your key</li>
-      <li>Notify us immediately if you suspect unauthorized use</li>
-    </ul>
-  </section>
-
-  <section id="s5">
-    <h2><span class="num">5.</span> User Content</h2>
-    <p>You retain ownership of content you create on CubeWorld ("User Content"). By posting User Content, you grant CubeWorld a non-exclusive, worldwide, royalty-free license to store, display, and distribute that content to other users as necessary to operate the Platform.</p>
-    <p>You represent and warrant that your User Content:</p>
-    <ul>
-      <li>Does not infringe on any third-party intellectual property rights</li>
-      <li>Does not contain unlawful, defamatory, or abusive material</li>
-      <li>Complies with all applicable laws and regulations</li>
-    </ul>
-    <p>We reserve the right to remove User Content that violates these Terms without notice.</p>
-  </section>
-
-  <section id="s6">
-    <h2><span class="num">6.</span> Prohibited Conduct</h2>
-    <p>You agree not to use CubeWorld to:</p>
-    <ul>
-      <li>Post illegal, harmful, threatening, abusive, or harassing content</li>
-      <li>Distribute malware, spam, or unauthorized advertising</li>
-      <li>Attempt to gain unauthorized access to other accounts or systems</li>
-      <li>Engage in market manipulation, pump-and-dump schemes, or fraudulent token activity</li>
-      <li>Scrape, crawl, or systematically extract data from the Platform without permission</li>
-      <li>Impersonate any person or entity</li>
-      <li>Violate any applicable law including financial regulations</li>
-      <li>Use the Platform to launder money or finance illegal activities</li>
-      <li>Create multiple accounts to circumvent bans or limits</li>
-    </ul>
-    <div class="warn">
-      <p>Violation of these rules may result in immediate and permanent account suspension without refund of CUBE tokens.</p>
-    </div>
-  </section>
-
-  <section id="s7">
-    <h2><span class="num">7.</span> CUBE Token &amp; Virtual Currency</h2>
-    <p>The CUBE token is an <strong class="w">in-platform virtual currency</strong>. By using CUBE tokens, you acknowledge:</p>
-    <ul>
-      <li>CUBE tokens are not legal tender, not a security, and not a guaranteed store of value</li>
-      <li>Token balances are associated with your Access Key; losing your key means losing your tokens</li>
-      <li>We may adjust token supply, pricing, or mechanics at any time with reasonable notice</li>
-      <li>Token prices displayed are market data only and do not constitute investment advice</li>
-      <li>Transactions are processed on our servers; blockchain transactions (if any) are subject to network conditions and gas fees</li>
-      <li>We are not responsible for losses due to market volatility, user error, or technical failure</li>
-    </ul>
-    <div class="highlight">
-      <p>&#x1F4A1; <strong style="color:#e0e0e0">Not financial advice.</strong> Nothing on CubeWorld should be interpreted as financial, investment, tax, or legal advice. Always consult a qualified professional before making financial decisions.</p>
-    </div>
-  </section>
-
-  <section id="s8">
-    <h2><span class="num">8.</span> Intellectual Property</h2>
-    <p>All Platform code, design, branding, logos, and non-user-generated content are the exclusive property of CubeWorld LLC and are protected by applicable intellectual property laws.</p>
-    <p>You may not copy, modify, distribute, or reverse-engineer any part of the Platform without our prior written consent.</p>
-    <p>The CubeWorld name and logo are trademarks of CubeWorld LLC.</p>
-  </section>
-
-  <section id="s9">
-    <h2><span class="num">9.</span> Disclaimers</h2>
-    <p>The Platform is provided <strong class="w">"AS IS"</strong> and <strong class="w">"AS AVAILABLE"</strong> without warranties of any kind, express or implied, including but not limited to:</p>
-    <ul>
-      <li>Warranties of merchantability, fitness for a particular purpose, or non-infringement</li>
-      <li>Guarantees of uptime, data integrity, or error-free operation</li>
-      <li>Guarantees that the Platform will be available at any particular time</li>
-    </ul>
-    <p>We do not endorse any content posted by users on the Platform.</p>
-  </section>
-
-  <section id="s10">
-    <h2><span class="num">10.</span> Limitation of Liability</h2>
-    <p>To the fullest extent permitted by law, CubeWorld LLC shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to:</p>
-    <ul>
-      <li>Loss of data, profits, or CUBE tokens</li>
-      <li>Service interruptions or downtime</li>
-      <li>Unauthorized access to your account</li>
-      <li>Actions of other users on the Platform</li>
-      <li>Cryptocurrency market losses</li>
-    </ul>
-    <p>Our total liability to you for any claim shall not exceed the greater of (a) the amount you paid to CubeWorld in the 12 months preceding the claim, or (b) USD $50.</p>
-  </section>
-
-  <section id="s11">
-    <h2><span class="num">11.</span> Termination</h2>
-    <p>We reserve the right to suspend or terminate your access to the Platform at any time, with or without cause, including for violations of these Terms.</p>
-    <p>You may stop using the Platform at any time. To delete your account and associated data, contact us at <a href="mailto:legal@cubeworld.app" style="color:#4f9cf9">legal@cubeworld.app</a> with your Access Key.</p>
-    <p>Upon termination, your license to use the Platform ends immediately. Sections 5, 8, 9, 10, and 12 survive termination.</p>
-  </section>
-
-  <section id="s12">
-    <h2><span class="num">12.</span> Governing Law</h2>
-    <p>These Terms are governed by and construed in accordance with applicable law. Any disputes arising under these Terms shall be resolved through good-faith negotiation. If negotiation fails, disputes shall be submitted to binding arbitration or the competent courts of the jurisdiction in which the Company is registered.</p>
-    <p>If any provision of these Terms is found to be unenforceable, the remaining provisions will continue in full force and effect.</p>
-  </section>
-
-  <section id="s13">
-    <h2><span class="num">13.</span> Changes to Terms</h2>
-    <p>We may update these Terms at any time. When we do, we will update the "Last updated" date at the top of this page and, for material changes, provide notice through the Platform.</p>
-    <p>Continued use of the Platform after changes constitutes your acceptance of the updated Terms.</p>
-  </section>
-
-  <section id="s14">
-    <h2><span class="num">14.</span> Contact</h2>
-    <div class="contact-card">
-      <div class="contact-icon">&#x2709;&#xFE0F;</div>
-      <div>
-        <h3>Legal &amp; Support</h3>
-        <p style="margin:0;color:#94a3b8;font-size:15px">For questions about these Terms, account issues, or legal inquiries:<br>
-        <a href="mailto:legal@cubeworld.app">legal@cubeworld.app</a></p>
-        <p style="margin:8px 0 0;color:#64748b;font-size:13px">We aim to respond within 5 business days.</p>
-      </div>
-    </div>
-  </section>
-
+  <div id="sections-container"></div>
 </div>
 
 <footer>
-  <p>&copy; 2026 CubeWorld. All rights reserved. &nbsp;&middot;&nbsp; <a href="./terms.html">Terms of Service</a> &nbsp;&middot;&nbsp; <a href="./privacy.html">Privacy Policy</a></p>
+  <p>&copy; 2026 CubeWorld LLC. &nbsp;&middot;&nbsp; <a href="./terms.html">Terms of Service</a> &nbsp;&middot;&nbsp; <a href="./privacy.html" id="footer-privacy">Privacy Policy</a></p>
 </footer>
+
+<script>
+var T = {
+en: {
+  title: "Terms of Service",
+  updated: "Last updated: July 29, 2026 · Effective immediately",
+  toc: "Table of Contents",
+  footer_privacy: "Privacy Policy",
+  sections: [
+    { id:"s1", h:"Acceptance of Terms",
+      body: "<p>By accessing or using CubeWorld (the \"Platform\", \"Service\"), you agree to be bound by these Terms of Service (\"Terms\"). If you do not agree to these Terms, do not use the Platform.</p><p>These Terms constitute a legally binding agreement between you and <strong style='color:#e0e0e0'>CubeWorld LLC</strong> (\"Company\", \"we\", \"us\", \"our\"), a company registered in Ukraine and in the process of establishing an entity in Estonia (OÜ) via e-Residency.</p><p>We reserve the right to update these Terms at any time. Continued use of the Platform after changes constitutes acceptance of the updated Terms.</p>" },
+    { id:"s2", h:"Description of Service",
+      body: "<p>CubeWorld is an anonymous decentralized social platform built around \"cubes\" — collaborative digital spaces where users interact in real time. Core features include:</p><ul class='content-list'><li class='content-li'><strong style='color:#e0e0e0'>Cube Spaces</strong> — Create and join collaborative digital spaces with real-time feeds, signals, and messaging</li><li class='content-li'><strong style='color:#e0e0e0'>Social Feed</strong> — Post content (text, images, video) in SHORT or BALL format with categories and reactions</li><li class='content-li'><strong style='color:#e0e0e0'>Real-time Messaging</strong> — Direct messages and group chats via WebSocket with E2E encryption option</li><li class='content-li'><strong style='color:#e0e0e0'>CUBE Token System</strong> — In-platform virtual currency with balances, rewards, and optional blockchain integration</li><li class='content-li'><strong style='color:#e0e0e0'>Groups</strong> — Telegram-style group chats with key-based access control and voice messaging</li><li class='content-li'><strong style='color:#e0e0e0'>API Hub</strong> — Multi-platform integrations and developer API access</li></ul>" },
+    { id:"s3", h:"Eligibility",
+      body: "<p>You must be at least <strong style='color:#e0e0e0'>13 years old</strong> to use CubeWorld. By using the Platform, you represent and warrant that you meet this age requirement and have the legal capacity to enter into binding agreements.</p><p>Users under 18 must have verifiable parental or guardian consent before using any cryptocurrency or CUBE token features. By using these features, you confirm such consent has been obtained.</p><p>The Platform is not available in jurisdictions where its use is prohibited by applicable law. You are solely responsible for determining whether your use of CubeWorld is lawful in your jurisdiction.</p>" },
+    { id:"s4", h:"Account &amp; Access Keys",
+      body: "<p>CubeWorld uses a key-based authentication system. Upon registration you receive a unique Access Key (e.g. <code>CUBE-XXXX-XXXX-XXXX</code>) that serves as your account identifier and credential.</p><div class='highlight'><p>⚠️ <strong style='color:#e0e0e0'>Your Access Key is your account.</strong> You are solely responsible for keeping it safe. We cannot recover lost keys — there is no email-based reset. If you lose your key, access to your account and its contents is permanently and irrecoverably lost.</p></div><p>Key tiers available: <strong style='color:#e0e0e0'>Basic, Pro, Master, Elite</strong> — each unlocking additional platform capabilities.</p><ul class='content-list'><li class='content-li'>Do not share your Access Key with others</li><li class='content-li'>You are responsible for all activity that occurs under your key</li><li class='content-li'>Notify us immediately if you suspect unauthorized use at <a href='mailto:security@cubeworld.app' style='color:#a78bfa'>security@cubeworld.app</a></li><li class='content-li'>Multiple accounts are permitted but may not be used to circumvent bans or restrictions</li></ul>" },
+    { id:"s5", h:"User Content",
+      body: "<p>You retain full ownership of content you create on CubeWorld (\"User Content\"). By posting User Content, you grant CubeWorld a non-exclusive, worldwide, royalty-free, sublicensable license to store, display, transmit, and distribute that content to other users as necessary to operate and improve the Platform.</p><p>You represent and warrant that your User Content:</p><ul class='content-list'><li class='content-li'>Does not infringe on any third-party intellectual property, privacy, or publicity rights</li><li class='content-li'>Does not contain unlawful, defamatory, obscene, harassing, or abusive material</li><li class='content-li'>Complies with all applicable laws and regulations in your jurisdiction</li><li class='content-li'>Does not contain malware, phishing links, or malicious code</li></ul><p>We reserve the right to remove User Content that violates these Terms without notice and without liability to you.</p>" },
+    { id:"s6", h:"CUBE Token &amp; Virtual Currency",
+      body: "<p>The CUBE token is an <strong style='color:#e0e0e0'>in-platform virtual currency</strong>. By using CUBE tokens, you acknowledge and agree:</p><ul class='content-list'><li class='content-li'>CUBE tokens are not legal tender, not a regulated financial instrument, not a security, and not a guaranteed store of value</li><li class='content-li'>Token balances are associated with your Access Key; losing your key means permanently losing your token balance</li><li class='content-li'>We may adjust token supply, issuance rates, pricing, or mechanics at any time with reasonable advance notice</li><li class='content-li'>Token prices displayed on the Platform are indicative market data only and do not constitute investment advice</li><li class='content-li'>Blockchain transactions on Polygon (if applicable) are subject to network conditions, gas fees, and may be delayed or failed due to network issues</li><li class='content-li'>You are solely responsible for any tax obligations arising from your use of CUBE tokens in your jurisdiction</li></ul><div class='highlight'><p>&#128161; <strong style='color:#e0e0e0'>Not financial advice.</strong> Nothing on CubeWorld should be interpreted as financial, investment, tax, or legal advice. Always consult a qualified professional before making financial decisions.</p></div>" },
+    { id:"s7", h:"Prohibited Activities",
+      body: "<p>You agree not to use CubeWorld to:</p><ul class='content-list'><li class='content-li'><strong style='color:#e0e0e0'>Content violations:</strong> Post illegal, harmful, threatening, abusive, harassing, defamatory, or discriminatory content</li><li class='content-li'><strong style='color:#e0e0e0'>Platform abuse:</strong> Distribute malware, spam, phishing links, or unauthorized advertising</li><li class='content-li'><strong style='color:#e0e0e0'>Security violations:</strong> Attempt to gain unauthorized access to other accounts, systems, or data</li><li class='content-li'><strong style='color:#e0e0e0'>Financial fraud:</strong> Engage in market manipulation, pump-and-dump schemes, wash trading, or fraudulent token activity</li><li class='content-li'><strong style='color:#e0e0e0'>Data scraping:</strong> Systematically extract data from the Platform without written permission</li><li class='content-li'><strong style='color:#e0e0e0'>Impersonation:</strong> Falsely represent yourself as another person, entity, or CubeWorld staff</li><li class='content-li'><strong style='color:#e0e0e0'>Money laundering:</strong> Use the Platform to launder money, finance terrorism, or conduct illegal financial transactions</li><li class='content-li'><strong style='color:#e0e0e0'>Circumvention:</strong> Create multiple accounts to bypass bans, restrictions, or feature limits</li></ul><div class='warn'><p>Violation of these rules may result in immediate and permanent account suspension without prior notice and without refund of any CUBE token balance.</p></div>" },
+    { id:"s8", h:"Intellectual Property",
+      body: "<p>All Platform code, design, branding, logos, visual assets, and non-user-generated content are the exclusive property of CubeWorld LLC and are protected by applicable intellectual property laws including copyright, trademark, and trade secret law.</p><p>You may not copy, modify, distribute, sell, reverse-engineer, decompile, or create derivative works based on any part of the Platform without our prior written consent.</p><p>The CubeWorld name, logo, and related marks are trademarks of CubeWorld LLC. Unauthorized use of these marks is prohibited.</p><p>If you believe your intellectual property rights have been violated on our platform, contact <a href='mailto:legal@cubeworld.app' style='color:#a78bfa'>legal@cubeworld.app</a>.</p>" },
+    { id:"s9", h:"Disclaimers",
+      body: "<p>The Platform is provided <strong style='color:#e0e0e0'>\"AS IS\"</strong> and <strong style='color:#e0e0e0'>\"AS AVAILABLE\"</strong> without warranties of any kind, express or implied, including but not limited to:</p><ul class='content-list'><li class='content-li'>Warranties of merchantability, fitness for a particular purpose, or non-infringement</li><li class='content-li'>Guarantees of uptime, availability, data integrity, or error-free operation</li><li class='content-li'>Guarantees that the Platform will be available at any specific time or from any specific location</li><li class='content-li'>Guarantees regarding the accuracy, reliability, or completeness of any content on the Platform</li></ul><p>We do not endorse, verify, or take responsibility for any content posted by users on the Platform. Use of the Platform is entirely at your own risk.</p>" },
+    { id:"s10", h:"Limitation of Liability",
+      body: "<p>To the fullest extent permitted by applicable law, CubeWorld LLC and its officers, directors, employees, and agents shall not be liable for any indirect, incidental, special, consequential, exemplary, or punitive damages, including but not limited to:</p><ul class='content-list'><li class='content-li'>Loss of data, content, CUBE tokens, or account access</li><li class='content-li'>Service interruptions, downtime, or platform unavailability</li><li class='content-li'>Unauthorized access to or alteration of your account</li><li class='content-li'>Actions, content, or conduct of other users on the Platform</li><li class='content-li'>Losses arising from cryptocurrency market volatility or blockchain network issues</li></ul><p>Our total aggregate liability to you for any claim arising out of or relating to these Terms or the Platform shall not exceed <strong style='color:#e0e0e0'>USD $100</strong> or the total amount you paid to CubeWorld in the 12 months preceding the claim, whichever is greater.</p>" },
+    { id:"s11", h:"Termination",
+      body: "<p>We reserve the right to suspend or terminate your access to the Platform at any time, with or without cause, and with or without notice, including for violations of these Terms, abuse of the platform, or any reason we deem necessary to protect our users or the platform.</p><p>You may stop using the Platform at any time. To request permanent deletion of your account and associated data, contact <a href='mailto:legal@cubeworld.app' style='color:#a78bfa'>legal@cubeworld.app</a> with your Access Key. Deletion will be processed within 30 days.</p><p>Upon termination, your license to use the Platform ends immediately. The following sections survive termination: User Content (license), Intellectual Property, Disclaimers, Limitation of Liability, and Governing Law.</p>" },
+    { id:"s12", h:"Governing Law",
+      body: "<p>These Terms are governed by and construed in accordance with applicable law. We are committed to compliance with major data protection frameworks including:</p><ul class='content-list'><li class='content-li'><strong style='color:#e0e0e0'>GDPR</strong> (EU General Data Protection Regulation) — for users in the European Union and EEA</li><li class='content-li'><strong style='color:#e0e0e0'>CCPA</strong> (California Consumer Privacy Act) — for users in California, USA</li><li class='content-li'><strong style='color:#e0e0e0'>COPPA</strong> (Children's Online Privacy Protection Act) — regarding users under 13</li></ul><p>Any disputes arising under these Terms shall first be attempted to be resolved through good-faith negotiation. If negotiation fails within 60 days, disputes shall be submitted to binding arbitration or the competent courts of the jurisdiction in which CubeWorld LLC is registered.</p><p>If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions will continue in full force and effect.</p>" },
+    { id:"s13", h:"Changes to Terms",
+      body: "<p>We may update these Terms at any time to reflect changes in our Service, business practices, or legal requirements. When we make material changes:</p><ul class='content-list'><li class='content-li'>We will update the \"Last updated\" date at the top of this page</li><li class='content-li'>We will post a notice within the CubeWorld platform</li><li class='content-li'>For changes that significantly affect your rights, we will provide at least 14 days advance notice</li></ul><p>Continued use of the Platform after the effective date of any changes constitutes your acceptance of the updated Terms.</p>" },
+    { id:"s14", h:"Contact",
+      body: "<div class='contact-card'><div class='contact-icon'>✉️</div><div><h3>Legal &amp; Support</h3><p style='margin:0 0 8px;color:#94a3b8;font-size:15px'>For questions about these Terms, account issues, or legal inquiries:</p><p style='margin:0 0 4px;color:#94a3b8;font-size:15px'>📧 <a href='mailto:legal@cubeworld.app'>legal@cubeworld.app</a></p><p style='margin:0 0 4px;color:#94a3b8;font-size:15px'>🔒 <a href='mailto:security@cubeworld.app'>security@cubeworld.app</a></p><p style='margin:0 0 4px;color:#94a3b8;font-size:15px'>📩 <a href='mailto:privacy@cubeworld.app'>privacy@cubeworld.app</a></p><p style='margin:8px 0 0;color:#64748b;font-size:13px'>CubeWorld LLC, Ukraine · Estonia OÜ (in registration) · Response within 5 business days.</p></div></div>" }
+  ]
+},
+ru: {
+  title: "Условия использования",
+  updated: "Последнее обновление: 29 июля 2026 г. · Действует немедленно",
+  toc: "Содержание",
+  footer_privacy: "Политика конфиденциальности",
+  sections: [
+    { id:"s1", h:"Принятие условий",
+      body: "<p>Используя CubeWorld, вы соглашаетесь с настоящими Условиями использования. Если вы не согласны — не используйте платформу.</p><p>Настоящие Условия составляют юридически обязывающее соглашение между вами и <strong style='color:#e0e0e0'>CubeWorld LLC</strong>, зарегистрированной в Украине, с процессом создания юридического лица в Эстонии (OÜ) через e-Residency.</p>" },
+    { id:"s2", h:"Описание сервиса",
+      body: "<p>CubeWorld — анонимная децентрализованная социальная платформа на основе «кубов». Основные функции:</p><ul class='content-list'><li class='content-li'><strong style='color:#e0e0e0'>Кубы</strong> — создание и вступление в совместные цифровые пространства с лентой, сигналами и чатом</li><li class='content-li'><strong style='color:#e0e0e0'>Лента</strong> — публикация контента в форматах SHORT и BALL с категориями и реакциями</li><li class='content-li'><strong style='color:#e0e0e0'>Мессенджер</strong> — личные сообщения и групповые чаты через WebSocket с опцией E2E шифрования</li><li class='content-li'><strong style='color:#e0e0e0'>Токен CUBE</strong> — внутриплатформенная виртуальная валюта с балансами, наградами и интеграцией блокчейна</li><li class='content-li'><strong style='color:#e0e0e0'>Группы</strong> — групповые чаты в стиле Telegram с ключами доступа и голосовыми сообщениями</li><li class='content-li'><strong style='color:#e0e0e0'>API Hub</strong> — мультиплатформенные интеграции и доступ для разработчиков</li></ul>" },
+    { id:"s3", h:"Требования к пользователям",
+      body: "<p>Вам должно быть не менее <strong style='color:#e0e0e0'>13 лет</strong> для использования CubeWorld. Используя платформу, вы подтверждаете соответствие этому требованию и наличие правовой дееспособности.</p><p>Пользователи от 13 до 18 лет должны получить согласие родителей или опекунов перед использованием функций CUBE токена и криптовалюты.</p><p>Платформа недоступна в юрисдикциях, где её использование запрещено законодательством.</p>" },
+    { id:"s4", h:"Аккаунт и ключи доступа",
+      body: "<p>CubeWorld использует систему аутентификации на основе ключей. При регистрации вы получаете уникальный ключ доступа (например, <code>CUBE-XXXX-XXXX-XXXX</code>).</p><div class='highlight'><p>⚠️ <strong style='color:#e0e0e0'>Ваш ключ — это ваш аккаунт.</strong> Вы несёте полную ответственность за его сохранность. Мы не можем восстановить потерянный ключ. При утере доступ к аккаунту и всем данным теряется навсегда.</p></div><p>Доступные уровни ключей: <strong style='color:#e0e0e0'>Basic, Pro, Master, Elite</strong>.</p><ul class='content-list'><li class='content-li'>Не передавайте ключ доступа третьим лицам</li><li class='content-li'>Вы несёте ответственность за все действия под вашим ключом</li><li class='content-li'>При подозрении на несанкционированное использование немедленно свяжитесь с <a href='mailto:security@cubeworld.app' style='color:#a78bfa'>security@cubeworld.app</a></li></ul>" },
+    { id:"s5", h:"Пользовательский контент",
+      body: "<p>Вы сохраняете право собственности на создаваемый контент. Публикуя контент, вы предоставляете CubeWorld неисключительную, всемирную, безвозмездную лицензию на его хранение и отображение для работы платформы.</p><p>Вы гарантируете, что ваш контент не нарушает права интеллектуальной собственности третьих лиц, не содержит незаконных, оскорбительных или вредоносных материалов и соответствует законодательству.</p><p>Мы вправе удалять контент, нарушающий настоящие Условия, без предварительного уведомления.</p>" },
+    { id:"s6", h:"Токен CUBE и виртуальная валюта",
+      body: "<p>Токен CUBE — внутриплатформенная виртуальная валюта. Используя токены, вы подтверждаете:</p><ul class='content-list'><li class='content-li'>CUBE не является законным платёжным средством, ценной бумагой или гарантированным средством сбережения</li><li class='content-li'>При потере ключа доступа баланс токенов теряется безвозвратно</li><li class='content-li'>Мы можем изменять параметры токена с разумным уведомлением</li><li class='content-li'>Вы самостоятельно несёте ответственность за налоговые обязательства в вашей юрисдикции</li></ul><div class='highlight'><p>&#128161; <strong style='color:#e0e0e0'>Не является финансовым советом.</strong> Ничто на CubeWorld не является инвестиционным, финансовым или юридическим советом.</p></div>" },
+    { id:"s7", h:"Запрещённые действия",
+      body: "<ul class='content-list'><li class='content-li'>Публикация незаконного, вредоносного, оскорбительного или дискриминационного контента</li><li class='content-li'>Распространение вредоносного ПО, спама или фишинговых ссылок</li><li class='content-li'>Попытки несанкционированного доступа к другим аккаунтам или системам</li><li class='content-li'>Манипуляции рынком, мошеннические схемы с токенами</li><li class='content-li'>Систематическое извлечение данных без письменного разрешения</li><li class='content-li'>Выдача себя за другое лицо или сотрудника CubeWorld</li><li class='content-li'>Использование платформы для отмывания денег или финансирования незаконной деятельности</li><li class='content-li'>Создание множества аккаунтов для обхода блокировок</li></ul><div class='warn'><p>Нарушение правил может привести к немедленной и постоянной блокировке аккаунта без возврата баланса CUBE.</p></div>" },
+    { id:"s8", h:"Интеллектуальная собственность",
+      body: "<p>Весь код платформы, дизайн, бренд, логотипы и не-пользовательский контент являются исключительной собственностью CubeWorld LLC и защищены законодательством об интеллектуальной собственности.</p><p>Запрещено копировать, изменять, распространять или декомпилировать любую часть платформы без нашего письменного согласия.</p><p>По вопросам нарушения IP: <a href='mailto:legal@cubeworld.app' style='color:#a78bfa'>legal@cubeworld.app</a>.</p>" },
+    { id:"s9", h:"Отказ от гарантий",
+      body: "<p>Платформа предоставляется <strong style='color:#e0e0e0'>«КАК ЕСТЬ»</strong> без каких-либо гарантий, включая гарантии бесперебойной работы, сохранности данных, отсутствия ошибок или доступности в любое время.</p><p>Мы не несём ответственности за контент, публикуемый пользователями на платформе. Использование платформы осуществляется на ваш страх и риск.</p>" },
+    { id:"s10", h:"Ограничение ответственности",
+      body: "<p>В максимальной степени, допускаемой законодательством, CubeWorld LLC не несёт ответственности за косвенные, случайные или иные убытки, включая потерю данных, токенов или доступа к аккаунту, перебои в работе сервиса или убытки от действий других пользователей.</p><p>Совокупная ответственность CubeWorld LLC по любому требованию не превышает <strong style='color:#e0e0e0'>100 USD</strong> или сумму, уплаченную вами платформе за 12 месяцев, предшествующих требованию (в зависимости от того, что больше).</p>" },
+    { id:"s11", h:"Прекращение доступа",
+      body: "<p>Мы вправе приостановить или прекратить ваш доступ к платформе в любое время с причиной или без неё, включая нарушения настоящих Условий.</p><p>Для удаления аккаунта и данных обращайтесь: <a href='mailto:legal@cubeworld.app' style='color:#a78bfa'>legal@cubeworld.app</a> с указанием ключа доступа. Удаление производится в течение 30 дней.</p>" },
+    { id:"s12", h:"Применимое право",
+      body: "<p>Мы соблюдаем основные стандарты защиты данных: <strong style='color:#e0e0e0'>GDPR</strong> (ЕС), <strong style='color:#e0e0e0'>CCPA</strong> (Калифорния, США), <strong style='color:#e0e0e0'>COPPA</strong> (США, дети до 13 лет).</p><p>Споры решаются путём добросовестных переговоров. При неурегулировании в течение 60 дней — путём обязательного арбитража или в компетентных судах по месту регистрации CubeWorld LLC.</p>" },
+    { id:"s13", h:"Изменения условий",
+      body: "<p>Мы можем обновлять настоящие Условия при изменении сервиса или законодательных требований. При существенных изменениях мы обновим дату, разместим уведомление на платформе и, при значительном влиянии на ваши права, уведомим за 14 дней.</p>" },
+    { id:"s14", h:"Контактная информация",
+      body: "<div class='contact-card'><div class='contact-icon'>✉️</div><div><h3>Юридический отдел и поддержка</h3><p style='margin:0 0 8px;color:#94a3b8;font-size:15px'>По вопросам Условий, аккаунта или юридическим вопросам:</p><p style='margin:0 0 4px;color:#94a3b8;font-size:15px'>📧 <a href='mailto:legal@cubeworld.app'>legal@cubeworld.app</a></p><p style='margin:0 0 4px;color:#94a3b8;font-size:15px'>🔒 <a href='mailto:security@cubeworld.app'>security@cubeworld.app</a></p><p style='margin:8px 0 0;color:#64748b;font-size:13px'>CubeWorld LLC, Украина · Эстония OÜ (в процессе регистрации) · Ответ в течение 5 рабочих дней.</p></div></div>" }
+  ]
+},
+es: {
+  title: "Términos de Servicio",
+  updated: "Última actualización: 29 de julio de 2026 · Vigente de inmediato",
+  toc: "Tabla de Contenidos",
+  footer_privacy: "Política de Privacidad",
+  sections: [
+    { id:"s1", h:"Aceptación de Términos",
+      body: "<p>Al acceder o usar CubeWorld, aceptas quedar vinculado por estos Términos de Servicio. Si no estás de acuerdo, no uses la Plataforma.</p><p>Estos Términos constituyen un acuerdo legalmente vinculante entre tú y <strong style='color:#e0e0e0'>CubeWorld LLC</strong>, registrada en Ucrania, con proceso de establecimiento en Estonia (OÜ) mediante e-Residency.</p>" },
+    { id:"s2", h:"Descripción del Servicio",
+      body: "<p>CubeWorld es una plataforma social anónima descentralizada basada en \"cubos\". Características principales:</p><ul class='content-list'><li class='content-li'><strong style='color:#e0e0e0'>Espacios Cubo</strong> — Crear y unirse a espacios digitales colaborativos con feed, señales y mensajería en tiempo real</li><li class='content-li'><strong style='color:#e0e0e0'>Feed Social</strong> — Publicar contenido en formatos SHORT o BALL con categorías y reacciones</li><li class='content-li'><strong style='color:#e0e0e0'>Mensajería en Tiempo Real</strong> — Mensajes directos y chats grupales vía WebSocket con opción E2E</li><li class='content-li'><strong style='color:#e0e0e0'>Sistema CUBE</strong> — Moneda virtual interna con saldos, recompensas e integración blockchain</li><li class='content-li'><strong style='color:#e0e0e0'>Grupos</strong> — Chats grupales estilo Telegram con control de acceso por clave</li><li class='content-li'><strong style='color:#e0e0e0'>API Hub</strong> — Integraciones multiplataforma y acceso para desarrolladores</li></ul>" },
+    { id:"s3", h:"Elegibilidad",
+      body: "<p>Debes tener al menos <strong style='color:#e0e0e0'>13 años</strong> para usar CubeWorld. Los usuarios menores de 18 deben tener consentimiento parental para usar funciones de tokens CUBE o criptomonedas.</p><p>La Plataforma no está disponible donde su uso esté prohibido por la ley aplicable.</p>" },
+    { id:"s4", h:"Cuenta y Claves de Acceso",
+      body: "<p>CubeWorld usa autenticación basada en claves. Al registrarte recibes una Clave de Acceso única (ej. <code>CUBE-XXXX-XXXX-XXXX</code>).</p><div class='highlight'><p>⚠️ <strong style='color:#e0e0e0'>Tu Clave de Acceso es tu cuenta.</strong> Eres el único responsable de mantenerla segura. No podemos recuperar claves perdidas. Si la pierdes, el acceso a tu cuenta y contenido se pierde permanentemente.</p></div><p>Niveles de clave: <strong style='color:#e0e0e0'>Basic, Pro, Master, Elite</strong>.</p><ul class='content-list'><li class='content-li'>No compartas tu Clave de Acceso</li><li class='content-li'>Eres responsable de toda actividad bajo tu clave</li><li class='content-li'>Notifica sospecha de uso no autorizado a <a href='mailto:security@cubeworld.app' style='color:#a78bfa'>security@cubeworld.app</a></li></ul>" },
+    { id:"s5", h:"Contenido del Usuario",
+      body: "<p>Conservas la propiedad de tu contenido. Al publicarlo, otorgas a CubeWorld una licencia no exclusiva, mundial y libre de regalías para almacenarlo y mostrarlo a otros usuarios.</p><p>Tu contenido no debe infringir derechos de terceros, contener material ilegal u ofensivo, ni incumplir leyes aplicables. Nos reservamos el derecho de eliminar contenido que viole estos Términos.</p>" },
+    { id:"s6", h:"Token CUBE y Moneda Virtual",
+      body: "<ul class='content-list'><li class='content-li'>Los tokens CUBE no son moneda de curso legal, instrumento financiero regulado ni valor garantizado</li><li class='content-li'>Perder tu Clave de Acceso significa perder tu saldo de tokens permanentemente</li><li class='content-li'>Podemos ajustar parámetros del token con aviso razonable</li><li class='content-li'>Eres responsable de tus obligaciones fiscales relacionadas con el uso de CUBE</li></ul><div class='highlight'><p>&#128161; <strong style='color:#e0e0e0'>No es asesoramiento financiero.</strong> Nada en CubeWorld debe interpretarse como consejo de inversión, financiero, fiscal o legal.</p></div>" },
+    { id:"s7", h:"Actividades Prohibidas",
+      body: "<ul class='content-list'><li class='content-li'>Publicar contenido ilegal, dañino, abusivo o discriminatorio</li><li class='content-li'>Distribuir malware, spam o enlaces de phishing</li><li class='content-li'>Intentar acceso no autorizado a cuentas o sistemas</li><li class='content-li'>Manipulación de mercado o actividad fraudulenta con tokens</li><li class='content-li'>Extracción sistemática de datos sin permiso escrito</li><li class='content-li'>Suplantar identidad de personas o personal de CubeWorld</li><li class='content-li'>Usar la plataforma para lavado de dinero o financiamiento ilegal</li><li class='content-li'>Crear múltiples cuentas para eludir restricciones</li></ul><div class='warn'><p>La violación puede resultar en suspensión inmediata y permanente sin reembolso del saldo CUBE.</p></div>" },
+    { id:"s8", h:"Propiedad Intelectual",
+      body: "<p>Todo el código, diseño, marca, logos y contenido no generado por usuarios son propiedad exclusiva de CubeWorld LLC. No puedes copiar, modificar, distribuir ni descompilar ninguna parte de la Plataforma sin consentimiento escrito previo.</p><p>Para reportar infracción de IP: <a href='mailto:legal@cubeworld.app' style='color:#a78bfa'>legal@cubeworld.app</a>.</p>" },
+    { id:"s9", h:"Exenciones de Garantía",
+      body: "<p>La Plataforma se proporciona <strong style='color:#e0e0e0'>\"TAL CUAL\"</strong> y <strong style='color:#e0e0e0'>\"SEGÚN DISPONIBILIDAD\"</strong> sin garantías de ningún tipo, incluyendo disponibilidad, integridad de datos u operación sin errores. El uso es bajo tu propio riesgo.</p>" },
+    { id:"s10", h:"Limitación de Responsabilidad",
+      body: "<p>CubeWorld LLC no será responsable por daños indirectos, incidentales o consecuentes, incluyendo pérdida de datos, tokens o acceso a la cuenta, interrupciones del servicio o pérdidas por acciones de otros usuarios.</p><p>La responsabilidad total agregada no excederá <strong style='color:#e0e0e0'>USD $100</strong> o el total pagado a CubeWorld en los 12 meses anteriores al reclamo.</p>" },
+    { id:"s11", h:"Terminación",
+      body: "<p>Nos reservamos el derecho de suspender o terminar tu acceso en cualquier momento, con o sin causa. Para eliminar tu cuenta: <a href='mailto:legal@cubeworld.app' style='color:#a78bfa'>legal@cubeworld.app</a> con tu Clave de Acceso. La eliminación se procesa en 30 días.</p>" },
+    { id:"s12", h:"Ley Aplicable",
+      body: "<p>Cumplimos con <strong style='color:#e0e0e0'>GDPR</strong> (UE), <strong style='color:#e0e0e0'>CCPA</strong> (California) y <strong style='color:#e0e0e0'>COPPA</strong> (EE.UU., menores de 13). Las disputas se resolverán primero por negociación de buena fe y, de fallar, por arbitraje vinculante o tribunales competentes.</p>" },
+    { id:"s13", h:"Cambios en los Términos",
+      body: "<p>Podemos actualizar estos Términos cuando sea necesario. Para cambios materiales, actualizaremos la fecha, publicaremos aviso en la plataforma y, para cambios que afecten tus derechos, notificaremos con al menos 14 días de antelación.</p>" },
+    { id:"s14", h:"Contacto",
+      body: "<div class='contact-card'><div class='contact-icon'>✉️</div><div><h3>Legal y Soporte</h3><p style='margin:0 0 4px;color:#94a3b8;font-size:15px'>📧 <a href='mailto:legal@cubeworld.app'>legal@cubeworld.app</a></p><p style='margin:0 0 4px;color:#94a3b8;font-size:15px'>🔒 <a href='mailto:security@cubeworld.app'>security@cubeworld.app</a></p><p style='margin:8px 0 0;color:#64748b;font-size:13px'>CubeWorld LLC, Ucrania · Estonia OÜ (en registro) · Respuesta en 5 días hábiles.</p></div></div>" }
+  ]
+},
+zh: {
+  title: "服务条款",
+  updated: "最后更新：2026年7月29日 · 即时生效",
+  toc: "目录",
+  footer_privacy: "隐私政策",
+  sections: [
+    { id:"s1", h:"接受条款",
+      body: "<p>访问或使用 CubeWorld，即表示您同意受本服务条款约束。如不同意，请勿使用本平台。</p><p>本条款构成您与 <strong style='color:#e0e0e0'>CubeWorld LLC</strong>（在乌克兰注册，正在通过爱沙尼亚电子居留计划建立爱沙尼亚 OÜ 实体）之间具有法律约束力的协议。</p>" },
+    { id:"s2", h:"服务描述",
+      body: "<p>CubeWorld 是一个围绕"方块"构建的匿名去中心化社交平台。核心功能包括：</p><ul class='content-list'><li class='content-li'><strong style='color:#e0e0e0'>方块空间</strong> — 创建和加入具有实时动态、信号和消息传递的协作数字空间</li><li class='content-li'><strong style='color:#e0e0e0'>社交动态</strong> — 以 SHORT 或 BALL 格式发布内容，支持分类和反应</li><li class='content-li'><strong style='color:#e0e0e0'>实时消息</strong> — 通过 WebSocket 进行直接消息和群组聊天，可选端对端加密</li><li class='content-li'><strong style='color:#e0e0e0'>CUBE 代币系统</strong> — 具有余额、奖励和可选区块链集成的平台内虚拟货币</li><li class='content-li'><strong style='color:#e0e0e0'>群组</strong> — 电报风格的群组聊天，支持密钥访问控制和语音消息</li><li class='content-li'><strong style='color:#e0e0e0'>API Hub</strong> — 多平台集成和开发者 API 访问</li></ul>" },
+    { id:"s3", h:"资格要求",
+      body: "<p>您必须年满 <strong style='color:#e0e0e0'>13 岁</strong>才能使用 CubeWorld。18岁以下用户在使用 CUBE 代币或加密货币功能前须获得父母或监护人的同意。</p>" },
+    { id:"s4", h:"账户与访问密钥",
+      body: "<p>注册后您将获得唯一访问密钥（如 <code>CUBE-XXXX-XXXX-XXXX</code>）。</p><div class='highlight'><p>⚠️ <strong style='color:#e0e0e0'>您的访问密钥就是您的账户。</strong>我们无法恢复丢失的密钥。一旦丢失，您的账户和内容将永久无法访问。</p></div><p>密钥等级：<strong style='color:#e0e0e0'>Basic、Pro、Master、Elite</strong></p><ul class='content-list'><li class='content-li'>请勿与他人共享您的访问密钥</li><li class='content-li'>您对密钥下发生的所有活动负责</li><li class='content-li'>怀疑未授权使用请联系 <a href='mailto:security@cubeworld.app' style='color:#a78bfa'>security@cubeworld.app</a></li></ul>" },
+    { id:"s5", h:"用户内容",
+      body: "<p>您保留对所创建内容的完整所有权。发布内容即表示您授予 CubeWorld 非独家的、全球性的、免版税的许可，以存储和显示该内容以运营平台。</p><p>您的内容不得侵犯第三方权利，不得包含非法或有害材料，并须遵守所有适用法律。我们有权在不事先通知的情况下删除违反本条款的内容。</p>" },
+    { id:"s6", h:"CUBE 代币与虚拟货币",
+      body: "<ul class='content-list'><li class='content-li'>CUBE 代币不是法定货币、受监管的金融工具、证券或有保障的价值储存</li><li class='content-li'>丢失访问密钥意味着永久失去代币余额</li><li class='content-li'>我们可能在合理通知后调整代币参数</li><li class='content-li'>您独自承担您所在司法管辖区使用 CUBE 代币产生的税务义务</li></ul><div class='highlight'><p>&#128161; <strong style='color:#e0e0e0'>非财务建议。</strong>CubeWorld 上的任何内容均不应被解读为财务、投资、税务或法律建议。</p></div>" },
+    { id:"s7", h:"禁止活动",
+      body: "<ul class='content-list'><li class='content-li'>发布非法、有害、威胁性、滥用性或歧视性内容</li><li class='content-li'>分发恶意软件、垃圾邮件或网络钓鱼链接</li><li class='content-li'>尝试未经授权访问其他账户或系统</li><li class='content-li'>参与市场操纵或欺诈性代币活动</li><li class='content-li'>未经书面许可系统性提取平台数据</li><li class='content-li'>冒充他人或 CubeWorld 工作人员</li><li class='content-li'>使用平台洗钱或资助非法活动</li><li class='content-li'>创建多个账户以规避封禁或限制</li></ul><div class='warn'><p>违反规定可能导致账户立即永久暂停，CUBE 代币余额不予退还。</p></div>" },
+    { id:"s8", h:"知识产权",
+      body: "<p>所有平台代码、设计、品牌、标志和非用户生成内容均为 CubeWorld LLC 的专有财产。未经书面同意，不得复制、修改、分发或反向工程平台的任何部分。</p><p>知识产权侵权报告：<a href='mailto:legal@cubeworld.app' style='color:#a78bfa'>legal@cubeworld.app</a></p>" },
+    { id:"s9", h:"免责声明",
+      body: "<p>平台按<strong style='color:#e0e0e0'>「现状」</strong>和<strong style='color:#e0e0e0'>「可用」</strong>状态提供，不提供任何形式的明示或暗示保证，包括可用性、数据完整性或无错误运行的保证。使用平台的风险由您自行承担。</p>" },
+    { id:"s10", h:"责任限制",
+      body: "<p>CubeWorld LLC 不对任何间接、附带或后果性损害承担责任，包括数据、代币或账户访问的损失、服务中断或其他用户行为造成的损失。</p><p>我们对您的总责任不超过 <strong style='color:#e0e0e0'>100 美元</strong>或您在索赔前12个月向 CubeWorld 支付的总金额（以较高者为准）。</p>" },
+    { id:"s11", h:"终止",
+      body: "<p>我们有权随时以任何原因暂停或终止您的访问。删除账户请联系 <a href='mailto:legal@cubeworld.app' style='color:#a78bfa'>legal@cubeworld.app</a>，注明您的访问密钥。删除将在30天内处理。</p>" },
+    { id:"s12", h:"适用法律",
+      body: "<p>我们遵守 <strong style='color:#e0e0e0'>GDPR</strong>（欧盟）、<strong style='color:#e0e0e0'>CCPA</strong>（加利福尼亚州）和 <strong style='color:#e0e0e0'>COPPA</strong>（美国，13岁以下儿童）。争议将首先通过诚信协商解决，如60天内未解决，将提交具有约束力的仲裁。</p>" },
+    { id:"s13", h:"条款变更",
+      body: "<p>我们可能在必要时更新本条款。对于重大变更，我们将更新日期、在平台内发布通知，并在影响您权利的变更发生前至少14天提前通知您。</p>" },
+    { id:"s14", h:"联系方式",
+      body: "<div class='contact-card'><div class='contact-icon'>✉️</div><div><h3>法律与支持</h3><p style='margin:0 0 4px;color:#94a3b8;font-size:15px'>📧 <a href='mailto:legal@cubeworld.app'>legal@cubeworld.app</a></p><p style='margin:0 0 4px;color:#94a3b8;font-size:15px'>🔒 <a href='mailto:security@cubeworld.app'>security@cubeworld.app</a></p><p style='margin:8px 0 0;color:#64748b;font-size:13px'>CubeWorld LLC，乌克兰 · 爱沙尼亚 OÜ（注册中）· 5个工作日内回复。</p></div></div>" }
+  ]
+},
+fr: {
+  title: "Conditions d'Utilisation",
+  updated: "Dernière mise à jour : 29 juillet 2026 · Effective immédiatement",
+  toc: "Table des Matières",
+  footer_privacy: "Politique de Confidentialité",
+  sections: [
+    { id:"s1", h:"Acceptation des Conditions",
+      body: "<p>En accédant ou utilisant CubeWorld, vous acceptez d'être lié par ces Conditions d'Utilisation. Si vous n'êtes pas d'accord, n'utilisez pas la Plateforme.</p><p>Ces Conditions constituent un accord juridiquement contraignant entre vous et <strong style='color:#e0e0e0'>CubeWorld LLC</strong>, enregistrée en Ukraine, en cours d'établissement d'une entité en Estonie (OÜ) via l'e-Résidence.</p>" },
+    { id:"s2", h:"Description du Service",
+      body: "<p>CubeWorld est une plateforme sociale anonyme décentralisée basée sur des \"cubes\". Fonctionnalités principales :</p><ul class='content-list'><li class='content-li'><strong style='color:#e0e0e0'>Espaces Cube</strong> — Créer et rejoindre des espaces numériques collaboratifs avec flux, signaux et messagerie en temps réel</li><li class='content-li'><strong style='color:#e0e0e0'>Flux Social</strong> — Publier du contenu en formats SHORT ou BALL avec catégories et réactions</li><li class='content-li'><strong style='color:#e0e0e0'>Messagerie Temps Réel</strong> — Messages directs et chats de groupe via WebSocket avec option E2E</li><li class='content-li'><strong style='color:#e0e0e0'>Système CUBE</strong> — Monnaie virtuelle interne avec soldes, récompenses et intégration blockchain</li><li class='content-li'><strong style='color:#e0e0e0'>Groupes</strong> — Chats de groupe style Telegram avec contrôle d'accès par clé</li><li class='content-li'><strong style='color:#e0e0e0'>API Hub</strong> — Intégrations multiplateformes et accès développeur</li></ul>" },
+    { id:"s3", h:"Éligibilité",
+      body: "<p>Vous devez avoir au moins <strong style='color:#e0e0e0'>13 ans</strong> pour utiliser CubeWorld. Les utilisateurs de moins de 18 ans doivent avoir le consentement parental pour utiliser les fonctionnalités de tokens CUBE ou de cryptomonnaies.</p>" },
+    { id:"s4", h:"Compte et Clés d'Accès",
+      body: "<p>À l'inscription, vous recevez une Clé d'Accès unique (ex. <code>CUBE-XXXX-XXXX-XXXX</code>).</p><div class='highlight'><p>⚠️ <strong style='color:#e0e0e0'>Votre Clé d'Accès est votre compte.</strong> Nous ne pouvons pas récupérer les clés perdues. En cas de perte, l'accès à votre compte est définitivement et irrécupérablement perdu.</p></div><p>Niveaux de clé : <strong style='color:#e0e0e0'>Basic, Pro, Master, Elite</strong></p><ul class='content-list'><li class='content-li'>Ne partagez pas votre Clé d'Accès</li><li class='content-li'>Vous êtes responsable de toute activité sous votre clé</li><li class='content-li'>Signalez toute utilisation non autorisée à <a href='mailto:security@cubeworld.app' style='color:#a78bfa'>security@cubeworld.app</a></li></ul>" },
+    { id:"s5", h:"Contenu Utilisateur",
+      body: "<p>Vous conservez la propriété de votre contenu. En le publiant, vous accordez à CubeWorld une licence non exclusive, mondiale et libre de redevances pour le stocker et l'afficher afin d'exploiter la Plateforme.</p><p>Votre contenu ne doit pas enfreindre les droits de tiers, contenir du matériel illégal ou nuisible, ni violer les lois applicables. Nous nous réservons le droit de supprimer le contenu enfreignant ces Conditions.</p>" },
+    { id:"s6", h:"Token CUBE et Monnaie Virtuelle",
+      body: "<ul class='content-list'><li class='content-li'>Les tokens CUBE ne sont pas une monnaie légale, un instrument financier réglementé ni une valeur garantie</li><li class='content-li'>Perdre votre Clé d'Accès signifie perdre définitivement votre solde de tokens</li><li class='content-li'>Nous pouvons ajuster les paramètres des tokens avec un préavis raisonnable</li><li class='content-li'>Vous êtes responsable de vos obligations fiscales liées à l'utilisation des tokens CUBE</li></ul><div class='highlight'><p>&#128161; <strong style='color:#e0e0e0'>Pas de conseil financier.</strong> Rien sur CubeWorld ne doit être interprété comme un conseil financier, d'investissement, fiscal ou juridique.</p></div>" },
+    { id:"s7", h:"Activités Interdites",
+      body: "<ul class='content-list'><li class='content-li'>Publier du contenu illégal, nuisible, menaçant, abusif ou discriminatoire</li><li class='content-li'>Distribuer des logiciels malveillants, du spam ou des liens d'hameçonnage</li><li class='content-li'>Tenter d'accéder sans autorisation à d'autres comptes ou systèmes</li><li class='content-li'>S'engager dans la manipulation de marché ou des activités frauduleuses avec les tokens</li><li class='content-li'>Extraire systématiquement des données sans autorisation écrite</li><li class='content-li'>Usurper l'identité d'une personne ou du personnel de CubeWorld</li><li class='content-li'>Utiliser la plateforme pour blanchiment d'argent ou financement illégal</li><li class='content-li'>Créer plusieurs comptes pour contourner les restrictions</li></ul><div class='warn'><p>La violation peut entraîner une suspension immédiate et permanente sans remboursement du solde CUBE.</p></div>" },
+    { id:"s8", h:"Propriété Intellectuelle",
+      body: "<p>Tout le code, design, marque, logos et contenu non généré par les utilisateurs sont la propriété exclusive de CubeWorld LLC. Vous ne pouvez pas copier, modifier, distribuer ou décompiler toute partie de la Plateforme sans notre consentement écrit préalable.</p><p>Signalement d'infraction IP : <a href='mailto:legal@cubeworld.app' style='color:#a78bfa'>legal@cubeworld.app</a></p>" },
+    { id:"s9", h:"Exclusions de Garantie",
+      body: "<p>La Plateforme est fournie <strong style='color:#e0e0e0'>\"EN L'ÉTAT\"</strong> et <strong style='color:#e0e0e0'>\"SELON DISPONIBILITÉ\"</strong> sans aucune garantie, y compris de disponibilité, d'intégrité des données ou d'opération sans erreur. L'utilisation est entièrement à vos risques et périls.</p>" },
+    { id:"s10", h:"Limitation de Responsabilité",
+      body: "<p>CubeWorld LLC ne sera pas responsable des dommages indirects, accessoires ou consécutifs, y compris la perte de données, tokens ou accès au compte, les interruptions de service ou les pertes dues aux actions d'autres utilisateurs.</p><p>Notre responsabilité totale ne dépassera pas <strong style='color:#e0e0e0'>100 USD</strong> ou le montant total payé à CubeWorld dans les 12 mois précédant la réclamation.</p>" },
+    { id:"s11", h:"Résiliation",
+      body: "<p>Nous nous réservons le droit de suspendre ou résilier votre accès à tout moment, avec ou sans motif. Pour supprimer votre compte : <a href='mailto:legal@cubeworld.app' style='color:#a78bfa'>legal@cubeworld.app</a> avec votre Clé d'Accès. La suppression sera traitée dans les 30 jours.</p>" },
+    { id:"s12", h:"Loi Applicable",
+      body: "<p>Nous respectons le <strong style='color:#e0e0e0'>RGPD</strong> (UE), le <strong style='color:#e0e0e0'>CCPA</strong> (Californie) et le <strong style='color:#e0e0e0'>COPPA</strong> (États-Unis, moins de 13 ans). Les litiges seront d'abord résolus par négociation de bonne foi et, en cas d'échec, par arbitrage contraignant.</p>" },
+    { id:"s13", h:"Modifications des Conditions",
+      body: "<p>Nous pouvons mettre à jour ces Conditions lorsque nécessaire. Pour les modifications importantes, nous mettrons à jour la date, publierons un avis sur la plateforme et, pour les changements affectant vos droits, vous notifierons au moins 14 jours à l'avance.</p>" },
+    { id:"s14", h:"Contact",
+      body: "<div class='contact-card'><div class='contact-icon'>✉️</div><div><h3>Juridique et Support</h3><p style='margin:0 0 4px;color:#94a3b8;font-size:15px'>📧 <a href='mailto:legal@cubeworld.app'>legal@cubeworld.app</a></p><p style='margin:0 0 4px;color:#94a3b8;font-size:15px'>🔒 <a href='mailto:security@cubeworld.app'>security@cubeworld.app</a></p><p style='margin:8px 0 0;color:#64748b;font-size:13px'>CubeWorld LLC, Ukraine · Estonie OÜ (en cours d'enregistrement) · Réponse sous 5 jours ouvrables.</p></div></div>" }
+  ]
+}
+};
+
+function setLang(lang, btn) {
+  var d = T[lang];
+  document.getElementById('page-title').textContent = d.title;
+  document.getElementById('page-updated').textContent = d.updated;
+  document.getElementById('toc-title').textContent = d.toc;
+  document.getElementById('footer-privacy').textContent = d.footer_privacy;
+  var tocHtml = '';
+  d.sections.forEach(function(s,i){ tocHtml += '<li><a href="#'+s.id+'">'+(i+1)+'. '+s.h+'</a></li>'; });
+  document.getElementById('toc-list').innerHTML = tocHtml;
+  var html = '';
+  d.sections.forEach(function(s,i){
+    html += '<section id="'+s.id+'"><h2><span class="num">'+(i+1)+'.</span> '+s.h+'</h2>'+s.body+'</section>';
+  });
+  document.getElementById('sections-container').innerHTML = html;
+  document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+}
+
+setLang('en', document.querySelector('.lang-btn'));
+</script>
 </body>
 </html>
