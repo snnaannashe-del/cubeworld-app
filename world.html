@@ -5334,8 +5334,11 @@ function switchUniTab(tab,btn){
   if(tab==='mine'){
     const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);
     const myCubes=(app.cubes||[]).filter(c=>c.isOwn===true||(myUid&&(String(c.owner_uid)===String(myUid)||String(c.creator)===String(myUid)||String(c.owner)===String(myUid))));
+    const backendCubes=myCubes.filter(c=>c.backendId);
+    // "Delete all" button at top
+    const deleteAllBtn=backendCubes.length?'<div style="grid-column:1/-1;margin-bottom:4px"><button onclick="deleteAllMyCubes()" style="width:100%;padding:8px;border:1px solid rgba(255,59,48,.4);border-radius:8px;background:rgba(255,59,48,.07);color:#ff3b30;font-size:12px;font-weight:600;cursor:pointer">🗑 Удалить все мои кубы ('+backendCubes.length+')</button></div>':'';
     if(!myCubes.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--text2);padding:24px">У тебя пока нет кубов</div>';return;}
-    grid.innerHTML=myCubes.map(cube=>{
+    grid.innerHTML=deleteAllBtn+myCubes.map(cube=>{
       const lifeStr=cube.life>0?fmtTime(cube.life):'истёк';
       const isBackend=!!cube.backendId;
       const canDel=isBackend?'':'opacity:.4;pointer-events:none;';
@@ -5366,6 +5369,23 @@ async function deleteCubeEarly(cubeId){
     switchUniTab('mine',document.getElementById('uni-tab-mine'));
     showToast('🗑 Куб удалён');
   } else showToast('Ошибка удаления');
+}
+async function deleteAllMyCubes(){
+  const toDelete=(app.cubes||[]).filter(c=>c.isOwn&&c.backendId);
+  if(!toDelete.length){showToast('Нет кубов для удаления');return;}
+  if(!confirm('Удалить все '+toDelete.length+' твоих кубов? Это нельзя отменить.'))return;
+  showToast('Удаляем...');
+  let ok=0;
+  for(const cube of toDelete){
+    const r=await apiCall('/cubes/'+cube.backendId,{method:'DELETE'}).catch(()=>null);
+    if(r!==null){
+      app.cubes=app.cubes.filter(c=>c.id!==cube.id);
+      wObjects=(wObjects||[]).filter(o=>o.cube.id!==cube.id);
+      ok++;
+    }
+  }
+  showToast('🗑 Удалено '+ok+' кубов');
+  switchUniTab('mine',document.getElementById('uni-tab-mine'));
 }
 let _kickCubeLocalId=null;
 function openKickModal(cubeId){
@@ -14435,9 +14455,9 @@ function addWbAccount(){
   const splash = document.getElementById('cw-splash');
   if(splash){ splash.classList.add('hide'); setTimeout(()=>splash.remove(), 400); }
 
-  if (!localStorage.getItem('cw_onboarded')){
-    setTimeout(openOnboarding, 1200);
-  }
+  // Mark as onboarded — if user is authenticated, they already have their key
+  localStorage.setItem('cw_onboarded', '1');
+  // (onboarding will never show again for authenticated users)
 })();
 
 /* ═══════════════════════════════════════════════════════════════════════
