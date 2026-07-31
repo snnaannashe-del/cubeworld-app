@@ -4546,7 +4546,11 @@ async function syncFromBackend(){
       const dn = document.getElementById('wb-key-badge');
       if(dn) dn.textContent = me.display_name;
     }
-    if(me.id) localStorage.setItem('cw_user_id', me.id);
+    if(me.id){
+      localStorage.setItem('cw_user_id', me.id);
+      app.myProfile.id = me.id;
+      app.myProfile.uid = me.id;
+    }
     if(me.display_name) localStorage.setItem('cw_display_name', me.display_name);
     // Restore account_type from DB (survives browser clear)
     if(me.account_type){
@@ -4583,6 +4587,17 @@ async function syncFromBackend(){
         rotX:Math.random()*360, rotY:Math.random()*360,
         speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1
       }));
+    // Also patch isOwn/backendId on cubes already in app.cubes (from cache)
+    if(myId){
+      cubesData.forEach(c=>{
+        const existing=app.cubes.find(x=>x.id==='bc'+c.id);
+        if(existing){
+          existing.backendId=existing.backendId||c.id;
+          existing.isOwn=c.owner_id!==null&&String(c.owner_id)===myId;
+          existing.owner_uid=existing.owner_uid||c.owner_id;
+        }
+      });
+    }
     if(newCubes.length > 0){
       app.cubes = [...app.cubes, ...newCubes];
       // Backend cubes are NOT auto-added to canvas or universe.
@@ -4590,6 +4605,8 @@ async function syncFromBackend(){
       const cnt = document.getElementById('wb-count');
       if(cnt) cnt.textContent = app.cubes.filter(c=>c.life>0).length+' кубов';
     }
+    // Save updated own cubes to cache
+    _saveMyCubesCache();
   }
 }
 
@@ -10655,6 +10672,9 @@ const STATUS_OPTS=[{v:'online',l:'В сети',c:'#00b894'},{v:'busy',l:'Зан�
   }catch(e){
     if(!app.myProfile) app.myProfile={avatar:'👤',status:'online',bio:'',displayName:'',privacy:'public',photoUrl:null,links:[],address:''};
   }
+  // Restore user ID into myProfile (needed for isOwn check before syncFromBackend)
+  const savedUid=localStorage.getItem('cw_user_id');
+  if(savedUid&&app.myProfile){app.myProfile.id=savedUid;app.myProfile.uid=savedUid;}
   // Sync topbar avatar after restore
   setTimeout(_syncTopbarAvatar, 0);
 })();
