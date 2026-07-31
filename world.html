@@ -5193,7 +5193,7 @@ function _addObjToWorld(cube,i){
   const obj={
     cube,
     x:Math.cos(angle)*rad,y:(Math.random()-0.5)*110,z:Math.sin(angle)*rad,
-    size:52+Math.random()*38,
+    size:(cube.size||2)*38+Math.random()*8,
     rotY:Math.random()*Math.PI*2,rotVY:(Math.random()-0.5)*0.009,
     floatOff:Math.random()*Math.PI*2,floatSpd:0.28+Math.random()*0.45,
     csx:wW/2,csy:wH/2,csr:40
