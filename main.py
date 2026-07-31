@@ -733,17 +733,33 @@ async def delete_cube(cube_id: int, user=Depends(get_current_user)):
 
 @app.post("/cubes/{cube_id}/kick")
 async def kick_user_from_cube(cube_id: int, request: Request, user=Depends(get_current_user)):
-    body = await request.json()
-    uid_str = str(body.get("uid","")).strip()
+    try:
+        body = await request.json()
+    except Exception:
+        raise HTTPException(400, "invalid json body")
+    uid_str = str(body.get("uid","")).strip().lstrip("#")
     if not uid_str:
         raise HTTPException(400, "uid required")
     try:
-        target_uid = int(uid_str.lstrip("#"))
+        target_uid = int(uid_str)
     except ValueError:
         raise HTTPException(400, "invalid uid")
-    ok = db.ban_user_from_cube(cube_id, target_uid, int(user["id"]))
-    if not ok:
-        raise HTTPException(403, "Куб не найден или вы не владелец")
+    # Check ownership directly — works even on expired/inactive cubes
+    conn = db.get_db()
+    cur = conn.cursor()
+    cur.execute(db._q("SELECT owner_id FROM cubes WHERE id=?"), (cube_id,))
+    row = cur.fetchone()
+    conn.close()
+    if not row:
+        raise HTTPException(404, "Куб не найден")
+    row_owner = row["owner_id"] if db._PG else row[0]
+    if int(row_owner) != int(user["id"]):
+        raise HTTPException(403, "Вы не владелец куба")
+    # Record ban (ignore if already banned)
+    try:
+        db.ban_user_from_cube(cube_id, target_uid, int(user["id"]))
+    except Exception:
+        pass
     # Kick via WebSocket if online
     cube_id_str = str(cube_id)
     if cube_id_str in cube_rooms and str(target_uid) in cube_rooms[cube_id_str]:
