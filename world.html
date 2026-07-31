@@ -5376,9 +5376,22 @@ function _loadMyCubesCache(){
     if(!raw)return;
     const cached=JSON.parse(raw);
     if(!Array.isArray(cached))return;
-    const existIds=new Set((app.cubes||[]).map(c=>c.id));
-    const toAdd=cached.filter(c=>!existIds.has(c.id));
-    if(toAdd.length) app.cubes=[...app.cubes,...toAdd];
+    cached.forEach(cc=>{
+      const existing=(app.cubes||[]).find(c=>c.id===cc.id);
+      if(existing){
+        // Patch missing fields — visited_cubes cache creates partial objects
+        existing.isOwn=true;
+        existing.backendId=existing.backendId||cc.backendId;
+        existing.owner_uid=existing.owner_uid||cc.owner_uid;
+        existing.cubeKey=existing.cubeKey||cc.cubeKey;
+        existing.desc=existing.desc||cc.desc;
+        existing.col=existing.col||cc.col;
+        existing.size=existing.size||cc.size;
+      } else {
+        if(!app.cubes) app.cubes=[];
+        app.cubes.push(cc);
+      }
+    });
   }catch(e){}
 }
 function pickCubeColor(el){
