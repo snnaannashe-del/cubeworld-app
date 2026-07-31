@@ -4582,15 +4582,8 @@ async function syncFromBackend(){
       }));
     if(newCubes.length > 0){
       app.cubes = [...app.cubes, ...newCubes];
-      // Auto-add own cubes to universe if not already saved
-      const savedUni = localStorage.getItem('cw_universe');
-      if(!savedUni){
-        // First time: add all backend cubes to universe
-        newCubes.forEach(c=>{ if(!app.myUniverse.includes(c.id)) app.myUniverse.push(c.id); });
-        localStorage.setItem('cw_universe', JSON.stringify(app.myUniverse));
-      }
-      // Only render cubes that are in myUniverse
-      if(wDone){ newCubes.filter(c=>app.myUniverse.includes(c.id)).forEach(c=>addCubeToWorld(c)); }
+      // Backend cubes are NOT auto-added to canvas or universe.
+      // They appear only in "Мои кубы" tab. User adds them to world manually.
       const cnt = document.getElementById('wb-count');
       if(cnt) cnt.textContent = app.cubes.filter(c=>c.life>0).length+' кубов';
     }
@@ -4848,11 +4841,8 @@ const SEED_CUBES = [
   {id:'c7',name:'???',           type:'private',key:'CUBE-????', colorHex:0x1e293b,colorCss:'#475569',life:300,  icon:'?', desc:'Неизвестный'},
 ];
 app.cubes = SEED_CUBES.map(c=>({...c}));
-// Restore universe selection from localStorage (overrides default 8 seeds)
-try{
-  const _savedUni=localStorage.getItem('cw_universe');
-  if(_savedUni) app.myUniverse=JSON.parse(_savedUni);
-}catch(e){}
+// myUniverse = always the 8 seed cubes (user can add their own on top)
+// We do NOT auto-add backend cubes — user controls this via "Моя вселенная"
 
 // ════════════════════════════════════════════════
 //  NAVIGATION
@@ -5303,35 +5293,32 @@ async function submitCreateCube(){
   const icon  = iconEl  ? iconEl.value  : icons[ci];
   const color = colorEl ? colorEl.value : cols[ci];
 
-  // Optimistic local add
-  const localId='u'+Date.now();
-  const cube={
-    id:localId, backendId:null,
-    name, type, life:life_hours*3600, size:cube_size,
-    col:color, colorCss:color, icon, desc:'Создано тобой', isOwn:true, owner_uid:(app.myProfile&&(app.myProfile.uid||app.myProfile.id))||null
-  };
-  app.cubes.push(cube);
   closeModal('modal-create-cube');
-  if(wDone) addCubeToWorld(cube);
-  document.getElementById('wb-count').textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
-  showToast('⬡ Куб "'+name+'" создан!');
 
-  // POST to backend
+  // POST to backend first, then add locally
   const res = await apiCall('/cubes',{
     method:'POST',
     body: JSON.stringify({name,description:'',icon,color,type,life_hours,size:cube_size})
   });
   if(res && res.id){
-    cube.backendId = res.id;
-    cube.id = 'bc'+res.id;
-    // Show Key 2 modal
+    const cube={
+      id:'bc'+res.id, backendId:res.id,
+      name, type, life:life_hours*3600, size:cube_size,
+      col:color, colorCss:color, icon, desc:'Создано тобой', isOwn:true,
+      owner_uid:(app.myProfile&&(app.myProfile.uid||app.myProfile.id))||null
+    };
+    if(res.cube_key) cube.cubeKey = res.cube_key;
+    app.cubes.push(cube);
+    // Add to canvas world
+    if(wDone) addCubeToWorld(cube);
+    const cnt=document.getElementById('wb-count');
+    if(cnt) cnt.textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
+    showToast('⬡ Куб "'+name+'" создан!');
     if(res.cube_key){
-      cube.cubeKey = res.cube_key;
       showCubeKeyModal(res.cube_key, name, life_hours, cube.icon, cube.id);
-    } else {
-      showToast('✓ Куб синхронизирован с сервером');
     }
-    setTimeout(syncFromBackend, 1000);
+  } else {
+    showToast('Ошибка создания куба');
   }
 }
 
