@@ -5548,20 +5548,37 @@ function openKickModal(cubeId){
   document.getElementById('kick-results').innerHTML='';
   openModal('modal-kick-user');
 }
+function _reverseDisplayUid(str){
+  // Reverse _genDisplayUid: brute-force seeds 1..20000 to find raw id
+  const target=parseInt(str.replace(/^0+/,''));
+  if(!target||isNaN(target))return null;
+  const min=115000,range=30000000000-115000;
+  for(let s=1;s<=20000;s++){const n=(s*97331+1000000)%range+min;if(n===target)return s;}
+  return null;
+}
 async function searchKickUser(q){
   const res=document.getElementById('kick-results');
-  if(!q.trim()||q.trim().length<2){res.innerHTML='';return;}
+  const qt=q.trim();
+  if(!qt||qt.length<2){res.innerHTML='';return;}
   res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Поиск...</div>';
-  const data=await apiCall('/users/search?q='+encodeURIComponent(q.trim())).catch(()=>null);
+  // Detect 11-digit display UID and reverse-map to raw id
+  let searchQ=qt;
+  if(/^\d{8,11}$/.test(qt)){const raw=_reverseDisplayUid(qt);if(raw)searchQ='#'+raw;}
+  const data=await apiCall('/users/search?q='+encodeURIComponent(searchQ)).catch(()=>null);
   if(!data||!data.length){res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Не найдено</div>';return;}
-  res.innerHTML=data.map(u=>`<div onclick="doKickUser('${u.uid||u.id}','${(u.display_name||'User').replace(/'/g,"\\'")}' )" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);cursor:pointer;margin-bottom:6px"><div><div style="font-weight:600;font-size:13px">${u.display_name||'User'}</div><div style="font-size:11px;color:var(--text3)">UID: ${u.uid||u.id}</div></div><button style="padding:4px 10px;border-radius:6px;background:rgba(255,59,48,.15);border:1px solid rgba(255,59,48,.4);color:#ff3b30;font-size:11px;cursor:pointer">Удалить</button></div>`).join('');
+  res.innerHTML=data.map(u=>{
+    const rawId=u.id;
+    const dispUid=(typeof _genDisplayUid==='function'&&rawId)?_genDisplayUid(rawId):String(rawId);
+    const name=(u.display_name||'User').replace(/'/g,"\\'");
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);margin-bottom:6px"><div><div style="font-weight:600;font-size:13px">${u.display_name||'User'}</div><div style="font-size:11px;color:var(--text3)">UID: ${dispUid}</div></div><button onclick="doKickUser('${rawId}','${name}')" style="padding:4px 10px;border-radius:6px;background:rgba(255,59,48,.15);border:1px solid rgba(255,59,48,.4);color:#ff3b30;font-size:11px;cursor:pointer">Удалить</button></div>`;
+  }).join('');
 }
 async function doKickUser(uid,name){
   if(!_kickCubeLocalId)return;
   const cube=app.cubes.find(c=>c.id===_kickCubeLocalId);
   const bid=cube&&cube.backendId;
   if(!bid){showToast('Ошибка: куб не найден');return;}
-  const r=await apiCall('/cubes/'+bid+'/kick',{method:'POST',body:JSON.stringify({uid:String(uid)})}).catch(()=>null);
+  const r=await apiCall('/cubes/'+bid+'/kick',{method:'POST',body:JSON.stringify({uid:String(uid).replace('#','')})}).catch(()=>null);
   if(r!==null){showToast('👥 '+name+' удалён из куба');closeModal('modal-kick-user');}
   else showToast('Ошибка удаления юзера');
 }
