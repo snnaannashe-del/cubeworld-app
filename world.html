@@ -2779,21 +2779,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <span class="wb-online"><span id="wb-online">–</span></span>
     <span class="wb-count-badge" id="wb-count"></span>
     <div id="crypto-ticker">
-      <div class="tradingview-widget-container">
-        <div class="tradingview-widget-container__widget"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-        {"symbols":[
-          {"proName":"BINANCE:BTCUSDT","title":"BTC"},
-          {"proName":"BINANCE:ETHUSDT","title":"ETH"},
-          {"proName":"BINANCE:BNBUSDT","title":"BNB"},
-          {"proName":"BINANCE:ADAUSDT","title":"ADA"},
-          {"proName":"BINANCE:SOLUSDT","title":"SOL"},
-          {"proName":"BINANCE:DOGEUSDT","title":"DOGE"},
-          {"proName":"BINANCE:XRPUSDT","title":"XRP"},
-          {"proName":"BINANCE:TONUSDT","title":"TON"}
-        ],"showSymbolLogo":false,"isTransparent":true,"displayMode":"compact","colorTheme":"dark","locale":"ru"}
-        </script>
-      </div>
+      <div id="ticker-track" style="display:inline-flex;animation:tickerScroll 30s linear infinite;white-space:nowrap;height:44px;align-items:center"></div>
     </div>
     <div class="wb-games" onclick="openGamesHub()">🎮 Игры</div>
     <div class="wb-ghost" id="wb-ghost-btn" onclick="openGhostMode()">👻 Ghost Mode</div>
@@ -3719,6 +3705,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <option value="72">3 дня</option>
       <option value="168">7 дней</option>
       <option value="720">30 дней</option>
+      <option value="0">∞ Бесконечно</option>
     </select>
     <label>Цвет куба</label>
     <input type="hidden" id="cc-color" value="#0095F6">
@@ -3735,9 +3722,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     </div>
     <label>Размер куба</label>
     <select id="cc-size">
+      <option value="xs">XS — Мини</option>
       <option value="s">S — Малый</option>
-      <option value="m" selected>М — Средний</option>
+      <option value="m" selected>M — Средний</option>
       <option value="l">L — Большой</option>
+      <option value="xl">XL — Огромный</option>
     </select>
     <div style="margin-top:10px;padding:10px 12px;background:rgba(0,149,246,.08);border:1px solid rgba(0,149,246,.2);border-radius:9px;font-size:11.5px;color:var(--text2)">
       🔑 После создания ты получишь <strong style="color:var(--accent)">Key 2</strong> — временный ключ куба.<br>
@@ -8246,8 +8235,11 @@ async function submitSignal(){
 //  TIMERS
 // ════════════════════════════════════════════════
 function fmtTime(s){
+  s=Math.floor(s);
   if(s<=0)return'EXPIRED';
-  return`${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+  if(s>=365*24*3600)return'∞';
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+  return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
 }
 setInterval(()=>{
   app.cubes.forEach(c=>{if(c.life>0)c.life--;});
@@ -10072,15 +10064,28 @@ const TICKER_DATA=[
   {sym:'CUBE',price:'$0.10',  chg:'+12.4%',up:true},
   {sym:'USDT',price:'$1.000', chg:'0%',   up:true},
 ];
-function initTicker(){
+function renderTicker(data){
   const track=document.getElementById('ticker-track'); if(!track) return;
-  const html=TICKER_DATA.map(t=>`
-    <div class="ticker-item">
-      <span class="ticker-sym">${t.sym}</span>
-      <span class="ticker-price">${t.price}</span>
-      <span class="ticker-chg ${t.up?'up':'down'}">${t.up?'▲':'▼'} ${t.chg}</span>
-    </div>`).join('');
-  track.innerHTML=html+html; // seamless loop
+  const html=data.map(t=>`<div class="ticker-item"><span class="ticker-sym">${t.sym}</span><span class="ticker-price"> ${t.price}</span><span class="ticker-chg ${t.up?'up':'down'}"> ${t.up?'▲':'▼'}${t.chg}</span></div>`).join('');
+  track.innerHTML=html+html;
+}
+async function initTicker(){
+  const track=document.getElementById('ticker-track'); if(!track) return;
+  renderTicker(TICKER_DATA); // show static first
+  try{
+    const ids='bitcoin,ethereum,binancecoin,solana,ripple,cardano,dogecoin,the-open-network';
+    const r=await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&price_change_percentage=24h`,{signal:AbortSignal.timeout(6000)});
+    if(!r.ok) return;
+    const coins=await r.json();
+    const sym={bitcoin:'BTC',ethereum:'ETH',binancecoin:'BNB',solana:'SOL',ripple:'XRP',cardano:'ADA',dogecoin:'DOGE','the-open-network':'TON'};
+    const live=coins.map(c=>{
+      const chg=(c.price_change_percentage_24h||0);
+      const price=c.current_price>=1?c.current_price.toLocaleString('en',{maximumFractionDigits:2}):c.current_price.toFixed(4);
+      return{sym:sym[c.id]||c.symbol.toUpperCase(),price:`$${price}`,chg:`${Math.abs(chg).toFixed(2)}%`,up:chg>=0};
+    });
+    live.push({sym:'CUBE',price:'$0.10',chg:'12.4%',up:true});
+    renderTicker(live);
+  }catch(e){}
 }
 
 // ════════════════════════════════════════════════
@@ -13139,6 +13144,7 @@ function bspFmtBubble(type){
 
 /* Init */
 document.addEventListener('DOMContentLoaded',()=>{
+  initTicker();
   _setupFmtBar(document.getElementById('gco-input'));
   _setupFmtBar(document.getElementById('ca-text-input'));
 
