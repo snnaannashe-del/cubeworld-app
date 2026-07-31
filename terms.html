@@ -67,7 +67,7 @@ footer .sep{color:#334155;margin:0 8px}
 <div class="cw-panel">
 <nav class="cw-topnav">
   <a href="./index.html" class="cw-logo">
-    <canvas id="lcv" width="62" height="62"></canvas><span>Cube<em>World</em></span>
+    <canvas id="lcv"></canvas><span>Cube<em>World</em></span>
   </a>
   <div class="ldd" id="ldd">
     <button class="ldb" onclick="togDD(event)">
@@ -349,12 +349,12 @@ pickL('en');
 (function(){
   var c=document.getElementById('lcv');
   var dpr=window.devicePixelRatio||1;
-  var S=62;
+  var S=36;
   c.width=S*dpr; c.height=S*dpr;
   c.style.width=S+'px'; c.style.height=S+'px';
   var ctx=c.getContext('2d');
   ctx.scale(dpr,dpr);
-  var cx=S/2,cy=S/2,sz=22,a=0;
+  var cx=S/2,cy=S/2,sz=13,a=0;
   var V=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
   var E=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
   function ry(v,t){return[v[0]*Math.cos(t)+v[2]*Math.sin(t),v[1],-v[0]*Math.sin(t)+v[2]*Math.cos(t)];}
@@ -363,13 +363,9 @@ pickL('en');
   (function draw(){
     ctx.clearRect(0,0,S,S);
     a+=0.003;
-    var r=3,x0=3,y0=3,w=S-6,h=S-6;
-    ctx.shadowColor='#4f9cf9';ctx.shadowBlur=8;
-    ctx.strokeStyle='rgba(79,156,249,0.55)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(x0+r,y0);ctx.lineTo(x0+w-r,y0);ctx.arcTo(x0+w,y0,x0+w,y0+r,r);ctx.lineTo(x0+w,y0+h-r);ctx.arcTo(x0+w,y0+h,x0+w-r,y0+h,r);ctx.lineTo(x0+r,y0+h);ctx.arcTo(x0,y0+h,x0,y0+h-r,r);ctx.lineTo(x0,y0+r);ctx.arcTo(x0,y0,x0+r,y0,r);ctx.closePath();ctx.stroke();
     var pts=V.map(function(v){return proj(rx(ry(v,a),a*0.4));});
-    ctx.shadowColor='#4f9cf9';ctx.shadowBlur=6;
-    ctx.strokeStyle='#4f9cf9';ctx.lineWidth=1.2;
+    ctx.shadowColor='#4f9cf9';ctx.shadowBlur=4;
+    ctx.strokeStyle='#4f9cf9';ctx.lineWidth=1;
     for(var i=0;i<E.length;i++){ctx.beginPath();ctx.moveTo(pts[E[i][0]][0],pts[E[i][0]][1]);ctx.lineTo(pts[E[i][1]][0],pts[E[i][1]][1]);ctx.stroke();}
     requestAnimationFrame(draw);
   })();
