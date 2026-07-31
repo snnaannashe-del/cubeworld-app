@@ -312,6 +312,7 @@ function setLang(lang) {
 
 function togDD(e){if(e)e.stopPropagation();ddOpen=!ddOpen;document.getElementById('ldd').classList.toggle('open',ddOpen);}
 function pickL(l){
+  localStorage.setItem('cw_lang',l);
   document.getElementById('lflag').innerHTML=FLAGS[l];
   document.getElementById('lcode').textContent=CODES[l];
   ddOpen=false;document.getElementById('ldd').classList.remove('open');
@@ -347,7 +348,7 @@ document.addEventListener('click',function(){if(ddOpen){ddOpen=false;document.ge
   })();
 })();
 
-pickL('en');
+pickL(localStorage.getItem('cw_lang')||'en');
 </script>
 </body>
 </html>
