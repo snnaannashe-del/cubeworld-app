@@ -3767,10 +3767,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <select id="cc-life">
       <option value="1">1 час</option>
       <option value="6">6 часов</option>
-      <option value="24" selected>24 часа</option>
+      <option value="24">24 часа</option>
       <option value="168">7 дней</option>
       <option value="720">1 месяц</option>
-      <option value="8760">Навсегда</option>
+      <option value="8760" selected>Навсегда</option>
     </select>
     <label>Цвет куба</label>
     <div style="display:flex;gap:8px;flex-wrap:wrap;padding:4px 0">
@@ -5588,7 +5588,7 @@ function showCubeKeyModal(key, name, lifeH, icon, cubeId){
   window._newCubeKey = key;
   document.getElementById('ck-icon').textContent = icon||'🧊';
   document.getElementById('ck-name').textContent = '«'+name+'» создан!';
-  const lifeLabel = lifeH<=1?'1 час':lifeH<=6?lifeH+' часов':lifeH<=24?'24 часа':lifeH<=72?'3 дня':lifeH<=168?'7 дней':'30 дней';
+  const lifeLabel = lifeH<=1?'1 час':lifeH<=6?lifeH+' часов':lifeH<=24?'24 часа':lifeH<=72?'3 дня':lifeH<=168?'7 дней':lifeH<=720?'1 месяц':'∞ Навсегда';
   document.getElementById('ck-life-label').textContent = 'Key 2 действует '+lifeLabel+' — пока живёт куб';
   document.getElementById('ck-key-display').textContent = key;
   const baseUrl = location.href.split('?')[0];
