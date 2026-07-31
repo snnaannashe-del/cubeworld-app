@@ -5120,6 +5120,8 @@ function initWorld(){
       if(Array.isArray(arr)&&arr.length) app.myUniverse=arr;
     }
   }catch(e){}
+  // Restore own cubes from cache (survives backend sleep)
+  _loadMyCubesCache();
   const cv=document.getElementById('world-canvas'),wrap=document.getElementById('world-wrap');
   wCtx=cv.getContext('2d');
   // Stars
@@ -5320,6 +5322,8 @@ async function submitCreateCube(){
     };
     if(res.cube_key) cube.cubeKey = res.cube_key;
     app.cubes.push(cube);
+    // Cache own cubes in localStorage so they survive page reload even when backend sleeps
+    _saveMyCubesCache();
     // Auto-add to myUniverse
     if(!(app.myUniverse||[]).includes(cube.id)){
       app.myUniverse=app.myUniverse||[];
@@ -5340,6 +5344,26 @@ async function submitCreateCube(){
   }
 }
 
+function _saveMyCubesCache(){
+  const own=(app.cubes||[]).filter(c=>c.isOwn&&c.backendId);
+  localStorage.setItem('cw_my_cubes',JSON.stringify(own.map(c=>({
+    id:c.id,backendId:c.backendId,name:c.name,type:c.type,
+    life:c.life,size:c.size,col:c.col,colorCss:c.colorCss,
+    icon:c.icon,desc:c.desc,isOwn:true,owner_uid:c.owner_uid,
+    cubeKey:c.cubeKey||null
+  }))));
+}
+function _loadMyCubesCache(){
+  try{
+    const raw=localStorage.getItem('cw_my_cubes');
+    if(!raw)return;
+    const cached=JSON.parse(raw);
+    if(!Array.isArray(cached))return;
+    const existIds=new Set((app.cubes||[]).map(c=>c.id));
+    const toAdd=cached.filter(c=>!existIds.has(c.id));
+    if(toAdd.length) app.cubes=[...app.cubes,...toAdd];
+  }catch(e){}
+}
 function pickCubeColor(el){
   document.querySelectorAll('.cclr').forEach(e=>e.classList.remove('active'));
   el.classList.add('active');
@@ -5406,7 +5430,10 @@ async function deleteCubeEarly(cubeId){
   const r=await apiCall('/cubes/'+bid,{method:'DELETE'}).catch(()=>null);
   if(r!==null){
     app.cubes=(app.cubes||[]).filter(c=>c.id!==cubeId);
+    app.myUniverse=(app.myUniverse||[]).filter(id=>id!==cubeId);
+    localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));
     wObjects=(wObjects||[]).filter(o=>o.cube.id!==cubeId);
+    _saveMyCubesCache();
     switchUniTab('mine',document.getElementById('uni-tab-mine'));
     showToast('🗑 Куб удалён');
   } else showToast('Ошибка удаления');
