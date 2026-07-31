@@ -5471,36 +5471,67 @@ function pickCubeColor(el){
   el.classList.add('active');
   const inp=document.getElementById('cc-color');if(inp)inp.value=el.dataset.c;
 }
+function _renderMineCubes(grid){
+  const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);
+  const myCubes=(app.cubes||[]).filter(c=>c.isOwn===true||(myUid&&(String(c.owner_uid)===String(myUid)||String(c.creator)===String(myUid)||String(c.owner)===String(myUid))));
+  if(!myCubes.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--text2);padding:24px">У тебя пока нет кубов.<br><small style="font-size:11px;opacity:.6">Создай первый куб кнопкой ниже</small></div>';
+    return;
+  }
+  grid.innerHTML=myCubes.map(cube=>{
+    const isExpired=cube.expired||(cube.life<=0&&!!cube.backendId);
+    const lifeStr=isExpired?'истёк':cube.life>0?fmtTime(cube.life):'∞';
+    const isBackend=!!cube.backendId;
+    const canDel=isBackend?'':'opacity:.4;pointer-events:none;';
+    const inUni=(app.myUniverse||[]).includes(cube.id);
+    const expiredBadge=isExpired?'<span style="font-size:9px;background:rgba(255,59,48,.2);color:#ff6b6b;border-radius:4px;padding:1px 5px;margin-left:4px">истёк</span>':'';
+    return '<div class="uni-cube-card'+(inUni?' in-universe':'')+'" id="uni-card-'+cube.id+'" style="flex-direction:column;align-items:flex-start;gap:8px;'+(isExpired?'opacity:.7;':'')+'" >'+
+      '<div style="display:flex;align-items:center;gap:8px;width:100%" onclick="'+(isExpired?'':' toggleMineCube(\''+cube.id+'\')')+'" style="cursor:'+(isExpired?'default':'pointer')+'">'+
+      '<span style="font-size:22px">'+(cube.icon||'📦')+'</span>'+
+      '<div style="flex:1;min-width:0"><div class="uni-cube-name">'+(cube.name||'Куб')+expiredBadge+'</div>'+
+      '<div style="font-size:10px;color:var(--text2)">'+(cube.type==='private'?'🔒 Приватный':'🌐 Публичный')+' · ⏱ '+lifeStr+'</div></div>'+
+      (isExpired?'':('<div class="uni-toggle" id="uni-tog-'+cube.id+'" onclick="event.stopPropagation();toggleMineCube(\''+cube.id+'\')" style="cursor:pointer">'+(inUni?'✓':'')+'</div>'))+
+      '</div>'+
+      '<div style="display:flex;gap:6px;width:100%">'+
+      '<button onclick="deleteCubeEarly(\''+cube.id+'\')" style="flex:1;padding:5px 0;border:1px solid rgba(255,59,48,.4);border-radius:6px;background:rgba(255,59,48,.1);color:#ff3b30;font-size:11px;cursor:pointer;'+canDel+'">🗑 Удалить куб</button>'+
+      (isExpired?'':('<button onclick="openKickModal(\''+cube.id+'\')" style="flex:1;padding:5px 0;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text2);font-size:11px;cursor:pointer;'+canDel+'">👥 Удалить юзера</button>'))+
+      '</div></div>';
+  }).join('');
+  const sel=myCubes.filter(c=>(app.myUniverse||[]).includes(c.id)).length;
+  const hint=document.getElementById('uni-hint');if(hint)hint.textContent='Выбрано: '+sel+' из '+myCubes.length+' кубов';
+}
 function switchUniTab(tab,btn){
   document.querySelectorAll('.uni-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   const grid=document.getElementById('uni-grid');if(!grid)return;
   if(tab==='mine'){
-    const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);
-    const myCubes=(app.cubes||[]).filter(c=>c.isOwn===true||(myUid&&(String(c.owner_uid)===String(myUid)||String(c.creator)===String(myUid)||String(c.owner)===String(myUid))));
-    if(!myCubes.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--text2);padding:24px">У тебя пока нет кубов</div>';return;}
-    grid.innerHTML=myCubes.map(cube=>{
-      const isExpired=cube.expired||(cube.life<=0&&cube.backendId);
-      const lifeStr=isExpired?'истёк':cube.life>0?fmtTime(cube.life):'∞';
-      const isBackend=!!cube.backendId;
-      const canDel=isBackend?'':'opacity:.4;pointer-events:none;';
-      const inUni=(app.myUniverse||[]).includes(cube.id);
-      const expiredBadge=isExpired?'<span style="font-size:9px;background:rgba(255,59,48,.2);color:#ff6b6b;border-radius:4px;padding:1px 5px;margin-left:4px">истёк</span>':'';
-      return '<div class="uni-cube-card'+(inUni?' in-universe':'')+'" id="uni-card-'+cube.id+'" style="flex-direction:column;align-items:flex-start;gap:8px;'+(isExpired?'opacity:.7;':'')+'" >'+
-        '<div style="display:flex;align-items:center;gap:8px;width:100%" onclick="'+(isExpired?'':' toggleMineCube(\''+cube.id+'\')')+'" style="cursor:'+(isExpired?'default':'pointer')+'">'+
-        '<span style="font-size:22px">'+(cube.icon||'📦')+'</span>'+
-        '<div style="flex:1;min-width:0"><div class="uni-cube-name">'+(cube.name||'Куб')+expiredBadge+'</div>'+
-        '<div style="font-size:10px;color:var(--text2)">'+(cube.type==='private'?'🔒 Приватный':'🌐 Публичный')+' · ⏱ '+lifeStr+'</div></div>'+
-        (isExpired?'':('<div class="uni-toggle" id="uni-tog-'+cube.id+'" onclick="event.stopPropagation();toggleMineCube(\''+cube.id+'\')" style="cursor:pointer">'+(inUni?'✓':'')+'</div>'))+
-        '</div>'+
-        '<div style="display:flex;gap:6px;width:100%">'+
-        '<button onclick="deleteCubeEarly(\''+cube.id+'\')" style="flex:1;padding:5px 0;border:1px solid rgba(255,59,48,.4);border-radius:6px;background:rgba(255,59,48,.1);color:#ff3b30;font-size:11px;cursor:pointer;'+canDel+'">🗑 Удалить куб</button>'+
-        (isExpired?'':('<button onclick="openKickModal(\''+cube.id+'\')" style="flex:1;padding:5px 0;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text2);font-size:11px;cursor:pointer;'+canDel+'">👥 Удалить юзера</button>'))+
-        '</div></div>';
-    }).join('');
-    // update hint
-    const sel=myCubes.filter(c=>(app.myUniverse||[]).includes(c.id)).length;
-    const hint=document.getElementById('uni-hint');if(hint)hint.textContent='Выбрано: '+sel+' из '+app.cubes.length+' кубов';
+    // Always fetch fresh from server — avoids race with syncFromBackend
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--text2);padding:24px">⏳ Загружаю...</div>';
+    apiCall('/me/cubes').then(serverCubes=>{
+      if(serverCubes && serverCubes.length > 0){
+        const myId=String(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||'');
+        // Merge into app.cubes
+        serverCubes.forEach(c=>{
+          const existing=app.cubes.find(x=>x.backendId===c.id);
+          if(existing){ existing.isOwn=true; }
+          else {
+            app.cubes.push({
+              id:'bc'+c.id, backendId:c.id, name:c.name, desc:c.description||'',
+              icon:c.icon||'📦', col:c.color||'#0095F6', colorCss:c.color||'#0095F6',
+              type:c.type||'public', isOwn:true, owner_uid:c.owner_id,
+              life:Math.max(0,c.life_left_seconds||0), size:c.size||2,
+              expired:!c.is_active||(c.life_left_seconds||0)<=0,
+              x:Math.random()*80+10, y:Math.random()*70+15,
+              rotX:Math.random()*360, rotY:Math.random()*360,
+              speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1
+            });
+          }
+        });
+      }
+      _renderMineCubes(grid);
+    }).catch(()=>{ _renderMineCubes(grid); });
+    return;
+  }
   } else {
     openUniverseManager();
   }
