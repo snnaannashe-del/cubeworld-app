@@ -327,7 +327,7 @@ document.addEventListener('click',function(){if(ddOpen){ddOpen=false;document.ge
     ctx.beginPath();ctx.rect(pl,0,pw,H);ctx.clip();
     for(i=0;i<stars.length;i++){s=stars[i];tw=0.65+0.35*Math.sin(a*1.8+s.p);ctx.beginPath();ctx.arc(pl+s.x*pw,s.y*H,s.r,0,6.283);ctx.fillStyle='rgba(255,255,255,'+(s.o*tw)+')';ctx.fill();}
     var pts=[];for(i=0;i<V.length;i++)pts.push(proj(rx(ry(V[i],a),a*0.4)));
-    ctx.strokeStyle='rgba(79,156,249,0.18)';ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(60,120,255,0.22)';ctx.lineWidth=1;
     for(i=0;i<E.length;i++){ctx.beginPath();ctx.moveTo(pts[E[i][0]][0],pts[E[i][0]][1]);ctx.lineTo(pts[E[i][1]][0],pts[E[i][1]][1]);ctx.stroke();}
     ctx.restore();
     requestAnimationFrame(draw);
