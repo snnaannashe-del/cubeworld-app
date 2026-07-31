@@ -9,7 +9,7 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0f;color:#e0e0e0;line-height:1.7;min-height:100vh}
 #cv{position:fixed;inset:0;z-index:0;pointer-events:none}
 .amb{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(ellipse at center,rgba(79,156,249,0.05) 0%,transparent 70%);z-index:0;pointer-events:none}
-.cw-panel{max-width:1020px;margin:0 auto;position:relative;z-index:1;border-left:1px solid rgba(255,255,255,0.07);border-right:1px solid rgba(255,255,255,0.07)}
+.cw-panel{max-width:1020px;margin:0 auto;position:relative;z-index:1;border-left:1px solid rgba(255,255,255,0.07);border-right:1px solid rgba(255,255,255,0.07);border-bottom:1px solid rgba(255,255,255,0.07);border-radius:0 0 16px 16px}
 .cw-topnav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:53px;background:rgba(4,5,20,0.90);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07)}
 .cw-logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:.01em}
 .cw-logo span{color:#e0e0e0}
@@ -55,8 +55,9 @@ tr:hover td{background:#0f172a}
 .contact-icon{font-size:32px;flex-shrink:0}
 .contact-card h3{color:#fff;font-size:16px;margin-bottom:6px}
 .contact-card a{color:#4f9cf9;text-decoration:none}
-footer{position:relative;z-index:1;text-align:center;padding:32px 24px;border-top:1px solid #1e2535;color:#334155;font-size:13px}
+footer{position:relative;z-index:1;text-align:center;padding:20px 0 28px;color:#475569;font-size:12px}
 footer a{color:#4f9cf9;text-decoration:none}
+footer .sep{color:#334155;margin:0 8px}
 @media(max-width:600px){.cw-topnav{padding:0 16px}.page-hero{padding:32px 16px 24px}.container{padding:32px 16px 60px}}
 </style>
 </head>
@@ -99,7 +100,7 @@ footer a{color:#4f9cf9;text-decoration:none}
 </div>
 
 <footer>
-  <p>&copy; 2026 CubeWorld LLC. &nbsp;&middot;&nbsp; <a href="./terms.html" id="footer-terms">Terms of Service</a> &nbsp;&middot;&nbsp; <a href="./privacy.html">Privacy Policy</a></p>
+  <a href="./privacy.html">Privacy Policy</a><span class="sep">·</span><a href="./terms.html" id="footer-terms">Terms of Service</a>
 </footer>
 </div>
 
