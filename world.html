@@ -4568,13 +4568,16 @@ async function syncFromBackend(){
   const cubesData = await apiCall('/cubes');
   if(cubesData && cubesData.length > 0){
     const existIds = new Set(app.cubes.map(c=>c.backendId).filter(Boolean));
+    const myId = String(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||'');
     const newCubes = cubesData
       .filter(c => !existIds.has(c.id))
       .map(c=>({
         id:'bc'+c.id, backendId:c.id,
         name:c.name, desc:c.description||'',
         icon:c.icon||'📦', col:c.color||'#0095F6', colorCss:c.color||'#0095F6',
-        type:c.type||'public', isOwn:true,
+        type:c.type||'public',
+        isOwn: myId && c.owner_id !== null && String(c.owner_id) === myId,
+        owner_uid: c.owner_id,
         life:c.life_left_seconds||3600, size:c.size||2,
         x:Math.random()*80+10, y:Math.random()*70+15,
         rotX:Math.random()*360, rotY:Math.random()*360,
@@ -5109,6 +5112,14 @@ function wRenderLoop(){
 }
 
 function initWorld(){
+  // Restore universe from localStorage (persists across reloads)
+  try{
+    const saved=localStorage.getItem('cw_universe');
+    if(saved){
+      const arr=JSON.parse(saved);
+      if(Array.isArray(arr)&&arr.length) app.myUniverse=arr;
+    }
+  }catch(e){}
   const cv=document.getElementById('world-canvas'),wrap=document.getElementById('world-wrap');
   wCtx=cv.getContext('2d');
   // Stars
@@ -14406,8 +14417,9 @@ function addWbAccount(){
 
   function _goLogin(){
     ['cw_key','cw_access_token','cw_refresh_token','cw_key_type',
-     'cw_user_id','cw_display_name','cw_cube_balance','cw_universe',
+     'cw_user_id','cw_display_name','cw_cube_balance',
      'cw_last_view','cw_last_cube'].forEach(k=>localStorage.removeItem(k));
+    // cw_universe intentionally NOT cleared — keep cube selections across sessions
     // cw_onboarded intentionally NOT cleared — user should not see onboarding again
     window.location.replace('index.html');
   }
