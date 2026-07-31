@@ -5309,6 +5309,13 @@ async function submitCreateCube(){
     };
     if(res.cube_key) cube.cubeKey = res.cube_key;
     app.cubes.push(cube);
+    // Auto-add to myUniverse
+    if(!(app.myUniverse||[]).includes(cube.id)){
+      app.myUniverse=app.myUniverse||[];
+      app.myUniverse.push(cube.id);
+      localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));
+      apiCall('/me/universe',{method:'POST',body:JSON.stringify({universe:app.myUniverse})}).catch(()=>{});
+    }
     // Add to canvas world
     if(wDone) addCubeToWorld(cube);
     const cnt=document.getElementById('wb-count');
@@ -5334,28 +5341,51 @@ function switchUniTab(tab,btn){
   if(tab==='mine'){
     const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);
     const myCubes=(app.cubes||[]).filter(c=>c.isOwn===true||(myUid&&(String(c.owner_uid)===String(myUid)||String(c.creator)===String(myUid)||String(c.owner)===String(myUid))));
-    const backendCubes=myCubes.filter(c=>c.backendId);
-    // "Delete all" button at top
-    const deleteAllBtn=backendCubes.length?'<div style="grid-column:1/-1;margin-bottom:4px"><button onclick="deleteAllMyCubes()" style="width:100%;padding:8px;border:1px solid rgba(255,59,48,.4);border-radius:8px;background:rgba(255,59,48,.07);color:#ff3b30;font-size:12px;font-weight:600;cursor:pointer">🗑 Удалить все мои кубы ('+backendCubes.length+')</button></div>':'';
     if(!myCubes.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--text2);padding:24px">У тебя пока нет кубов</div>';return;}
-    grid.innerHTML=deleteAllBtn+myCubes.map(cube=>{
+    grid.innerHTML=myCubes.map(cube=>{
       const lifeStr=cube.life>0?fmtTime(cube.life):'истёк';
       const isBackend=!!cube.backendId;
       const canDel=isBackend?'':'opacity:.4;pointer-events:none;';
-      return '<div class="uni-cube-card" style="flex-direction:column;align-items:flex-start;gap:8px">'+
-        '<div style="display:flex;align-items:center;gap:8px;width:100%">'+
+      const inUni=(app.myUniverse||[]).includes(cube.id);
+      return '<div class="uni-cube-card'+(inUni?' in-universe':'')+'" id="uni-card-'+cube.id+'" style="flex-direction:column;align-items:flex-start;gap:8px">'+
+        '<div style="display:flex;align-items:center;gap:8px;width:100%" onclick="toggleMineCube(\''+cube.id+'\')" style="cursor:pointer">'+
         '<span style="font-size:22px">'+(cube.icon||'📦')+'</span>'+
         '<div style="flex:1;min-width:0"><div class="uni-cube-name">'+(cube.name||'Куб')+'</div>'+
-        '<div style="font-size:10px;color:var(--text2)">'+(cube.type==='private'?'🔒 Приватный':'🌐 Публичный')+' · ⏱ '+lifeStr+'</div></div></div>'+
+        '<div style="font-size:10px;color:var(--text2)">'+(cube.type==='private'?'🔒 Приватный':'🌐 Публичный')+' · ⏱ '+lifeStr+'</div></div>'+
+        '<div class="uni-toggle" id="uni-tog-'+cube.id+'" onclick="event.stopPropagation();toggleMineCube(\''+cube.id+'\')" style="cursor:pointer">'+(inUni?'✓':'')+'</div>'+
+        '</div>'+
         '<div style="display:flex;gap:6px;width:100%">'+
         '<button onclick="deleteCubeEarly(\''+cube.id+'\')" style="flex:1;padding:5px 0;border:1px solid rgba(255,59,48,.4);border-radius:6px;background:rgba(255,59,48,.1);color:#ff3b30;font-size:11px;cursor:pointer;'+canDel+'">🗑 Удалить куб</button>'+
         '<button onclick="openKickModal(\''+cube.id+'\')" style="flex:1;padding:5px 0;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text2);font-size:11px;cursor:pointer;'+canDel+'">👥 Удалить юзера</button>'+
         '</div></div>';
     }).join('');
+    // update hint
+    const sel=myCubes.filter(c=>(app.myUniverse||[]).includes(c.id)).length;
+    const hint=document.getElementById('uni-hint');if(hint)hint.textContent='Выбрано: '+sel+' из '+app.cubes.length+' кубов';
   } else {
     openUniverseManager();
     document.querySelectorAll('.uni-tab').forEach((b,i)=>b.classList.toggle('active',i===0));
   }
+}
+function toggleMineCube(cubeId){
+  const uni=app.myUniverse||(app.myUniverse=[]);
+  const idx=uni.indexOf(cubeId);
+  if(idx>=0) uni.splice(idx,1); else uni.push(cubeId);
+  app.myUniverse=uni;
+  localStorage.setItem('cw_universe',JSON.stringify(uni));
+  apiCall('/me/universe',{method:'POST',body:JSON.stringify({universe:uni})}).catch(()=>{});
+  // update card UI
+  const card=document.getElementById('uni-card-'+cubeId);
+  const tog=document.getElementById('uni-tog-'+cubeId);
+  if(card){card.classList.toggle('in-universe',uni.includes(cubeId));}
+  if(tog){tog.textContent=uni.includes(cubeId)?'✓':'';}
+  // refresh world canvas
+  wObjects=[];wDone=false;
+  document.getElementById('world-overlay').innerHTML='';
+  requestAnimationFrame(initWorld);
+  const hint=document.getElementById('uni-hint');
+  if(hint){const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);const mc=(app.cubes||[]).filter(c=>c.isOwn===true||(myUid&&(String(c.owner_uid)===String(myUid))));const sel=mc.filter(c=>uni.includes(c.id)).length;hint.textContent='Выбрано: '+sel+' из '+app.cubes.length+' кубов';}
+  showToast(uni.includes(cubeId)?'⬡ Куб добавлен в мир':'⬡ Куб убран из мира');
 }
 async function deleteCubeEarly(cubeId){
   if(!confirm('Удалить куб досрочно?'))return;
