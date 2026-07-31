@@ -2,6 +2,9 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <title>CubeWorld — Next-Gen Anonymous Social</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css">
@@ -466,7 +469,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #wb-key-badge{display:none!important}
   .wb-online{flex-shrink:0}
   #wb-count,.wb-count-badge{flex-shrink:0;font-size:10px}
-  #crypto-ticker{flex-shrink:0;min-width:160px;max-width:210px;overflow:hidden;height:44px;mask-image:none;-webkit-mask-image:none}
+  #crypto-ticker{flex-shrink:0;min-width:160px;max-width:calc(100vw - 248px);overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:none;height:44px;mask-image:none;-webkit-mask-image:none}
+  #crypto-ticker::-webkit-scrollbar{display:none}
+  #ct-track{animation:none!important;-webkit-animation:none!important}
   .wb-games{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-ghost{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-wallet{flex-shrink:0;padding:4px 8px;font-size:11px}
@@ -2755,10 +2760,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #wb-key-badge{order:3}
   .wb-online{order:4;flex-shrink:0}
   .wb-count-badge{order:5;flex-shrink:0;font-size:10px}
-  /* Ticker: exact width = screen minus items before it, so it never overflows viewport */
-  #crypto-ticker{order:6;flex:0 0 calc(100vw - 248px);max-width:calc(100vw - 248px);min-width:80px;overflow:hidden!important;mask-image:none;-webkit-mask-image:none}
-  /* Override animation:none from 768px — must be !important and after that rule */
-  #ct-track{animation:ctScroll 25s linear infinite!important}
+  /* Ticker: touch-scroll, same as 768px but with order */
+  #crypto-ticker{order:6;flex:0 0 calc(100vw - 248px);max-width:calc(100vw - 248px);min-width:80px;overflow-x:auto!important;-webkit-overflow-scrolling:touch;touch-action:pan-x;mask-image:none;-webkit-mask-image:none}
+  #ct-track{animation:none!important;-webkit-animation:none!important;transform:none!important}
   .ct-pill{padding:3px 8px}.ct-sym{font-size:9px}.ct-px{font-size:10px}.ct-chg{font-size:8px}
   .wb-games{order:7;flex-shrink:0}
   .wb-ghost{order:8;flex-shrink:0}
@@ -14433,18 +14437,11 @@ function _ctFmt(p){if(p>=10000)return p.toLocaleString('en',{maximumFractionDigi
 function _ctPlaceholder(){var tr=document.getElementById('ct-track');if(!tr||tr.innerHTML.length>10)return;var ph=[['BTC','~97k','+1.2','up'],['ETH','~2700','+0.8','up'],['USDT','~1.00','0.0','up'],['BNB','~640','+0.5','up'],['SOL','~155','+2.1','up'],['XRP','~2.35','+1.4','up'],['DOGE','~0.22','+3.2','up'],['ADA','~0.75','+1.8','up'],['TRX','~0.27','+0.3','up'],['AVAX','~24','-0.6','dn'],['SHIB','~0.000014','+2.5','up'],['LINK','~15','+1.1','up'],['GRAM','~3.2','-0.4','dn'],['DOT','~4.5','+0.7','up'],['BCH','~395','+0.9','up'],['LTC','~88','+0.6','up'],['NEAR','~2.8','+1.5','up'],['UNI','~6.1','-0.3','dn'],['POL','~0.24','+0.8','up'],['XLM','~0.29','+1.2','up']];var h='';ph.forEach(function(x){h+='<div class="ct-pill"><span class="ct-sym">'+x[0]+'</span><span class="ct-px">'+x[1]+'</span><span class="ct-chg '+x[3]+'">'+(x[3]==='up'?'+':'')+x[2]+'%</span></div>';});tr.innerHTML=h+h;}
 function _applyTickerAnim(){
   const track=document.getElementById('ct-track');if(!track)return;
-  if(window.innerWidth<=600){
-    // Use individual style properties + webkit prefix for iOS Safari compatibility
-    track.style.webkitAnimation='ctScroll 25s linear infinite';
-    track.style.animation='ctScroll 25s linear infinite';
-    track.style.whiteSpace='nowrap';
-    track.style.display='flex';
-    track.style.alignItems='center';
-    track.style.flexShrink='0';
-    track.style.willChange='transform';
-  } else if(window.innerWidth<=768){
+  if(window.innerWidth<=768){
+    // Mobile: no animation, touch-scroll only
     track.style.webkitAnimation='none';
     track.style.animation='none';
+    track.style.transform='none';
   } else {
     track.style.cssText='';
   }
