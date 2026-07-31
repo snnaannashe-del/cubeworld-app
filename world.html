@@ -2750,12 +2750,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 }
 
 @media(max-width:600px) and (orientation:portrait){
-  .wb-logo{order:1}.wb-av-btn{order:2}#wb-key-badge{order:3}
-  .wb-online{order:4}.wb-count-badge{order:5}
-  #crypto-ticker{order:6;min-width:160px;max-width:220px;flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x manipulation;scrollbar-width:none;mask-image:none;-webkit-mask-image:none}
-  #ct-track{animation:none!important;white-space:nowrap}
+  /* Topbar — no horizontal scroll, fixed layout */
+  #world-bar{overflow:hidden!important;flex-wrap:nowrap!important}
+  .wb-logo{order:1;flex-shrink:0}
+  .wb-av-btn{order:2;flex-shrink:0}
+  #wb-key-badge{order:3}
+  .wb-online{order:4;flex-shrink:0}
+  /* Hide count + heavy buttons — ticker needs the space */
+  .wb-count-badge{display:none!important}
+  .wb-games{display:none!important}
+  .wb-ghost{display:none!important}
+  /* Ticker: take all remaining space, animate */
+  #crypto-ticker{order:5;flex:1!important;min-width:0!important;max-width:none!important;overflow:hidden!important;mask-image:none!important;-webkit-mask-image:none!important}
+  #ct-track{animation:ctScroll 40s linear infinite!important}
   .ct-pill{padding:3px 8px}.ct-sym{font-size:9px}.ct-px{font-size:10px}.ct-chg{font-size:8px}
-  .wb-games{order:7}.wb-ghost{order:8}.wb-wallet{order:9}
+  .wb-wallet{order:6;flex-shrink:0}
 }
 
 </style>
@@ -14421,7 +14430,7 @@ function cwLogout(){
 function cwLogoutClose(){const _m=document.getElementById('cw-logout-modal');if(_m)_m.remove();}
 function cwLogoutDo(){cwLogoutClose();localStorage.clear();window.location.replace('index.html');}
 
-const _CT_COINS=[{id:'bitcoin',sym:'BTC'},{id:'ethereum',sym:'ETH'},{id:'binancecoin',sym:'BNB'},{id:'cardano',sym:'ADA'},{id:'solana',sym:'SOL'},{id:'dogecoin',sym:'DOGE'},{id:'ripple',sym:'XRP'},{id:'toncoin',sym:'TON'}];
+const _CT_COINS=[{id:'bitcoin',sym:'BTC'},{id:'ethereum',sym:'ETH'},{id:'tether',sym:'USDT'},{id:'binancecoin',sym:'BNB'},{id:'solana',sym:'SOL'},{id:'ripple',sym:'XRP'},{id:'dogecoin',sym:'DOGE'},{id:'cardano',sym:'ADA'},{id:'tron',sym:'TRX'},{id:'avalanche-2',sym:'AVAX'},{id:'shiba-inu',sym:'SHIB'},{id:'polkadot',sym:'DOT'},{id:'chainlink',sym:'LINK'},{id:'toncoin',sym:'TON'},{id:'bitcoin-cash',sym:'BCH'},{id:'litecoin',sym:'LTC'},{id:'near',sym:'NEAR'},{id:'uniswap',sym:'UNI'},{id:'matic-network',sym:'POL'},{id:'stellar',sym:'XLM'},{id:'pepe',sym:'PEPE'},{id:'arbitrum',sym:'ARB'},{id:'aptos',sym:'APT'},{id:'sui',sym:'SUI'},{id:'optimism',sym:'OP'},{id:'injective-protocol',sym:'INJ'},{id:'cosmos',sym:'ATOM'},{id:'filecoin',sym:'FIL'},{id:'vechain',sym:'VET'},{id:'the-open-network',sym:'NOT'}];
 function _ctFmt(p){if(p>=10000)return p.toLocaleString('en',{maximumFractionDigits:0});if(p>=1)return p.toFixed(2);return p.toFixed(5);}
 function _ctPlaceholder(){var tr=document.getElementById('ct-track');if(!tr||tr.innerHTML.length>10)return;var ph=[['BTC','~64k'],['ETH','~3.4k'],['BNB','~570'],['SOL','~76'],['XRP','~0.53'],['TON','~5.2'],['DOGE','~0.07'],['ADA','~0.44']];var h='';ph.forEach(function(x){var d=document.createElement('div');d.className='ct-pill';var s=document.createElement('span');s.className='ct-sym';s.textContent=x[0];var p=document.createElement('span');p.className='ct-px';p.textContent=x[1];d.appendChild(s);d.appendChild(p);h+=d.outerHTML;});tr.innerHTML=h+h;}
 async function loadCryptoTicker(){
