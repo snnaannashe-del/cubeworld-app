@@ -11,11 +11,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .amb{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(ellipse at center,rgba(79,156,249,0.05) 0%,transparent 70%);z-index:0;pointer-events:none}
 .cw-panel{max-width:1020px;margin:0 auto;position:relative;z-index:1;border-left:1px solid rgba(255,255,255,0.07);border-right:1px solid rgba(255,255,255,0.07)}
 .cw-topnav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:53px;background:rgba(4,5,20,0.90);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07)}
-.cw-logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:.01em;perspective:80px}
-.cw-logo svg{animation:cwLogoSpin 34.9s linear infinite;transform-origin:center}
-@keyframes cwLogoSpin{to{transform:rotateY(-360deg)}}
+.cw-logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:.01em}
 .cw-logo span{color:#e0e0e0}
 .cw-logo em{color:#4f9cf9;font-style:normal}
+#lcv{display:block;flex-shrink:0}
 .ldd{position:relative}
 .ldb{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:7px 12px;color:#e0e0e0;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s}
 .ldb:hover{background:rgba(255,255,255,0.1)}
@@ -68,7 +67,7 @@ footer a{color:#4f9cf9;text-decoration:none}
 <div class="cw-panel">
 <nav class="cw-topnav">
   <a href="./index.html" class="cw-logo">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4f9cf9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg><span>Cube<em>World</em></span>
+    <canvas id="lcv" width="28" height="28"></canvas><span>Cube<em>World</em></span>
   </a>
   <div class="ldd" id="ldd">
     <button class="ldb" onclick="togDD(event)">
@@ -328,6 +327,25 @@ document.addEventListener('click',function(){if(ddOpen){ddOpen=false;document.ge
 })();
 
 pickL('en');
+</script>
+<script>
+(function(){
+  var c=document.getElementById('lcv'),ctx=c.getContext('2d');
+  var W=28,H=28,cx=14,cy=14,sz=10,a=0;
+  var V=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+  var E=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  function ry(v,t){return[v[0]*Math.cos(t)+v[2]*Math.sin(t),v[1],-v[0]*Math.sin(t)+v[2]*Math.cos(t)];}
+  function rx(v,t){return[v[0],v[1]*Math.cos(t)-v[2]*Math.sin(t),v[1]*Math.sin(t)+v[2]*Math.cos(t)];}
+  function proj(v){var f=sz/(v[2]+3);return[cx+v[0]*f,cy+v[1]*f];}
+  (function draw(){
+    ctx.clearRect(0,0,W,H);
+    a+=0.003;
+    var pts=V.map(function(v){return proj(rx(ry(v,a),a*0.4));});
+    ctx.strokeStyle='#4f9cf9';ctx.lineWidth=1.2;
+    for(var i=0;i<E.length;i++){ctx.beginPath();ctx.moveTo(pts[E[i][0]][0],pts[E[i][0]][1]);ctx.lineTo(pts[E[i][1]][0],pts[E[i][1]][1]);ctx.stroke();}
+    requestAnimationFrame(draw);
+  })();
+})();
 </script>
 </body>
 </html>
