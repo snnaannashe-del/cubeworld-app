@@ -3793,6 +3793,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   </div>
 </div>
 
+<!-- Kick User Modal -->
+<div class="modal-backdrop" id="modal-kick-user">
+  <div class="modal" style="max-width:400px">
+    <h3>👥 Удалить юзера из куба</h3>
+    <label>Поиск по UID или никнейму</label>
+    <input type="text" id="kick-search" placeholder="Введи UID или имя..." oninput="searchKickUser(this.value)" autocomplete="off">
+    <div id="kick-results" style="margin-top:10px;max-height:220px;overflow-y:auto"></div>
+    <div class="modal-actions" style="margin-top:14px">
+      <button class="btn btn-ghost" onclick="closeModal('modal-kick-user')">Отмена</button>
+    </div>
+  </div>
+</div>
+
 <!-- Cube Key Modal (shown after creation) -->
 <div class="modal-backdrop" id="modal-cube-key">
   <div class="modal" style="max-width:400px">
@@ -5322,17 +5335,20 @@ function switchUniTab(tab,btn){
     const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);
     const myCubes=(app.cubes||[]).filter(c=>c.isOwn===true||(myUid&&(String(c.owner_uid)===String(myUid)||String(c.creator)===String(myUid)||String(c.owner)===String(myUid))));
     if(!myCubes.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--text2);padding:24px">У тебя пока нет кубов</div>';return;}
-    grid.innerHTML=myCubes.map(cube=>
-      '<div class="uni-cube-card" style="flex-direction:column;align-items:flex-start;gap:8px">'+
-      '<div style="display:flex;align-items:center;gap:8px;width:100%">'+
-      '<span style="font-size:22px">'+(cube.icon||'📦')+'</span>'+
-      '<div style="flex:1;min-width:0"><div class="uni-cube-name">'+(cube.name||'Куб')+'</div>'+
-      '<div style="font-size:10px;color:var(--text2)">'+(cube.type==='private'?'🔒 Приватный':'🌐 Публичный')+'</div></div></div>'+
-      '<div style="display:flex;gap:6px;width:100%">'+
-      '<button onclick="deleteCubeEarly(\'' + cube.id + '\')" style="flex:1;padding:5px 0;border:1px solid rgba(255,59,48,.4);border-radius:6px;background:rgba(255,59,48,.1);color:#ff3b30;font-size:11px;cursor:pointer">🗑 Удалить куб</button>'+
-      '<button onclick="kickCubeUser(\'' + cube.id + '\')" style="flex:1;padding:5px 0;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text2);font-size:11px;cursor:pointer">👥 Удалить юзера</button>'+
-      '</div></div>'
-    ).join('');
+    grid.innerHTML=myCubes.map(cube=>{
+      const lifeStr=cube.life>0?fmtTime(cube.life):'истёк';
+      const isBackend=!!cube.backendId;
+      const canDel=isBackend?'':'opacity:.4;pointer-events:none;';
+      return '<div class="uni-cube-card" style="flex-direction:column;align-items:flex-start;gap:8px">'+
+        '<div style="display:flex;align-items:center;gap:8px;width:100%">'+
+        '<span style="font-size:22px">'+(cube.icon||'📦')+'</span>'+
+        '<div style="flex:1;min-width:0"><div class="uni-cube-name">'+(cube.name||'Куб')+'</div>'+
+        '<div style="font-size:10px;color:var(--text2)">'+(cube.type==='private'?'🔒 Приватный':'🌐 Публичный')+' · ⏱ '+lifeStr+'</div></div></div>'+
+        '<div style="display:flex;gap:6px;width:100%">'+
+        '<button onclick="deleteCubeEarly(\''+cube.id+'\')" style="flex:1;padding:5px 0;border:1px solid rgba(255,59,48,.4);border-radius:6px;background:rgba(255,59,48,.1);color:#ff3b30;font-size:11px;cursor:pointer;'+canDel+'">🗑 Удалить куб</button>'+
+        '<button onclick="openKickModal(\''+cube.id+'\')" style="flex:1;padding:5px 0;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text2);font-size:11px;cursor:pointer;'+canDel+'">👥 Удалить юзера</button>'+
+        '</div></div>';
+    }).join('');
   } else {
     openUniverseManager();
     document.querySelectorAll('.uni-tab').forEach((b,i)=>b.classList.toggle('active',i===0));
@@ -5340,15 +5356,40 @@ function switchUniTab(tab,btn){
 }
 async function deleteCubeEarly(cubeId){
   if(!confirm('Удалить куб досрочно?'))return;
-  const r=await apiCall('/cubes/'+cubeId,{method:'DELETE'}).catch(()=>null);
-  if(r!==null){app.cubes=(app.cubes||[]).filter(c=>c.id!==cubeId);switchUniTab('mine',document.getElementById('uni-tab-mine'));}
-  else showToast('Ошибка удаления');
+  const cube=app.cubes.find(c=>c.id===cubeId);
+  const bid=cube&&cube.backendId;
+  if(!bid){showToast('Только кубы из базы можно удалить');return;}
+  const r=await apiCall('/cubes/'+bid,{method:'DELETE'}).catch(()=>null);
+  if(r!==null){
+    app.cubes=(app.cubes||[]).filter(c=>c.id!==cubeId);
+    wObjects=(wObjects||[]).filter(o=>o.cube.id!==cubeId);
+    switchUniTab('mine',document.getElementById('uni-tab-mine'));
+    showToast('🗑 Куб удалён');
+  } else showToast('Ошибка удаления');
 }
-async function kickCubeUser(cubeId){
-  const uid=prompt('Введи UID юзера которого удалить из куба:');
-  if(!uid||!uid.trim())return;
-  const r=await apiCall('/cubes/'+cubeId+'/kick',{method:'POST',body:JSON.stringify({uid:uid.trim()})}).catch(()=>null);
-  r!==null?showToast('Юзер удалён из куба'):showToast('Ошибка');
+let _kickCubeLocalId=null;
+function openKickModal(cubeId){
+  _kickCubeLocalId=cubeId;
+  document.getElementById('kick-search').value='';
+  document.getElementById('kick-results').innerHTML='';
+  openModal('modal-kick-user');
+}
+async function searchKickUser(q){
+  const res=document.getElementById('kick-results');
+  if(!q.trim()||q.trim().length<2){res.innerHTML='';return;}
+  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Поиск...</div>';
+  const data=await apiCall('/users/search?q='+encodeURIComponent(q.trim())).catch(()=>null);
+  if(!data||!data.length){res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Не найдено</div>';return;}
+  res.innerHTML=data.map(u=>`<div onclick="doKickUser('${u.uid||u.id}','${(u.display_name||'User').replace(/'/g,"\\'")}' )" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);cursor:pointer;margin-bottom:6px"><div><div style="font-weight:600;font-size:13px">${u.display_name||'User'}</div><div style="font-size:11px;color:var(--text3)">UID: ${u.uid||u.id}</div></div><button style="padding:4px 10px;border-radius:6px;background:rgba(255,59,48,.15);border:1px solid rgba(255,59,48,.4);color:#ff3b30;font-size:11px;cursor:pointer">Удалить</button></div>`).join('');
+}
+async function doKickUser(uid,name){
+  if(!_kickCubeLocalId)return;
+  const cube=app.cubes.find(c=>c.id===_kickCubeLocalId);
+  const bid=cube&&cube.backendId;
+  if(!bid){showToast('Ошибка: куб не найден');return;}
+  const r=await apiCall('/cubes/'+bid+'/kick',{method:'POST',body:JSON.stringify({uid:String(uid)})}).catch(()=>null);
+  if(r!==null){showToast('👥 '+name+' удалён из куба');closeModal('modal-kick-user');}
+  else showToast('Ошибка удаления юзера');
 }
 
 function showCubeKeyModal(key, name, lifeH, icon, cubeId){
@@ -14313,8 +14354,9 @@ function addWbAccount(){
 
   function _goLogin(){
     ['cw_key','cw_access_token','cw_refresh_token','cw_key_type',
-     'cw_user_id','cw_display_name','cw_cube_balance','cw_universe','cw_onboarded',
+     'cw_user_id','cw_display_name','cw_cube_balance','cw_universe',
      'cw_last_view','cw_last_cube'].forEach(k=>localStorage.removeItem(k));
+    // cw_onboarded intentionally NOT cleared — user should not see onboarding again
     window.location.replace('index.html');
   }
 
