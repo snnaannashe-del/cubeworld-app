@@ -134,8 +134,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #cw-splash .sp-logo em{color:#0095F6;font-style:normal}
 #cw-splash .sp-dot{width:8px;height:8px;border-radius:50%;background:#0095F6;animation:splashPulse 1s infinite}
 @keyframes splashPulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-#world-bar{display:flex;align-items:center;gap:8px;padding:0 12px;height:48px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);z-index:10;flex-shrink:0;overflow-x:auto;overflow-y:visible;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-#world-bar::-webkit-scrollbar{display:none}
+#wb-key-badge{display:none!important;width:0!important;max-width:0!important;overflow:hidden!important;padding:0!important;margin:0!important}
+#world-bar{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);z-index:10;flex-shrink:0}
 /* World-bar avatar + account menu */
 .wb-av-btn{position:relative;flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(0,149,246,.25);border:2px solid rgba(0,149,246,.7);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all .18s;user-select:none;box-shadow:0 0 0 3px rgba(0,149,246,.15);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .wb-av-btn:hover{background:rgba(0,149,246,.38);border-color:#0095F6;box-shadow:0 0 0 4px rgba(0,149,246,.25)}
@@ -160,38 +160,37 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .wl-inner{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:5px 9px;background:rgba(5,5,26,.85);border:1px solid var(--col,rgba(255,255,255,.08));border-radius:8px;backdrop-filter:blur(4px)}
 .wl-icon{font-size:15px;line-height:1;user-select:none}.wl-name{font-size:10px;font-weight:700;color:#e0e0f8;white-space:nowrap;user-select:none}.wl-timer{user-select:none}.wl-own{font-size:8px;font-weight:800;color:#fff;background:var(--col,#0095F6);border-radius:4px;padding:1px 5px;letter-spacing:.5px}
 .wl-timer{font-size:9px;color:var(--col,var(--text2));font-family:'Courier New',monospace;font-weight:600}
-#world-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text3);pointer-events:none;white-space:nowrap}
+#world-hint{position:absolute;bottom:18px;left:0;right:0;text-align:center;font:bold 36px/1 system-ui,sans-serif;pointer-events:none;z-index:100;letter-spacing:-1px}#world-hint span:first-child{color:rgba(180,200,255,.5)}#world-hint span:last-child{color:rgba(0,149,246,.6)}
 #world-fab{position:absolute;bottom:20px;right:20px;z-index:10;display:flex;flex-direction:column;gap:8px;align-items:center}
 #world-fab button{width:46px;height:46px;border-radius:50%;background:rgba(0,149,246,.65);border:1px solid rgba(0,149,246,.85);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 4px 24px rgba(0,149,246,.25)}
 #world-fab button:hover{transform:scale(1.08);background:rgba(0,149,246,.85)}
 
 /* ── UNIVERSE MANAGER ── */
-#modal-universe .modal{max-width:560px;width:95%}
-.uni-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;max-height:400px;overflow-y:auto;overflow-x:hidden}
-.uni-cube-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 10px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .18s;min-width:0;overflow:hidden}
+#modal-universe .modal{max-width:min(560px,calc(100vw - 24px));width:100%;max-height:90svh;box-sizing:border-box;overflow-y:auto;padding:20px 16px}
+@media(max-width:480px){#modal-universe .modal{padding:12px 10px;max-height:85svh}.uni-grid{max-height:calc(45vh - 80px)!important}.uni-cube-card{padding:8px 10px;gap:8px}.uni-cube-name{font-size:12px}
+.cclr{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid transparent;box-sizing:border-box;display:inline-block;transition:.15s;flex-shrink:0}
+.cclr.active{border-color:#fff}
+.uni-tabs{display:flex;gap:8px;margin-bottom:12px}
+.uni-tab{flex:1;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text2);font-size:13px;cursor:pointer;transition:.15s}
+.uni-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}.uni-grid{grid-template-columns:1fr}}}
+.uni-tabs{display:flex;gap:8px;margin-bottom:12px}
+.uni-tab{flex:1;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:14px;cursor:pointer;transition:.15s;font-weight:500;text-align:center}
+.uni-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+.uni-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;max-height:min(380px,calc(60vh - 220px));overflow-y:auto;padding-right:4px}
+.uni-cube-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .18s}
 .uni-cube-card.in-universe{border-color:rgba(0,149,246,.5);background:rgba(0,149,246,.08)}
 .uni-cube-card:hover{border-color:rgba(255,255,255,.18)}
-.uni-cube-icon{font-size:20px;flex-shrink:0;width:24px;text-align:center}
+.uni-cube-icon{font-size:22px;flex-shrink:0}
 .uni-cube-info{flex:1;min-width:0}
-.uni-cube-name{font-size:12px;font-weight:600;color:#e0e0f8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.uni-cube-type{font-size:10px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.uni-toggle{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .18s;margin-left:auto}
+.uni-cube-name{font-size:13px;font-weight:600;color:#e0e0f8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uni-cube-type{font-size:10px;color:var(--text3);margin-top:2px}
+.uni-toggle{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .18s}
 .uni-cube-card.in-universe .uni-toggle{background:var(--accent);border-color:var(--accent);color:#fff}
 .uni-save-btn{padding:12px 16px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;flex:2}
 .uni-save-btn:hover{background:#6a58f0}
 .uni-create-btn{padding:12px 16px;background:rgba(0,149,246,.18);color:var(--accent);border:1px solid rgba(0,149,246,.4);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;flex:1}
 .uni-create-btn:hover{background:rgba(0,149,246,.3)}
 .uni-hint{font-size:11px;color:var(--text3);margin-top:8px;text-align:center}
-@media(max-width:420px){
-  #modal-universe .modal{padding:20px 16px;width:98%}
-  .uni-grid{gap:6px;max-height:52vh}
-  .uni-cube-card{padding:8px 8px;gap:6px}
-  .uni-cube-icon{font-size:18px;width:20px}
-  .uni-cube-name{font-size:11px}
-  .uni-cube-type{font-size:9px}
-  .uni-toggle{width:20px;height:20px;font-size:11px}
-  .uni-save-btn,.uni-create-btn{padding:10px 12px;font-size:13px}
-}
 .uni-search{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:#e0e0f8;font-size:13px;margin-bottom:2px;outline:none;transition:border-color .2s}
 .uni-search:focus{border-color:rgba(0,149,246,.6)}
 .uni-search::placeholder{color:var(--text3)}
@@ -461,20 +460,20 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 @media(max-width:768px){
   #chat-overlay-backdrop{display:none!important}
   /* ── World Map mobile ── */
-  /* Mobile world-bar: avatar is sticky-left, rest scrolls */
-  #world-bar{padding:0 0 0 8px;gap:6px;flex-wrap:nowrap;height:48px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  #world-bar{padding:6px 8px;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   #world-bar::-webkit-scrollbar{display:none}
-  .wb-logo{font-size:12px;flex-shrink:0;display:none}
+  .wb-logo{font-size:13px;flex-shrink:0}
   #wb-key-badge{display:none!important}
-  .wb-online{flex-shrink:0;font-size:10px}
+  .wb-online{flex-shrink:0}
   #wb-count,.wb-count-badge{flex-shrink:0;font-size:10px}
-  #crypto-ticker{flex-shrink:0;min-width:180px;max-width:220px}
-  .wb-games{flex-shrink:0;font-size:10px;padding:4px 8px}
-  .wb-ghost{flex-shrink:0;font-size:10px;padding:4px 8px}
-  .wb-wallet{flex-shrink:0;padding:3px 8px;font-size:10px}
-  /* avatar: sticky left, not affected by horizontal scroll */
-  .wb-av-btn{flex-shrink:0;width:30px;height:30px;font-size:13px;position:sticky;left:0;z-index:10;touch-action:manipulation}
-  .wb-av-btn .wb-acct-menu{position:fixed;top:54px;left:8px;right:auto;width:230px;max-width:calc(100vw - 16px);min-width:unset;z-index:3000}
+  #crypto-ticker{flex-shrink:0;min-width:160px;max-width:210px;overflow-x:auto;-webkit-overflow-scrolling:touch;height:44px;mask-image:none;-webkit-mask-image:none;touch-action:pan-x manipulation;scrollbar-width:none}
+  #ct-track{animation:none!important}
+  .wb-games{flex-shrink:0;font-size:11px;padding:5px 9px}
+  .wb-ghost{flex-shrink:0;font-size:11px;padding:5px 9px}
+  .wb-wallet{flex-shrink:0;padding:4px 8px;font-size:11px}
+  .wb-av-btn{flex-shrink:0;width:28px;height:28px;font-size:13px}
+  /* account menu: fixed so it doesn't get clipped by overflow scroll */
+  .wb-acct-menu{position:fixed!important;top:54px!important;left:6px!important;bottom:auto!important;width:230px;max-width:calc(100vw - 12px);min-width:unset;z-index:3001;border-radius:12px!important;box-shadow:0 8px 40px rgba(0,0,0,.85)!important}
   #world-wrap{touch-action:none}
   #world-hint{font-size:10px;padding:4px 8px;bottom:70px}
   #world-fab{bottom:16px;right:12px;gap:8px}
@@ -1912,9 +1911,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .ab-badge.locked{background:rgba(255,255,255,.02);border-color:var(--border);filter:grayscale(1);opacity:.3}
 
 /* ══ CRYPTO TICKER ══════════════════════════ */
-#crypto-ticker{flex:1;overflow:hidden;height:44px;position:relative;min-width:0;display:flex;align-items:center}
-#crypto-ticker .tradingview-widget-container{height:44px!important;width:100%!important}
-#crypto-ticker .tradingview-widget-container__widget{height:44px!important}
+#crypto-ticker{flex:1;min-width:0;overflow:hidden;height:44px;display:flex;align-items:center;position:relative;mask-image:linear-gradient(to right,transparent,#000 4%,#000 96%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 4%,#000 96%,transparent)}
+#ct-track{display:flex;align-items:center;gap:0;white-space:nowrap;animation:ctScroll 38s linear infinite;will-change:transform;flex-shrink:0}
+#ct-track:hover{animation-play-state:paused}
+@keyframes ctScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ct-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;flex-shrink:0;border-right:1px solid rgba(255,255,255,.06)}
+.ct-sym{color:var(--text3);font-size:10px;font-weight:700;letter-spacing:.05em}
+.ct-px{color:var(--text);font-weight:700;font-size:11px}
+.ct-chg{font-size:9px;font-weight:600}
+.ct-chg.up{color:var(--green)}
+.ct-chg.dn{color:var(--red)}
 @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .ticker-item{display:inline-flex;align-items:center;gap:5px;padding:0 14px;height:100%;font-size:11px;font-weight:700;border-right:1px solid var(--border2)}
 .ticker-sym{color:var(--text3)}
@@ -2170,6 +2176,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   }
   /* Sidenav keeps fixed width, content gets the rest */
   #int-sidenav{flex-shrink:0}
+  /* World view — same centered frame as interior */
+  #v-world{align-items:center;background:#01010c}
+  #world-bar{max-width:1020px;width:100%;box-sizing:border-box;border-left:1px solid var(--border);border-right:1px solid var(--border);flex-shrink:0}
+  #world-wrap{max-width:1020px;width:100%;box-sizing:border-box;border-left:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:0 0 16px 16px;overflow:hidden}
 
   /* ── Scrollable sections: center inner content ── */
   #sec-signals,#sec-channels,#sec-analytics,
@@ -2714,6 +2724,40 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .modal-wrap.modal-center{align-items:center!important}
   .modal-wrap.modal-center .modal{border-radius:14px!important;width:90%!important;max-height:85vh}
 }
+
+/* portrait: dropdown at top, same as landscape */
+
+/* Force dropdown to top on ALL mobile, ALL orientations */
+@media(max-width:600px){
+  .wb-av-btn .wb-acct-menu,.wb-acct-menu{position:fixed!important;top:54px!important;bottom:auto!important;left:6px!important;right:auto!important;width:230px!important;max-width:calc(100vw - 12px)!important;border-radius:12px!important;box-shadow:0 8px 40px rgba(0,0,0,.9)!important}
+}
+
+/* portrait-fix: same specificity .wb-av-btn .wb-acct-menu.open, later position wins */
+@media(max-width:600px){
+  .wb-av-btn .wb-acct-menu.open{
+    position:fixed!important;
+    top:54px!important;
+    bottom:auto!important;
+    left:6px!important;
+    right:auto!important;
+    width:230px!important;
+    max-width:calc(100vw - 12px)!important;
+    min-width:unset!important;
+    border-radius:12px!important;
+    box-shadow:0 8px 40px rgba(0,0,0,.9)!important;
+    padding-bottom:8px!important;
+  }
+}
+
+@media(max-width:600px) and (orientation:portrait){
+  .wb-logo{order:1}.wb-av-btn{order:2}#wb-key-badge{order:3}
+  .wb-online{order:4}.wb-count-badge{order:5}
+  #crypto-ticker{order:6;min-width:200px;max-width:240px;flex-shrink:0;overflow:hidden}
+  #ct-track{animation:ctScroll 22s linear infinite!important}
+  .ct-pill{padding:3px 8px}.ct-sym{font-size:9px}.ct-px{font-size:10px}.ct-chg{font-size:8px}
+  .wb-games{order:7}.wb-ghost{order:8}.wb-wallet{order:9}
+}
+
 </style>
 </head>
 <body>
@@ -2777,7 +2821,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   <div id="world-bar">
     <div class="wb-logo">Cube<em>World</em></div>
     <!-- Avatar + account switcher (after logo) -->
-    <div class="wb-av-btn" id="wb-av-btn" onclick="toggleWbAcctMenu(event)" ontouchend="event.stopPropagation();event.preventDefault();toggleWbAcctMenu(event);" title="Аккаунт" style="touch-action:manipulation">
+    <div class="wb-av-btn" id="wb-av-btn" onclick="toggleWbAcctMenu(event)" ontouchend="event.stopPropagation();event.preventDefault();toggleWbAcctMenu(event);" style="touch-action:manipulation" title="Аккаунт">
       <span id="wb-av-inner-world">👤</span>
       <div class="wb-acct-menu" id="wb-acct-menu">
         <div class="wb-acct-head" id="wb-acct-head"><span id="wb-acct-name">—</span><br><span id="wb-acct-uid" style="font-size:9px;opacity:.55;font-weight:400"></span></div>
@@ -2785,11 +2829,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <div class="wb-acct-row red" onclick="cwLogout()"><i class="ti ti-logout"></i> Выйти</div>
       </div>
     </div>
-    <div id="wb-key-badge" style="display:none"></div>
+    <div class="wb-key mono badge" id="wb-key-badge" style="font-size:10px;padding:3px 9px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;color:var(--text2);flex-shrink:0" title="Ключ аккаунта"></div>
     <span class="wb-online"><span id="wb-online">–</span></span>
     <span class="wb-count-badge" id="wb-count"></span>
     <div id="crypto-ticker">
-      <div id="ticker-track" style="display:inline-flex;animation:tickerScroll 30s linear infinite;white-space:nowrap;height:44px;align-items:center"></div>
+      <div id="ct-track"></div>
     </div>
     <div class="wb-games" onclick="openGamesHub()">🎮 Игры</div>
     <div class="wb-ghost" id="wb-ghost-btn" onclick="openGhostMode()">👻 Ghost Mode</div>
@@ -2801,8 +2845,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   <div id="world-wrap">
     <canvas id="world-canvas"></canvas>
     <div id="world-overlay"></div>
-    <div id="world-hint">CubeWorld</div>
+    
     <div id="cube-tooltip"><div class="ct-inner" id="ct-inner"></div></div>
+    <div id="world-hint"><span>Cube</span><span>World</span></div>
     <div id="world-fab">
       <button onclick="openUniverseManager()" title="Моя вселенная / Создать куб" style="font-size:20px">⬡</button>
       <button onclick="openModal('modal-join-key')" title="Войти по ключу куба" style="font-size:16px;background:rgba(0,149,246,.18);border-color:rgba(0,149,246,.4)">🔑</button>
@@ -3708,35 +3753,33 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <option value="private">🔒 Приватный — только по ключу</option>
     </select>
     <label>Время жизни куба</label>
-    <select id="cc-life">
+    <<select id="cc-life">
       <option value="1">1 час</option>
       <option value="6">6 часов</option>
       <option value="24" selected>24 часа</option>
-      <option value="72">3 дня</option>
       <option value="168">7 дней</option>
-      <option value="720">30 дней</option>
-      <option value="0">∞ Бесконечно</option>
+      <option value="720">1 месяц</option>
+      <option value="8760">Навсегда</option>
     </select>
     <label>Цвет куба</label>
-    <input type="hidden" id="cc-color" value="#0095F6">
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px">
-      <div onclick="ccPickColor(this,'#e879f9')" style="width:28px;height:28px;border-radius:50%;background:#e879f9;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0"></div>
-      <div onclick="ccPickColor(this,'#f97316')" style="width:28px;height:28px;border-radius:50%;background:#f97316;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0"></div>
-      <div onclick="ccPickColor(this,'#06b6d4')" style="width:28px;height:28px;border-radius:50%;background:#06b6d4;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0"></div>
-      <div onclick="ccPickColor(this,'#84cc16')" style="width:28px;height:28px;border-radius:50%;background:#84cc16;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0"></div>
-      <div onclick="ccPickColor(this,'#0095F6')" style="width:28px;height:28px;border-radius:50%;background:#0095F6;cursor:pointer;border:2px solid white;box-shadow:0 0 0 3px rgba(0,149,246,.4);transition:all .15s;flex-shrink:0"></div>
-      <div onclick="ccPickColor(this,'#4ade80')" style="width:28px;height:28px;border-radius:50%;background:#4ade80;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0"></div>
-      <div onclick="ccPickColor(this,'#f43f5e')" style="width:28px;height:28px;border-radius:50%;background:#f43f5e;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0"></div>
-      <div onclick="ccPickColor(this,'#a78bfa')" style="width:28px;height:28px;border-radius:50%;background:#a78bfa;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0"></div>
-      <div onclick="ccPickColor(this,'#fbbf24')" style="width:28px;height:28px;border-radius:50%;background:#fbbf24;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;padding:4px 0">
+      <span class="cclr active" data-c="#0095F6" style="background:#0095F6" onclick="pickCubeColor(this)"></span>
+      <span class="cclr" data-c="#ff4757" style="background:#ff4757" onclick="pickCubeColor(this)"></span>
+      <span class="cclr" data-c="#ffa502" style="background:#ffa502" onclick="pickCubeColor(this)"></span>
+      <span class="cclr" data-c="#7bed9f" style="background:#7bed9f" onclick="pickCubeColor(this)"></span>
+      <span class="cclr" data-c="#a29bfe" style="background:#a29bfe" onclick="pickCubeColor(this)"></span>
+      <span class="cclr" data-c="#fd79a8" style="background:#fd79a8" onclick="pickCubeColor(this)"></span>
+      <span class="cclr" data-c="#ff6348" style="background:#ff6348" onclick="pickCubeColor(this)"></span>
+      <span class="cclr" data-c="#dfe6e9" style="background:#dfe6e9" onclick="pickCubeColor(this)"></span>
     </div>
+    <input type="hidden" id="cc-color" value="#0095F6">
     <label>Размер куба</label>
     <select id="cc-size">
-      <option value="xs">XS — Мини</option>
-      <option value="s">S — Малый</option>
-      <option value="m" selected>M — Средний</option>
-      <option value="l">L — Большой</option>
-      <option value="xl">XL — Огромный</option>
+      <option value="0.5">XS — Маленький</option>
+      <option value="0.75">S — Малый</option>
+      <option value="1" selected>M — Средний</option>
+      <option value="1.3">L — Большой</option>
+      <option value="1.7">XL — Огромный</option>
     </select>
     <div style="margin-top:10px;padding:10px 12px;background:rgba(0,149,246,.08);border:1px solid rgba(0,149,246,.2);border-radius:9px;font-size:11.5px;color:var(--text2)">
       🔑 После создания ты получишь <strong style="color:var(--accent)">Key 2</strong> — временный ключ куба.<br>
@@ -3787,7 +3830,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 <div class="modal-backdrop" id="modal-join-key">
   <div class="modal" style="max-width:380px">
     <h3>🔑 Войти по ключу куба</h3>
-    <div style="font-size:12px;color:var(--text2);margin-bottom:14px">Введи Key 2, который тебе прислали. Ключ действует пока живёт куб.</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px">Введите Key 2. Ключ действует пока живёт куб.</div>
     <label>Ключ куба</label>
     <input type="text" id="jk-input" placeholder="CK-XXXX-XXXX-XXXX" class="mono" maxlength="20"
       style="font-family:'Courier New',monospace;font-size:15px;letter-spacing:.08em;text-transform:uppercase"
@@ -4184,9 +4227,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <button class="btn btn-ghost" onclick="closePeOverlay()">Отмена</button>
       <button class="btn btn-accent" onclick="saveMyProfile()">💾 Сохранить</button>
     </div>
-
     <!-- Legal links -->
-    <div style="text-align:center;padding:20px 0 8px;font-size:12px;color:#475569">
+    <div style="text-align:center;padding:16px 0 4px;font-size:12px;color:#475569">
       <a href="./privacy.html" target="_blank" style="color:#4f9cf9;text-decoration:none">Privacy Policy</a>
       <span style="color:#334155;margin:0 8px">·</span>
       <a href="./terms.html" target="_blank" style="color:#4f9cf9;text-decoration:none">Terms of Service</a>
@@ -4506,7 +4548,7 @@ async function syncFromBackend(){
     const cnt = document.getElementById('wb-count');
     const oc  = document.getElementById('wb-online');
     if(cnt) cnt.textContent = (st.total_cubes||app.cubes.filter(c=>c.life>0).length)+' кубов';
-    if(oc)  oc.textContent  = st.online_users+' онлайн';  // span wrapper has no extra text now
+    if(oc)  oc.textContent  = st.online_users+' онлайн';
   }
   // 4. Real cubes from backend — append to SEED_CUBES
   const cubesData = await apiCall('/cubes');
@@ -4828,11 +4870,13 @@ document.querySelectorAll('.modal-backdrop').forEach(b=>b.addEventListener('clic
       if(d<130){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
         ctx.strokeStyle=`rgba(0,149,246,${.18*(1-d/130)})`;ctx.lineWidth=.5;ctx.stroke();}
     }
+    // CubeWorld watermark
+    ctx.save();ctx.globalAlpha=1;ctx.font='bold 36px system-ui,sans-serif';ctx.textAlign='left';var _cwW=ctx.measureText('CubeWorld').width;var _cwC=ctx.measureText('Cube').width;var _cwX=Math.round((W-_cwW)/2);ctx.fillStyle='rgba(180,200,255,.45)';ctx.fillText('Cube',_cwX,H-22);ctx.fillStyle='rgba(0,149,246,.55)';ctx.fillText('World',_cwX+_cwC,H-22);ctx.restore();
   };
   draw();
 })();
 (function(){
-  // Real stats loaded via syncFromBackend — no fake animation
+  // Real stats loaded via syncFromBackend
 })();
 
 // ════════════════════════════════════════════════
@@ -5041,7 +5085,7 @@ function wRenderLoop(){
     if(hobj){
       const c=hobj.cube;
       document.getElementById('ct-inner').innerHTML=`<div class="ct-name" style="color:${c.colorCss||c.col||'#0095F6'}">${c.icon} ${c.name}</div><div class="ct-desc">${c.desc}</div><div class="ct-row"><span class="ct-timer">${fmtTime(c.life)}</span><span class="ct-type ${c.type}">${c.type==='public'?'PUBLIC':'PRIVATE'}</span></div>`;
-      tt.style.display='block';
+      const _rect=(document.getElementById('world-wrap')||document.body).getBoundingClientRect();tt.style.left=Math.min(_rect.left+hobj.csx+14,window.innerWidth-220)+'px';tt.style.top=Math.max(_rect.top+hobj.csy-70,10)+'px';tt.style.display='block';
     }
   }else{tt.style.display='none';}
   // Labels drawn on canvas inside wDrawCube
@@ -5075,7 +5119,7 @@ function initWorld(){
     wrap.classList.add('dragging');
   });
   window.addEventListener('mousemove',e=>{
-    const rect=wrap.getBoundingClientRect();
+    const rect=(document.getElementById('world-wrap')||document.body).getBoundingClientRect();
     wMouseX=e.clientX-rect.left;wMouseY=e.clientY-rect.top;
     if(wDrag){wDragDX=e.clientX-wDragSX;wDragDY=e.clientY-wDragSY;
       wTarTheta=wThetaD+wDragDX*0.009;
@@ -5087,7 +5131,7 @@ function initWorld(){
     if(!wDrag)return;wDrag=false;wrap.classList.remove('dragging');
     if(Math.abs(wDragDX)+Math.abs(wDragDY)<8){
       // Re-detect hover at mouseup position to avoid timing gaps
-      const rect=wrap.getBoundingClientRect();
+      const rect=(document.getElementById('world-wrap')||document.body).getBoundingClientRect();
       const mx=e.clientX-rect.left,my=e.clientY-rect.top;
       wMouseX=mx;wMouseY=my;
       wHovId=null;let hovDist=9999;
@@ -5107,16 +5151,16 @@ function initWorld(){
     wDrag=true;wAutoRot=false;
     _tSX=t.clientX;_tSY=t.clientY;_tDX=_tDY=0;
     _tThD=wTarTheta;_tPhD=wTarPhi;
-    const rect=wrap.getBoundingClientRect();
+    const rect=(document.getElementById('world-wrap')||document.body).getBoundingClientRect();
     wMouseX=t.clientX-rect.left;wMouseY=t.clientY-rect.top;
   },{passive:false});
   cv.addEventListener('touchmove',e=>{
     e.preventDefault();
     const t=e.touches[0];
-    _tDX=t.clientX-_tSX;_tDY=t.clientY-_tSY;
+    wHovId=null;_tDX=t.clientX-_tSX;_tDY=t.clientY-_tSY;
     wTarTheta=_tThD+_tDX*0.009;
     wTarPhi=Math.max(-0.75,Math.min(0.75,_tPhD-_tDY*0.007));
-    const rect=wrap.getBoundingClientRect();
+    const rect=(document.getElementById('world-wrap')||document.body).getBoundingClientRect();
     wMouseX=t.clientX-rect.left;wMouseY=t.clientY-rect.top;
   },{passive:false});
   cv.addEventListener('touchend',e=>{
@@ -5125,7 +5169,7 @@ function initWorld(){
     // Tap = minimal movement → enter cube
     if(Math.abs(_tDX)+Math.abs(_tDY)<12){
       // Force hover detection from touch-start position (don't wait for RAF)
-      const rect=wrap.getBoundingClientRect();
+      const rect=(document.getElementById('world-wrap')||document.body).getBoundingClientRect();
       const tx=_tSX-rect.left,ty=_tSY-rect.top;
       wMouseX=tx;wMouseY=ty;
       wHovId=null;let hovDist=9999;
@@ -5159,12 +5203,19 @@ function _addObjToWorld(cube,i){
 function addCubeToWorld(cube){_addObjToWorld(cube,undefined);}
 
 function enterWorld(){
-  // wb-key-badge is hidden; key is only shown once during account creation
+  loadCryptoTicker();
+  // wb-key-badge hidden - key not shown in topbar;
   // Update avatar in world topbar
   const wbAv=document.getElementById('wb-av-inner-world');
   if(wbAv){
-    const dn=app.myProfile&&app.myProfile.displayName;
-    wbAv.textContent=dn?dn[0].toUpperCase():'👤';
+    const pu=app.myProfile&&app.myProfile.photoUrl;
+    const av=(app.myProfile&&app.myProfile.avatar)||'👤';
+    if(pu){
+      const im=document.createElement('img');
+      im.style.cssText='width:26px;height:26px;border-radius:50%;object-fit:cover;display:block';
+      im.onerror=function(){wbAv.textContent=av;};
+      wbAv.innerHTML='';im.src=pu;wbAv.appendChild(im);
+    } else {wbAv.textContent=av;}
   }
   document.getElementById('wb-count').textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
   try{localStorage.setItem('cw_last_view','world');}catch(e){}
@@ -5210,12 +5261,6 @@ function submitEntryKey(){
   else{document.getElementById('mke-err').textContent='Неверный ключ.';inp.style.borderColor='rgba(248,113,113,.5)';setTimeout(()=>inp.style.borderColor='',1200);}
 }
 document.getElementById('mke-input').addEventListener('keydown',e=>{if(e.key==='Enter')submitEntryKey();});
-function ccPickColor(el,color){
-  document.getElementById('cc-color').value=color;
-  const swatches=el.parentElement.querySelectorAll('div');
-  swatches.forEach(s=>{s.style.border='2px solid transparent';s.style.boxShadow='none';});
-  el.style.border='2px solid white';el.style.boxShadow='0 0 0 3px '+color+'88';
-}
 function openCreateCube(){openModal('modal-create-cube');}
 async function submitCreateCube(){
   const name=(document.getElementById('cc-name').value.trim()||'Куб '+(app.cubes.length+1)).slice(0,32);
@@ -5223,7 +5268,8 @@ async function submitCreateCube(){
   const lifeEl=document.getElementById('cc-life');
   const life_hours = lifeEl ? parseInt(lifeEl.value)||24 : 24;
   const iconEl=document.getElementById('cc-icon');
-  const colorEl=document.getElementById('cc-color');
+  const colorEl=document.getElementById('cc-color')
+  const sizeEl=document.getElementById('cc-size');const cube_size=sizeEl?parseFloat(sizeEl.value)||1:1;;
   const cols=['#e879f9','#f97316','#06b6d4','#84cc16','#0095F6','#4ade80'];
   const icons=['🔮','🔥','💧','🌿','🧠','🌐'];
   const ci=Math.floor(Math.random()*icons.length);
@@ -5235,7 +5281,7 @@ async function submitCreateCube(){
   const cube={
     id:localId, backendId:null,
     name, type, life:life_hours*3600,
-    col:color, colorCss:color, icon, desc:'Создано тобой', isOwn:true
+    col:color, colorCss:color, icon, desc:'Создано тобой', isOwn:true, owner_uid:(app.myProfile&&(app.myProfile.uid||app.myProfile.id))||null
   };
   app.cubes.push(cube);
   closeModal('modal-create-cube');
@@ -5246,7 +5292,7 @@ async function submitCreateCube(){
   // POST to backend
   const res = await apiCall('/cubes',{
     method:'POST',
-    body: JSON.stringify({name,description:'',icon,color,type,life_hours})
+    body: JSON.stringify({name,description:'',icon,color,type,life_hours,size:cube_size})
   });
   if(res && res.id){
     cube.backendId = res.id;
@@ -5260,6 +5306,49 @@ async function submitCreateCube(){
     }
     setTimeout(syncFromBackend, 1000);
   }
+}
+
+function pickCubeColor(el){
+  document.querySelectorAll('.cclr').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  const inp=document.getElementById('cc-color');if(inp)inp.value=el.dataset.c;
+}
+function switchUniTab(tab,btn){
+  document.querySelectorAll('.uni-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const grid=document.getElementById('uni-grid');if(!grid)return;
+  if(tab==='mine'){
+    const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);
+    if(!myUid){grid.innerHTML='<div style="padding:20px;text-align:center;color:var(--text2,#888)">Нет кубов</div>';return;}
+    const myCubes=(app.cubes||[]).filter(c=>c.isOwn===true||(c.owner_uid&&c.owner_uid===myUid)||(c.creator&&c.creator===myUid)||(c.owner&&c.owner===myUid));
+    if(!myCubes.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--text2);padding:24px">У тебя пока нет кубов</div>';return;}
+    grid.innerHTML=myCubes.map(cube=>
+      '<div class="uni-cube-card" style="flex-direction:column;align-items:flex-start;gap:8px">'+
+      '<div style="display:flex;align-items:center;gap:8px;width:100%">'+
+      '<span style="font-size:22px">'+(cube.icon||'📦')+'</span>'+
+      '<div style="flex:1;min-width:0"><div class="uni-cube-name">'+(cube.name||'Куб')+'</div>'+
+      '<div style="font-size:10px;color:var(--text2)">'+(cube.type==='private'?'🔒 Приватный':'🌐 Публичный')+'</div></div></div>'+
+      '<div style="display:flex;gap:6px;width:100%">'+
+      '<button onclick="deleteCubeEarly(\'' + cube.id + '\')" style="flex:1;padding:5px 0;border:1px solid rgba(255,59,48,.4);border-radius:6px;background:rgba(255,59,48,.1);color:#ff3b30;font-size:11px;cursor:pointer">🗑 Удалить куб</button>'+
+      '<button onclick="kickCubeUser(\'' + cube.id + '\')" style="flex:1;padding:5px 0;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text2);font-size:11px;cursor:pointer">👥 Удалить юзера</button>'+
+      '</div></div>'
+    ).join('');
+  } else {
+    openUniverseManager();
+    document.querySelectorAll('.uni-tab').forEach((b,i)=>b.classList.toggle('active',i===0));
+  }
+}
+async function deleteCubeEarly(cubeId){
+  if(!confirm('Удалить куб досрочно?'))return;
+  const r=await apiCall('/cubes/'+cubeId,{method:'DELETE'}).catch(()=>null);
+  if(r!==null){app.cubes=(app.cubes||[]).filter(c=>c.id!==cubeId);switchUniTab('mine',document.getElementById('uni-tab-mine'));}
+  else showToast('Ошибка удаления');
+}
+async function kickCubeUser(cubeId){
+  const uid=prompt('Введи UID юзера которого удалить из куба:');
+  if(!uid||!uid.trim())return;
+  const r=await apiCall('/cubes/'+cubeId+'/kick',{method:'POST',body:JSON.stringify({uid:uid.trim()})}).catch(()=>null);
+  r!==null?showToast('Юзер удалён из куба'):showToast('Ошибка');
 }
 
 function showCubeKeyModal(key, name, lifeH, icon, cubeId){
@@ -5470,42 +5559,30 @@ function initInteriorData(cubeId){
   // ── Load real data from server in background ──────────────────────────────
   (async()=>{
     const [feedData, signalsData] = await Promise.all([
-      apiFetch('/api/feed'),
-      apiFetch('/api/signals'),
+      apiCall('/feed').catch(()=>null),
+      apiCall('/cubes/1/signals').catch(()=>null),
     ]);
     if(feedData && feedData.length){
       app.feedPosts = feedData.map(p=>({
-        id: p.id, author: p.author, avatar:'👤', time: p.time,
-        text: p.text, type: p.type||'text',
-        reactions:{fire:p.reactions.fire,rocket:p.reactions.rocket,like:p.reactions.like,heart:p.reactions.heart,eyes:p.reactions.eyes,thinking:p.reactions.thinking}
+        id: p.id, author: p.display_name||'Anon', avatar:'🤖',
+        time: p.created_at ? p.created_at.substring(0,10) : '',
+        text: p.content||p.description||'',
+        type: p.post_type||p.type||'short',
+        reactions:{fire:0, rocket:0, like:p.likes||0, heart:0, eyes:p.view_count||0},
       }));
       renderFeed();
     }
     if(signalsData && signalsData.length){
       app.signals = signalsData.map(s=>({
-        id:s.id, pair:s.pair, dir:s.direction, entry:s.entry, tp:s.tp, sl:s.sl,
-        author:s.author, time:'–', reactions:{rocket:s.react_rocket,fire:s.react_fire}, pnl:'–'
+        id:s.id, pair:s.ticker||'BTC/USDT', dir:s.direction||'LONG',
+        entry:s.entry_price!=null?String(s.entry_price):'—',
+        tp:s.tp_price!=null?String(s.tp_price):'—',
+        sl:s.sl_price!=null?String(s.sl_price):'—',
+        author:s.display_name||'Anon', time:'⋅', reactions:{rocket:0,fire:0}, pnl:'⋅'
       }));
       renderSignals();
     }
-    // Fetch wallet if key exists
-    if(app.userKey){
-      const walletData = await apiFetch('/api/wallet/'+encodeURIComponent(app.userKey));
-      if(walletData){
-        app.wallet.balance = walletData.balance;
-        app.wallet.xp = walletData.xp;
-        if(walletData.txs && walletData.txs.length){
-          app.wallet.txs = walletData.txs.map(t=>({
-            dir:t.dir, icon:'💰', desc:t.desc, time:'', amount:(t.dir==='in'?'+':'-')+t.amount
-          }));
-        }
-        renderWalletTxs(); renderEarnSection();
-      }
-      // Daily check-in (silent)
-      apiFetch('/api/wallet/checkin/'+encodeURIComponent(app.userKey), {method:'POST'}).then(r=>{
-        if(r && r.ok) showToast('🎁 Ежедневный бонус +'+r.earned+' CUBE!');
-      });
-    }
+    apiCall('/activity/ping','POST').catch(()=>{});
   })();
 }
 
@@ -7546,7 +7623,7 @@ function showMiniCard(uid, name, avColor, anchorEl) {
   avEl.style.display = 'flex'; avEl.style.alignItems = 'center'; avEl.style.justifyContent = 'center';
   avEl.style.color = '#fff'; avEl.style.fontWeight = '700'; avEl.style.fontSize = '16px';
   document.getElementById('cmc-name').textContent = name||'—';
-  {const _ri=parseInt(uid||'0');const _du=(_ri&&typeof _genDisplayUid==='function')?_genDisplayUid(_ri):(uid||'');document.getElementById('cmc-uid').textContent=_du?'UID · '+_du:'';}
+  const _ri=parseInt(uid||'0');const _du=(_ri&&typeof _genDisplayUid==='function')?_genDisplayUid(_ri):(uid||'');document.getElementById('cmc-uid').textContent=_du?'UID · '+_du:'';
   // Position near anchor
   if(anchorEl) {
     const rect = anchorEl.getBoundingClientRect();
@@ -8245,11 +8322,10 @@ async function submitSignal(){
 //  TIMERS
 // ════════════════════════════════════════════════
 function fmtTime(s){
-  s=Math.floor(s);
   if(s<=0)return'EXPIRED';
-  if(s>=365*24*3600)return'∞';
-  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
-  return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  s=Math.round(s||0);
+  if(s>604800)return'∞';
+  return`${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 }
 setInterval(()=>{
   app.cubes.forEach(c=>{if(c.life>0)c.life--;});
@@ -9092,7 +9168,7 @@ app.cryptoBalances = { btc:0.00012, eth:0.042, usdt:18.50, bnb:0.15, trx:240 };
 function _coinLogo(sym, size=24){
   const s=(sym||'btc').toLowerCase().split('/')[0];
   const fb=`<span style="width:${size}px;height:${size}px;border-radius:50%;background:rgba(255,255,255,.12);display:inline-flex;align-items:center;justify-content:center;font-size:${Math.round(size*.45)}px;font-weight:800;color:#fff;flex-shrink:0">${s.slice(0,2).toUpperCase()}</span>`;
-  return `<img src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/svg/color/${s}.svg" class="coin-logo" width="${size}" height="${size}" onerror="this.outerHTML='${fb}'" loading="lazy">`;
+  return `<img src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/svg/color/${s}.svg" class="coin-logo" width="${size}" height="${size}" onerror="this.outerHTML='${fb.replace(/\"/g,'&quot;')}'" loading="lazy">`;
 }
 // Exchange logo (Google favicon service — very stable CDN)
 function _exchLogo(domain, size=36){
@@ -10074,28 +10150,15 @@ const TICKER_DATA=[
   {sym:'CUBE',price:'$0.10',  chg:'+12.4%',up:true},
   {sym:'USDT',price:'$1.000', chg:'0%',   up:true},
 ];
-function renderTicker(data){
+function initTicker(){
   const track=document.getElementById('ticker-track'); if(!track) return;
-  const html=data.map(t=>`<div class="ticker-item"><span class="ticker-sym">${t.sym}</span><span class="ticker-price"> ${t.price}</span><span class="ticker-chg ${t.up?'up':'down'}"> ${t.up?'▲':'▼'}${t.chg}</span></div>`).join('');
-  track.innerHTML=html+html;
-}
-async function initTicker(){
-  const track=document.getElementById('ticker-track'); if(!track) return;
-  renderTicker(TICKER_DATA); // show static first
-  try{
-    const ids='bitcoin,ethereum,binancecoin,solana,ripple,cardano,dogecoin,the-open-network';
-    const r=await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&price_change_percentage=24h`,{signal:AbortSignal.timeout(6000)});
-    if(!r.ok) return;
-    const coins=await r.json();
-    const sym={bitcoin:'BTC',ethereum:'ETH',binancecoin:'BNB',solana:'SOL',ripple:'XRP',cardano:'ADA',dogecoin:'DOGE','the-open-network':'TON'};
-    const live=coins.map(c=>{
-      const chg=(c.price_change_percentage_24h||0);
-      const price=c.current_price>=1?c.current_price.toLocaleString('en',{maximumFractionDigits:2}):c.current_price.toFixed(4);
-      return{sym:sym[c.id]||c.symbol.toUpperCase(),price:`$${price}`,chg:`${Math.abs(chg).toFixed(2)}%`,up:chg>=0};
-    });
-    live.push({sym:'CUBE',price:'$0.10',chg:'12.4%',up:true});
-    renderTicker(live);
-  }catch(e){}
+  const html=TICKER_DATA.map(t=>`
+    <div class="ticker-item">
+      <span class="ticker-sym">${t.sym}</span>
+      <span class="ticker-price">${t.price}</span>
+      <span class="ticker-chg ${t.up?'up':'down'}">${t.up?'▲':'▼'} ${t.chg}</span>
+    </div>`).join('');
+  track.innerHTML=html+html; // seamless loop
 }
 
 // ════════════════════════════════════════════════
@@ -13154,7 +13217,6 @@ function bspFmtBubble(type){
 
 /* Init */
 document.addEventListener('DOMContentLoaded',()=>{
-  initTicker();
   _setupFmtBar(document.getElementById('gco-input'));
   _setupFmtBar(document.getElementById('ca-text-input'));
 
@@ -14157,32 +14219,88 @@ function saveUniverse(){
 })();
 
 function cwLogout(){
-  if(!confirm('Выйти из аккаунта? Сохрани свой ключ заранее.')) return;
-  localStorage.clear();
-  window.location.replace('index.html');
+  const _em=document.getElementById('cw-logout-modal');if(_em)_em.remove();
+  const _m=document.createElement('div');_m.id='cw-logout-modal';
+  _m.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:20px';
+  _m.innerHTML='<div style="background:var(--card,#1a1a2e);border:1px solid var(--border,#2a2a4a);border-radius:20px;padding:28px 24px;max-width:320px;width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.6)"><div style="font-size:38px;margin-bottom:14px">🚪</div><div style="font-size:17px;font-weight:700;color:var(--text,#fff);margin-bottom:8px">Выйти из аккаунта?</div><div style="font-size:13px;color:var(--text2,#aaa);line-height:1.5;margin-bottom:24px">Сохрани свой ключ заранее — без него войти не получится.</div><div style="display:flex;gap:10px"><button onclick="cwLogoutClose()" style="flex:1;padding:12px;border:1px solid var(--border,#2a2a4a);border-radius:12px;background:var(--card2,#252540);color:var(--text,#fff);font-size:14px;cursor:pointer">Отмена</button><button onclick="cwLogoutDo()" style="flex:1;padding:12px;border:none;border-radius:12px;background:#ff3b30;color:#fff;font-size:14px;font-weight:600;cursor:pointer">Выйти</button></div></div>';
+  document.body.appendChild(_m);
+  _m.addEventListener('click',e=>{if(e.target===_m)_m.remove();});
+}
+function cwLogoutClose(){const _m=document.getElementById('cw-logout-modal');if(_m)_m.remove();}
+function cwLogoutDo(){cwLogoutClose();localStorage.clear();window.location.replace('index.html');}
+
+const _CT_COINS=[{id:'bitcoin',sym:'BTC'},{id:'ethereum',sym:'ETH'},{id:'binancecoin',sym:'BNB'},{id:'cardano',sym:'ADA'},{id:'solana',sym:'SOL'},{id:'dogecoin',sym:'DOGE'},{id:'ripple',sym:'XRP'},{id:'toncoin',sym:'TON'}];
+function _ctFmt(p){if(p>=10000)return p.toLocaleString('en',{maximumFractionDigits:0});if(p>=1)return p.toFixed(2);return p.toFixed(5);}
+function _ctPlaceholder(){var tr=document.getElementById('ct-track');if(!tr||tr.innerHTML.length>10)return;var ph=[['BTC','~64k'],['ETH','~3.4k'],['BNB','~570'],['SOL','~76'],['XRP','~0.53'],['TON','~5.2'],['DOGE','~0.07'],['ADA','~0.44']];var h='';ph.forEach(function(x){var d=document.createElement('div');d.className='ct-pill';var s=document.createElement('span');s.className='ct-sym';s.textContent=x[0];var p=document.createElement('span');p.className='ct-px';p.textContent=x[1];d.appendChild(s);d.appendChild(p);h+=d.outerHTML;});tr.innerHTML=h+h;}
+async function loadCryptoTicker(){
+  _ctPlaceholder();
+  const track=document.getElementById('ct-track');if(!track)return;
+  if(!track.innerHTML||track.innerHTML.includes('opacity')){const _ph=[['BTC','~64k'],['ETH','~3.4k'],['BNB','~570'],['SOL','~76'],['XRP','~0.53'],['TON','~5.2'],['DOGE','~0.07'],['ADA','~0.44']];let _h=_ph.map(([s,p])=>'<div class="ct-pill"><span class="ct-sym">'+s+'</span><span class="ct-px">'+p+'</span></div>').join('');track.innerHTML=_h+_h;}
+  try{
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+_CT_COINS.map(c=>c.id).join(',')+'&vs_currencies=usd&include_24hr_change=true',{cache:'no-store'});
+    if(!r.ok)throw 0;
+    const d=await r.json();
+    let h='';
+    for(const c of _CT_COINS){const i=d[c.id];if(!i)continue;const chg=(i.usd_24h_change||0).toFixed(2);const cls=parseFloat(chg)>=0?'up':'dn';h+='<div class="ct-pill"><span class="ct-sym">'+c.sym+'</span><span class="ct-px">'+_ctFmt(i.usd)+'</span><span class="ct-chg '+cls+'">'+(parseFloat(chg)>=0?'+':'')+chg+'%</span></div>';}
+    track.innerHTML=h+h;
+  }catch(e){if(!track.innerHTML)track.innerHTML='<div class="ct-pill"><span class="ct-sym" style="opacity:.4">···</span></div>';}
+  setTimeout(loadCryptoTicker,30000);
 }
 function _syncWbAcctHead(){
   const nameEl=document.getElementById('wb-acct-name');
   const uidEl=document.getElementById('wb-acct-uid');
-  if(nameEl) nameEl.textContent=(app.myProfile&&app.myProfile.displayName)||'Мой аккаунт';
-  if(uidEl){
-    // app._myUID is already the display UID (set via _genDisplayUid in autoLogin)
-    // if not yet set, compute from raw DB id in localStorage
-    let dispUid=app._myUID||'';
-    if(!dispUid){const rawId=parseInt(localStorage.getItem('cw_user_id')||'0');if(rawId&&typeof _genDisplayUid==='function')dispUid=_genDisplayUid(rawId);}
-    uidEl.textContent=dispUid?'UID · '+dispUid:'';
+  const avEl=document.getElementById('wb-av-inner-world');
+  if(avEl){
+    const pu2=app.myProfile&&app.myProfile.photoUrl;
+    const av2=(app.myProfile&&app.myProfile.avatar)||'👤';
+    if(pu2){const im2=document.createElement('img');im2.style.cssText='width:26px;height:26px;border-radius:50%;object-fit:cover;display:block';im2.onerror=function(){avEl.textContent=av2;};avEl.innerHTML='';im2.src=pu2;avEl.appendChild(im2);}else{avEl.textContent=av2;}
   }
+  if(nameEl) nameEl.textContent=(app.myProfile&&app.myProfile.displayName)||'Мой аккаунт';
+  if(uidEl){let dispUid=app._myUID||'';if(!dispUid){const rawId=parseInt(localStorage.getItem('cw_user_id')||'0');if(rawId&&typeof _genDisplayUid==='function')dispUid=_genDisplayUid(rawId);}uidEl.textContent=dispUid?'UID · '+dispUid:'';}
 }
 function toggleWbAcctMenu(e){
-  e.stopPropagation();
+  if(e){e.stopPropagation();if(e.preventDefault&&e.type==='touchend')e.preventDefault();}
   const m=document.getElementById('wb-acct-menu');
-  if(!m) return;
-  _syncWbAcctHead();
+  const btn=document.getElementById('wb-av-btn');
+  if(!m||!btn)return;
+  // Move to body to escape -webkit-overflow-scrolling:touch (breaks fixed on iOS)
+  if(m.parentNode!==document.body)document.body.appendChild(m);
   const isOpen=m.classList.contains('open');
-  m.classList.toggle('open');
-  if(!isOpen){
-    setTimeout(()=>document.addEventListener('click',function _c(){m.classList.remove('open');document.removeEventListener('click',_c);}),50);
+  if(isOpen){
+    m.classList.remove('open');
+    m.style.cssText='display:none';
+    return;
   }
+  const rect=btn.getBoundingClientRect();
+  const top=Math.round(rect.bottom+4);
+  const left=Math.min(Math.max(4,Math.round(rect.left)),window.innerWidth-240);
+  m.style.cssText='';
+  m.style.setProperty('display','flex','important');
+  m.style.setProperty('flex-direction','column','important');
+  m.style.setProperty('position','fixed','important');
+  m.style.setProperty('top',top+'px','important');
+  m.style.setProperty('bottom','auto','important');
+  m.style.setProperty('left',left+'px','important');
+  m.style.setProperty('right','auto','important');
+  m.style.setProperty('width','230px','important');
+  m.style.setProperty('max-width','calc(100vw - 8px)','important');
+  m.style.setProperty('border-radius','12px','important');
+  m.style.setProperty('z-index','99999','important');
+  m.style.setProperty('box-shadow','0 8px 40px rgba(0,0,0,.85)','important');
+  m.style.setProperty('padding-bottom','8px','important');
+  m.classList.add('open');
+  const _c=function(ev){
+    if(!m.contains(ev.target)&&!btn.contains(ev.target)){
+      m.classList.remove('open');
+      m.style.cssText='display:none';
+      document.removeEventListener('click',_c);
+      document.removeEventListener('touchend',_c);
+    }
+  };
+  setTimeout(function(){
+    document.addEventListener('click',_c);
+    document.addEventListener('touchend',_c);
+  },150);
 }
 function addWbAccount(){
   // Go to index.html to log in with a different key
@@ -14814,8 +14932,12 @@ const _grpOvId='grp-chat-overlay';
 
 <!-- ══ UNIVERSE MANAGER ══════════════════════════════ -->
 <div class="modal-backdrop" id="modal-universe">
-  <div class="modal" style="max-width:560px">
+  <div class="modal">
     <h3>⬡ Моя вселенная</h3>
+    <div class="uni-tabs">
+      <button class="uni-tab active" id="uni-tab-all" onclick="switchUniTab('all',this)">Все кубы</button>
+      <button class="uni-tab" id="uni-tab-mine" onclick="switchUniTab('mine',this)">Мои кубы</button>
+    </div>
     <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Выбери кубы которые вращаются в твоём мире. Нажми на куб чтобы добавить/убрать.</p>
     <input class="uni-search" id="uni-search" type="text" placeholder="🔍 Поиск кубов по названию..." oninput="filterUniGrid(this.value)">
     <div class="uni-grid" id="uni-grid"></div>
@@ -15276,6 +15398,7 @@ const _grpOvId='grp-chat-overlay';
   <button onclick="gcoSelectAction('delete')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;padding:6px 10px;border-radius:8px"><i class="ti ti-trash"></i> Удалить</button>
   <button onclick="gcoExitSelect()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:6px"><i class="ti ti-x"></i></button>
 </div>
+
 
 </body>
 </html>
