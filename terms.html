@@ -296,7 +296,7 @@ function setLang(lang) {
   document.getElementById('toc-title').textContent = d.toc;
   document.getElementById('footer-privacy').textContent = d.footer_privacy;
   var tocHtml = '';
-  d.sections.forEach(function(s,i){ tocHtml += '<li><a href="#'+s.id+'">'+(i+1)+'. '+s.h+'</a></li>'; });
+  d.sections.forEach(function(s,i){ tocHtml += '<li><a href="#'+s.id+'">'+s.h+'</a></li>'; });
   document.getElementById('toc-list').innerHTML = tocHtml;
   var html = '';
   d.sections.forEach(function(s,i){
