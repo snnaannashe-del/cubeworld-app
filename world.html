@@ -5439,7 +5439,6 @@ function switchUniTab(tab,btn){
     const hint=document.getElementById('uni-hint');if(hint)hint.textContent='Выбрано: '+sel+' из '+app.cubes.length+' кубов';
   } else {
     openUniverseManager();
-    document.querySelectorAll('.uni-tab').forEach((b,i)=>b.classList.toggle('active',i===0));
   }
 }
 function toggleMineCube(cubeId){
@@ -14352,6 +14351,8 @@ function openUniverseManager(){
     </div>`;
   }).join('');
   updateUniHint();
+  // Always reset tabs to "Все кубы" since we just rendered all-cubes content
+  document.querySelectorAll('.uni-tab').forEach((b,i)=>b.classList.toggle('active',i===0));
   openModal('modal-universe');
 }
 
