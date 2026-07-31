@@ -3804,15 +3804,28 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   </div>
 </div>
 
-<!-- Kick User Modal -->
-<div class="modal-backdrop" id="modal-kick-user">
+<!-- Kick User Modal (z-index:3000 — above modal-universe) -->
+<div class="modal-backdrop" id="modal-kick-user" style="z-index:3000">
   <div class="modal" style="max-width:400px">
     <h3>👥 Удалить юзера из куба</h3>
-    <label>Поиск по UID или никнейму</label>
-    <input type="text" id="kick-search" placeholder="Введи UID или имя..." oninput="searchKickUser(this.value)" autocomplete="off">
+    <label style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)">Поиск по UID или никнейму</label>
+    <input type="text" id="kick-search" placeholder="Введи UID или имя..." oninput="searchKickUser(this.value)" autocomplete="off" style="margin-top:8px;width:100%;box-sizing:border-box;padding:12px 16px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text1);font-size:14px;outline:none">
     <div id="kick-results" style="margin-top:10px;max-height:220px;overflow-y:auto"></div>
     <div class="modal-actions" style="margin-top:14px">
       <button class="btn btn-ghost" onclick="closeModal('modal-kick-user')">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete Cube Modal (z-index:3000 — above modal-universe) -->
+<div class="modal-backdrop" id="modal-confirm-cube-del" style="z-index:3000">
+  <div class="modal" style="max-width:340px;text-align:center">
+    <div style="font-size:36px;margin-bottom:12px">🗑</div>
+    <h3 style="margin:0 0 8px">Удалить куб?</h3>
+    <p style="color:var(--text2);font-size:14px;margin:0 0 20px">Куб будет удалён досрочно. Это действие необратимо.</p>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-confirm-cube-del')">Отмена</button>
+      <button class="btn" style="flex:1;background:rgba(255,59,48,.2);border-color:rgba(255,59,48,.5);color:#ff3b30" onclick="_confirmDeleteCube()">Удалить</button>
     </div>
   </div>
 </div>
@@ -5491,8 +5504,16 @@ function _purgeCubeFromAllCaches(cubeId){
   // Update my cubes cache
   _saveMyCubesCache();
 }
-async function deleteCubeEarly(cubeId){
-  if(!confirm('Удалить куб досрочно?'))return;
+let _pendingDeleteCubeId=null;
+function deleteCubeEarly(cubeId){
+  _pendingDeleteCubeId=cubeId;
+  openModal('modal-confirm-cube-del');
+}
+async function _confirmDeleteCube(){
+  closeModal('modal-confirm-cube-del');
+  const cubeId=_pendingDeleteCubeId;
+  if(!cubeId)return;
+  _pendingDeleteCubeId=null;
   const cube=app.cubes.find(c=>c.id===cubeId);
   const bid=cube&&cube.backendId;
   if(!bid){showToast('Только кубы из базы можно удалить');return;}
