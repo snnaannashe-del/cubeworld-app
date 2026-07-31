@@ -287,7 +287,7 @@ function setLang(lang) {
   document.getElementById('footer-terms').textContent = d.footer_terms;
   document.getElementById('highlight-top-text').innerHTML = d.highlight;
   var tocHtml = '';
-  d.sections.forEach(function(s,i){ tocHtml += '<li><a href="#'+s.id+'">'+(i+1)+'. '+s.h+'</a></li>'; });
+  d.sections.forEach(function(s,i){ tocHtml += '<li><a href="#'+s.id+'">'+s.h+'</a></li>'; });
   document.getElementById('toc-list').innerHTML = tocHtml;
   var html = '';
   d.sections.forEach(function(s,i){
