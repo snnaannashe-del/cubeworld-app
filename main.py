@@ -251,6 +251,11 @@ async def get_me(user=Depends(get_current_user)):
             "cube_balance": user["cube_balance"], "created_at": user["created_at"],
             "last_seen": user["last_seen"]}
 
+@app.get("/me/cubes")
+async def get_my_cubes(user=Depends(get_current_user)):
+    """Return all cubes owned by the current user (including expired/inactive)."""
+    return db.get_my_cubes(int(user["id"]))
+
 @app.patch("/me")
 async def update_me(body: UpdateProfileRequest, user=Depends(get_current_user)):
     db.update_profile(user["id"], body.display_name, body.avatar_url)
