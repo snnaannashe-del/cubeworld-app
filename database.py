@@ -1083,6 +1083,20 @@ def deactivate_expired_cubes():
         c.execute("UPDATE cubes SET is_active=0 WHERE is_active=1 AND expires_at<=datetime('now')")
     conn.commit(); conn.close()
 
+def get_my_cubes(owner_id: int):
+    """Return ALL cubes owned by this user, including expired ones."""
+    conn = get_db(); c = conn.cursor()
+    if _PG:
+        c.execute("""SELECT id,owner_id,name,description,icon,color,type,life_hours,is_active,expires_at,cube_key,
+                            GREATEST(0, CAST(EXTRACT(EPOCH FROM (expires_at - NOW())) AS INTEGER)) as life_left_seconds
+                     FROM cubes WHERE owner_id=%s ORDER BY created_at DESC LIMIT 50""", (owner_id,))
+    else:
+        c.execute("""SELECT id,owner_id,name,description,icon,color,type,life_hours,is_active,expires_at,cube_key,
+                            MAX(0, CAST((julianday(expires_at)-julianday('now'))*86400 AS INTEGER)) as life_left_seconds
+                     FROM cubes WHERE owner_id=? ORDER BY created_at DESC LIMIT 50""", (owner_id,))
+    rows = c.fetchall()
+    conn.close(); return _fetchall(rows)
+
 def list_cubes():
     conn = get_db(); c = conn.cursor()
     if _PG:
@@ -1774,7 +1788,7 @@ def get_group_members(group_id: int, limit: int = 50):
 def ban_user_from_cube(cube_id: int, user_id: int, owner_id: int) -> bool:
     """Ban user from cube. Returns True if cube exists and requester is owner."""
     conn = get_db(); c = conn.cursor()
-    c.execute(_q("SELECT owner_id FROM cubes WHERE id=? AND is_active=1"), (cube_id,))
+    c.execute(_q("SELECT owner_id FROM cubes WHERE id=?"), (cube_id,))
     row = c.fetchone()
     if not row:
         conn.close(); return False
