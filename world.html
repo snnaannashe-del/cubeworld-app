@@ -2750,21 +2750,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 }
 
 @media(max-width:600px) and (orientation:portrait){
-  /* Topbar — no horizontal scroll, fixed layout */
-  #world-bar{overflow:hidden!important;flex-wrap:nowrap!important}
+  /* Topbar stays scrollable (from 768px), ticker fits within viewport */
   .wb-logo{order:1;flex-shrink:0}
   .wb-av-btn{order:2;flex-shrink:0}
   #wb-key-badge{order:3}
   .wb-online{order:4;flex-shrink:0}
-  /* Hide count + heavy buttons — ticker needs the space */
-  .wb-count-badge{display:none!important}
-  .wb-games{display:none!important}
-  .wb-ghost{display:none!important}
-  /* Ticker: take all remaining space, animate */
-  #crypto-ticker{order:5;flex:1!important;min-width:0!important;max-width:none!important;overflow:hidden!important;mask-image:none!important;-webkit-mask-image:none!important}
-  #ct-track{animation:ctScroll 40s linear infinite!important}
+  .wb-count-badge{order:5;flex-shrink:0;font-size:10px}
+  /* Ticker: exact width = screen minus items before it, so it never overflows viewport */
+  #crypto-ticker{order:6;flex:0 0 calc(100vw - 248px);max-width:calc(100vw - 248px);min-width:80px;overflow:hidden!important;mask-image:none;-webkit-mask-image:none}
+  #ct-track{animation:ctScroll 25s linear infinite!important}
   .ct-pill{padding:3px 8px}.ct-sym{font-size:9px}.ct-px{font-size:10px}.ct-chg{font-size:8px}
-  .wb-wallet{order:6;flex-shrink:0}
+  .wb-games{order:7;flex-shrink:0}
+  .wb-ghost{order:8;flex-shrink:0}
+  .wb-wallet{order:9;flex-shrink:0}
 }
 
 </style>
