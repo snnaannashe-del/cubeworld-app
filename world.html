@@ -4562,7 +4562,7 @@ async function syncFromBackend(){
         name:c.name, desc:c.description||'',
         icon:c.icon||'📦', col:c.color||'#0095F6', colorCss:c.color||'#0095F6',
         type:c.type||'public', isOwn:true,
-        life:c.life_left_seconds||3600,
+        life:c.life_left_seconds||3600, size:c.size||2,
         x:Math.random()*80+10, y:Math.random()*70+15,
         rotX:Math.random()*360, rotY:Math.random()*360,
         speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1
@@ -5281,7 +5281,7 @@ async function submitCreateCube(){
   const localId='u'+Date.now();
   const cube={
     id:localId, backendId:null,
-    name, type, life:life_hours*3600,
+    name, type, life:life_hours*3600, size:cube_size,
     col:color, colorCss:color, icon, desc:'Создано тобой', isOwn:true, owner_uid:(app.myProfile&&(app.myProfile.uid||app.myProfile.id))||null
   };
   app.cubes.push(cube);
