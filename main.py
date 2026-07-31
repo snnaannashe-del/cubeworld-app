@@ -706,7 +706,7 @@ async def create_cube(body: CreateCubeRequest, user=Depends(get_current_user)):
     icon      = body.icon[:8]
     color     = body.color[:20]
     ctype     = "public" if body.type == "public" else "private"
-    life_h    = max(1, min(body.life_hours, 720))
+    life_h    = max(1, min(body.life_hours, 8760))
     cube_id, cube_key = db.create_cube(user["id"], name, desc, icon, color, ctype, life_h)
     return {"id": cube_id, "name": name, "type": ctype, "life_hours": life_h,
             "cube_key": cube_key, "ok": True}
@@ -727,7 +727,8 @@ async def delete_cube(cube_id: int, user=Depends(get_current_user)):
     return {"ok": True, "deleted_id": cube_id}
 
 @app.post("/cubes/{cube_id}/kick")
-async def kick_user_from_cube(cube_id: int, body: dict, user=Depends(get_current_user)):
+async def kick_user_from_cube(cube_id: int, request: Request, user=Depends(get_current_user)):
+    body = await request.json()
     uid_str = str(body.get("uid","")).strip()
     if not uid_str:
         raise HTTPException(400, "uid required")
