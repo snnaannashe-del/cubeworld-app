@@ -2749,7 +2749,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   }
 }
 
-@media(max-width:600px) and (orientation:portrait){
+@media(max-width:600px){
   /* Topbar stays scrollable (from 768px), ticker fits within viewport */
   .wb-logo{order:1;flex-shrink:0}
   .wb-av-btn{order:2;flex-shrink:0}
@@ -2758,6 +2758,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .wb-count-badge{order:5;flex-shrink:0;font-size:10px}
   /* Ticker: exact width = screen minus items before it, so it never overflows viewport */
   #crypto-ticker{order:6;flex:0 0 calc(100vw - 248px);max-width:calc(100vw - 248px);min-width:80px;overflow:hidden!important;mask-image:none;-webkit-mask-image:none}
+  /* Override animation:none from 768px — must be !important and after that rule */
   #ct-track{animation:ctScroll 25s linear infinite!important}
   .ct-pill{padding:3px 8px}.ct-sym{font-size:9px}.ct-px{font-size:10px}.ct-chg{font-size:8px}
   .wb-games{order:7;flex-shrink:0}
