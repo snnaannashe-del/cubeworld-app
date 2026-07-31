@@ -154,6 +154,9 @@ class SetGroupKeyRequest(BaseModel):
 class AddCommentRequest(BaseModel):
     content: str
 
+class KickUserRequest(BaseModel):
+    uid: str
+
 class CreateSignalRequest(BaseModel):
     ticker: str
     direction: str = "LONG"
@@ -727,15 +730,15 @@ async def delete_cube(cube_id: int, user=Depends(get_current_user)):
     return {"ok": True, "deleted_id": cube_id}
 
 @app.post("/cubes/{cube_id}/kick")
-async def kick_user_from_cube(cube_id: int, body: dict, user=Depends(get_current_user)):
-    uid_str = str(body.get("uid","")).strip()
+async def kick_user_from_cube(cube_id: int, body: KickUserRequest, user=Depends(get_current_user)):
+    uid_str = str(body.uid).strip()
     if not uid_str:
         raise HTTPException(400, "uid required")
     try:
         target_uid = int(uid_str.lstrip("#"))
     except ValueError:
         raise HTTPException(400, "invalid uid")
-    ok = db.ban_user_from_cube(cube_id, target_uid, user["id"])
+    ok = db.ban_user_from_cube(cube_id, target_uid, int(user["id"]))
     if not ok:
         raise HTTPException(403, "Куб не найден или вы не владелец")
     # Kick via WebSocket if online
