@@ -14435,18 +14435,27 @@ function _ctPlaceholder(){var tr=document.getElementById('ct-track');if(!tr||tr.
 function _applyTickerAnim(){
   const track=document.getElementById('ct-track');if(!track)return;
   if(window.innerWidth<=600){
-    // Force animation via inline style — overrides CSS !important on iOS
-    track.style.cssText='animation:ctScroll 25s linear infinite;white-space:nowrap;display:flex;align-items:center;gap:0;flex-shrink:0;will-change:transform;';
+    // Use individual style properties + webkit prefix for iOS Safari compatibility
+    track.style.webkitAnimation='ctScroll 25s linear infinite';
+    track.style.animation='ctScroll 25s linear infinite';
+    track.style.whiteSpace='nowrap';
+    track.style.display='flex';
+    track.style.alignItems='center';
+    track.style.flexShrink='0';
+    track.style.willChange='transform';
   } else if(window.innerWidth<=768){
-    track.style.cssText='animation:none;white-space:nowrap;display:flex;align-items:center;gap:0;flex-shrink:0;';
+    track.style.webkitAnimation='none';
+    track.style.animation='none';
   } else {
-    track.style.cssText='';// desktop — let CSS handle it
+    track.style.cssText='';
   }
 }
 window.addEventListener('resize',_applyTickerAnim);
 window.addEventListener('orientationchange',function(){setTimeout(_applyTickerAnim,150);});
+window.addEventListener('pageshow',function(){setTimeout(_applyTickerAnim,100);}); // iOS bfcache
 async function loadCryptoTicker(){
   _ctPlaceholder();
+  _applyTickerAnim(); // start animation immediately with placeholder
   const track=document.getElementById('ct-track');if(!track)return;
   try{
     const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+_CT_COINS.map(c=>c.id).join(',')+'&vs_currencies=usd&include_24hr_change=true',{cache:'no-store'});
@@ -14454,9 +14463,8 @@ async function loadCryptoTicker(){
     const d=await r.json();
     let h='';
     for(const c of _CT_COINS){const i=d[c.id];if(!i)continue;const chg=(i.usd_24h_change||0).toFixed(2);const cls=parseFloat(chg)>=0?'up':'dn';h+='<div class="ct-pill"><span class="ct-sym">'+c.sym+'</span><span class="ct-px">'+_ctFmt(i.usd)+'</span><span class="ct-chg '+cls+'">'+(parseFloat(chg)>=0?'+':'')+chg+'%</span></div>';}
-    if(h){track.innerHTML=h+h;}
+    if(h){track.innerHTML=h+h;_applyTickerAnim();}
   }catch(e){}
-  _applyTickerAnim();
   setTimeout(loadCryptoTicker,30000);
 }
 function _syncWbAcctHead(){
