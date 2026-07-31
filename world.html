@@ -4600,11 +4600,21 @@ async function syncFromBackend(){
     }
     if(newCubes.length > 0){
       app.cubes = [...app.cubes, ...newCubes];
-      // Backend cubes are NOT auto-added to canvas or universe.
-      // They appear only in "Мои кубы" tab. User adds them to world manually.
-      const cnt = document.getElementById('wb-count');
-      if(cnt) cnt.textContent = app.cubes.filter(c=>c.life>0).length+' кубов';
     }
+    // Remove from app.cubes and visited cache any bc* cubes NOT returned by backend
+    // (covers deleted cubes that re-appear from cw_visited_cubes_v2 on reload)
+    const backendIdSet=new Set(cubesData.map(c=>'bc'+c.id));
+    app.cubes=app.cubes.filter(c=>!c.id.startsWith('bc')||backendIdSet.has(c.id));
+    if(app.visitedCubes){
+      app.visitedCubes=app.visitedCubes.filter(c=>!c.id.startsWith('bc')||backendIdSet.has(c.id));
+      try{
+        const toSave=app.visitedCubes.map(c=>({id:c.id,name:c.name,icon:c.icon||'🔷',colorCss:c.colorCss||'#4ade80',life:c.life||0,type:c.type||'public'}));
+        localStorage.setItem('cw_visited_cubes_v2',JSON.stringify(toSave));
+      }catch(e){}
+    }
+    // Update count
+    const cnt=document.getElementById('wb-count');
+    if(cnt) cnt.textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
     // Save updated own cubes to cache
     _saveMyCubesCache();
   }
@@ -5452,6 +5462,25 @@ function toggleMineCube(cubeId){
   if(hint){const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);const mc=(app.cubes||[]).filter(c=>c.isOwn===true||(myUid&&(String(c.owner_uid)===String(myUid))));const sel=mc.filter(c=>uni.includes(c.id)).length;hint.textContent='Выбрано: '+sel+' из '+app.cubes.length+' кубов';}
   showToast(uni.includes(cubeId)?'⬡ Куб добавлен в мир':'⬡ Куб убран из мира');
 }
+function _purgeCubeFromAllCaches(cubeId){
+  // Remove from app.cubes
+  app.cubes=(app.cubes||[]).filter(c=>c.id!==cubeId);
+  // Remove from universe
+  app.myUniverse=(app.myUniverse||[]).filter(id=>id!==cubeId);
+  localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));
+  // Remove from visited cubes (cw_visited_cubes_v2) — otherwise it reappears on reload
+  if(app.visitedCubes){
+    app.visitedCubes=app.visitedCubes.filter(c=>c.id!==cubeId);
+    try{
+      const toSave=app.visitedCubes.map(c=>({id:c.id,name:c.name,icon:c.icon||'🔷',colorCss:c.colorCss||'#4ade80',life:c.life||0,type:c.type||'public'}));
+      localStorage.setItem('cw_visited_cubes_v2',JSON.stringify(toSave));
+    }catch(e){}
+  }
+  // Remove from world objects
+  wObjects=(wObjects||[]).filter(o=>o.cube.id!==cubeId);
+  // Update my cubes cache
+  _saveMyCubesCache();
+}
 async function deleteCubeEarly(cubeId){
   if(!confirm('Удалить куб досрочно?'))return;
   const cube=app.cubes.find(c=>c.id===cubeId);
@@ -5459,11 +5488,7 @@ async function deleteCubeEarly(cubeId){
   if(!bid){showToast('Только кубы из базы можно удалить');return;}
   const r=await apiCall('/cubes/'+bid,{method:'DELETE'}).catch(()=>null);
   if(r!==null){
-    app.cubes=(app.cubes||[]).filter(c=>c.id!==cubeId);
-    app.myUniverse=(app.myUniverse||[]).filter(id=>id!==cubeId);
-    localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));
-    wObjects=(wObjects||[]).filter(o=>o.cube.id!==cubeId);
-    _saveMyCubesCache();
+    _purgeCubeFromAllCaches(cubeId);
     switchUniTab('mine',document.getElementById('uni-tab-mine'));
     showToast('🗑 Куб удалён');
   } else showToast('Ошибка удаления');
@@ -8850,6 +8875,8 @@ app.visitedCubes = (function(){
     });
   }catch(e){ return []; }
 })();
+// Deduplicate app.cubes by id (visited cubes IIFE may create duplicates)
+{const _seen=new Set();app.cubes=app.cubes.filter(c=>{if(_seen.has(c.id))return false;_seen.add(c.id);return true;});}
 // Render switcher immediately if cubes already known (page reload)
 if(app.visitedCubes.length) setTimeout(renderCubeSwitcher, 0);
 
