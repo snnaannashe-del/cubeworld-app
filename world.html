@@ -5320,8 +5320,7 @@ function switchUniTab(tab,btn){
   const grid=document.getElementById('uni-grid');if(!grid)return;
   if(tab==='mine'){
     const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);
-    if(!myUid){grid.innerHTML='<div style="padding:20px;text-align:center;color:var(--text2,#888)">Нет кубов</div>';return;}
-    const myCubes=(app.cubes||[]).filter(c=>c.isOwn===true||(c.owner_uid&&c.owner_uid===myUid)||(c.creator&&c.creator===myUid)||(c.owner&&c.owner===myUid));
+    const myCubes=(app.cubes||[]).filter(c=>c.isOwn===true||(myUid&&(String(c.owner_uid)===String(myUid)||String(c.creator)===String(myUid)||String(c.owner)===String(myUid))));
     if(!myCubes.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--text2);padding:24px">У тебя пока нет кубов</div>';return;}
     grid.innerHTML=myCubes.map(cube=>
       '<div class="uni-cube-card" style="flex-direction:column;align-items:flex-start;gap:8px">'+
@@ -14327,8 +14326,31 @@ function addWbAccount(){
     const r = await fetch('https://cubeworld-backend.onrender.com/me',{
       headers:{'Authorization':'Bearer '+token}
     });
-    if (!r.ok) { _goLogin(); return; }
-    me = await r.json();
+    if (!r.ok) {
+      // Token expired — try to re-login with saved key before giving up
+      const refreshToken = localStorage.getItem('cw_refresh_token');
+      let refreshed = false;
+      if (refreshToken) {
+        try {
+          const rr = await fetch('https://cubeworld-backend.onrender.com/auth/refresh',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({refresh_token: refreshToken})
+          });
+          if (rr.ok) {
+            const rd = await rr.json();
+            localStorage.setItem('cw_access_token', rd.access_token);
+            if (rd.refresh_token) localStorage.setItem('cw_refresh_token', rd.refresh_token);
+            const r2 = await fetch('https://cubeworld-backend.onrender.com/me',{
+              headers:{'Authorization':'Bearer '+rd.access_token}
+            });
+            if (r2.ok) { me = await r2.json(); refreshed = true; }
+          }
+        } catch(e2){}
+      }
+      if (!refreshed) { _goLogin(); return; }
+    } else {
+      me = await r.json();
+    }
   } catch(e) {
     // Network error (offline / Render cold start) — still try to load
     // to avoid locking users out when backend is slow
@@ -14340,6 +14362,8 @@ function addWbAccount(){
     app.keyType  = me.key_type || localStorage.getItem('cw_key_type') || 'free';
     app.wallet.balance = parseFloat(me.cube_balance) || 0;
     if (me.display_name) app.myProfile.displayName = me.display_name;
+    app.myProfile.id  = me.id;
+    app.myProfile.uid = me.id;
     // Store for WS matching
     localStorage.setItem('cw_user_id',   me.id);
     localStorage.setItem('cw_key_type',  app.keyType);
