@@ -5676,9 +5676,24 @@ async function doKickUser(uid,name){
   const cube=app.cubes.find(c=>c.id===_kickCubeLocalId);
   const bid=cube&&cube.backendId;
   if(!bid){showToast('Ошибка: куб не найден');return;}
-  const r=await apiCall('/cubes/'+bid+'/kick',{method:'POST',body:JSON.stringify({uid:String(uid).replace('#','')})}).catch(()=>null);
-  if(r!==null){showToast('👥 '+name+' удалён из куба');closeModal('modal-kick-user');}
-  else showToast('Ошибка удаления юзера');
+  try{
+    const token=localStorage.getItem('cw_access_token');
+    const resp=await fetch(API_BASE+'/cubes/'+bid+'/kick',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
+      body:JSON.stringify({uid:String(uid).replace('#','')})
+    });
+    if(resp.ok){
+      showToast('👥 '+name+' удалён из куба');
+      closeModal('modal-kick-user');
+      // Remove from local list so it doesn't reappear immediately
+      _kickCubeMembers=_kickCubeMembers.filter(u=>String(u.id)!==String(uid));
+    } else {
+      let detail='';
+      try{const d=await resp.json();detail=d.detail||'';}catch(e){}
+      showToast('Ошибка '+(resp.status)+(detail?' — '+detail:''));
+    }
+  }catch(e){showToast('Сеть: '+e.message);}
 }
 
 function showCubeKeyModal(key, name, lifeH, icon, cubeId){
