@@ -4575,29 +4575,6 @@ async function syncFromBackend(){
       localStorage.setItem('cw_user_id', me.id);
       app.myProfile.id = me.id;
       app.myProfile.uid = me.id;
-      // Restore joined cubes saved at logout (account-specific by user_id)
-      try{
-        const bk = localStorage.getItem('cw_joined_'+me.id);
-        if(bk){
-          const joined = JSON.parse(bk);
-          joined.forEach(c=>{
-            if(app.cubes.find(x=>x.id===c.id)) return; // already present
-            const cube = {...c, isOwn:false, size:2,
-              x:Math.random()*80+10, y:Math.random()*70+15,
-              rotX:Math.random()*360, rotY:Math.random()*360,
-              speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1};
-            app.cubes.push(cube);
-            if(!(app.myUniverse||[]).includes(c.id)){
-              app.myUniverse = app.myUniverse||[];
-              app.myUniverse.push(c.id);
-              try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
-            }
-            if(wDone) addCubeToWorld(cube);
-          });
-          const cnt=document.getElementById('wb-count');
-          if(cnt) cnt.textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
-        }
-      }catch(e){}
     }
     if(me.display_name) localStorage.setItem('cw_display_name', me.display_name);
     // Restore avatar from DB (survives localStorage.clear on logout)
@@ -4663,8 +4640,11 @@ async function syncFromBackend(){
     }
     // Remove from app.cubes and visited cache any bc* cubes NOT returned by backend
     // (covers deleted cubes that re-appear from cw_visited_cubes_v2 on reload)
+    // But protect joined cubes saved at logout from being wiped
     const backendIdSet=new Set(cubesData.map(c=>'bc'+c.id));
-    app.cubes=app.cubes.filter(c=>!c.id.startsWith('bc')||backendIdSet.has(c.id));
+    const _joinedBackupIds=new Set();
+    try{const _jbk=localStorage.getItem('cw_joined_'+(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||''));if(_jbk)JSON.parse(_jbk).forEach(c=>_joinedBackupIds.add(c.id));}catch(e){}
+    app.cubes=app.cubes.filter(c=>!c.id.startsWith('bc')||backendIdSet.has(c.id)||_joinedBackupIds.has(c.id));
     if(app.visitedCubes){
       app.visitedCubes=app.visitedCubes.filter(c=>!c.id.startsWith('bc')||backendIdSet.has(c.id));
       try{
@@ -4672,6 +4652,26 @@ async function syncFromBackend(){
         localStorage.setItem('cw_visited_cubes_v2',JSON.stringify(toSave));
       }catch(e){}
     }
+    // Restore joined cubes from logout backup (after filter so they don't get wiped)
+    try{
+      const _bk=localStorage.getItem('cw_joined_'+(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||''));
+      if(_bk){
+        JSON.parse(_bk).forEach(c=>{
+          if(app.cubes.find(x=>x.id===c.id)) return;
+          const cube={...c, isOwn:false, size:2,
+            x:Math.random()*80+10, y:Math.random()*70+15,
+            rotX:Math.random()*360, rotY:Math.random()*360,
+            speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1};
+          app.cubes.push(cube);
+          if(!(app.myUniverse||[]).includes(c.id)){
+            app.myUniverse=app.myUniverse||[];
+            app.myUniverse.push(c.id);
+            try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
+          }
+          if(wDone) addCubeToWorld(cube);
+        });
+      }
+    }catch(e){}
     // Update count
     const cnt=document.getElementById('wb-count');
     if(cnt) cnt.textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
