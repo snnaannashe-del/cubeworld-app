@@ -14832,17 +14832,17 @@ function cwLogoutClose(){const _m=document.getElementById('cw-logout-modal');if(
 function cwLogoutDo(){
   cwLogoutClose();
   const keep={};
-  // Save user-scoped cube data — these keys are safe because they're tied to THIS user's uid.
-  // Other users logging in will read their own cw_my_cubes_<uid> / cw_universe_<uid>.
   const uid = localStorage.getItem('cw_user_id');
   if(uid){
-    // Flush latest state to user-scoped keys before clearing
+    // Flush current user's latest in-memory state to localStorage before clearing
     _saveMyCubesCache();
-    // Also flush in-memory myUniverse to localStorage (it may not have been saved yet)
     try{ localStorage.setItem('cw_universe_'+uid, JSON.stringify(app.myUniverse||[])); }catch(e){}
-    const mv=localStorage.getItem('cw_my_cubes_'+uid); if(mv) keep['cw_my_cubes_'+uid]=mv;
-    const uv=localStorage.getItem('cw_universe_'+uid); if(uv) keep['cw_universe_'+uid]=uv;
   }
+  // Preserve ALL user-scoped cube data for ALL accounts (not just current one).
+  // Critical: switching A→B→A must not wipe A's cubes when B logs out.
+  Object.keys(localStorage).forEach(function(k){
+    if(k.startsWith('cw_universe_') || k.startsWith('cw_my_cubes_')) keep[k]=localStorage.getItem(k);
+  });
   // Preserve device_id across logout so device-ban survives account switch
   const did=localStorage.getItem('cw_device_id'); if(did) keep['cw_device_id']=did;
   localStorage.clear();
