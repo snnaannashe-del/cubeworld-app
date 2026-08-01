@@ -772,24 +772,30 @@ async def kick_user_from_cube(cube_id: int, request: Request, user=Depends(get_c
 
 @app.get("/cubes/{cube_id}/online")
 async def get_cube_online_members(cube_id: int, user=Depends(get_current_user)):
-    """Return cube members for kick search: live WS users + recent message senders."""
+    """Return cube members for kick search: everyone who ever visited (cube_visitors table) + live online flag."""
     seen = {}
-    # 1. Currently connected via WebSocket
+    # 1. All persistent visitors (survives server restarts — recorded on each WS connect)
+    for v in db.get_cube_visitors(cube_id, limit=100):
+        seen[v["id"]] = {
+            "id": v["id"],
+            "display_name": v["display_name"] or "User",
+            "avatar_url": v.get("avatar_url"),
+            "is_online": False
+        }
+    # 2. Mark currently online users (in live cube_rooms)
     room = cube_rooms.get(str(cube_id), {})
     for uid_str in room:
         try:
             uid = int(uid_str)
-            u = db.get_user_by_id(uid)
-            if u:
-                seen[uid] = {"id": u["id"], "display_name": u["display_name"] or "User",
-                             "avatar_url": u.get("avatar_url"), "is_online": True}
+            if uid in seen:
+                seen[uid]["is_online"] = True
+            else:
+                u = db.get_user_by_id(uid)
+                if u:
+                    seen[uid] = {"id": u["id"], "display_name": u["display_name"] or "User",
+                                 "avatar_url": u.get("avatar_url"), "is_online": True}
         except Exception:
             continue
-    # 2. Recent message senders (persistent — survives server restarts)
-    for u in db.get_cube_message_senders(cube_id, limit=50):
-        if u["id"] not in seen:
-            seen[u["id"]] = {"id": u["id"], "display_name": u["display_name"] or "User",
-                             "avatar_url": u.get("avatar_url"), "is_online": False}
     return list(seen.values())
 
 @app.post("/cubes/join")
@@ -1092,6 +1098,9 @@ async def ws_cube(websocket: WebSocket, token: str, cube_id: str):
             cube_rooms[cube_id] = {}
         cube_rooms[cube_id][user_id] = {"ws": websocket, "display_name": display_name}
         user_ws[user_id] = websocket  # register for direct notifications
+        # Persist visit so kick-search works even after server restart
+        if cube_id.isdigit():
+            db.record_cube_visit(int(cube_id), int(user_id), display_name)
 
         online = len(cube_rooms[cube_id])
 
