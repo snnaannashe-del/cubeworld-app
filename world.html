@@ -4575,6 +4575,29 @@ async function syncFromBackend(){
       localStorage.setItem('cw_user_id', me.id);
       app.myProfile.id = me.id;
       app.myProfile.uid = me.id;
+      // Restore joined cubes saved at logout (account-specific by user_id)
+      try{
+        const bk = localStorage.getItem('cw_joined_'+me.id);
+        if(bk){
+          const joined = JSON.parse(bk);
+          joined.forEach(c=>{
+            if(app.cubes.find(x=>x.id===c.id)) return; // already present
+            const cube = {...c, isOwn:false, size:2,
+              x:Math.random()*80+10, y:Math.random()*70+15,
+              rotX:Math.random()*360, rotY:Math.random()*360,
+              speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1};
+            app.cubes.push(cube);
+            if(!(app.myUniverse||[]).includes(c.id)){
+              app.myUniverse = app.myUniverse||[];
+              app.myUniverse.push(c.id);
+              try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
+            }
+            if(wDone) addCubeToWorld(cube);
+          });
+          const cnt=document.getElementById('wb-count');
+          if(cnt) cnt.textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
+        }
+      }catch(e){}
     }
     if(me.display_name) localStorage.setItem('cw_display_name', me.display_name);
     // Restore avatar from DB (survives localStorage.clear on logout)
@@ -14709,9 +14732,18 @@ function cwLogout(){
 function cwLogoutClose(){const _m=document.getElementById('cw-logout-modal');if(_m)_m.remove();}
 function cwLogoutDo(){
   cwLogoutClose();
-  // Preserve own-cubes cache so "Мои кубы" survives logout/login on same device
   const keep={};
   ['cw_my_cubes'].forEach(k=>{const v=localStorage.getItem(k);if(v)keep[k]=v;});
+  // Save joined (non-owned) cubes keyed by user_id so they restore on next login
+  const uid = localStorage.getItem('cw_user_id');
+  if(uid){
+    const joined = (app.cubes||[]).filter(c=>c.backendId && !c.isOwn && c.life>0).map(c=>({
+      id:c.id, backendId:c.backendId, name:c.name,
+      icon:c.icon||'🧊', col:c.col||'#0095F6', colorCss:c.colorCss||'#0095F6',
+      type:c.type||'public', life:c.life||3600
+    }));
+    if(joined.length) keep['cw_joined_'+uid] = JSON.stringify(joined);
+  }
   localStorage.clear();
   Object.keys(keep).forEach(k=>localStorage.setItem(k,keep[k]));
   window.location.replace('index.html');
