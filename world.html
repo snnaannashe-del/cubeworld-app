@@ -4496,6 +4496,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 //  REAL SERVER CONNECTION
 // ════════════════════════════════════════════════
 const CUBE_API = 'https://cubeworld-backend.onrender.com';
+
+// ── Persistent device fingerprint (used for cross-account ban by owner) ──────
+(function(){
+  if(!localStorage.getItem('cw_device_id')){
+    const arr = new Uint8Array(16);
+    crypto.getRandomValues(arr);
+    localStorage.setItem('cw_device_id', Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join(''));
+  }
+})();
 const CUBE_WS  = 'wss://cubeworld-backend.onrender.com';
 const API_BASE = 'https://cubeworld-backend.onrender.com';
 
@@ -4533,7 +4542,8 @@ async function apiCall(path, methodOrOpts={}, bodyObj){
     opts = methodOrOpts;
   }
   const token = localStorage.getItem('cw_access_token');
-  const headers = {'Content-Type':'application/json'};
+  const deviceId = localStorage.getItem('cw_device_id') || '';
+  const headers = {'Content-Type':'application/json', 'X-Device-Id': deviceId};
   if(token) headers['Authorization'] = 'Bearer '+token;
   try{
     const r = await fetch(API_BASE+path, {...opts, headers:{...headers,...(opts.headers||{})}});
@@ -4655,7 +4665,7 @@ async function syncFromBackend(){
     // Restore joined cubes from logout backup — add to myUniverse+wObjects even if already in app.cubes
     try{
       const _bk=localStorage.getItem('cw_joined_'+(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||''));
-      showToast('DEBUG restore: key=cw_joined_'+(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||'NOID')+' found='+(!!_bk)+' count='+((_bk&&JSON.parse(_bk).length)||0));
+      // joined-backup restore
       if(_bk){
         JSON.parse(_bk).forEach(c=>{
           // Ensure cube exists in app.cubes
@@ -5408,8 +5418,6 @@ function _addObjToWorld(cube,i){
 function addCubeToWorld(cube){_addObjToWorld(cube,undefined);}
 
 function enterWorld(){
-  // DEBUG: show what was saved at logout
-  try{const dbg=localStorage.getItem('cw_logout_debug');if(dbg){setTimeout(()=>showToast('DEBUG logout: '+dbg),2000);localStorage.removeItem('cw_logout_debug');}}catch(e){}
   loadCryptoTicker();
   // wb-key-badge hidden - key not shown in topbar;
   // Update avatar in world topbar
@@ -5572,7 +5580,7 @@ function _uniKey(){ var u=localStorage.getItem('cw_user_id'); return u?'cw_unive
 function _myKey(){  var u=localStorage.getItem('cw_user_id'); return u?'cw_my_cubes_'+u:'cw_my_cubes'; }
 
 function _saveMyCubesCache(){
-  // Save both own AND joined cubes so they survive logout
+  // Save all backend cubes (own OR joined with life>0) so they survive logout
   const toCache=(app.cubes||[]).filter(c=>c.backendId&&(c.isOwn||(c.life>0)));
   localStorage.setItem(_myKey(),JSON.stringify(toCache.map(c=>({
     id:c.id,backendId:c.backendId,name:c.name,type:c.type,
@@ -5591,20 +5599,28 @@ function _loadMyCubesCache(){
     cached.forEach(cc=>{
       const existing=(app.cubes||[]).find(c=>c.id===cc.id);
       if(existing){
-        // Patch missing fields — visited_cubes cache creates partial objects
-        if(cc.isOwn) existing.isOwn=true; // only force true if cached as own
+        // Patch missing fields
+        if(cc.isOwn) existing.isOwn=true;
         existing.backendId=existing.backendId||cc.backendId;
         existing.owner_uid=existing.owner_uid||cc.owner_uid;
         existing.cubeKey=existing.cubeKey||cc.cubeKey;
         existing.desc=existing.desc||cc.desc;
         existing.col=existing.col||cc.col;
+        existing.colorCss=existing.colorCss||cc.colorCss||cc.col;
+        existing.icon=existing.icon||cc.icon;
         existing.size=existing.size||cc.size;
+        existing.life=existing.life||cc.life;
       } else {
         if(!app.cubes) app.cubes=[];
-        app.cubes.push(cc);
+        // Restore cached cube with preserved data (life may be stale but keeps it visible)
+        app.cubes.push({
+          ...cc,
+          life: cc.life>0 ? cc.life : 3600, // ensure positive life so initWorld renders it
+          colorCss: cc.colorCss||cc.col||'#0095F6'
+        });
       }
-      // For joined (non-own) cubes: restore them to myUniverse so initWorld renders them
-      if(!cc.isOwn && cc.id && cc.life>0){
+      // Ensure ALL backend cubes from cache are in myUniverse (own AND joined)
+      if(cc.id && cc.id.startsWith('bc')){
         if(!app.myUniverse) app.myUniverse=[];
         if(!app.myUniverse.includes(cc.id)){
           app.myUniverse.push(cc.id);
@@ -5921,7 +5937,8 @@ async function submitJoinKey(){
   let res=null, errMsg='Ключ не найден или куб истёк';
   try{
     const token=localStorage.getItem('cw_access_token');
-    const headers={'Content-Type':'application/json'};
+    const deviceId=localStorage.getItem('cw_device_id')||'';
+    const headers={'Content-Type':'application/json','X-Device-Id':deviceId};
     if(token) headers['Authorization']='Bearer '+token;
     const r=await fetch(API_BASE+'/cubes/join',{method:'POST',headers,body:JSON.stringify({cube_key:key})});
     const data=await r.json();
