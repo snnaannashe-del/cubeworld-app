@@ -4710,13 +4710,9 @@ function connectGlobalWS(){
     try{
       const msg = JSON.parse(e.data);
       const myUserId = localStorage.getItem('cw_user_id');
-      if(msg.type==='pong') return;
-      if(msg.type==='dm'){ handleIncomingDm(msg, myUserId); return; }
-      if(msg.type==='kicked'){
-        _handleKickedFromCube(msg.cube_id ? 'bc'+msg.cube_id : app.currentCubeId);
-        return;
-      }
-      if(msg.type==='balance_update'){
+      if(msg.type==='dm') handleIncomingDm(msg, myUserId);
+      if(msg.type==='pong') return; // keepalive ack
+      else if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
         if(next>prev){ app.wallet.balance=next; syncWalletUI(); showToast('💰 +'+(next-prev).toLocaleString('ru')+' CUBE!'); }
       }
@@ -4752,7 +4748,7 @@ function openRoomWS(roomId){
     try{
       const msg = JSON.parse(e.data);
       const myUserId = localStorage.getItem('cw_user_id');
-      if(msg.type==='kicked'){ _handleKickedFromCube(msg.cube_id?'bc'+msg.cube_id:app.currentCubeId); return; }
+      // DM and balance_update must work even outside a cube
       if(msg.type==='dm'){ handleIncomingDm(msg, myUserId); return; }
       if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
@@ -4845,11 +4841,13 @@ function openRoomWS(roomId){
     loadChatHistory(roomId);
   };
   _ws.onerror = ()=>{ _ws=null; };
-  _ws.onclose = (e)=>{
+  _ws.onclose = ()=>{
     if(_wsRoom!==roomId) return;
     _ws=null;
-    if(e.code===4003){ _handleKickedFromCube(app.currentCubeId); return; }
-    setTimeout(()=>{ if(_wsRoom===roomId && !_ws) openRoomWS(roomId); }, 3000);
+    // Auto-reconnect after 3s if user is still in same room
+    setTimeout(()=>{
+      if(_wsRoom===roomId && !_ws) openRoomWS(roomId);
+    }, 3000);
   };
 }
 
@@ -5346,8 +5344,6 @@ function enterWorld(){
   if(!wDone){wDone=true;requestAnimationFrame(initWorld);}
   // Fetch real data in background
   syncFromBackend();
-  // Record visits for all joined (non-owned) cubes so owner can find them in kick search
-  _recordAllCubeVisits();
   // Restore modal-universe state (tab + position) after true page reload
   _restoreUniModal();
   // Refresh stats every 60s
@@ -5869,8 +5865,6 @@ async function submitJoinKey(){
 // ════════════════════════════════════════════════
 function enterInterior(cubeId){
   app.currentCubeId=cubeId;
-  const _n=cubeId.replace(/^[a-z]+/,'');
-  if(_n&&!isNaN(_n)){const _t=localStorage.getItem('cw_access_token');if(_t)fetch(API_BASE+'/cubes/'+_n+'/visit',{method:'POST',headers:{Authorization:'Bearer '+_t}}).catch(()=>{});}
   // Persist: remember we're inside this cube
   try{ localStorage.setItem('cw_last_view','interior'); localStorage.setItem('cw_last_cube',cubeId); }catch(e){}
   const cube=app.cubes.find(c=>c.id===cubeId);
@@ -5903,30 +5897,6 @@ function enterInterior(cubeId){
   loadRealSignals();
 }
 function exitInterior(){ if(liveInterval){clearInterval(liveInterval);liveInterval=null;} try{localStorage.setItem('cw_last_view','world');}catch(e){} showView('v-world'); }
-
-function _recordAllCubeVisits(){
-  // Called on world load — records visits for every non-owned cube the user has in their world.
-  // This ensures the owner can find them in kick search even without entering interior.
-  const tok=localStorage.getItem('cw_access_token');
-  if(!tok) return;
-  setTimeout(()=>{
-    (app.cubes||[]).forEach(c=>{
-      if(c.isOwn||!c.backendId) return;
-      fetch(API_BASE+'/cubes/'+c.backendId+'/visit',{method:'POST',headers:{Authorization:'Bearer '+tok}}).catch(()=>{});
-    });
-  }, 2000); // wait for cubes to load from syncFromBackend
-}
-
-function _handleKickedFromCube(cubeId){
-  showToast('🚫 Тебя удалили из этого куба');
-  if(cubeId){
-    app.myUniverse=(app.myUniverse||[]).filter(id=>id!==cubeId);
-    try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
-    wObjects=(wObjects||[]).filter(o=>!(o.cube&&o.cube.id===cubeId));
-    app.cubes=app.cubes.filter(c=>c.id!==cubeId);
-  }
-  setTimeout(()=>exitInterior(),1200);
-}
 
 // ════════════════════════════════════════════════
 //  INTERIOR — DATA INIT
