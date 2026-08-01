@@ -4671,7 +4671,7 @@ async function syncFromBackend(){
           if(!(app.myUniverse||[]).includes(c.id)){
             app.myUniverse=app.myUniverse||[];
             app.myUniverse.push(c.id);
-            try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
+            try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
             if(wDone) addCubeToWorld(cubeObj);
           }
         });
@@ -4730,7 +4730,7 @@ async function syncFromBackend(){
           if(!(app.myUniverse||[]).includes(localId)){
             app.myUniverse = app.myUniverse||[];
             app.myUniverse.push(localId);
-            try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
+            try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
           }
           if(wDone) addCubeToWorld(cube);
         }
@@ -4778,18 +4778,17 @@ function connectGlobalWS(){
       // Kicked from a cube by owner — remove cube from world immediately
       if(msg.type==='cube_removed' && msg.cube_id){
         const cubeId='bc'+msg.cube_id;
-        _purgeCubeFromAllCaches(cubeId);
-        showToast('👢 Тебя удалили из куба «'+(msg.cube_name||'')+'»');
-        // Close cube interior if currently inside it
         if(app.currentCubeId===cubeId && typeof closeCabinetOverlay==='function') closeCabinetOverlay();
+        _purgeCubeFromAllCaches(cubeId);
+        showCubeAlert('👢','Вас удалили из куба',msg.cube_name?'«'+msg.cube_name+'»':'');
         return;
       }
       // Cube was deleted by owner — remove from world for all members
       if(msg.type==='cube_deleted' && msg.cube_id){
         const cubeId='bc'+msg.cube_id;
-        _purgeCubeFromAllCaches(cubeId);
-        showToast('🗑 Куб «'+(msg.cube_name||'')+'» был удалён владельцем');
         if(app.currentCubeId===cubeId && typeof closeCabinetOverlay==='function') closeCabinetOverlay();
+        _purgeCubeFromAllCaches(cubeId);
+        showCubeAlert('🗑️','Куб удалён',msg.cube_name?'«'+msg.cube_name+'»'+' был удалён владельцем':'');
         return;
       }
     }catch(e){}
@@ -4910,13 +4909,11 @@ function openRoomWS(roomId){
           document.querySelectorAll('#wb-cube-balance,#itb-cube-bal').forEach(el=>{ el.classList.add('balance-pop'); setTimeout(()=>el.classList.remove('balance-pop'),400); });
         }
       } else if(msg.type==='kicked'){
-        // Owner kicked us from this cube while we were inside — purge and go back to world
+        // Owner kicked us from this cube while we were inside — close, purge, show alert
         const kickedId = app.currentCubeId;
-        if(kickedId){
-          _purgeCubeFromAllCaches(kickedId);
-          showToast('👢 Тебя выгнали из куба');
-          if(typeof closeCabinetOverlay==='function') closeCabinetOverlay();
-        }
+        if(typeof closeCabinetOverlay==='function') closeCabinetOverlay();
+        if(kickedId) _purgeCubeFromAllCaches(kickedId);
+        showCubeAlert('👢','Вас удалили из куба',msg.cube_name?'«'+msg.cube_name+'»':'');
       }
     }catch(err){}
   };
@@ -5289,7 +5286,7 @@ function wRenderLoop(){
 function initWorld(){
   // Restore universe from localStorage (persists across reloads)
   try{
-    const saved=localStorage.getItem('cw_universe');
+    const saved=localStorage.getItem(_uniKey())||localStorage.getItem('cw_universe');
     if(saved){
       const arr=JSON.parse(saved);
       if(Array.isArray(arr)&&arr.length) app.myUniverse=arr;
@@ -5550,7 +5547,7 @@ async function submitCreateCube(){
     if(!(app.myUniverse||[]).includes(cube.id)){
       app.myUniverse=app.myUniverse||[];
       app.myUniverse.push(cube.id);
-      localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));
+      localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));
       apiCall('/me/universe',{method:'POST',body:JSON.stringify({universe:app.myUniverse})}).catch(()=>{});
     }
     // Add to canvas world
@@ -5566,10 +5563,15 @@ async function submitCreateCube(){
   }
 }
 
+// ── User-scoped localStorage key helpers ───────────────────────────────────
+// Keys are scoped to the logged-in user so switching accounts never mixes cubes.
+function _uniKey(){ var u=localStorage.getItem('cw_user_id'); return u?'cw_universe_'+u:'cw_universe'; }
+function _myKey(){  var u=localStorage.getItem('cw_user_id'); return u?'cw_my_cubes_'+u:'cw_my_cubes'; }
+
 function _saveMyCubesCache(){
-  // Save both own AND joined cubes so they survive logout (cw_my_cubes is preserved in keep)
+  // Save both own AND joined cubes so they survive logout
   const toCache=(app.cubes||[]).filter(c=>c.backendId&&(c.isOwn||(c.life>0)));
-  localStorage.setItem('cw_my_cubes',JSON.stringify(toCache.map(c=>({
+  localStorage.setItem(_myKey(),JSON.stringify(toCache.map(c=>({
     id:c.id,backendId:c.backendId,name:c.name,type:c.type,
     life:c.life,size:c.size||2,col:c.col,colorCss:c.colorCss,
     icon:c.icon,desc:c.desc,isOwn:!!c.isOwn,owner_uid:c.owner_uid,
@@ -5578,7 +5580,7 @@ function _saveMyCubesCache(){
 }
 function _loadMyCubesCache(){
   try{
-    const raw=localStorage.getItem('cw_my_cubes');
+    const raw=localStorage.getItem(_myKey())||localStorage.getItem('cw_my_cubes');
     if(!raw)return;
     const cached=JSON.parse(raw);
     if(!Array.isArray(cached))return;
@@ -5608,7 +5610,7 @@ function _loadMyCubesCache(){
       }
     });
     if(universeChanged){
-      try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
+      try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
     }
   }catch(e){}
 }
@@ -5692,7 +5694,7 @@ function toggleMineCube(cubeId){
   const idx=uni.indexOf(cubeId);
   if(idx>=0) uni.splice(idx,1); else uni.push(cubeId);
   app.myUniverse=uni;
-  localStorage.setItem('cw_universe',JSON.stringify(uni));
+  localStorage.setItem(_uniKey(),JSON.stringify(uni));
   apiCall('/me/universe',{method:'POST',body:JSON.stringify({universe:uni})}).catch(()=>{});
   // update card UI
   const card=document.getElementById('uni-card-'+cubeId);
@@ -5712,7 +5714,7 @@ function _purgeCubeFromAllCaches(cubeId){
   app.cubes=(app.cubes||[]).filter(c=>c.id!==cubeId);
   // Remove from universe
   app.myUniverse=(app.myUniverse||[]).filter(id=>id!==cubeId);
-  localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));
+  localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));
   // Remove from visited cubes (cw_visited_cubes_v2) — otherwise it reappears on reload
   if(app.visitedCubes){
     app.visitedCubes=app.visitedCubes.filter(c=>c.id!==cubeId);
@@ -5932,7 +5934,7 @@ async function submitJoinKey(){
   if(!(app.myUniverse||[]).includes(cubeId)){
     app.myUniverse=app.myUniverse||[];
     app.myUniverse.push(cubeId);
-    try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
+    try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
   }
   _saveMyCubesCache(); // persist joined cube in cache
   closeModal('modal-join-key');
@@ -8890,6 +8892,24 @@ function showCoinPop(n){
   btn.classList.remove('coin-pop'); void btn.offsetWidth; btn.classList.add('coin-pop');
   showToast('💰 +'+n+' CUBE');
 }
+// ── Модальный попап для важных системных событий (kick / cube deleted) ─────
+function showCubeAlert(icon, title, subtitle){
+  // Remove any existing alert
+  const old=document.getElementById('cube-alert-modal');if(old)old.remove();
+  const ov=document.createElement('div');
+  ov.id='cube-alert-modal';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:99999;display:flex;align-items:center;justify-content:center;animation:fadeIn .25s';
+  ov.innerHTML=`<div style="background:var(--card,#1a1a2e);border:1px solid var(--border,#2a2a4a);border-radius:22px;padding:36px 28px 28px;max-width:340px;width:90%;text-align:center;box-shadow:0 12px 60px rgba(0,0,0,.7);animation:slideUp .3s">
+    <div style="font-size:54px;margin-bottom:14px;line-height:1">${icon}</div>
+    <div style="font-size:18px;font-weight:700;color:var(--text,#fff);line-height:1.4;margin-bottom:${subtitle?'8':'20'}px">${title}</div>
+    ${subtitle?`<div style="font-size:14px;color:var(--text2,#aaa);margin-bottom:20px">${subtitle}</div>`:''}
+    <button onclick="document.getElementById('cube-alert-modal').remove()" style="padding:12px 36px;border-radius:22px;background:#0095F6;color:#fff;border:none;cursor:pointer;font-size:15px;font-weight:700;width:100%">OK</button>
+  </div>`;
+  document.body.appendChild(ov);
+  // Auto-dismiss after 12s
+  setTimeout(()=>{ const m=document.getElementById('cube-alert-modal');if(m)m.remove(); }, 12000);
+}
+
 function showToast(msg,type){
   let t=document.getElementById('cube-toast');
   if(!t){
@@ -14702,7 +14722,7 @@ function toggleUniCard(id, el){
   // Autosave selection to localStorage (no need to press "Сохранить")
   const selected=[...document.querySelectorAll('#uni-grid .uni-cube-card.in-universe')].map(e=>e.id.replace('uni-card-',''));
   app.myUniverse=selected;
-  try{localStorage.setItem('cw_universe',JSON.stringify(selected));}catch(e){}
+  try{localStorage.setItem(_uniKey(),JSON.stringify(selected));}catch(e){}
   updateUniHint();
 }
 
@@ -14736,7 +14756,7 @@ function saveUniverse(){
     .map(el => el.id.replace('uni-card-',''));
   if(selected.length === 0){ showToast('Выбери хотя бы 1 куб'); return; }
   app.myUniverse = selected;
-  localStorage.setItem('cw_universe', JSON.stringify(selected));
+  localStorage.setItem(_uniKey(), JSON.stringify(selected));
   // Try to persist to backend (silent fail if endpoint missing)
   apiCall('/me/universe',{method:'POST',body:JSON.stringify({universe:selected})}).catch(()=>{});
   // Refresh world
@@ -14775,19 +14795,14 @@ function cwLogoutClose(){const _m=document.getElementById('cw-logout-modal');if(
 function cwLogoutDo(){
   cwLogoutClose();
   const keep={};
-  ['cw_my_cubes'].forEach(k=>{const v=localStorage.getItem(k);if(v)keep[k]=v;});
-  // Preserve universe so joined cubes survive manual logout
-  const _uv=localStorage.getItem('cw_universe');if(_uv)keep['cw_universe']=_uv;
-  // Save joined (non-owned) cubes keyed by user_id so they restore on next login
+  // Save user-scoped cube data — these keys are safe because they're tied to THIS user's uid.
+  // Other users logging in will read their own cw_my_cubes_<uid> / cw_universe_<uid>.
   const uid = localStorage.getItem('cw_user_id');
   if(uid){
-    const joined = (app.cubes||[]).filter(c=>c.backendId && !c.isOwn && c.life>0).map(c=>({
-      id:c.id, backendId:c.backendId, name:c.name,
-      icon:c.icon||'🧊', col:c.col||'#0095F6', colorCss:c.colorCss||'#0095F6',
-      type:c.type||'public', life:c.life||3600
-    }));
-    keep['cw_joined_'+uid] = JSON.stringify(joined);
-    keep['cw_logout_debug'] = 'uid='+uid+' saved='+joined.length+' names='+joined.map(c=>c.name).join(',');
+    // Flush latest state to user-scoped keys before clearing
+    _saveMyCubesCache();
+    const mv=localStorage.getItem('cw_my_cubes_'+uid); if(mv) keep['cw_my_cubes_'+uid]=mv;
+    const uv=localStorage.getItem('cw_universe_'+uid); if(uv) keep['cw_universe_'+uid]=uv;
   }
   localStorage.clear();
   Object.keys(keep).forEach(k=>localStorage.setItem(k,keep[k]));
