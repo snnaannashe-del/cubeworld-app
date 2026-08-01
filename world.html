@@ -5382,10 +5382,12 @@ function _closeAllModals(){
 // 1. Fresh reload: enterWorld() (above) closes modals
 // 2. bfcache restore: pageshow fires → close modals
 window.addEventListener('pageshow', _closeAllModals);
-// 3. iOS PWA / app-switch: visibilitychange fires → close modals
+// 3. pagehide: fires BEFORE iOS bfcache snapshot — closes modals so snapshot is clean
+//    This is the primary iOS Safari fix: modal is closed before the page is cached
+window.addEventListener('pagehide', _closeAllModals);
+// 4. iOS PWA / app-switch: visibilitychange fires → close modals
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible') _closeAllModals();});
-// 4. beforeunload: close modals before page is unloaded/snapshotted into bfcache
-//    Also prevents bfcache in Chrome (pages with beforeunload listener are not cached)
+// 5. beforeunload: prevents bfcache in Chrome + closes modals before unload
 window.addEventListener('beforeunload', _closeAllModals);
 // handleWorldClick defined below (enhanced with premium cube logic)
 function submitEntryKey(){
