@@ -5556,6 +5556,7 @@ function _loadMyCubesCache(){
     if(!raw)return;
     const cached=JSON.parse(raw);
     if(!Array.isArray(cached))return;
+    let universeChanged=false;
     cached.forEach(cc=>{
       const existing=(app.cubes||[]).find(c=>c.id===cc.id);
       if(existing){
@@ -5571,7 +5572,18 @@ function _loadMyCubesCache(){
         if(!app.cubes) app.cubes=[];
         app.cubes.push(cc);
       }
+      // For joined (non-own) cubes: restore them to myUniverse so initWorld renders them
+      if(!cc.isOwn && cc.id && cc.life>0){
+        if(!app.myUniverse) app.myUniverse=[];
+        if(!app.myUniverse.includes(cc.id)){
+          app.myUniverse.push(cc.id);
+          universeChanged=true;
+        }
+      }
     });
+    if(universeChanged){
+      try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
+    }
   }catch(e){}
 }
 function pickCubeColor(el){
