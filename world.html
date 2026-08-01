@@ -5617,22 +5617,31 @@ async function deleteAllMyCubes(){
   switchUniTab('mine',document.getElementById('uni-tab-mine'));
 }
 let _kickCubeLocalId=null;
+let _kickCubeMembers=[];
 let _kickSearchTimer=null;
-function openKickModal(cubeId){
+async function openKickModal(cubeId){
   _kickCubeLocalId=cubeId;
+  _kickCubeMembers=[];
   document.getElementById('kick-search').value='';
-  document.getElementById('kick-results').innerHTML=
-    '<div style="color:var(--text3);padding:16px;text-align:center;font-size:13px">🔍 Введи UID или имя юзера</div>';
+  const res=document.getElementById('kick-results');
+  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">⏳ Загружаю участников...</div>';
   openModal('modal-kick-user');
+  const cube=app.cubes.find(c=>c.id===cubeId);
+  const bid=cube&&cube.backendId;
+  if(!bid){res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Куб не найден</div>';return;}
+  const members=await apiCall('/cubes/'+bid+'/online').catch(()=>null);
+  if(members&&members.length){
+    _kickCubeMembers=members;
+    _renderKickResults(members);
+  } else {
+    res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center;font-size:13px">Никто ещё не заходил в этот куб<br><span style="font-size:11px;opacity:.6">Поиск по имени или UID найдёт любого юзера</span></div>';
+  }
 }
 function _renderKickResults(users){
   const myId=String(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||'');
   const res=document.getElementById('kick-results');
   const filtered=users.filter(u=>String(u.id)!==myId);
-  if(!filtered.length){
-    res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Юзер не найден</div>';
-    return;
-  }
+  if(!filtered.length){res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Нет участников</div>';return;}
   res.innerHTML=filtered.map(u=>{
     const dispUid=(typeof _genDisplayUid==='function'&&u.id)?_genDisplayUid(u.id):String(u.id);
     const name=(u.display_name||'User').replace(/'/g,"\\'");
@@ -5641,21 +5650,28 @@ function _renderKickResults(users){
 }
 async function searchKickUser(q){
   clearTimeout(_kickSearchTimer);
-  const qt=q.trim();
+  const qt=q.trim().toLowerCase();
   const res=document.getElementById('kick-results');
   if(!qt){
-    res.innerHTML='<div style="color:var(--text3);padding:16px;text-align:center;font-size:13px">🔍 Введи UID или имя юзера</div>';
+    if(_kickCubeMembers.length) _renderKickResults(_kickCubeMembers);
+    else res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center;font-size:13px">Никто ещё не заходил в этот куб</div>';
     return;
   }
+  // First filter from cube members
+  const fromCube=_kickCubeMembers.filter(u=>{
+    const nm=(u.display_name||'').toLowerCase();
+    const uid=String(u.id);
+    const duid=(typeof _genDisplayUid==='function'&&u.id)?String(_genDisplayUid(u.id)):'';
+    return nm.includes(qt)||uid.includes(qt)||duid.includes(qt);
+  });
+  if(fromCube.length){_renderKickResults(fromCube);return;}
+  // Fallback: search all users if no cube members match
   if(qt.length<2){return;}
   res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">⏳ Поиск...</div>';
   _kickSearchTimer=setTimeout(async()=>{
     const data=await apiCall('/users/search?q='+encodeURIComponent(qt)+'&limit=20').catch(()=>null);
-    if(data&&data.length){
-      _renderKickResults(data);
-    } else {
-      res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Юзер не найден</div>';
-    }
+    if(data&&data.length) _renderKickResults(data);
+    else res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Юзер не найден</div>';
   },350);
 }
 async function doKickUser(uid,name){
