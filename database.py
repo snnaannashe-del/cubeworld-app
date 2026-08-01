@@ -1131,6 +1131,31 @@ def get_my_cubes(owner_id: int):
     rows = c.fetchall()
     conn.close(); return _fetchall(rows)
 
+def get_cube_message_senders(cube_id: int, limit: int = 50):
+    """Return distinct users who sent messages in this cube (recent participants for kick search)."""
+    conn = get_db(); c = conn.cursor()
+    if _PG:
+        c.execute("""
+            SELECT DISTINCT ON (u.id) u.id, u.display_name, u.avatar_url
+            FROM messages m JOIN users u ON u.id = m.user_id
+            WHERE m.cube_id = %s AND m.user_id IS NOT NULL
+              AND m.created_at >= NOW() - INTERVAL '90 days'
+            ORDER BY u.id, m.created_at DESC
+            LIMIT %s
+        """, (cube_id, limit))
+    else:
+        c.execute("""
+            SELECT u.id, u.display_name, u.avatar_url
+            FROM (
+                SELECT user_id, MAX(created_at) as last_msg
+                FROM messages WHERE cube_id=? AND user_id IS NOT NULL
+                  AND created_at >= datetime('now', '-90 days')
+                GROUP BY user_id ORDER BY last_msg DESC LIMIT ?
+            ) m JOIN users u ON u.id = m.user_id
+        """, (cube_id, limit))
+    rows = c.fetchall(); conn.close()
+    return _fetchall(rows)
+
 def list_cubes():
     conn = get_db(); c = conn.cursor()
     if _PG:
