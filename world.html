@@ -4710,9 +4710,14 @@ function connectGlobalWS(){
     try{
       const msg = JSON.parse(e.data);
       const myUserId = localStorage.getItem('cw_user_id');
-      if(msg.type==='dm') handleIncomingDm(msg, myUserId);
-      if(msg.type==='pong') return; // keepalive ack
-      else if(msg.type==='balance_update'){
+      if(msg.type==='pong') return;
+      if(msg.type==='dm'){ handleIncomingDm(msg, myUserId); return; }
+      if(msg.type==='kicked'){
+        const cubeId = msg.cube_id ? 'bc'+msg.cube_id : app.currentCubeId;
+        _handleKickedFromCube(cubeId);
+        return;
+      }
+      if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
         if(next>prev){ app.wallet.balance=next; syncWalletUI(); showToast('💰 +'+(next-prev).toLocaleString('ru')+' CUBE!'); }
       }
@@ -5729,20 +5734,8 @@ async function searchKickUser(q){
     return nm.includes(qtL)||uid.includes(qt)||duid.includes(qt);
   });
   if(fromCube.length){_renderKickResults(fromCube);return;}
-  // 2. Fallback: server search (for cubes with no tracked visitors yet)
-  if(qt.length<2){return;}
-  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">⏳ Поиск...</div>';
-  _kickSearchTimer=setTimeout(async()=>{
-    let searchQ=qt;
-    // If input is all digits — try to reverse displayed UID to raw DB id
-    if(/^\d+$/.test(qt)){
-      const rawId=(typeof _reverseDisplayUid==='function')?_reverseDisplayUid(qt):null;
-      if(rawId) searchQ='#'+rawId;
-    }
-    const data=await apiCall('/users/search?q='+encodeURIComponent(searchQ)+'&limit=20').catch(()=>null);
-    if(data&&data.length) _renderKickResults(data);
-    else res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Юзер не найден</div>';
-  },350);
+  // No fallback to global user search — only cube members can be kicked
+  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Юзер не найден среди участников куба</div>';
 }
 async function doKickUser(uid,name){
   if(!_kickCubeLocalId)return;
