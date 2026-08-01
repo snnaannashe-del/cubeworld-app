@@ -5508,16 +5508,18 @@ function switchUniTab(tab,btn){
   btn.classList.add('active');
   const grid=document.getElementById('uni-grid');if(!grid)return;
   if(tab==='mine'){
-    // Always fetch fresh from server — avoids race with syncFromBackend
-    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--text2);padding:24px">⏳ Загружаю...</div>';
+    // Render cached cubes immediately so user sees something right away
+    _renderMineCubes(grid);
+    // Then fetch fresh from server and update
     apiCall('/me/cubes').then(serverCubes=>{
       if(serverCubes && serverCubes.length > 0){
-        const myId=String(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||'');
-        // Merge into app.cubes
         serverCubes.forEach(c=>{
           const existing=app.cubes.find(x=>x.backendId===c.id);
-          if(existing){ existing.isOwn=true; }
-          else {
+          if(existing){
+            existing.isOwn=true;
+            existing.expired=!c.is_active||(c.life_left_seconds||0)<=0;
+            existing.life=Math.max(0,c.life_left_seconds||0);
+          } else {
             app.cubes.push({
               id:'bc'+c.id, backendId:c.id, name:c.name, desc:c.description||'',
               icon:c.icon||'📦', col:c.color||'#0095F6', colorCss:c.color||'#0095F6',
@@ -5530,9 +5532,10 @@ function switchUniTab(tab,btn){
             });
           }
         });
+        _saveMyCubesCache();
+        _renderMineCubes(grid);
       }
-      _renderMineCubes(grid);
-    }).catch(()=>{ _renderMineCubes(grid); });
+    }).catch(()=>{});
     return;
   }
   openUniverseManager();
@@ -5554,7 +5557,7 @@ function toggleMineCube(cubeId){
   document.getElementById('world-overlay').innerHTML='';
   requestAnimationFrame(initWorld);
   const hint=document.getElementById('uni-hint');
-  if(hint){const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);const mc=(app.cubes||[]).filter(c=>c.isOwn===true||(myUid&&(String(c.owner_uid)===String(myUid))));const sel=mc.filter(c=>uni.includes(c.id)).length;hint.textContent='Выбрано: '+sel+' из '+app.cubes.length+' кубов';}
+  if(hint){updateUniHint();}
   showToast(uni.includes(cubeId)?'⬡ Куб добавлен в мир':'⬡ Куб убран из мира');
 }
 function _purgeCubeFromAllCaches(cubeId){
@@ -14509,9 +14512,20 @@ function toggleUniCard(id, el){
 }
 
 function updateUniHint(){
-  const selected = document.querySelectorAll('#uni-grid .uni-cube-card.in-universe').length;
-  const visible = document.querySelectorAll('#uni-grid .uni-cube-card').length;
-  document.getElementById('uni-hint').textContent = `Выбрано: ${selected} из ${app.cubes.length} кубов`;
+  // On "Мои кубы" tab — show own-cubes count; on "Все кубы" tab — show global count
+  const mineActive=document.getElementById('uni-tab-mine')&&document.getElementById('uni-tab-mine').classList.contains('active');
+  const hint=document.getElementById('uni-hint');if(!hint)return;
+  if(mineActive){
+    const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);
+    const myCubes=(app.cubes||[]).filter(c=>c.isOwn===true||(myUid&&String(c.owner_uid)===String(myUid)));
+    const activeMy=myCubes.filter(c=>!c.expired&&c.backendId);
+    const uni=app.myUniverse||[];
+    const sel=activeMy.filter(c=>uni.includes(c.id)).length;
+    hint.textContent='Мои активные кубы: '+activeMy.length+' · Выбрано: '+sel;
+  } else {
+    const selected=document.querySelectorAll('#uni-grid .uni-cube-card.in-universe').length;
+    hint.textContent='Выбрано: '+selected+' из '+app.cubes.length+' кубов';
+  }
 }
 
 function filterUniGrid(query){
