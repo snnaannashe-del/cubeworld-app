@@ -5134,18 +5134,22 @@ document.querySelectorAll('.modal-backdrop').forEach(b=>b.addEventListener('clic
       if(d<130){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
         ctx.strokeStyle=`rgba(0,149,246,${.18*(1-d/130)})`;ctx.lineWidth=.5;ctx.stroke();}
     }
-    // CubeWorld watermark — large, scales with canvas width for all iPhone models
+    // CubeWorld watermark — fills ~88% of canvas width on all screen sizes
     ctx.save();
-    var _cwFs=Math.max(48,Math.round(W*0.15));
-    ctx.globalAlpha=1;ctx.font='bold '+_cwFs+'px system-ui,sans-serif';ctx.textAlign='left';
+    // Start with large candidate size, then shrink to fit 88% width
+    var _cwFs=Math.round(W*0.5);
+    ctx.font='bold '+_cwFs+'px system-ui,sans-serif';
     var _cwW=ctx.measureText('CubeWorld').width;
-    // If text wider than 88% of canvas, scale down
-    if(_cwW>W*0.88){_cwFs=Math.round(_cwFs*(W*0.88/_cwW));ctx.font='bold '+_cwFs+'px system-ui,sans-serif';_cwW=ctx.measureText('CubeWorld').width;}
+    var _cwTarget=W*0.88;
+    if(_cwW>0){_cwFs=Math.round(_cwFs*(_cwTarget/_cwW));_cwFs=Math.max(36,_cwFs);}
+    ctx.font='bold '+_cwFs+'px system-ui,sans-serif';
+    _cwW=ctx.measureText('CubeWorld').width;
     var _cwC=ctx.measureText('Cube').width;
     var _cwX=Math.round((W-_cwW)/2);
-    var _cwY=H-Math.max(20,Math.round(_cwFs*0.4));
-    ctx.fillStyle='rgba(180,200,255,.42)';ctx.fillText('Cube',_cwX,_cwY);
-    ctx.fillStyle='rgba(0,149,246,.52)';ctx.fillText('World',_cwX+_cwC,_cwY);
+    var _cwY=H-Math.max(16,Math.round(_cwFs*0.18));
+    ctx.globalAlpha=1;
+    ctx.fillStyle='rgba(180,200,255,.38)';ctx.fillText('Cube',_cwX,_cwY);
+    ctx.fillStyle='rgba(0,149,246,.48)';ctx.fillText('World',_cwX+_cwC,_cwY);
     ctx.restore();
   };
   draw();
@@ -5707,6 +5711,7 @@ function pickCubeColor(el){
   document.querySelectorAll('.cclr').forEach(e=>e.classList.remove('active'));
   el.classList.add('active');
   const inp=document.getElementById('cc-color');if(inp)inp.value=el.dataset.c;
+}
 // ── CREATE-CUBE COLOR PICKER ──────────────────────────────────────────
 const CC_COLORS_128=[
   // Blues
@@ -5800,7 +5805,6 @@ function ccReset(){
   const lbl=document.getElementById('cc-icon-label');if(lbl)lbl.textContent='Выбрать иконку';
   const sw=document.getElementById('cc-color-swatch');if(sw)sw.style.background='#0095F6';
   const tx=document.getElementById('cc-color-text');if(tx)tx.textContent='#0095F6';
-}
 }
 function _renderMineCubes(grid){
   const myUid=app.myProfile&&(app.myProfile.uid||app.myProfile.id);
