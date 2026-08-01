@@ -3757,7 +3757,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   <div class="modal">
     <h3>✦ Создать куб</h3>
     <label>Название</label>
-    <input type="text" id="cc-name" placeholder="Мой куб" maxlength="32">
+    <input type="text" id="cc-name" placeholder="Мой куб" maxlength="40" oninput="validateCubeName(this)">
+    <div id="cc-name-err" style="display:none;margin-top:6px;padding:8px 12px;border-radius:8px;background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.3);color:#ff6b6b;font-size:12px;animation:fadeIn .2s ease"></div>
     <label>Тип куба</label>
     <select id="cc-type">
       <option value="public">🌐 Публичный — виден всем в мире</option>
@@ -5381,8 +5382,29 @@ function submitEntryKey(){
 }
 document.getElementById('mke-input').addEventListener('keydown',e=>{if(e.key==='Enter')submitEntryKey();});
 function openCreateCube(){openModal('modal-create-cube');}
+function validateCubeName(inp){
+  const v=inp.value;const err=document.getElementById('cc-name-err');
+  if(!err)return;
+  if(v.length===0){err.style.display='none';return;}
+  const len=[...v].length; // count unicode codepoints (emojis = 1)
+  if(len>40){err.style.display='block';err.textContent='⚠️ Название слишком длинное — максимум 40 символов (сейчас '+len+')';}
+  else{err.style.display='none';}
+}
 async function submitCreateCube(){
-  const name=(document.getElementById('cc-name').value.trim()||'Куб '+(app.cubes.length+1)).slice(0,32);
+  const rawName=document.getElementById('cc-name').value.trim();
+  const nameLen=[...rawName].length;
+  const errEl=document.getElementById('cc-name-err');
+  // Validation
+  if(nameLen===0){
+    if(errEl){errEl.style.display='block';errEl.textContent='⚠️ Введи название куба — от 1 до 40 символов';}
+    document.getElementById('cc-name').focus();return;
+  }
+  if(nameLen>40){
+    if(errEl){errEl.style.display='block';errEl.textContent='⚠️ Название слишком длинное — максимум 40 символов';}
+    return;
+  }
+  if(errEl) errEl.style.display='none';
+  const name=rawName.slice(0,40);
   const type=document.getElementById('cc-type').value||'public';
   const lifeEl=document.getElementById('cc-life');
   const life_hours = lifeEl ? parseInt(lifeEl.value)||24 : 24;
@@ -5618,10 +5640,12 @@ async function deleteAllMyCubes(){
 }
 let _kickCubeLocalId=null;
 let _kickCubeMembers=[];
+let _kickedUids=new Set(); // track kicked UIDs so they disappear immediately
 let _kickSearchTimer=null;
 async function openKickModal(cubeId){
   _kickCubeLocalId=cubeId;
   _kickCubeMembers=[];
+  _kickedUids=new Set();
   document.getElementById('kick-search').value='';
   const res=document.getElementById('kick-results');
   res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">⏳ Загружаю участников...</div>';
@@ -5634,42 +5658,51 @@ async function openKickModal(cubeId){
     _kickCubeMembers=members;
     _renderKickResults(members);
   } else {
-    res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center;font-size:13px">Никто ещё не заходил в этот куб<br><span style="font-size:11px;opacity:.6">Поиск по имени или UID найдёт любого юзера</span></div>';
+    res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center;font-size:13px">В этом кубе пока нет участников.<br><span style="font-size:11px;opacity:.6">Введи имя или UID чтобы найти юзера.</span></div>';
   }
 }
 function _renderKickResults(users){
   const myId=String(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||'');
   const res=document.getElementById('kick-results');
-  const filtered=users.filter(u=>String(u.id)!==myId);
+  // Exclude self and already-kicked
+  const filtered=users.filter(u=>String(u.id)!==myId&&!_kickedUids.has(String(u.id)));
   if(!filtered.length){res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Нет участников</div>';return;}
   res.innerHTML=filtered.map(u=>{
     const dispUid=(typeof _genDisplayUid==='function'&&u.id)?_genDisplayUid(u.id):String(u.id);
     const name=(u.display_name||'User').replace(/'/g,"\\'");
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);margin-bottom:6px"><div><div style="font-weight:600;font-size:13px">${u.display_name||'User'}</div><div style="font-size:11px;color:var(--text3)">UID: ${dispUid}</div></div><button onclick="doKickUser('${u.id}','${name}')" style="padding:4px 10px;border-radius:6px;background:rgba(255,59,48,.15);border:1px solid rgba(255,59,48,.4);color:#ff3b30;font-size:11px;cursor:pointer">Удалить</button></div>`;
+    const onlineDot=u.is_online?'<span style="width:6px;height:6px;border-radius:50%;background:#4ade80;display:inline-block;margin-right:4px"></span>':'';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);margin-bottom:6px"><div><div style="font-weight:600;font-size:13px">${onlineDot}${u.display_name||'User'}</div><div style="font-size:11px;color:var(--text3)">UID: ${dispUid}</div></div><button onclick="doKickUser('${u.id}','${name}')" style="padding:4px 10px;border-radius:6px;background:rgba(255,59,48,.15);border:1px solid rgba(255,59,48,.4);color:#ff3b30;font-size:11px;cursor:pointer">Удалить</button></div>`;
   }).join('');
 }
 async function searchKickUser(q){
   clearTimeout(_kickSearchTimer);
-  const qt=q.trim().toLowerCase();
+  const qt=q.trim();
+  const qtL=qt.toLowerCase();
   const res=document.getElementById('kick-results');
   if(!qt){
     if(_kickCubeMembers.length) _renderKickResults(_kickCubeMembers);
-    else res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center;font-size:13px">Никто ещё не заходил в этот куб</div>';
+    else res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center;font-size:13px">В этом кубе пока нет участников</div>';
     return;
   }
-  // First filter from cube members
+  // Filter from cube members (by name, raw id, or displayed UID)
   const fromCube=_kickCubeMembers.filter(u=>{
     const nm=(u.display_name||'').toLowerCase();
     const uid=String(u.id);
     const duid=(typeof _genDisplayUid==='function'&&u.id)?String(_genDisplayUid(u.id)):'';
-    return nm.includes(qt)||uid.includes(qt)||duid.includes(qt);
+    return nm.includes(qtL)||uid.includes(qt)||duid.includes(qt);
   });
   if(fromCube.length){_renderKickResults(fromCube);return;}
-  // Fallback: search all users if no cube members match
+  // If typed looks like a UID (digits), try reverse lookup then server search
   if(qt.length<2){return;}
   res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">⏳ Поиск...</div>';
   _kickSearchTimer=setTimeout(async()=>{
-    const data=await apiCall('/users/search?q='+encodeURIComponent(qt)+'&limit=20').catch(()=>null);
+    // Try to reverse display-UID to raw id for server search
+    let searchQ=qt;
+    if(/^\d+$/.test(qt)){
+      const rawId=(typeof _reverseDisplayUid==='function')?_reverseDisplayUid(qt):null;
+      if(rawId) searchQ='#'+rawId;
+    }
+    const data=await apiCall('/users/search?q='+encodeURIComponent(searchQ)+'&limit=20').catch(()=>null);
     if(data&&data.length) _renderKickResults(data);
     else res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Юзер не найден</div>';
   },350);
@@ -5689,7 +5722,8 @@ async function doKickUser(uid,name){
     if(resp.ok){
       showToast('👥 '+name+' удалён из куба');
       closeModal('modal-kick-user');
-      // Remove from local list so it doesn't reappear immediately
+      // Track kicked uid so they don't reappear in search
+      _kickedUids.add(String(uid));
       _kickCubeMembers=_kickCubeMembers.filter(u=>String(u.id)!==String(uid));
     } else {
       let detail='';
