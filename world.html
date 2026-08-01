@@ -4768,11 +4768,29 @@ function connectGlobalWS(){
     try{
       const msg = JSON.parse(e.data);
       const myUserId = localStorage.getItem('cw_user_id');
-      if(msg.type==='dm') handleIncomingDm(msg, myUserId);
+      if(msg.type==='dm'){ handleIncomingDm(msg, myUserId); return; }
       if(msg.type==='pong') return; // keepalive ack
-      else if(msg.type==='balance_update'){
+      if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
         if(next>prev){ app.wallet.balance=next; syncWalletUI(); showToast('💰 +'+(next-prev).toLocaleString('ru')+' CUBE!'); }
+        return;
+      }
+      // Kicked from a cube by owner — remove cube from world immediately
+      if(msg.type==='cube_removed' && msg.cube_id){
+        const cubeId='bc'+msg.cube_id;
+        _purgeCubeFromAllCaches(cubeId);
+        showToast('👢 Тебя удалили из куба «'+(msg.cube_name||'')+'»');
+        // Close cube interior if currently inside it
+        if(app.currentCubeId===cubeId && typeof closeCabinetOverlay==='function') closeCabinetOverlay();
+        return;
+      }
+      // Cube was deleted by owner — remove from world for all members
+      if(msg.type==='cube_deleted' && msg.cube_id){
+        const cubeId='bc'+msg.cube_id;
+        _purgeCubeFromAllCaches(cubeId);
+        showToast('🗑 Куб «'+(msg.cube_name||'')+'» был удалён владельцем');
+        if(app.currentCubeId===cubeId && typeof closeCabinetOverlay==='function') closeCabinetOverlay();
+        return;
       }
     }catch(e){}
   };
@@ -4890,6 +4908,14 @@ function openRoomWS(roomId){
           showToast('💰 +'+diff.toLocaleString('ru')+' CUBE получено!');
           pushNotification('💰','Баланс: +'+diff.toLocaleString('ru')+' CUBE');
           document.querySelectorAll('#wb-cube-balance,#itb-cube-bal').forEach(el=>{ el.classList.add('balance-pop'); setTimeout(()=>el.classList.remove('balance-pop'),400); });
+        }
+      } else if(msg.type==='kicked'){
+        // Owner kicked us from this cube while we were inside — purge and go back to world
+        const kickedId = app.currentCubeId;
+        if(kickedId){
+          _purgeCubeFromAllCaches(kickedId);
+          showToast('👢 Тебя выгнали из куба');
+          if(typeof closeCabinetOverlay==='function') closeCabinetOverlay();
         }
       }
     }catch(err){}
@@ -5793,20 +5819,8 @@ async function searchKickUser(q){
     return nm.includes(qtL)||uid.includes(qt)||duid.includes(qt);
   });
   if(fromCube.length){_renderKickResults(fromCube);return;}
-  // 2. Fallback: server search (for cubes with no tracked visitors yet)
-  if(qt.length<2){return;}
-  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">⏳ Поиск...</div>';
-  _kickSearchTimer=setTimeout(async()=>{
-    let searchQ=qt;
-    // If input is all digits — try to reverse displayed UID to raw DB id
-    if(/^\d+$/.test(qt)){
-      const rawId=(typeof _reverseDisplayUid==='function')?_reverseDisplayUid(qt):null;
-      if(rawId) searchQ='#'+rawId;
-    }
-    const data=await apiCall('/users/search?q='+encodeURIComponent(searchQ)+'&limit=20').catch(()=>null);
-    if(data&&data.length) _renderKickResults(data);
-    else res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Юзер не найден</div>';
-  },350);
+  // No global search fallback — kick is restricted to cube members only
+  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Не найден среди участников куба</div>';
 }
 async function doKickUser(uid,name){
   if(!_kickCubeLocalId)return;
