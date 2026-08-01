@@ -4655,6 +4655,7 @@ async function syncFromBackend(){
     // Restore joined cubes from logout backup — add to myUniverse+wObjects even if already in app.cubes
     try{
       const _bk=localStorage.getItem('cw_joined_'+(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||''));
+      showToast('DEBUG restore: key=cw_joined_'+(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||'NOID')+' found='+(!!_bk)+' count='+((_bk&&JSON.parse(_bk).length)||0));
       if(_bk){
         JSON.parse(_bk).forEach(c=>{
           // Ensure cube exists in app.cubes
@@ -5381,6 +5382,8 @@ function _addObjToWorld(cube,i){
 function addCubeToWorld(cube){_addObjToWorld(cube,undefined);}
 
 function enterWorld(){
+  // DEBUG: show what was saved at logout
+  try{const dbg=localStorage.getItem('cw_logout_debug');if(dbg){setTimeout(()=>showToast('DEBUG logout: '+dbg),2000);localStorage.removeItem('cw_logout_debug');}}catch(e){}
   loadCryptoTicker();
   // wb-key-badge hidden - key not shown in topbar;
   // Update avatar in world topbar
@@ -14746,7 +14749,8 @@ function cwLogoutDo(){
       icon:c.icon||'🧊', col:c.col||'#0095F6', colorCss:c.colorCss||'#0095F6',
       type:c.type||'public', life:c.life||3600
     }));
-    if(joined.length) keep['cw_joined_'+uid] = JSON.stringify(joined);
+    keep['cw_joined_'+uid] = JSON.stringify(joined);
+    keep['cw_logout_debug'] = 'uid='+uid+' saved='+joined.length+' names='+joined.map(c=>c.name).join(',');
   }
   localStorage.clear();
   Object.keys(keep).forEach(k=>localStorage.setItem(k,keep[k]));
