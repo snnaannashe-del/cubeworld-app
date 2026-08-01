@@ -5497,8 +5497,11 @@ function _renderMineCubes(grid){
       (isExpired?'':('<button onclick="openKickModal(\''+cube.id+'\')" style="flex:1;padding:5px 0;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text2);font-size:11px;cursor:pointer;'+canDel+'">👥 Удалить юзера</button>'))+
       '</div></div>';
   }).join('');
-  const sel=myCubes.filter(c=>(app.myUniverse||[]).includes(c.id)).length;
-  const hint=document.getElementById('uni-hint');if(hint)hint.textContent='Выбрано: '+sel+' из '+myCubes.length+' кубов';
+  const uni=app.myUniverse||[];
+  const activeMy=myCubes.filter(c=>!c.expired&&c.backendId);
+  const sel=activeMy.filter(c=>uni.includes(c.id)).length;
+  const hint=document.getElementById('uni-hint');
+  if(hint)hint.textContent='Мои активные кубы: '+activeMy.length+' · Выбрано: '+sel;
 }
 function switchUniTab(tab,btn){
   document.querySelectorAll('.uni-tab').forEach(b=>b.classList.remove('active'));
@@ -5611,11 +5614,39 @@ async function deleteAllMyCubes(){
   switchUniTab('mine',document.getElementById('uni-tab-mine'));
 }
 let _kickCubeLocalId=null;
-function openKickModal(cubeId){
+let _kickCubeMembers=[];
+async function openKickModal(cubeId){
   _kickCubeLocalId=cubeId;
+  _kickCubeMembers=[];
   document.getElementById('kick-search').value='';
-  document.getElementById('kick-results').innerHTML='';
+  const res=document.getElementById('kick-results');
+  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">⏳ Загружаю участников...</div>';
   openModal('modal-kick-user');
+  // Load online members of this specific cube
+  const cube=app.cubes.find(c=>c.id===cubeId);
+  const bid=cube&&cube.backendId;
+  if(bid){
+    const members=await apiCall('/cubes/'+bid+'/online').catch(()=>null);
+    if(members&&members.length){
+      _kickCubeMembers=members;
+      _renderKickResults(members);
+    } else {
+      res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Никого нет в кубе онлайн</div>';
+    }
+  } else {
+    res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Куб не найден в базе</div>';
+  }
+}
+function _renderKickResults(users){
+  const myId=String(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||'');
+  const res=document.getElementById('kick-results');
+  const filtered=users.filter(u=>String(u.id)!==myId);
+  if(!filtered.length){res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Нет других участников</div>';return;}
+  res.innerHTML=filtered.map(u=>{
+    const dispUid=(typeof _genDisplayUid==='function'&&u.id)?_genDisplayUid(u.id):String(u.id);
+    const name=(u.display_name||'User').replace(/'/g,"\\'");
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);margin-bottom:6px"><div><div style="font-weight:600;font-size:13px">${u.display_name||'User'}</div><div style="font-size:11px;color:var(--text3)">UID: ${dispUid}</div></div><button onclick="doKickUser('${u.id}','${name}')" style="padding:4px 10px;border-radius:6px;background:rgba(255,59,48,.15);border:1px solid rgba(255,59,48,.4);color:#ff3b30;font-size:11px;cursor:pointer">Удалить</button></div>`;
+  }).join('');
 }
 function _reverseDisplayUid(str){
   // Reverse _genDisplayUid: brute-force seeds 1..20000 to find raw id
@@ -5625,22 +5656,17 @@ function _reverseDisplayUid(str){
   for(let s=1;s<=20000;s++){const n=(s*97331+1000000)%range+min;if(n===target)return s;}
   return null;
 }
-async function searchKickUser(q){
-  const res=document.getElementById('kick-results');
-  const qt=q.trim();
-  if(!qt||qt.length<2){res.innerHTML='';return;}
-  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Поиск...</div>';
-  // Detect 11-digit display UID and reverse-map to raw id
-  let searchQ=qt;
-  if(/^\d{8,11}$/.test(qt)){const raw=_reverseDisplayUid(qt);if(raw)searchQ='#'+raw;}
-  const data=await apiCall('/users/search?q='+encodeURIComponent(searchQ)).catch(()=>null);
-  if(!data||!data.length){res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Не найдено</div>';return;}
-  res.innerHTML=data.map(u=>{
-    const rawId=u.id;
-    const dispUid=(typeof _genDisplayUid==='function'&&rawId)?_genDisplayUid(rawId):String(rawId);
-    const name=(u.display_name||'User').replace(/'/g,"\\'");
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);margin-bottom:6px"><div><div style="font-weight:600;font-size:13px">${u.display_name||'User'}</div><div style="font-size:11px;color:var(--text3)">UID: ${dispUid}</div></div><button onclick="doKickUser('${rawId}','${name}')" style="padding:4px 10px;border-radius:6px;background:rgba(255,59,48,.15);border:1px solid rgba(255,59,48,.4);color:#ff3b30;font-size:11px;cursor:pointer">Удалить</button></div>`;
-  }).join('');
+function searchKickUser(q){
+  const qt=q.trim().toLowerCase();
+  if(!qt){_renderKickResults(_kickCubeMembers);return;}
+  // Filter loaded cube members by name or UID
+  const filtered=_kickCubeMembers.filter(u=>{
+    const name=(u.display_name||'').toLowerCase();
+    const uid=String(u.id);
+    const dispUid=(typeof _genDisplayUid==='function'&&u.id)?String(_genDisplayUid(u.id)):'';
+    return name.includes(qt)||uid.includes(qt)||dispUid.includes(qt);
+  });
+  _renderKickResults(filtered);
 }
 async function doKickUser(uid,name){
   if(!_kickCubeLocalId)return;
@@ -14537,11 +14563,31 @@ function cwLogout(){
   _m.addEventListener('click',e=>{if(e.target===_m)_m.remove();});
 }
 function cwLogoutClose(){const _m=document.getElementById('cw-logout-modal');if(_m)_m.remove();}
-function cwLogoutDo(){cwLogoutClose();localStorage.clear();window.location.replace('index.html');}
+function cwLogoutDo(){
+  cwLogoutClose();
+  // Preserve own-cubes cache so "Мои кубы" survives logout/login on same device
+  const keep={};
+  ['cw_my_cubes'].forEach(k=>{const v=localStorage.getItem(k);if(v)keep[k]=v;});
+  localStorage.clear();
+  Object.keys(keep).forEach(k=>localStorage.setItem(k,keep[k]));
+  window.location.replace('index.html');
+}
 
 const _CT_COINS=[{id:'bitcoin',sym:'BTC'},{id:'ethereum',sym:'ETH'},{id:'tether',sym:'USDT'},{id:'binancecoin',sym:'BNB'},{id:'solana',sym:'SOL'},{id:'ripple',sym:'XRP'},{id:'dogecoin',sym:'DOGE'},{id:'cardano',sym:'ADA'},{id:'tron',sym:'TRX'},{id:'avalanche-2',sym:'AVAX'},{id:'shiba-inu',sym:'SHIB'},{id:'polkadot',sym:'DOT'},{id:'chainlink',sym:'LINK'},{id:'toncoin',sym:'GRAM'},{id:'bitcoin-cash',sym:'BCH'},{id:'litecoin',sym:'LTC'},{id:'near',sym:'NEAR'},{id:'uniswap',sym:'UNI'},{id:'matic-network',sym:'POL'},{id:'stellar',sym:'XLM'},{id:'pepe',sym:'PEPE'},{id:'arbitrum',sym:'ARB'},{id:'aptos',sym:'APT'},{id:'sui',sym:'SUI'},{id:'optimism',sym:'OP'},{id:'injective-protocol',sym:'INJ'},{id:'cosmos',sym:'ATOM'},{id:'filecoin',sym:'FIL'},{id:'vechain',sym:'VET'},{id:'notcoin',sym:'NOT'}];
 function _ctFmt(p){if(p>=10000)return p.toLocaleString('en',{maximumFractionDigits:0});if(p>=1)return p.toFixed(2);return p.toFixed(5);}
-function _ctPlaceholder(){var tr=document.getElementById('ct-track');if(!tr||tr.innerHTML.length>10)return;var ph=[['BTC','~97k','+1.2','up'],['ETH','~2700','+0.8','up'],['USDT','~1.00','0.0','up'],['BNB','~640','+0.5','up'],['SOL','~155','+2.1','up'],['XRP','~2.35','+1.4','up'],['DOGE','~0.22','+3.2','up'],['ADA','~0.75','+1.8','up'],['TRX','~0.27','+0.3','up'],['AVAX','~24','-0.6','dn'],['SHIB','~0.000014','+2.5','up'],['LINK','~15','+1.1','up'],['GRAM','~3.2','-0.4','dn'],['DOT','~4.5','+0.7','up'],['BCH','~395','+0.9','up'],['LTC','~88','+0.6','up'],['NEAR','~2.8','+1.5','up'],['UNI','~6.1','-0.3','dn'],['POL','~0.24','+0.8','up'],['XLM','~0.29','+1.2','up']];var h='';ph.forEach(function(x){h+='<div class="ct-pill"><span class="ct-sym">'+x[0]+'</span><span class="ct-px">'+x[1]+'</span><span class="ct-chg '+x[3]+'">'+(x[3]==='up'?'+':'')+x[2]+'%</span></div>';});tr.innerHTML=h+h;}
+function _ctPlaceholder(){
+  const tr=document.getElementById('ct-track');
+  if(!tr||tr.innerHTML.length>10)return;
+  // Use cached real data if available (from previous page load)
+  try{
+    const cached=localStorage.getItem('cw_ticker_cache');
+    if(cached){tr.innerHTML=cached;_applyTickerAnim();return;}
+  }catch(e){}
+  // Fallback static placeholder (clearly marked with ~)
+  const ph=[['BTC','~97k','+1.2','up'],['ETH','~2.7k','+0.8','up'],['SOL','~155','+2.1','up'],['BNB','~640','+0.5','up'],['XRP','~2.35','+1.4','up'],['DOGE','~0.22','+3.2','up'],['ADA','~0.75','+1.8','up'],['AVAX','~24','-0.6','dn'],['LINK','~15','+1.1','up'],['NEAR','~2.8','+1.5','up']];
+  let h='';ph.forEach(x=>{h+=`<div class="ct-pill"><span class="ct-sym">${x[0]}</span><span class="ct-px">${x[1]}</span><span class="ct-chg ${x[3]}">${x[3]==='up'?'+':''}${x[2]}%</span></div>`;});
+  tr.innerHTML=h+h;
+}
 function _applyTickerAnim(){
   const track=document.getElementById('ct-track');if(!track)return;
   if(window.innerWidth<=768){
@@ -14566,7 +14612,13 @@ async function loadCryptoTicker(){
     const d=await r.json();
     let h='';
     for(const c of _CT_COINS){const i=d[c.id];if(!i)continue;const chg=(i.usd_24h_change||0).toFixed(2);const cls=parseFloat(chg)>=0?'up':'dn';h+='<div class="ct-pill"><span class="ct-sym">'+c.sym+'</span><span class="ct-px">'+_ctFmt(i.usd)+'</span><span class="ct-chg '+cls+'">'+(parseFloat(chg)>=0?'+':'')+chg+'%</span></div>';}
-    if(h){track.innerHTML=h+h;_applyTickerAnim();}
+    if(h){
+      const full=h+h;
+      track.innerHTML=full;
+      _applyTickerAnim();
+      // Cache real data for next page load (avoids stale placeholder)
+      try{localStorage.setItem('cw_ticker_cache',full);}catch(e){}
+    }
   }catch(e){}
   setTimeout(loadCryptoTicker,30000);
 }
