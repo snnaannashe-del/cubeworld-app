@@ -4953,9 +4953,10 @@ function closeModal(id){
   if(!el) return;
   el.classList.remove('open');
   el.style.display='none';
+  if(id==='modal-universe') _saveUniModalState(false,'all');
 }
 document.querySelectorAll('.modal-backdrop').forEach(b=>b.addEventListener('click',e=>{
-  if(e.target===b){ b.classList.remove('open'); b.style.display='none'; }
+  if(e.target===b){ b.classList.remove('open'); b.style.display='none'; if(b.id==='modal-universe') _saveUniModalState(false,'all'); }
 }));
 
 // ════════════════════════════════════════════════
@@ -5323,8 +5324,6 @@ function _addObjToWorld(cube,i){
 function addCubeToWorld(cube){_addObjToWorld(cube,undefined);}
 
 function enterWorld(){
-  // Close any open modals (fixes bfcache page restore keeping modals open after reload)
-  document.querySelectorAll('.modal-backdrop.open').forEach(el=>{el.classList.remove('open');el.style.display='none';});
   loadCryptoTicker();
   // wb-key-badge hidden - key not shown in topbar;
   // Update avatar in world topbar
@@ -5345,6 +5344,8 @@ function enterWorld(){
   if(!wDone){wDone=true;requestAnimationFrame(initWorld);}
   // Fetch real data in background
   syncFromBackend();
+  // Restore modal-universe state (tab + position) after true page reload
+  _restoreUniModal();
   // Refresh stats every 60s
   if(!window._statInterval) window._statInterval = setInterval(syncFromBackend, 60000);
   // Keep-alive: ping Render free tier every 4 min to prevent sleep
@@ -5376,19 +5377,27 @@ function enterWorld(){
 
 document.addEventListener('mousemove',e=>{const t=document.getElementById('cube-tooltip');if(t.style.display==='block'){t.style.left=(e.clientX+14)+'px';t.style.top=(e.clientY-20)+'px';}});
 // ── Close all modals on every page restore (bfcache, iOS background→foreground, tab switch)
-function _closeAllModals(){
-  document.querySelectorAll('.modal-backdrop.open').forEach(el=>{el.classList.remove('open');el.style.display='none';});
+// ── Modal-universe state persistence ──────────────────────────────────────
+// Saves which tab was open + whether modal was open, so true page reload restores it.
+function _saveUniModalState(open, tab){
+  try{localStorage.setItem('cw_uni_modal',JSON.stringify({open:!!open,tab:tab||'all'}));}catch(e){}
 }
-// 1. Fresh reload: enterWorld() (above) closes modals
-// 2. bfcache restore: pageshow fires → close modals
-window.addEventListener('pageshow', _closeAllModals);
-// 3. pagehide: fires BEFORE iOS bfcache snapshot — closes modals so snapshot is clean
-//    This is the primary iOS Safari fix: modal is closed before the page is cached
-window.addEventListener('pagehide', _closeAllModals);
-// 4. iOS PWA / app-switch: visibilitychange fires → close modals
-document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible') _closeAllModals();});
-// 5. beforeunload: prevents bfcache in Chrome + closes modals before unload
-window.addEventListener('beforeunload', _closeAllModals);
+function _restoreUniModal(){
+  try{
+    const s=localStorage.getItem('cw_uni_modal');
+    if(!s) return;
+    const d=JSON.parse(s);
+    if(!d||!d.open) return;
+    // Delay so initWorld + syncFromBackend have populated app.cubes
+    setTimeout(function(){
+      openUniverseManager();
+      if(d.tab==='mine'){
+        const btn=document.getElementById('uni-tab-mine');
+        if(btn) switchUniTab('mine',btn);
+      }
+    }, 400);
+  }catch(e){}
+}
 // handleWorldClick defined below (enhanced with premium cube logic)
 function submitEntryKey(){
   const inp=document.getElementById('mke-input'),id=inp.dataset.cubeId;
@@ -5544,6 +5553,7 @@ function _renderMineCubes(grid){
 function switchUniTab(tab,btn){
   document.querySelectorAll('.uni-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+  _saveUniModalState(true, tab);
   const grid=document.getElementById('uni-grid');if(!grid)return;
   if(tab==='mine'){
     // Render cached cubes immediately so user sees something right away
@@ -14569,6 +14579,7 @@ window.onEnterInterior=function(){
 //  UNIVERSE MANAGER
 // ════════════════════════════════════════════════
 function openUniverseManager(){
+  _saveUniModalState(true,'all');
   const grid = document.getElementById('uni-grid');
   const tmpUni = [...app.myUniverse]; // working copy
   grid.innerHTML = app.cubes.map(cube => {
@@ -14593,6 +14604,10 @@ function toggleUniCard(id, el){
   const tog = el.querySelector('.uni-toggle');
   if(el.classList.contains('in-universe')){ tog.textContent='✓'; }
   else { tog.textContent=''; }
+  // Autosave selection to localStorage (no need to press "Сохранить")
+  const selected=[...document.querySelectorAll('#uni-grid .uni-cube-card.in-universe')].map(e=>e.id.replace('uni-card-',''));
+  app.myUniverse=selected;
+  try{localStorage.setItem('cw_universe',JSON.stringify(selected));}catch(e){}
   updateUniHint();
 }
 
