@@ -642,9 +642,13 @@ async function loadStats() {
 /* ── Init ── */
 (function init() {
   var saved = localStorage.getItem('cw_lang') || 'en';
-  // Wipe session data on landing, but keep cross-session caches
-  var _keep = {'cw_lang':1,'cw_my_cubes':1,'cw_ticker_cache':1};
-  Object.keys(localStorage).forEach(function(k){ if(!_keep[k]) localStorage.removeItem(k); });
+  // Wipe session data on landing, but keep cross-session caches and user-scoped cube data
+  var _keep = {'cw_lang':1,'cw_my_cubes':1,'cw_ticker_cache':1,'cw_device_id':1};
+  Object.keys(localStorage).forEach(function(k){
+    // Always preserve user-scoped cube cache + universe keys (survive logout/login)
+    if(k.startsWith('cw_my_cubes_') || k.startsWith('cw_universe_')) return;
+    if(!_keep[k]) localStorage.removeItem(k);
+  });
   if (saved !== 'en') pickL(saved);
   loadStats();
   setInterval(loadStats, 30000);
