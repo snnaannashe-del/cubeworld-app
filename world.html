@@ -4715,8 +4715,6 @@ function connectGlobalWS(){
       else if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
         if(next>prev){ app.wallet.balance=next; syncWalletUI(); showToast('💰 +'+(next-prev).toLocaleString('ru')+' CUBE!'); }
-      } else if(msg.type==='kicked' && msg.cube_id){
-        _handleKickedFromCube(Number(msg.cube_id));
       }
     }catch(e){}
   };
@@ -4835,10 +4833,6 @@ function openRoomWS(roomId){
           pushNotification('💰','Баланс: +'+diff.toLocaleString('ru')+' CUBE');
           document.querySelectorAll('#wb-cube-balance,#itb-cube-bal').forEach(el=>{ el.classList.add('balance-pop'); setTimeout(()=>el.classList.remove('balance-pop'),400); });
         }
-      } else if(msg.type==='kicked'){
-        // Kicked from inside the cube interior
-        const bid = cubeId ? Number(cubeId.replace(/^[a-z]+/,'')) : null;
-        if(bid) _handleKickedFromCube(bid);
       }
     }catch(err){}
   };
@@ -4847,10 +4841,9 @@ function openRoomWS(roomId){
     loadChatHistory(roomId);
   };
   _ws.onerror = ()=>{ _ws=null; };
-  _ws.onclose = (ev)=>{
+  _ws.onclose = ()=>{
     if(_wsRoom!==roomId) return;
     _ws=null;
-    if(ev && ev.code===4003) return; // kicked — no reconnect
     // Auto-reconnect after 3s if user is still in same room
     setTimeout(()=>{
       if(_wsRoom===roomId && !_ws) openRoomWS(roomId);
@@ -5359,8 +5352,6 @@ function enterWorld(){
   if(!window._keepAlive) window._keepAlive = setInterval(()=>fetch(CUBE_API+'/health').catch(()=>{}), 4*60*1000);
   // Global WS for DM delivery even when not in a cube
   connectGlobalWS();
-  // Silently register all previously-visited cubes so kick-search finds them
-  setTimeout(_pingMembership, 3000);
   // Activity ping: track online time every 60s for reward system
   if(!window._actPing) window._actPing = setInterval(()=>{
     const tok=localStorage.getItem('cw_access_token');
@@ -5729,7 +5720,20 @@ async function searchKickUser(q){
     return nm.includes(qtL)||uid.includes(qt)||duid.includes(qt);
   });
   if(fromCube.length){_renderKickResults(fromCube);return;}
-  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center;font-size:13px">Участник не найден</div>';
+  // 2. Fallback: server search (for cubes with no tracked visitors yet)
+  if(qt.length<2){return;}
+  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">⏳ Поиск...</div>';
+  _kickSearchTimer=setTimeout(async()=>{
+    let searchQ=qt;
+    // If input is all digits — try to reverse displayed UID to raw DB id
+    if(/^\d+$/.test(qt)){
+      const rawId=(typeof _reverseDisplayUid==='function')?_reverseDisplayUid(qt):null;
+      if(rawId) searchQ='#'+rawId;
+    }
+    const data=await apiCall('/users/search?q='+encodeURIComponent(searchQ)+'&limit=20').catch(()=>null);
+    if(data&&data.length) _renderKickResults(data);
+    else res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Юзер не найден</div>';
+  },350);
 }
 async function doKickUser(uid,name){
   if(!_kickCubeLocalId)return;
@@ -5839,8 +5843,6 @@ async function submitJoinKey(){
   closeModal('modal-join-key');
   inp.value='';
   showToast('✅ Куб найден! Входишь…');
-  // Register membership immediately so owner's kick-search finds this user
-  (()=>{ const tok=localStorage.getItem('cw_access_token'); if(tok) fetch(API_BASE+'/cubes/'+res.id+'/ping-member',{method:'POST',headers:{'Authorization':'Bearer '+tok}}).catch(()=>{}); })();
   setTimeout(()=>enterInterior(cubeId), 400);
 }
 
@@ -5894,55 +5896,6 @@ function enterInterior(cubeId){
   loadRealPosts();
   loadRealSignals();
 }
-// ── _handleKickedFromCube: removes cube from world & shows toast ──────────────
-function _handleKickedFromCube(cubeId){
-  // cubeId = numeric backend id (e.g. 5)
-  const localId = 'bc'+cubeId;
-  // 1. Remove from universe array + localStorage
-  app.myUniverse = (app.myUniverse||[]).filter(id=>id!==localId);
-  try{ localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse)); }catch(e){}
-  // 2. Remove from cubes list
-  app.cubes = app.cubes.filter(c=>c.id!==localId);
-  // 3. Remove from 3D world
-  if(typeof wObjects!=='undefined') wObjects = wObjects.filter(o=>o.cube.id!==localId);
-  // 4. Remove from visited cubes switcher
-  if(app.visitedCubes){
-    app.visitedCubes = app.visitedCubes.filter(c=>c.id!==localId);
-    try{ _saveVisitedCubes(); }catch(e){}
-  }
-  // 5. Remove from cw_visited_cubes_v2 localStorage
-  try{
-    const vis = JSON.parse(localStorage.getItem('cw_visited_cubes_v2')||'[]');
-    localStorage.setItem('cw_visited_cubes_v2', JSON.stringify(vis.filter(c=>c.id!==localId)));
-  }catch(e){}
-  // 6. If currently inside the kicked cube — close WS and exit to world
-  if(app.currentCubeId===localId){
-    if(typeof _ws!=='undefined'&&_ws){ try{_ws.close();}catch(e){} _ws=null; }
-    exitInterior();
-  }
-  showToast('⛔ Тебя удалили из куба');
-  // Sync universe to backend
-  apiCall('/me/universe',{method:'POST',body:JSON.stringify({universe:app.myUniverse})}).catch(()=>{});
-}
-
-// ── _pingMembership: silently registers all visited cubes on page load ────────
-function _pingMembership(){
-  const token = localStorage.getItem('cw_access_token');
-  if(!token) return;
-  try{
-    const visited = JSON.parse(localStorage.getItem('cw_visited_cubes_v2')||'[]');
-    visited.forEach(c=>{
-      const numId = c.id ? parseInt(String(c.id).replace(/^[a-z]+/,''), 10) : NaN;
-      if(!isNaN(numId) && numId>0){
-        fetch(API_BASE+'/cubes/'+numId+'/ping-member',{
-          method:'POST',
-          headers:{'Authorization':'Bearer '+token}
-        }).catch(()=>{});
-      }
-    });
-  }catch(e){}
-}
-
 function exitInterior(){ if(liveInterval){clearInterval(liveInterval);liveInterval=null;} try{localStorage.setItem('cw_last_view','world');}catch(e){} showView('v-world'); }
 
 // ════════════════════════════════════════════════
