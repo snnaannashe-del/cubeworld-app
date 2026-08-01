@@ -4644,7 +4644,7 @@ async function syncFromBackend(){
     const backendIdSet=new Set(cubesData.map(c=>'bc'+c.id));
     const _joinedBackupIds=new Set();
     try{const _jbk=localStorage.getItem('cw_joined_'+(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||''));if(_jbk)JSON.parse(_jbk).forEach(c=>_joinedBackupIds.add(c.id));}catch(e){}
-    app.cubes=app.cubes.filter(c=>!c.id.startsWith('bc')||backendIdSet.has(c.id)||_joinedBackupIds.has(c.id));
+    app.cubes=app.cubes.filter(c=>!c.id.startsWith('bc')||backendIdSet.has(c.id)||_joinedBackupIds.has(c.id)||(app.myUniverse||[]).includes(c.id));
     if(app.visitedCubes){
       app.visitedCubes=app.visitedCubes.filter(c=>!c.id.startsWith('bc')||backendIdSet.has(c.id));
       try{
@@ -5541,11 +5541,12 @@ async function submitCreateCube(){
 }
 
 function _saveMyCubesCache(){
-  const own=(app.cubes||[]).filter(c=>c.isOwn&&c.backendId);
-  localStorage.setItem('cw_my_cubes',JSON.stringify(own.map(c=>({
+  // Save both own AND joined cubes so they survive logout (cw_my_cubes is preserved in keep)
+  const toCache=(app.cubes||[]).filter(c=>c.backendId&&(c.isOwn||(c.life>0)));
+  localStorage.setItem('cw_my_cubes',JSON.stringify(toCache.map(c=>({
     id:c.id,backendId:c.backendId,name:c.name,type:c.type,
-    life:c.life,size:c.size,col:c.col,colorCss:c.colorCss,
-    icon:c.icon,desc:c.desc,isOwn:true,owner_uid:c.owner_uid,
+    life:c.life,size:c.size||2,col:c.col,colorCss:c.colorCss,
+    icon:c.icon,desc:c.desc,isOwn:!!c.isOwn,owner_uid:c.owner_uid,
     cubeKey:c.cubeKey||null
   }))));
 }
@@ -5559,7 +5560,7 @@ function _loadMyCubesCache(){
       const existing=(app.cubes||[]).find(c=>c.id===cc.id);
       if(existing){
         // Patch missing fields — visited_cubes cache creates partial objects
-        existing.isOwn=true;
+        if(cc.isOwn) existing.isOwn=true; // only force true if cached as own
         existing.backendId=existing.backendId||cc.backendId;
         existing.owner_uid=existing.owner_uid||cc.owner_uid;
         existing.cubeKey=existing.cubeKey||cc.cubeKey;
@@ -14741,6 +14742,8 @@ function cwLogoutDo(){
   cwLogoutClose();
   const keep={};
   ['cw_my_cubes'].forEach(k=>{const v=localStorage.getItem(k);if(v)keep[k]=v;});
+  // Preserve universe so joined cubes survive manual logout
+  const _uv=localStorage.getItem('cw_universe');if(_uv)keep['cw_universe']=_uv;
   // Save joined (non-owned) cubes keyed by user_id so they restore on next login
   const uid = localStorage.getItem('cw_user_id');
   if(uid){
