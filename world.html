@@ -4749,6 +4749,11 @@ function openRoomWS(roomId){
       const msg = JSON.parse(e.data);
       const myUserId = localStorage.getItem('cw_user_id');
       // DM and balance_update must work even outside a cube
+      if(msg.type==='kicked'){
+        showToast('🚫 Тебя удалили из этого куба');
+        setTimeout(()=>exitInterior(), 1200);
+        return;
+      }
       if(msg.type==='dm'){ handleIncomingDm(msg, myUserId); return; }
       if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
@@ -4841,9 +4846,15 @@ function openRoomWS(roomId){
     loadChatHistory(roomId);
   };
   _ws.onerror = ()=>{ _ws=null; };
-  _ws.onclose = ()=>{
+  _ws.onclose = (e)=>{
     if(_wsRoom!==roomId) return;
     _ws=null;
+    // code 4003 = kicked/banned — don't reconnect, exit cube
+    if(e.code===4003){
+      showToast('🚫 Тебя удалили из этого куба');
+      setTimeout(()=>exitInterior(), 1200);
+      return;
+    }
     // Auto-reconnect after 3s if user is still in same room
     setTimeout(()=>{
       if(_wsRoom===roomId && !_ws) openRoomWS(roomId);
