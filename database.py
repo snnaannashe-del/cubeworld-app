@@ -640,6 +640,32 @@ def init_db():
         try: c.execute(ddl)
         except Exception: pass
 
+    # Backfill cube_visitors from messages table so kick-search works immediately
+    # (cube_visitors was added later; this runs on every startup but is idempotent)
+    try:
+        if _PG:
+            c.execute("""
+                INSERT INTO cube_visitors (cube_id, user_id, display_name, last_visit)
+                SELECT DISTINCT ON (m.cube_id, m.user_id)
+                       m.cube_id, m.user_id, u.display_name, m.created_at
+                FROM messages m
+                JOIN users u ON u.id = m.user_id
+                WHERE m.user_id IS NOT NULL AND u.is_active = 1
+                ORDER BY m.cube_id, m.user_id, m.created_at DESC
+                ON CONFLICT (cube_id, user_id) DO NOTHING
+            """)
+        else:
+            c.execute("""
+                INSERT OR IGNORE INTO cube_visitors (cube_id, user_id, display_name, last_visit)
+                SELECT m.cube_id, m.user_id, u.display_name, MAX(m.created_at)
+                FROM messages m
+                JOIN users u ON u.id = m.user_id
+                WHERE m.user_id IS NOT NULL AND u.is_active = 1
+                GROUP BY m.cube_id, m.user_id
+            """)
+    except Exception:
+        pass  # Non-fatal: messages table may not exist yet on fresh DB
+
     conn.commit()
     conn.close()
 
@@ -1167,19 +1193,22 @@ def record_cube_visit(cube_id: int, user_id: int, display_name: str):
 
 def get_cube_visitors(cube_id: int, limit: int = 100):
     """Return all users who ever visited this cube (persistent across server restarts)."""
-    conn = get_db(); c = conn.cursor()
-    if _PG:
-        c.execute("""SELECT u.id, u.display_name, u.avatar_url, cv.last_visit
-                     FROM cube_visitors cv JOIN users u ON u.id = cv.user_id
-                     WHERE cv.cube_id = %s AND u.is_active = 1
-                     ORDER BY cv.last_visit DESC LIMIT %s""", (cube_id, limit))
-    else:
-        c.execute("""SELECT u.id, u.display_name, u.avatar_url, cv.last_visit
-                     FROM cube_visitors cv JOIN users u ON u.id = cv.user_id
-                     WHERE cv.cube_id = ? AND u.is_active = 1
-                     ORDER BY cv.last_visit DESC LIMIT ?""", (cube_id, limit))
-    rows = c.fetchall(); conn.close()
-    return _fetchall(rows)
+    try:
+        conn = get_db(); c = conn.cursor()
+        if _PG:
+            c.execute("""SELECT u.id, u.display_name, u.avatar_url, cv.last_visit
+                         FROM cube_visitors cv JOIN users u ON u.id = cv.user_id
+                         WHERE cv.cube_id = %s AND u.is_active = 1
+                         ORDER BY cv.last_visit DESC LIMIT %s""", (cube_id, limit))
+        else:
+            c.execute("""SELECT u.id, u.display_name, u.avatar_url, cv.last_visit
+                         FROM cube_visitors cv JOIN users u ON u.id = cv.user_id
+                         WHERE cv.cube_id = ? AND u.is_active = 1
+                         ORDER BY cv.last_visit DESC LIMIT ?""", (cube_id, limit))
+        rows = c.fetchall(); conn.close()
+        return _fetchall(rows)
+    except Exception:
+        return []
 
 def get_cube_message_senders(cube_id: int, limit: int = 50):
     """Return distinct users who sent messages in this cube (recent participants for kick search)."""
