@@ -409,10 +409,15 @@ def init_db():
         _sqlite_add_col('users', 'username', 'TEXT UNIQUE')
         _sqlite_add_col('cubes', 'handle', 'TEXT UNIQUE')
         _sqlite_add_col('users', 'account_type', "TEXT NOT NULL DEFAULT 'public'")
-        _sqlite_add_col('groups', 'group_key', 'TEXT UNIQUE')
-        _sqlite_add_col('posts', 'post_type', "TEXT NOT NULL DEFAULT 'short'")
-        _sqlite_add_col('posts', 'image_url', 'TEXT')
-        _sqlite_add_col('posts', 'view_count', 'INTEGER NOT NULL DEFAULT 0')
+        # groups/posts may not exist yet on a fresh DB — safe to ignore, re-run after table creation
+        try: _sqlite_add_col('groups', 'group_key', 'TEXT UNIQUE')
+        except Exception: pass
+        try: _sqlite_add_col('posts', 'post_type', "TEXT NOT NULL DEFAULT 'short'")
+        except Exception: pass
+        try: _sqlite_add_col('posts', 'image_url', 'TEXT')
+        except Exception: pass
+        try: _sqlite_add_col('posts', 'view_count', 'INTEGER NOT NULL DEFAULT 0')
+        except Exception: pass
         conn.commit()
         c.execute("""CREATE TABLE IF NOT EXISTS groups (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -591,6 +596,35 @@ def init_db():
         ]:
             try: c.execute(col_sql)
             except Exception: pass
+        # Re-run migrations for groups/posts now that tables exist
+        try: _sqlite_add_col('groups', 'group_key', 'TEXT UNIQUE')
+        except Exception: pass
+        try: _sqlite_add_col('posts', 'post_type', "TEXT NOT NULL DEFAULT 'short'")
+        except Exception: pass
+        try: _sqlite_add_col('posts', 'image_url', 'TEXT')
+        except Exception: pass
+        try: _sqlite_add_col('posts', 'view_count', 'INTEGER NOT NULL DEFAULT 0')
+        except Exception: pass
+
+    # Performance indexes (both PG and SQLite)
+    index_ddl = [
+        "CREATE INDEX IF NOT EXISTS idx_messages_cube_id ON messages(cube_id)",
+        "CREATE INDEX IF NOT EXISTS idx_messages_created ON messages(cube_id, created_at DESC)",
+        "CREATE INDEX IF NOT EXISTS idx_cubes_owner ON cubes(owner_id)",
+        "CREATE INDEX IF NOT EXISTS idx_cubes_active_expires ON cubes(is_active, expires_at)",
+        "CREATE INDEX IF NOT EXISTS idx_dm_from_to ON direct_messages(from_user_id, to_user_id)",
+        "CREATE INDEX IF NOT EXISTS idx_dm_to ON direct_messages(to_user_id)",
+        "CREATE INDEX IF NOT EXISTS idx_dm_created ON direct_messages(created_at DESC)",
+        "CREATE INDEX IF NOT EXISTS idx_posts_cube ON posts(cube_id)",
+        "CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at DESC)",
+        "CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id)",
+        "CREATE INDEX IF NOT EXISTS idx_users_last_seen ON users(last_seen DESC)",
+        "CREATE INDEX IF NOT EXISTS idx_group_members_user ON group_members(user_id)",
+        "CREATE INDEX IF NOT EXISTS idx_signals_cube ON signals(cube_id)",
+    ]
+    for ddl in index_ddl:
+        try: c.execute(ddl)
+        except Exception: pass
 
     conn.commit()
     conn.close()
@@ -1317,7 +1351,10 @@ def like_post(post_id, user_id):
     exists = c.fetchone()
     if exists:
         c.execute(_q("DELETE FROM post_likes WHERE post_id=? AND user_id=?"), (post_id, user_id))
-        c.execute(_q("UPDATE posts SET likes=MAX(0,likes-1) WHERE id=?"), (post_id,))
+        if _PG:
+            c.execute("UPDATE posts SET likes=GREATEST(0,likes-1) WHERE id=%s", (post_id,))
+        else:
+            c.execute("UPDATE posts SET likes=MAX(0,likes-1) WHERE id=?", (post_id,))
         liked = False
     else:
         try:
@@ -1527,12 +1564,17 @@ def activate_premium(user_id, months=1, payment_method=None, tx_hash=None):
     if _PG:
         c.execute("""SELECT NOW() + (%s || ' months')::INTERVAL AS exp""", (str(months),))
         expires = dict(c.fetchone())["exp"]
-        c.execute("""INSERT INTO premium_subscriptions (user_id,expires_at,price_usd,payment_method,tx_hash,status)
-                     VALUES (%s,%s,%s,%s,%s,'active')
-                     ON CONFLICT (user_id) DO UPDATE
-                       SET expires_at=EXCLUDED.expires_at, price_usd=EXCLUDED.price_usd,
-                           payment_method=EXCLUDED.payment_method, tx_hash=EXCLUDED.tx_hash, status='active'""",
-                  (user_id, expires, 6.99*months, payment_method, tx_hash))
+        # No UNIQUE(user_id) on premium_subscriptions — use SELECT then INSERT/UPDATE
+        c.execute("SELECT id FROM premium_subscriptions WHERE user_id=%s ORDER BY id DESC LIMIT 1", (user_id,))
+        existing = c.fetchone()
+        if existing:
+            c.execute("""UPDATE premium_subscriptions SET expires_at=%s, price_usd=%s,
+                             payment_method=%s, tx_hash=%s, status='active' WHERE id=%s""",
+                      (expires, 6.99*months, payment_method, tx_hash, dict(existing)["id"]))
+        else:
+            c.execute("""INSERT INTO premium_subscriptions (user_id,expires_at,price_usd,payment_method,tx_hash,status)
+                         VALUES (%s,%s,%s,%s,%s,'active')""",
+                      (user_id, expires, 6.99*months, payment_method, tx_hash))
         c.execute("UPDATE users SET key_type='premium', premium_expires_at=%s WHERE id=%s",
                   (str(expires), user_id))
     else:
