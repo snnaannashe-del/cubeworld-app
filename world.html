@@ -5299,7 +5299,7 @@ function wRenderLoop(){
 function initWorld(){
   // Restore universe from localStorage (persists across reloads)
   try{
-    const saved=localStorage.getItem(_uniKey())||localStorage.getItem('cw_universe');
+    const saved=localStorage.getItem(_uniKey());
     if(saved){
       const arr=JSON.parse(saved);
       if(Array.isArray(arr)&&arr.length) app.myUniverse=arr;
@@ -5576,8 +5576,8 @@ async function submitCreateCube(){
 
 // ── User-scoped localStorage key helpers ───────────────────────────────────
 // Keys are scoped to the logged-in user so switching accounts never mixes cubes.
-function _uniKey(){ var u=localStorage.getItem('cw_user_id'); return u?'cw_universe_'+u:'cw_universe'; }
-function _myKey(){  var u=localStorage.getItem('cw_user_id'); return u?'cw_my_cubes_'+u:'cw_my_cubes'; }
+function _uniKey(){ var u=localStorage.getItem('cw_user_id'); return 'cw_universe_'+(u||'guest'); }
+function _myKey(){  var u=localStorage.getItem('cw_user_id'); return 'cw_my_cubes_'+(u||'guest'); }
 
 function _saveMyCubesCache(){
   // Save all backend cubes (own OR joined with life>0) so they survive logout
@@ -5591,7 +5591,7 @@ function _saveMyCubesCache(){
 }
 function _loadMyCubesCache(){
   try{
-    const raw=localStorage.getItem(_myKey())||localStorage.getItem('cw_my_cubes');
+    const raw=localStorage.getItem(_myKey());
     if(!raw)return;
     const cached=JSON.parse(raw);
     if(!Array.isArray(cached))return;
@@ -15008,6 +15008,9 @@ function addWbAccount(){
     app.myProfile.uid = me.id;
     // Store for WS matching
     localStorage.setItem('cw_user_id',   me.id);
+    // Remove legacy non-user-scoped keys to prevent cross-account contamination
+    localStorage.removeItem('cw_my_cubes');
+    localStorage.removeItem('cw_universe');
     localStorage.setItem('cw_key_type',  app.keyType);
     localStorage.setItem('cw_cube_balance', me.cube_balance || 0);
     if (me.display_name) localStorage.setItem('cw_display_name', me.display_name);
