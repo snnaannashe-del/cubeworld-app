@@ -4778,7 +4778,7 @@ function connectGlobalWS(){
       // Kicked from a cube by owner — remove cube from world immediately
       if(msg.type==='cube_removed' && msg.cube_id){
         const cubeId='bc'+msg.cube_id;
-        if(app.currentCubeId===cubeId && typeof closeCabinetOverlay==='function') closeCabinetOverlay();
+        if(app.currentCubeId===cubeId){ exitInterior(); }
         _purgeCubeFromAllCaches(cubeId);
         showCubeAlert('👢','Вас удалили из куба',msg.cube_name?'«'+msg.cube_name+'»':'');
         return;
@@ -4786,7 +4786,7 @@ function connectGlobalWS(){
       // Cube was deleted by owner — remove from world for all members
       if(msg.type==='cube_deleted' && msg.cube_id){
         const cubeId='bc'+msg.cube_id;
-        if(app.currentCubeId===cubeId && typeof closeCabinetOverlay==='function') closeCabinetOverlay();
+        if(app.currentCubeId===cubeId){ exitInterior(); }
         _purgeCubeFromAllCaches(cubeId);
         showCubeAlert('🗑️','Куб удалён',msg.cube_name?'«'+msg.cube_name+'»'+' был удалён владельцем':'');
         return;
@@ -4909,11 +4909,14 @@ function openRoomWS(roomId){
           document.querySelectorAll('#wb-cube-balance,#itb-cube-bal').forEach(el=>{ el.classList.add('balance-pop'); setTimeout(()=>el.classList.remove('balance-pop'),400); });
         }
       } else if(msg.type==='kicked'){
-        // Owner kicked us from this cube while we were inside — close, purge, show alert
+        // Owner kicked us from this cube while we were inside — stop reconnect, exit, purge, alert
         const kickedId = app.currentCubeId;
-        if(typeof closeCabinetOverlay==='function') closeCabinetOverlay();
+        const kickedName = msg.cube_name || '';
+        _wsRoom = null; // prevent auto-reconnect to this room
+        if(_ws){ try{ _ws.close(); }catch(e){} _ws=null; }
+        exitInterior(); // back to world view
         if(kickedId) _purgeCubeFromAllCaches(kickedId);
-        showCubeAlert('👢','Вас удалили из куба',msg.cube_name?'«'+msg.cube_name+'»':'');
+        showCubeAlert('👢','Вас удалили из куба', kickedName?'«'+kickedName+'»':'');
       }
     }catch(err){}
   };
@@ -5710,12 +5713,18 @@ function toggleMineCube(cubeId){
   showToast(uni.includes(cubeId)?'⬡ Куб добавлен в мир':'⬡ Куб убран из мира');
 }
 function _purgeCubeFromAllCaches(cubeId){
+  // If currently inside this cube — exit to world view first
+  if(app.currentCubeId===cubeId){
+    _wsRoom=null; // stop WS reconnect to this cube
+    if(_ws){ try{ _ws.close(); }catch(e){} _ws=null; }
+    exitInterior();
+  }
   // Remove from app.cubes
   app.cubes=(app.cubes||[]).filter(c=>c.id!==cubeId);
   // Remove from universe
   app.myUniverse=(app.myUniverse||[]).filter(id=>id!==cubeId);
   localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));
-  // Remove from visited cubes (cw_visited_cubes_v2) — otherwise it reappears on reload
+  // Remove from visited cubes (cw_visited_cubes_v2)
   if(app.visitedCubes){
     app.visitedCubes=app.visitedCubes.filter(c=>c.id!==cubeId);
     try{
@@ -5723,7 +5732,7 @@ function _purgeCubeFromAllCaches(cubeId){
       localStorage.setItem('cw_visited_cubes_v2',JSON.stringify(toSave));
     }catch(e){}
   }
-  // Remove from world objects
+  // Remove from world canvas
   wObjects=(wObjects||[]).filter(o=>o.cube.id!==cubeId);
   // Update my cubes cache
   _saveMyCubesCache();
