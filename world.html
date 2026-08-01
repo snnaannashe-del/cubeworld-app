@@ -5375,10 +5375,12 @@ function enterWorld(){
 }
 
 document.addEventListener('mousemove',e=>{const t=document.getElementById('cube-tooltip');if(t.style.display==='block'){t.style.left=(e.clientX+14)+'px';t.style.top=(e.clientY-20)+'px';}});
-// Close all modals on every pageshow (handles bfcache restore on all browsers/iOS)
-window.addEventListener('pageshow',function(){
+// ── Close all modals on every page restore (bfcache, iOS background→foreground, tab switch)
+function _closeAllModals(){
   document.querySelectorAll('.modal-backdrop.open').forEach(el=>{el.classList.remove('open');el.style.display='none';});
-});
+}
+window.addEventListener('pageshow', _closeAllModals);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible') _closeAllModals();});
 // handleWorldClick defined below (enhanced with premium cube logic)
 function submitEntryKey(){
   const inp=document.getElementById('mke-input'),id=inp.dataset.cubeId;
