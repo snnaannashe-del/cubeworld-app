@@ -5375,9 +5375,9 @@ function enterWorld(){
 }
 
 document.addEventListener('mousemove',e=>{const t=document.getElementById('cube-tooltip');if(t.style.display==='block'){t.style.left=(e.clientX+14)+'px';t.style.top=(e.clientY-20)+'px';}});
-// Close all modals when browser restores page from bfcache (back/forward cache after F5/reload)
-window.addEventListener('pageshow',function(e){
-  if(e.persisted){document.querySelectorAll('.modal-backdrop.open').forEach(el=>{el.classList.remove('open');el.style.display='none';});}
+// Close all modals on every pageshow (handles bfcache restore on all browsers/iOS)
+window.addEventListener('pageshow',function(){
+  document.querySelectorAll('.modal-backdrop.open').forEach(el=>{el.classList.remove('open');el.style.display='none';});
 });
 // handleWorldClick defined below (enhanced with premium cube logic)
 function submitEntryKey(){
@@ -10966,23 +10966,33 @@ let _peEmojiOpen=false;
 function _genDisplayUid(seed){
   // Use seed (backend integer id) to produce a deterministic display UID
   const min=115000, max=30000000000;
-  // Simple LCG-style expansion of small id into the range
   let n = (seed * 97331 + 1000000) % (max - min) + min;
-  // Pad to 11 digits
   let s = String(Math.floor(n)).padStart(11,'0');
-  // Validate: at least 3 distinct digit chars
   const distinct = new Set(s.split('')).size;
   if(distinct < 3){
-    // Flip 3 digits deterministically
     const arr = s.split('');
     arr[2] = String((parseInt(arr[0])+3)%10);
     arr[5] = String((parseInt(arr[1])+7)%10);
     arr[8] = String((parseInt(arr[2])+5)%10);
     s = arr.join('');
   }
-  // No all-same check
   if(new Set(s.split('')).size < 2) s = s.slice(0,8)+'123';
   return s;
+}
+// Reverse lookup: find raw DB id from a displayed UID string (checks ids 1–100000)
+function _reverseDisplayUid(str){
+  const clean=str.replace(/^0+/,'');
+  if(!clean||isNaN(parseInt(clean)))return null;
+  const min=115000,max=30000000000;
+  for(let seed=1;seed<=100000;seed++){
+    let n=(seed*97331+1000000)%(max-min)+min;
+    let s=String(Math.floor(n)).padStart(11,'0');
+    const distinct=new Set(s.split('')).size;
+    if(distinct<3){const arr=s.split('');arr[2]=String((parseInt(arr[0])+3)%10);arr[5]=String((parseInt(arr[1])+7)%10);arr[8]=String((parseInt(arr[2])+5)%10);s=arr.join('');}
+    if(new Set(s.split('')).size<2)s=s.slice(0,8)+'123';
+    if(s===str||s.replace(/^0+/,'')===clean)return seed;
+  }
+  return null;
 }
 
 async function openMyProfile(){
