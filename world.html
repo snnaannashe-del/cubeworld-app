@@ -5379,8 +5379,14 @@ document.addEventListener('mousemove',e=>{const t=document.getElementById('cube-
 function _closeAllModals(){
   document.querySelectorAll('.modal-backdrop.open').forEach(el=>{el.classList.remove('open');el.style.display='none';});
 }
+// 1. Fresh reload: enterWorld() (above) closes modals
+// 2. bfcache restore: pageshow fires → close modals
 window.addEventListener('pageshow', _closeAllModals);
+// 3. iOS PWA / app-switch: visibilitychange fires → close modals
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible') _closeAllModals();});
+// 4. beforeunload: close modals before page is unloaded/snapshotted into bfcache
+//    Also prevents bfcache in Chrome (pages with beforeunload listener are not cached)
+window.addEventListener('beforeunload', _closeAllModals);
 // handleWorldClick defined below (enhanced with premium cube logic)
 function submitEntryKey(){
   const inp=document.getElementById('mke-input'),id=inp.dataset.cubeId;
