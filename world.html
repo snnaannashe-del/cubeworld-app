@@ -4652,23 +4652,27 @@ async function syncFromBackend(){
         localStorage.setItem('cw_visited_cubes_v2',JSON.stringify(toSave));
       }catch(e){}
     }
-    // Restore joined cubes from logout backup (after filter so they don't get wiped)
+    // Restore joined cubes from logout backup — add to myUniverse+wObjects even if already in app.cubes
     try{
       const _bk=localStorage.getItem('cw_joined_'+(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||''));
       if(_bk){
         JSON.parse(_bk).forEach(c=>{
-          if(app.cubes.find(x=>x.id===c.id)) return;
-          const cube={...c, isOwn:false, size:2,
-            x:Math.random()*80+10, y:Math.random()*70+15,
-            rotX:Math.random()*360, rotY:Math.random()*360,
-            speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1};
-          app.cubes.push(cube);
+          // Ensure cube exists in app.cubes
+          let cubeObj=app.cubes.find(x=>x.id===c.id);
+          if(!cubeObj){
+            cubeObj={...c, isOwn:false, size:2,
+              x:Math.random()*80+10, y:Math.random()*70+15,
+              rotX:Math.random()*360, rotY:Math.random()*360,
+              speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1};
+            app.cubes.push(cubeObj);
+          }
+          // Always add to myUniverse and render — even if cube was already in app.cubes
           if(!(app.myUniverse||[]).includes(c.id)){
             app.myUniverse=app.myUniverse||[];
             app.myUniverse.push(c.id);
             try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
+            if(wDone) addCubeToWorld(cubeObj);
           }
-          if(wDone) addCubeToWorld(cube);
         });
       }
     }catch(e){}
