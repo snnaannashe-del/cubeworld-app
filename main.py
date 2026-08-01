@@ -1045,7 +1045,7 @@ async def stats():
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "version": "4.0.0"}
+    return {"status": "ok", "version": "5.1.0", "kick_route": "active", "cube_visitors": "active"}
 
 # ── WebSocket: per-cube rooms ─────────────────────────────────────────────────
 # cube_rooms: { cube_id_str: { user_id_str: {"ws": websocket, "display_name": str} } }
