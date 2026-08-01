@@ -4713,8 +4713,7 @@ function connectGlobalWS(){
       if(msg.type==='pong') return;
       if(msg.type==='dm'){ handleIncomingDm(msg, myUserId); return; }
       if(msg.type==='kicked'){
-        const cubeId = msg.cube_id ? 'bc'+msg.cube_id : app.currentCubeId;
-        _handleKickedFromCube(cubeId);
+        _handleKickedFromCube(msg.cube_id ? 'bc'+msg.cube_id : app.currentCubeId);
         return;
       }
       if(msg.type==='balance_update'){
@@ -4753,11 +4752,7 @@ function openRoomWS(roomId){
     try{
       const msg = JSON.parse(e.data);
       const myUserId = localStorage.getItem('cw_user_id');
-      // DM and balance_update must work even outside a cube
-      if(msg.type==='kicked'){
-        _handleKickedFromCube(app.currentCubeId);
-        return;
-      }
+      if(msg.type==='kicked'){ _handleKickedFromCube(msg.cube_id?'bc'+msg.cube_id:app.currentCubeId); return; }
       if(msg.type==='dm'){ handleIncomingDm(msg, myUserId); return; }
       if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
@@ -4853,15 +4848,8 @@ function openRoomWS(roomId){
   _ws.onclose = (e)=>{
     if(_wsRoom!==roomId) return;
     _ws=null;
-    // code 4003 = kicked/banned — don't reconnect, exit cube
-    if(e.code===4003){
-      _handleKickedFromCube(app.currentCubeId);
-      return;
-    }
-    // Auto-reconnect after 3s if user is still in same room
-    setTimeout(()=>{
-      if(_wsRoom===roomId && !_ws) openRoomWS(roomId);
-    }, 3000);
+    if(e.code===4003){ _handleKickedFromCube(app.currentCubeId); return; }
+    setTimeout(()=>{ if(_wsRoom===roomId && !_ws) openRoomWS(roomId); }, 3000);
   };
 }
 
@@ -5734,8 +5722,20 @@ async function searchKickUser(q){
     return nm.includes(qtL)||uid.includes(qt)||duid.includes(qt);
   });
   if(fromCube.length){_renderKickResults(fromCube);return;}
-  // No fallback to global user search — only cube members can be kicked
-  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Юзер не найден среди участников куба</div>';
+  // 2. Fallback: server search (for cubes with no tracked visitors yet)
+  if(qt.length<2){return;}
+  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">⏳ Поиск...</div>';
+  _kickSearchTimer=setTimeout(async()=>{
+    let searchQ=qt;
+    // If input is all digits — try to reverse displayed UID to raw DB id
+    if(/^\d+$/.test(qt)){
+      const rawId=(typeof _reverseDisplayUid==='function')?_reverseDisplayUid(qt):null;
+      if(rawId) searchQ='#'+rawId;
+    }
+    const data=await apiCall('/users/search?q='+encodeURIComponent(searchQ)+'&limit=20').catch(()=>null);
+    if(data&&data.length) _renderKickResults(data);
+    else res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Юзер не найден</div>';
+  },350);
 }
 async function doKickUser(uid,name){
   if(!_kickCubeLocalId)return;
@@ -5867,6 +5867,8 @@ async function submitJoinKey(){
 // ════════════════════════════════════════════════
 function enterInterior(cubeId){
   app.currentCubeId=cubeId;
+  const _n=cubeId.replace(/^[a-z]+/,'');
+  if(_n&&!isNaN(_n)){const _t=localStorage.getItem('cw_access_token');if(_t)fetch(API_BASE+'/cubes/'+_n+'/visit',{method:'POST',headers:{Authorization:'Bearer '+_t}}).catch(()=>{});}
   // Persist: remember we're inside this cube
   try{ localStorage.setItem('cw_last_view','interior'); localStorage.setItem('cw_last_cube',cubeId); }catch(e){}
   const cube=app.cubes.find(c=>c.id===cubeId);
@@ -5903,15 +5905,12 @@ function exitInterior(){ if(liveInterval){clearInterval(liveInterval);liveInterv
 function _handleKickedFromCube(cubeId){
   showToast('🚫 Тебя удалили из этого куба');
   if(cubeId){
-    // Remove from universe list
     app.myUniverse=(app.myUniverse||[]).filter(id=>id!==cubeId);
     try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
-    // Remove from world canvas
     wObjects=(wObjects||[]).filter(o=>!(o.cube&&o.cube.id===cubeId));
-    // Remove from cubes array so it doesn't re-appear
     app.cubes=app.cubes.filter(c=>c.id!==cubeId);
   }
-  setTimeout(()=>exitInterior(), 1200);
+  setTimeout(()=>exitInterior(),1200);
 }
 
 // ════════════════════════════════════════════════
