@@ -772,19 +772,25 @@ async def kick_user_from_cube(cube_id: int, request: Request, user=Depends(get_c
 
 @app.get("/cubes/{cube_id}/online")
 async def get_cube_online_members(cube_id: int, user=Depends(get_current_user)):
-    """Return users currently online in a cube room (for kick search)."""
+    """Return cube members for kick search: live WS users + recent message senders."""
+    seen = {}
+    # 1. Currently connected via WebSocket
     room = cube_rooms.get(str(cube_id), {})
-    members = []
-    for uid_str, info in room.items():
+    for uid_str in room:
         try:
             uid = int(uid_str)
-        except ValueError:
+            u = db.get_user_by_id(uid)
+            if u:
+                seen[uid] = {"id": u["id"], "display_name": u["display_name"] or "User",
+                             "avatar_url": u.get("avatar_url"), "is_online": True}
+        except Exception:
             continue
-        u = db.get_user_by_id(uid)
-        if u:
-            members.append({"id": u["id"], "display_name": u["display_name"] or "User",
-                            "avatar_url": u.get("avatar_url"), "username": u.get("username")})
-    return members
+    # 2. Recent message senders (persistent — survives server restarts)
+    for u in db.get_cube_message_senders(cube_id, limit=50):
+        if u["id"] not in seen:
+            seen[u["id"]] = {"id": u["id"], "display_name": u["display_name"] or "User",
+                             "avatar_url": u.get("avatar_url"), "is_online": False}
+    return list(seen.values())
 
 @app.post("/cubes/join")
 async def join_cube_by_key(body: JoinCubeRequest):
@@ -815,14 +821,6 @@ async def get_cube_key(cube_id: int, user=Depends(get_current_user)):
 @app.get("/cubes/{cube_id}/messages")
 async def get_messages(cube_id: int, limit: int = 50):
     return db.get_messages(cube_id, min(limit, 100))
-
-@app.get("/cubes/{cube_id}/online")
-async def cube_online_users(cube_id: str):
-    """Return list of online users in this cube's WS room."""
-    room = cube_rooms.get(cube_id, {})
-    users = [{"user_id": uid, "display_name": info["display_name"]}
-             for uid, info in room.items()]
-    return {"online": len(users), "users": users}
 
 @app.post("/messages/{msg_id}/react")
 async def react_to_message(msg_id: int, body: ReactRequest, user=Depends(get_current_user)):
