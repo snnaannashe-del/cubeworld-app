@@ -14830,6 +14830,8 @@ function cwLogoutDo(){
     const mv=localStorage.getItem('cw_my_cubes_'+uid); if(mv) keep['cw_my_cubes_'+uid]=mv;
     const uv=localStorage.getItem('cw_universe_'+uid); if(uv) keep['cw_universe_'+uid]=uv;
   }
+  // Preserve device_id across logout so device-ban survives account switch
+  const did=localStorage.getItem('cw_device_id'); if(did) keep['cw_device_id']=did;
   localStorage.clear();
   Object.keys(keep).forEach(k=>localStorage.setItem(k,keep[k]));
   window.location.replace('index.html');
