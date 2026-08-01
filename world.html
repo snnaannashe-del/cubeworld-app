@@ -5897,10 +5897,18 @@ async function submitJoinKey(){
   const cubeId = 'bc'+res.id;
   if(!app.cubes.find(c=>c.id===cubeId)){
     const cube={id:cubeId, backendId:res.id, name:res.name, icon:res.icon||'🧊', col:res.color||'#0095F6',
-                colorCss:res.color||'#0095F6', type:res.type, life:res.life_left||3600, desc:'Вошёл по ключу', cubeKey:key};
+                colorCss:res.color||'#0095F6', type:res.type, life:res.life_left||3600, desc:'Вошёл по ключу',
+                cubeKey:key, isOwn:false};
     app.cubes.push(cube);
     if(wDone) addCubeToWorld(cube);
   }
+  // Add to myUniverse so it persists across logout/reload (critical fix)
+  if(!(app.myUniverse||[]).includes(cubeId)){
+    app.myUniverse=app.myUniverse||[];
+    app.myUniverse.push(cubeId);
+    try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
+  }
+  _saveMyCubesCache(); // persist joined cube in cache
   closeModal('modal-join-key');
   inp.value='';
   showToast('✅ Куб найден! Входишь…');
