@@ -770,6 +770,22 @@ async def kick_user_from_cube(cube_id: int, request: Request, user=Depends(get_c
             pass
     return {"ok": True}
 
+@app.get("/cubes/{cube_id}/online")
+async def get_cube_online_members(cube_id: int, user=Depends(get_current_user)):
+    """Return users currently online in a cube room (for kick search)."""
+    room = cube_rooms.get(str(cube_id), {})
+    members = []
+    for uid_str, info in room.items():
+        try:
+            uid = int(uid_str)
+        except ValueError:
+            continue
+        u = db.get_user_by_id(uid)
+        if u:
+            members.append({"id": u["id"], "display_name": u["display_name"] or "User",
+                            "avatar_url": u.get("avatar_url"), "username": u.get("username")})
+    return members
+
 @app.post("/cubes/join")
 async def join_cube_by_key(body: JoinCubeRequest):
     """Resolve a cube invite key — returns cube info if valid."""
