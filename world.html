@@ -4715,6 +4715,8 @@ function connectGlobalWS(){
       else if(msg.type==='balance_update'){
         const prev=app.wallet.balance, next=msg.balance||prev;
         if(next>prev){ app.wallet.balance=next; syncWalletUI(); showToast('💰 +'+(next-prev).toLocaleString('ru')+' CUBE!'); }
+      } else if(msg.type==='kicked' && msg.cube_id){
+        _handleKickedFromCube(msg.cube_id);
       }
     }catch(e){}
   };
@@ -4833,6 +4835,10 @@ function openRoomWS(roomId){
           pushNotification('💰','Баланс: +'+diff.toLocaleString('ru')+' CUBE');
           document.querySelectorAll('#wb-cube-balance,#itb-cube-bal').forEach(el=>{ el.classList.add('balance-pop'); setTimeout(()=>el.classList.remove('balance-pop'),400); });
         }
+      } else if(msg.type==='kicked'){
+        // Kicked from cube interior via cube-room WS
+        const bid = app.currentCubeId ? parseInt(app.currentCubeId.replace(/^[a-z]+/,''),10) : null;
+        if(bid) _handleKickedFromCube(bid);
       }
     }catch(err){}
   };
@@ -4841,9 +4847,13 @@ function openRoomWS(roomId){
     loadChatHistory(roomId);
   };
   _ws.onerror = ()=>{ _ws=null; };
-  _ws.onclose = ()=>{
+  _ws.onclose = (ev)=>{
     if(_wsRoom!==roomId) return;
     _ws=null;
+    if(ev && ev.code===4003){
+      // Server closed with 4003 = kicked; handled by onmessage already
+      return;
+    }
     // Auto-reconnect after 3s if user is still in same room
     setTimeout(()=>{
       if(_wsRoom===roomId && !_ws) openRoomWS(roomId);
@@ -5720,20 +5730,7 @@ async function searchKickUser(q){
     return nm.includes(qtL)||uid.includes(qt)||duid.includes(qt);
   });
   if(fromCube.length){_renderKickResults(fromCube);return;}
-  // 2. Fallback: server search (for cubes with no tracked visitors yet)
-  if(qt.length<2){return;}
-  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">⏳ Поиск...</div>';
-  _kickSearchTimer=setTimeout(async()=>{
-    let searchQ=qt;
-    // If input is all digits — try to reverse displayed UID to raw DB id
-    if(/^\d+$/.test(qt)){
-      const rawId=(typeof _reverseDisplayUid==='function')?_reverseDisplayUid(qt):null;
-      if(rawId) searchQ='#'+rawId;
-    }
-    const data=await apiCall('/users/search?q='+encodeURIComponent(searchQ)+'&limit=20').catch(()=>null);
-    if(data&&data.length) _renderKickResults(data);
-    else res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center">Юзер не найден</div>';
-  },350);
+  res.innerHTML='<div style="color:var(--text3);padding:10px;text-align:center;font-size:13px">Участник не найден</div>';
 }
 async function doKickUser(uid,name){
   if(!_kickCubeLocalId)return;
@@ -5895,6 +5892,24 @@ function enterInterior(cubeId){
   // Load real backend data for this cube
   loadRealPosts();
   loadRealSignals();
+}
+function _handleKickedFromCube(cubeId){
+  // cubeId is numeric backend id
+  const localId='bc'+cubeId;
+  // Remove from universe
+  app.myUniverse=(app.myUniverse||[]).filter(id=>id!==localId);
+  try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
+  // Remove from cubes list
+  app.cubes=app.cubes.filter(c=>c.id!==localId);
+  // Remove 3D object from world
+  wObjects=wObjects.filter(o=>o.cube.id!==localId);
+  // Close WS if inside this cube
+  if(app.currentCubeId===localId){
+    if(_ws){ try{_ws.close();}catch(e){} _ws=null; }
+    exitInterior();
+  }
+  showToast('⛔ Тебя удалили из куба');
+  apiCall('/me/universe',{method:'POST',body:JSON.stringify({universe:app.myUniverse})}).catch(()=>{});
 }
 function exitInterior(){ if(liveInterval){clearInterval(liveInterval);liveInterval=null;} try{localStorage.setItem('cw_last_view','world');}catch(e){} showView('v-world'); }
 
