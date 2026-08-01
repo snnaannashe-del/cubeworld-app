@@ -5346,6 +5346,8 @@ function enterWorld(){
   if(!wDone){wDone=true;requestAnimationFrame(initWorld);}
   // Fetch real data in background
   syncFromBackend();
+  // Record visits for all joined (non-owned) cubes so owner can find them in kick search
+  _recordAllCubeVisits();
   // Restore modal-universe state (tab + position) after true page reload
   _restoreUniModal();
   // Refresh stats every 60s
@@ -5901,6 +5903,19 @@ function enterInterior(cubeId){
   loadRealSignals();
 }
 function exitInterior(){ if(liveInterval){clearInterval(liveInterval);liveInterval=null;} try{localStorage.setItem('cw_last_view','world');}catch(e){} showView('v-world'); }
+
+function _recordAllCubeVisits(){
+  // Called on world load — records visits for every non-owned cube the user has in their world.
+  // This ensures the owner can find them in kick search even without entering interior.
+  const tok=localStorage.getItem('cw_access_token');
+  if(!tok) return;
+  setTimeout(()=>{
+    (app.cubes||[]).forEach(c=>{
+      if(c.isOwn||!c.backendId) return;
+      fetch(API_BASE+'/cubes/'+c.backendId+'/visit',{method:'POST',headers:{Authorization:'Bearer '+tok}}).catch(()=>{});
+    });
+  }, 2000); // wait for cubes to load from syncFromBackend
+}
 
 function _handleKickedFromCube(cubeId){
   showToast('🚫 Тебя удалили из этого куба');
