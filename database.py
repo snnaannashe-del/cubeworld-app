@@ -204,6 +204,13 @@ def init_db():
             banned_at TIMESTAMP NOT NULL DEFAULT NOW(),
             PRIMARY KEY (cube_id, user_id)
         )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS cube_visitors (
+            cube_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            display_name TEXT,
+            last_visit TIMESTAMP NOT NULL DEFAULT NOW(),
+            PRIMARY KEY (cube_id, user_id)
+        )""")
         conn.commit()
         c.execute("""CREATE TABLE IF NOT EXISTS messages (
             id SERIAL PRIMARY KEY,
@@ -450,6 +457,13 @@ def init_db():
             cube_id INTEGER NOT NULL,
             user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
             banned_at TEXT NOT NULL DEFAULT (datetime('now')),
+            PRIMARY KEY (cube_id, user_id)
+        )""")
+        c.execute("""CREATE TABLE IF NOT EXISTS cube_visitors (
+            cube_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            display_name TEXT,
+            last_visit TEXT NOT NULL DEFAULT (datetime('now')),
             PRIMARY KEY (cube_id, user_id)
         )""")
         conn.commit()
@@ -1130,6 +1144,42 @@ def get_my_cubes(owner_id: int):
                      FROM cubes WHERE owner_id=? ORDER BY created_at DESC LIMIT 50""", (owner_id,))
     rows = c.fetchall()
     conn.close(); return _fetchall(rows)
+
+def record_cube_visit(cube_id: int, user_id: int, display_name: str):
+    """Record that a user visited a cube (called on WS connect). Upserts last_visit."""
+    try:
+        conn = get_db(); c = conn.cursor()
+        if _PG:
+            c.execute("""INSERT INTO cube_visitors (cube_id, user_id, display_name, last_visit)
+                         VALUES (%s, %s, %s, NOW())
+                         ON CONFLICT (cube_id, user_id) DO UPDATE
+                           SET display_name=EXCLUDED.display_name, last_visit=NOW()""",
+                      (cube_id, user_id, display_name))
+        else:
+            c.execute("""INSERT INTO cube_visitors (cube_id, user_id, display_name, last_visit)
+                         VALUES (?, ?, ?, datetime('now'))
+                         ON CONFLICT (cube_id, user_id) DO UPDATE
+                           SET display_name=excluded.display_name, last_visit=datetime('now')""",
+                      (cube_id, user_id, display_name))
+        conn.commit(); conn.close()
+    except Exception:
+        pass  # Non-critical — never crash a WS connection
+
+def get_cube_visitors(cube_id: int, limit: int = 100):
+    """Return all users who ever visited this cube (persistent across server restarts)."""
+    conn = get_db(); c = conn.cursor()
+    if _PG:
+        c.execute("""SELECT u.id, u.display_name, u.avatar_url, cv.last_visit
+                     FROM cube_visitors cv JOIN users u ON u.id = cv.user_id
+                     WHERE cv.cube_id = %s AND u.is_active = 1
+                     ORDER BY cv.last_visit DESC LIMIT %s""", (cube_id, limit))
+    else:
+        c.execute("""SELECT u.id, u.display_name, u.avatar_url, cv.last_visit
+                     FROM cube_visitors cv JOIN users u ON u.id = cv.user_id
+                     WHERE cv.cube_id = ? AND u.is_active = 1
+                     ORDER BY cv.last_visit DESC LIMIT ?""", (cube_id, limit))
+    rows = c.fetchall(); conn.close()
+    return _fetchall(rows)
 
 def get_cube_message_senders(cube_id: int, limit: int = 50):
     """Return distinct users who sent messages in this cube (recent participants for kick search)."""
