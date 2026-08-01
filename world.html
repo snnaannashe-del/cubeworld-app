@@ -4698,13 +4698,16 @@ async function syncFromBackend(){
   if(myCubesData && myCubesData.length > 0){
     const myId = String(app.myProfile&&(app.myProfile.id||app.myProfile.uid)||'');
     myCubesData.forEach(c=>{
+      const localId = 'bc'+c.id;
       const existById = app.cubes.find(x=>x.backendId===c.id);
+      let cubeObj;
       if(existById){
         existById.isOwn = true;
         existById.owner_uid = existById.owner_uid || c.owner_id;
+        cubeObj = existById;
       } else {
-        app.cubes.push({
-          id:'bc'+c.id, backendId:c.id,
+        cubeObj = {
+          id: localId, backendId:c.id,
           name:c.name, desc:c.description||'',
           icon:c.icon||'📦', col:c.color||'#0095F6', colorCss:c.color||'#0095F6',
           type:c.type||'public',
@@ -4714,7 +4717,15 @@ async function syncFromBackend(){
           x:Math.random()*80+10, y:Math.random()*70+15,
           rotX:Math.random()*360, rotY:Math.random()*360,
           speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1
-        });
+        };
+        app.cubes.push(cubeObj);
+      }
+      // Add active own cubes to myUniverse and render on canvas
+      if(cubeObj.life > 0 && !(app.myUniverse||[]).includes(localId)){
+        if(!app.myUniverse) app.myUniverse=[];
+        app.myUniverse.push(localId);
+        try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
+        if(wDone) addCubeToWorld(cubeObj);
       }
     });
     _saveMyCubesCache();
@@ -14827,6 +14838,8 @@ function cwLogoutDo(){
   if(uid){
     // Flush latest state to user-scoped keys before clearing
     _saveMyCubesCache();
+    // Also flush in-memory myUniverse to localStorage (it may not have been saved yet)
+    try{ localStorage.setItem('cw_universe_'+uid, JSON.stringify(app.myUniverse||[])); }catch(e){}
     const mv=localStorage.getItem('cw_my_cubes_'+uid); if(mv) keep['cw_my_cubes_'+uid]=mv;
     const uv=localStorage.getItem('cw_universe_'+uid); if(uv) keep['cw_universe_'+uid]=uv;
   }
