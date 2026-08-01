@@ -4681,6 +4681,36 @@ async function syncFromBackend(){
     });
     _saveMyCubesCache();
   }
+  // 6. Joined cubes (from cube_visitors DB) — restores world after logout/login on any device
+  const memberships = await apiCall('/me/cube-memberships');
+  if(memberships && memberships.length > 0){
+    memberships.forEach(c=>{
+      const localId = 'bc'+c.id;
+      if(!app.cubes.find(x=>x.id===localId)){
+        const cube = {
+          id: localId, backendId: c.id,
+          name: c.name, desc: '',
+          icon: c.icon||'🧊', col: c.color||'#0095F6', colorCss: c.color||'#0095F6',
+          type: c.type||'public', isOwn: false,
+          life: Math.max(0, c.life_left_seconds||3600), size: 2,
+          x:Math.random()*80+10, y:Math.random()*70+15,
+          rotX:Math.random()*360, rotY:Math.random()*360,
+          speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1
+        };
+        app.cubes.push(cube);
+        // Add to universe if not already there
+        if(!(app.myUniverse||[]).includes(localId)){
+          app.myUniverse = app.myUniverse||[];
+          app.myUniverse.push(localId);
+          try{localStorage.setItem('cw_universe',JSON.stringify(app.myUniverse));}catch(e){}
+        }
+        // Add to world canvas if already initialized
+        if(wDone) addCubeToWorld(cube);
+      }
+    });
+    const cnt=document.getElementById('wb-count');
+    if(cnt) cnt.textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
+  }
 }
 
 // Generic fetch helper with error swallowing (falls back silently)
