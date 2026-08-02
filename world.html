@@ -5750,7 +5750,6 @@ function _loadMyCubesCache(){
     if(!raw)return;
     const cached=JSON.parse(raw);
     if(!Array.isArray(cached))return;
-    let universeChanged=false;
     cached.forEach(cc=>{
       const existing=(app.cubes||[]).find(c=>c.id===cc.id);
       if(existing){
@@ -5774,18 +5773,11 @@ function _loadMyCubesCache(){
           colorCss: cc.colorCss||cc.col||'#0095F6'
         });
       }
-      // Ensure ALL backend cubes from cache are in myUniverse (own AND joined)
-      if(cc.id && cc.id.startsWith('bc')){
-        if(!app.myUniverse) app.myUniverse=[];
-        if(!app.myUniverse.includes(cc.id)){
-          app.myUniverse.push(cc.id);
-          universeChanged=true;
-        }
-      }
+      // NOTE: do NOT auto-add bc* cubes to myUniverse here.
+      // myUniverse is managed by: (1) localStorage in initWorld, (2) server in syncFromBackend.
+      // Auto-adding here caused stale cubes to flash on canvas before server universe loaded.
     });
-    if(universeChanged){
-      try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
-    }
+    // universeChanged no longer needed — universe managed by server/localStorage only
   }catch(e){}
 }
 function pickCubeColor(el){
