@@ -518,9 +518,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #wb-key-badge{display:none!important}
   .wb-online{flex-shrink:0}
   #wb-count,.wb-count-badge{flex-shrink:0;font-size:10px}
-  #crypto-ticker{flex-shrink:0;min-width:160px;max-width:calc(100vw - 248px);overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:none;height:44px;mask-image:none;-webkit-mask-image:none}
-  #crypto-ticker::-webkit-scrollbar{display:none}
-  #ct-track{animation:none!important;-webkit-animation:none!important}
+  #crypto-ticker{display:none!important}
+  #mob-ticker-bar{display:block}
   .wb-games{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-ghost{flex-shrink:0;font-size:11px;padding:5px 9px}
   .wb-wallet{flex-shrink:0;padding:4px 8px;font-size:11px}
@@ -1965,7 +1964,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 /* ══ CRYPTO TICKER ══════════════════════════ */
 #crypto-ticker{flex:1;min-width:0;overflow:hidden;height:44px;display:flex;align-items:center;position:relative;mask-image:linear-gradient(to right,transparent,#000 4%,#000 96%,transparent);-webkit-mask-image:linear-gradient(to right,transparent,#000 4%,#000 96%,transparent)}
-#ct-track{display:flex;align-items:center;gap:0;white-space:nowrap;animation:ctScroll 38s linear infinite;will-change:transform;flex-shrink:0}
+#ct-track{display:flex;align-items:center;gap:0;white-space:nowrap;animation:ctScroll 70s linear infinite;will-change:transform;flex-shrink:0;transform:translateZ(0);backface-visibility:hidden;-webkit-backface-visibility:hidden;text-rendering:geometricPrecision}
 #ct-track:hover{animation-play-state:paused}
 @keyframes ctScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .ct-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;flex-shrink:0;border-right:1px solid rgba(255,255,255,.06)}
@@ -1974,6 +1973,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .ct-chg{font-size:9px;font-weight:600}
 .ct-chg.up{color:var(--green)}
 .ct-chg.dn{color:var(--red)}
+/* ══ MOBILE TICKER BAR (auto-scroll marquee below header) ══ */
+#mob-ticker-bar{display:none;width:100%;overflow:hidden;height:22px;flex-shrink:0;position:relative;z-index:9;pointer-events:none;border-bottom:1px solid rgba(255,255,255,.04)}
+#mob-ct-track{display:inline-flex;align-items:center;white-space:nowrap;animation:ctScroll 45s linear infinite;will-change:transform;transform:translateZ(0);backface-visibility:hidden}
+#mob-ticker-bar .ct-pill{padding:2px 8px;border-right:1px solid rgba(255,255,255,.05)}
+#mob-ticker-bar .ct-sym{font-size:8.5px}
+#mob-ticker-bar .ct-px{font-size:9px}
+#mob-ticker-bar .ct-chg{font-size:7.5px}
 @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .ticker-item{display:inline-flex;align-items:center;gap:5px;padding:0 14px;height:100%;font-size:11px;font-weight:700;border-right:1px solid var(--border2)}
 .ticker-sym{color:var(--text3)}
@@ -2809,10 +2815,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   #wb-key-badge{order:3}
   .wb-online{order:4;flex-shrink:0}
   .wb-count-badge{order:5;flex-shrink:0;font-size:10px}
-  /* Ticker: touch-scroll, same as 768px but with order */
-  #crypto-ticker{order:6;flex:0 0 calc(100vw - 248px);max-width:calc(100vw - 248px);min-width:80px;overflow-x:auto!important;-webkit-overflow-scrolling:touch;touch-action:pan-x;mask-image:none;-webkit-mask-image:none}
-  #ct-track{animation:none!important;-webkit-animation:none!important;transform:none!important}
-  .ct-pill{padding:3px 8px}.ct-sym{font-size:9px}.ct-px{font-size:10px}.ct-chg{font-size:8px}
+  /* Ticker: moved to mob-ticker-bar below header */
+  #crypto-ticker{display:none!important}
   .wb-games{order:7;flex-shrink:0}
   .wb-ghost{order:8;flex-shrink:0}
   .wb-wallet{order:9;flex-shrink:0}
@@ -2902,6 +2906,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <span id="wb-cube-balance">0</span> CUBE
     </div>
   </div>
+  <div id="mob-ticker-bar"><div id="mob-ct-track"></div></div>
   <div id="world-wrap">
     <canvas id="world-canvas"></canvas>
     <div id="world-overlay"></div>
@@ -15114,18 +15119,22 @@ function cwLogoutDo(){
 
 const _CT_COINS=[{id:'bitcoin',sym:'BTC'},{id:'ethereum',sym:'ETH'},{id:'tether',sym:'USDT'},{id:'binancecoin',sym:'BNB'},{id:'solana',sym:'SOL'},{id:'ripple',sym:'XRP'},{id:'dogecoin',sym:'DOGE'},{id:'cardano',sym:'ADA'},{id:'tron',sym:'TRX'},{id:'avalanche-2',sym:'AVAX'},{id:'shiba-inu',sym:'SHIB'},{id:'polkadot',sym:'DOT'},{id:'chainlink',sym:'LINK'},{id:'toncoin',sym:'GRAM'},{id:'bitcoin-cash',sym:'BCH'},{id:'litecoin',sym:'LTC'},{id:'near',sym:'NEAR'},{id:'uniswap',sym:'UNI'},{id:'matic-network',sym:'POL'},{id:'stellar',sym:'XLM'},{id:'pepe',sym:'PEPE'},{id:'arbitrum',sym:'ARB'},{id:'aptos',sym:'APT'},{id:'sui',sym:'SUI'},{id:'optimism',sym:'OP'},{id:'injective-protocol',sym:'INJ'},{id:'cosmos',sym:'ATOM'},{id:'filecoin',sym:'FIL'},{id:'vechain',sym:'VET'},{id:'notcoin',sym:'NOT'}];
 function _ctFmt(p){if(p>=10000)return p.toLocaleString('en',{maximumFractionDigits:0});if(p>=1)return p.toFixed(2);return p.toFixed(5);}
+function _ctSetHTML(html){
+  const tr=document.getElementById('ct-track');
+  const mob=document.getElementById('mob-ct-track');
+  if(tr)tr.innerHTML=html;
+  if(mob)mob.innerHTML=html;
+}
 function _ctPlaceholder(){
   const tr=document.getElementById('ct-track');
   if(!tr||tr.innerHTML.length>10)return;
-  // Use cached real data if available (from previous page load)
+  // Use cached real data only if fresh (< 5 minutes old)
   try{
     const cached=localStorage.getItem('cw_ticker_cache');
-    if(cached){tr.innerHTML=cached;_applyTickerAnim();return;}
+    const ts=parseInt(localStorage.getItem('cw_ticker_ts')||'0');
+    if(cached&&(Date.now()-ts)<300000){_ctSetHTML(cached);_applyTickerAnim();return;}
   }catch(e){}
-  // Fallback static placeholder (clearly marked with ~)
-  const ph=[['BTC','~97k','+1.2','up'],['ETH','~2.7k','+0.8','up'],['SOL','~155','+2.1','up'],['BNB','~640','+0.5','up'],['XRP','~2.35','+1.4','up'],['DOGE','~0.22','+3.2','up'],['ADA','~0.75','+1.8','up'],['AVAX','~24','-0.6','dn'],['LINK','~15','+1.1','up'],['NEAR','~2.8','+1.5','up']];
-  let h='';ph.forEach(x=>{h+=`<div class="ct-pill"><span class="ct-sym">${x[0]}</span><span class="ct-px">${x[1]}</span><span class="ct-chg ${x[3]}">${x[3]==='up'?'+':''}${x[2]}%</span></div>`;});
-  tr.innerHTML=h+h;
+  // Cache is stale or missing — don't show wrong prices, live data will populate shortly
 }
 function _applyTickerAnim(){
   const track=document.getElementById('ct-track');if(!track)return;
@@ -15153,10 +15162,10 @@ async function loadCryptoTicker(){
     for(const c of _CT_COINS){const i=d[c.id];if(!i)continue;const chg=(i.usd_24h_change||0).toFixed(2);const cls=parseFloat(chg)>=0?'up':'dn';h+='<div class="ct-pill"><span class="ct-sym">'+c.sym+'</span><span class="ct-px">'+_ctFmt(i.usd)+'</span><span class="ct-chg '+cls+'">'+(parseFloat(chg)>=0?'+':'')+chg+'%</span></div>';}
     if(h){
       const full=h+h;
-      track.innerHTML=full;
+      _ctSetHTML(full);
       _applyTickerAnim();
-      // Cache real data for next page load (avoids stale placeholder)
-      try{localStorage.setItem('cw_ticker_cache',full);}catch(e){}
+      // Cache real data with timestamp for next page load
+      try{localStorage.setItem('cw_ticker_cache',full);localStorage.setItem('cw_ticker_ts',Date.now().toString());}catch(e){}
     }
   }catch(e){}
   setTimeout(loadCryptoTicker,30000);
