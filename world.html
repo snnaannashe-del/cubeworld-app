@@ -4847,6 +4847,8 @@ async function syncFromBackend(){
       if(cnt) cnt.textContent=app.cubes.filter(c=>c.life>0).length+' кубов';
     }
   } catch(e){}
+  // After all cubes loaded — rebuild canvas to match server universe
+  if(wDone) _refreshWorld();
 }
 
 // Generic fetch helper with error swallowing (falls back silently)
