@@ -6108,8 +6108,8 @@ function showCubeKeyModal(key, name, lifeH, icon, cubeId){
   window._newCubeId = cubeId;
   window._newCubeKey = key;
   const _ckIco=document.getElementById('ck-icon');
-  if((icon||'').startsWith('data:')){_ckIco.innerHTML='<img src="'+icon+'" style="width:48px;height:48px;border-radius:10px;object-fit:cover">';}
-  else{_ckIco.textContent=icon||'🧊';}
+  if((icon||'').startsWith('data:')&&(icon||'').length>50){_ckIco.innerHTML='<img src="'+icon+'" style="width:48px;height:48px;border-radius:10px;object-fit:cover" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{textContent:\'📦\'}))">';}
+  else{_ckIco.textContent=(icon||'').startsWith('data:')?'📦':(icon||'🧊');}
   document.getElementById('ck-name').textContent = '«'+name+'» создан!';
   const lifeLabel = lifeH<=1?'1 час':lifeH<=6?lifeH+' часов':lifeH<=24?'24 часа':lifeH<=72?'3 дня':lifeH<=168?'7 дней':lifeH<=720?'1 месяц':'∞ Навсегда';
   document.getElementById('ck-life-label').textContent = 'Key 2 действует '+lifeLabel+' — пока живёт куб';
@@ -6141,8 +6141,8 @@ async function showCubeKeyPanel(){
   window._newCubeKey = key;
   window._newCubeId = app.currentCubeId;
   const _ckIco2=document.getElementById('ck-icon');
-  if((cube.icon||'').startsWith('data:')){_ckIco2.innerHTML='<img src="'+cube.icon+'" style="width:48px;height:48px;border-radius:10px;object-fit:cover">';}
-  else{_ckIco2.textContent=cube.icon||'🧊';}
+  if((cube.icon||'').startsWith('data:')&&(cube.icon||'').length>50){_ckIco2.innerHTML='<img src="'+cube.icon+'" style="width:48px;height:48px;border-radius:10px;object-fit:cover" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{textContent:\'📦\'}))">';}
+  else{_ckIco2.textContent=(cube.icon||'').startsWith('data:')?'📦':(cube.icon||'🧊');}
   document.getElementById('ck-name').textContent = 'Key 2 куба «'+(cube.name||'Куб')+'»';
   document.getElementById('ck-life-label').textContent = 'Действует пока куб активен';
   document.getElementById('ck-key-display').textContent = key;
@@ -6220,7 +6220,7 @@ function enterInterior(cubeId){
   try{ localStorage.setItem('cw_last_view','interior'); localStorage.setItem('cw_last_cube',cubeId); }catch(e){}
   const cube=app.cubes.find(c=>c.id===cubeId);
   // Null-safe updates (elements may not exist in redesigned topbar)
-  const _iconEl=document.getElementById('itb-icon'); if(_iconEl) _iconEl.textContent=cube?cube.icon:'';
+  const _iconEl=document.getElementById('itb-icon'); if(_iconEl) _icoEl(_iconEl, cube?cube.icon:'');
   const _nameEl=document.getElementById('itb-name'); if(_nameEl) _nameEl.textContent=cube?cube.name:'Куб';
   const _mkEl=document.getElementById('itb-mykey'); if(_mkEl)_mkEl.textContent=app.userKey?app.userKey.slice(0,12)+'…':'';
   const _tmrEl=document.getElementById('itb-timer'); if(_tmrEl) _tmrEl.style.color='var(--cyan)';
@@ -9112,6 +9112,22 @@ setInterval(()=>{
 //  UTILS
 // ════════════════════════════════════════════════
 function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+// Helper: render cube icon as <img> for valid data URLs, else emoji text
+// Guards against truncated data URLs (e.g. "data:ima" = 8 chars saved by old bug)
+function _icoHtml(icon,size){
+  const s=size||20; const ic=icon||'';
+  if(ic.startsWith('data:')&&ic.length>50)
+    return`<img src="${ic}" style="width:${s}px;height:${s}px;border-radius:4px;object-fit:cover;flex-shrink:0;vertical-align:middle" onerror="this.replaceWith(document.createTextNode('📦'))">`;
+  if(ic.startsWith('data:')) return '📦'; // truncated / invalid
+  return ic||'🧊';
+}
+// Helper: set icon element content safely (handles base64 data URLs)
+function _icoEl(el,icon){
+  if(!el)return; const ic=icon||'';
+  if(ic.startsWith('data:')&&ic.length>50){
+    el.innerHTML=`<img src="${ic}" style="width:20px;height:20px;border-radius:4px;object-fit:cover" onerror="this.replaceWith(document.createTextNode('📦'))">`;
+  }else{el.textContent=ic.startsWith('data:')?'📦':(ic||'');}
+}
 
 // ════════════════════════════════════════════════
 //  WALLET SYSTEM
@@ -9509,7 +9525,7 @@ function renderCubeSwitcher(){
       oncontextmenu="openCubeCtx(event,'${c.id}');return false;"
       data-cube-id="${c.id}">
       <div class="ct-dot" style="background:${c.colorCss||'#4ade80'}"></div>
-      ${c.icon||'🔷'} ${c.name}
+      ${_icoHtml(c.icon||'🔷',16)} <span style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(c.name)}</span>
       <span class="ct-timer">${fmtTime(c.life)}</span>
     </div>`).join('');
   // Long-press for mobile
@@ -9574,7 +9590,7 @@ function switchCube(cubeId){
   if(cubeId===app.currentCubeId) return;
   const cube=app.cubes.find(c=>c.id===cubeId); if(!cube||cube.life<=0){ showToast('⏰ Куб истёк'); return; }
   app.currentCubeId=cubeId;
-  const _ic=document.getElementById('itb-icon'); if(_ic) _ic.textContent=cube.icon;
+  const _ic=document.getElementById('itb-icon'); if(_ic) _icoEl(_ic, cube.icon);
   const _nm=document.getElementById('itb-name'); if(_nm) _nm.textContent=cube.name;
   const tel=document.getElementById('itb-timer');
   if(tel){tel.textContent=fmtTime(cube.life); tel.className='itb-timer'+(cube.life<=300?' urgent':'');}
@@ -9862,7 +9878,7 @@ async function buildEntityTab(type){
       if(!local.length){ body.innerHTML=`<div class="srch-empty"><span class="srch-empty-icon">🧊</span>Нет кубов</div>`; return; }
       body.innerHTML=`<div class="srch-entity-list">${local.map(c=>`
         <div class="srch-entity-item" onclick="closeSrchModal();enterInterior('${c.id}')">
-          <div class="sei-icon">${c.icon||'🧊'}</div>
+          <div class="sei-icon">${_icoHtml(c.icon||'🧊',28)}</div>
           <div class="sei-info">
             <div class="sei-name">${escHtml(c.name)}</div>
             <div class="sei-sub">${c.handle?'@'+escHtml(c.handle)+' · ':''}<span style="color:var(--text3)">#G${c.backendId||''}</span></div>
@@ -9877,7 +9893,7 @@ async function buildEntityTab(type){
     }
     body.innerHTML=`<div class="srch-entity-list">${res.map(c=>`
       <div class="srch-entity-item" onclick="closeSrchModal();joinOrEnterCube(${c.id},'${escHtml(c.name)}','${c.cube_key||''}')">
-        <div class="sei-icon">${c.icon||'🧊'}</div>
+        <div class="sei-icon">${_icoHtml(c.icon||'🧊',28)}</div>
         <div class="sei-info">
           <div class="sei-name">${escHtml(c.name)}</div>
           <div class="sei-sub">${escHtml(c.handle)} · ${fmtTime(c.life_left||0)}</div>
@@ -14954,7 +14970,7 @@ function openUniverseManager(){
   grid.innerHTML = app.cubes.map(cube => {
     const inUni = tmpUni.includes(cube.id);
     return `<div class="uni-cube-card${inUni?' in-universe':''}" id="uni-card-${cube.id}" onclick="toggleUniCard('${cube.id}',this)">
-      ${(cube.icon||'').startsWith('data:')?`<img src="${cube.icon}" class="uni-cube-icon" style="border-radius:6px;object-fit:cover;width:32px;height:32px">`:`<span class="uni-cube-icon">${cube.icon||'📦'}</span>`}
+      ${((cube.icon||'').startsWith('data:')&&(cube.icon||'').length>50)?`<img src="${cube.icon}" class="uni-cube-icon" style="border-radius:6px;object-fit:cover;width:32px;height:32px" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'uni-cube-icon',textContent:'📦'}))">`:`<span class="uni-cube-icon">${(cube.icon||'').startsWith('data:')?'📦':(cube.icon||'📦')}</span>`}
       <div class="uni-cube-info">
         <div class="uni-cube-name">${cube.name}</div>
         <div class="uni-cube-type">${cube.type==='public'?'🌐 Публичный':'🔐 Закрытый'} · ${fmtTime(cube.life)}</div>
