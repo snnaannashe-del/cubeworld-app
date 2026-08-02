@@ -5436,12 +5436,15 @@ function wRenderLoop(){
 
 function _refreshWorld(){
   // Rebuild wObjects from current app.cubes+myUniverse WITHOUT restarting the RAF loop
+  // CRITICAL: preserve existing 3D positions so cubes don't jump on server sync
+  const _prev={};
+  (wObjects||[]).forEach(o=>{if(o.cube&&o.cube.id)_prev[o.cube.id]={x:o.x,y:o.y,z:o.z,size:o.size,rotY:o.rotY,rotVY:o.rotVY,floatOff:o.floatOff,floatSpd:o.floatSpd};});
   wObjects=[];
   const ov=document.getElementById('world-overlay');if(ov)ov.innerHTML='';
   (app.cubes||[]).forEach((cube,i)=>{
     if(cube.life<=0)return;
     if(!(app.myUniverse||[]).includes(cube.id))return;
-    _addObjToWorld(cube,i);
+    _addObjToWorld(cube,i,_prev[cube.id]);
   });
 }
 function initWorld(){
@@ -5552,16 +5555,20 @@ function initWorld(){
   wRenderLoop();
 }
 
-function _addObjToWorld(cube,i){
+function _addObjToWorld(cube,i,savedPos){
   const idx=(i!==undefined)?i:app.cubes.indexOf(cube);
   const angle=(idx/Math.max(app.cubes.length,1))*Math.PI*2+Math.random()*0.4;
   const rad=170+Math.random()*90;
   const obj={
     cube,
-    x:Math.cos(angle)*rad,y:(Math.random()-0.5)*110,z:Math.sin(angle)*rad,
-    size:(cube.size||2)*38+Math.random()*8,
-    rotY:Math.random()*Math.PI*2,rotVY:(Math.random()-0.5)*0.009,
-    floatOff:Math.random()*Math.PI*2,floatSpd:0.28+Math.random()*0.45,
+    x:savedPos?savedPos.x:Math.cos(angle)*rad,
+    y:savedPos?savedPos.y:(Math.random()-0.5)*110,
+    z:savedPos?savedPos.z:Math.sin(angle)*rad,
+    size:savedPos?savedPos.size:(cube.size||2)*38+Math.random()*8,
+    rotY:savedPos?savedPos.rotY:Math.random()*Math.PI*2,
+    rotVY:savedPos?savedPos.rotVY:(Math.random()-0.5)*0.009,
+    floatOff:savedPos?savedPos.floatOff:Math.random()*Math.PI*2,
+    floatSpd:savedPos?savedPos.floatSpd:0.28+Math.random()*0.45,
     csx:wW/2,csy:wH/2,csr:40
   };
   wObjects.push(obj);
