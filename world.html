@@ -4681,9 +4681,12 @@ async function syncFromBackend(){
     }
   }
   // 3. Universe from backend (authoritative over localStorage)
+  // _uniLoadedFromServer=true means user has an explicit saved list — don't auto-add cubes on top of it
+  let _uniLoadedFromServer = false;
   const uniData = await apiCall('/me/universe');
   if(uniData && Array.isArray(uniData.universe) && uniData.universe.length > 0){
     app.myUniverse = uniData.universe;
+    _uniLoadedFromServer = true;
     try{localStorage.setItem(_uniKey(), JSON.stringify(app.myUniverse));}catch(e){}
   }
   // 3b. Stats (online count)
@@ -4756,11 +4759,14 @@ async function syncFromBackend(){
               speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1};
             app.cubes.push(cubeObj);
           }
-          // Always add to myUniverse and render — even if cube was already in app.cubes
-          if(!(app.myUniverse||[]).includes(c.id)){
+          // Add to myUniverse only if server didn't return an explicit list
+          // (if server list exists, it's authoritative — respect user's manual removals)
+          if(!_uniLoadedFromServer && !(app.myUniverse||[]).includes(c.id)){
             app.myUniverse=app.myUniverse||[];
             app.myUniverse.push(c.id);
             try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
+            if(wDone) addCubeToWorld(cubeObj);
+          } else if(_uniLoadedFromServer && (app.myUniverse||[]).includes(c.id)){
             if(wDone) addCubeToWorld(cubeObj);
           }
         });
@@ -4799,12 +4805,18 @@ async function syncFromBackend(){
         };
         app.cubes.push(cubeObj);
       }
-      // Add active own cubes to myUniverse and render on canvas
-      if(cubeObj.life > 0 && !(app.myUniverse||[]).includes(localId)){
-        if(!app.myUniverse) app.myUniverse=[];
-        app.myUniverse.push(localId);
-        try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
-        if(wDone) addCubeToWorld(cubeObj);
+      // Add active own cubes to myUniverse — only if server didn't return explicit list
+      // If server list exists, respect user's manual removals (don't re-add removed cubes)
+      if(cubeObj.life > 0){
+        const alreadyInUni = (app.myUniverse||[]).includes(localId);
+        if(!_uniLoadedFromServer && !alreadyInUni){
+          if(!app.myUniverse) app.myUniverse=[];
+          app.myUniverse.push(localId);
+          try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
+          if(wDone) addCubeToWorld(cubeObj);
+        } else if(alreadyInUni && wDone){
+          addCubeToWorld(cubeObj);
+        }
       }
     });
     _saveMyCubesCache();
@@ -4827,12 +4839,14 @@ async function syncFromBackend(){
             speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1
           };
           app.cubes.push(cube);
-          if(!(app.myUniverse||[]).includes(localId)){
+          // Only auto-add to universe if server didn't return explicit list
+          // (if it did, respect what user has checked/unchecked)
+          if(!_uniLoadedFromServer && !(app.myUniverse||[]).includes(localId)){
             app.myUniverse = app.myUniverse||[];
             app.myUniverse.push(localId);
             try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
           }
-          if(wDone) addCubeToWorld(cube);
+          if(wDone && (app.myUniverse||[]).includes(localId)) addCubeToWorld(cube);
         }
       });
       const cnt=document.getElementById('wb-count');
@@ -5674,6 +5688,11 @@ async function submitCreateCube(){
     };
     if(res.cube_key) cube.cubeKey = res.cube_key;
     app.cubes.push(cube);
+    // If icon is a photo (data URL), also PATCH it to backend — belt-and-suspenders
+    // (POST already saves icon, but this guarantees it even if POST limit missed it)
+    if(icon && icon.startsWith('data:') && icon.length > 50){
+      apiCall('/cubes/'+res.id+'/icon',{method:'PATCH',body:JSON.stringify({icon})}).catch(()=>{});
+    }
     // Cache own cubes in localStorage so they survive page reload even when backend sleeps
     _saveMyCubesCache();
     // Auto-add to myUniverse
@@ -6177,18 +6196,24 @@ async function submitJoinKey(){
   if(!res){ errEl.textContent=errMsg; errEl.style.display='block'; return; }
   // Cube found — add to world and enter
   const cubeId = 'bc'+res.id;
-  if(!app.cubes.find(c=>c.id===cubeId)){
+  const existingCube = app.cubes.find(c=>c.id===cubeId);
+  if(!existingCube){
     const cube={id:cubeId, backendId:res.id, name:res.name, icon:res.icon||'🧊', col:res.color||'#0095F6',
                 colorCss:res.color||'#0095F6', type:res.type, life:res.life_left||3600, desc:'Вошёл по ключу',
                 cubeKey:key, isOwn:false};
     app.cubes.push(cube);
     if(wDone) addCubeToWorld(cube);
+  } else {
+    // Patch icon in case it was stale (e.g. loaded from old cache)
+    if(res.icon && res.icon.length > 10) existingCube.icon = res.icon;
   }
-  // Add to myUniverse so it persists across logout/reload (critical fix)
+  // Add to myUniverse and persist to backend (so reload keeps it checked)
   if(!(app.myUniverse||[]).includes(cubeId)){
     app.myUniverse=app.myUniverse||[];
     app.myUniverse.push(cubeId);
     try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
+    // Save to backend so server universe is up-to-date
+    apiCall('/me/universe',{method:'POST',body:JSON.stringify({universe:app.myUniverse})}).catch(()=>{});
   }
   _saveMyCubesCache(); // persist joined cube in cache
   closeModal('modal-join-key');
