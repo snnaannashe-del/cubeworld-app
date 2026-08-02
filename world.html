@@ -6107,7 +6107,9 @@ async function doKickUser(uid,name){
 function showCubeKeyModal(key, name, lifeH, icon, cubeId){
   window._newCubeId = cubeId;
   window._newCubeKey = key;
-  document.getElementById('ck-icon').textContent = icon||'🧊';
+  const _ckIco=document.getElementById('ck-icon');
+  if((icon||'').startsWith('data:')){_ckIco.innerHTML='<img src="'+icon+'" style="width:48px;height:48px;border-radius:10px;object-fit:cover">';}
+  else{_ckIco.textContent=icon||'🧊';}
   document.getElementById('ck-name').textContent = '«'+name+'» создан!';
   const lifeLabel = lifeH<=1?'1 час':lifeH<=6?lifeH+' часов':lifeH<=24?'24 часа':lifeH<=72?'3 дня':lifeH<=168?'7 дней':lifeH<=720?'1 месяц':'∞ Навсегда';
   document.getElementById('ck-life-label').textContent = 'Key 2 действует '+lifeLabel+' — пока живёт куб';
@@ -6138,7 +6140,9 @@ async function showCubeKeyPanel(){
   // Reuse the key modal
   window._newCubeKey = key;
   window._newCubeId = app.currentCubeId;
-  document.getElementById('ck-icon').textContent = cube.icon||'🧊';
+  const _ckIco2=document.getElementById('ck-icon');
+  if((cube.icon||'').startsWith('data:')){_ckIco2.innerHTML='<img src="'+cube.icon+'" style="width:48px;height:48px;border-radius:10px;object-fit:cover">';}
+  else{_ckIco2.textContent=cube.icon||'🧊';}
   document.getElementById('ck-name').textContent = 'Key 2 куба «'+(cube.name||'Куб')+'»';
   document.getElementById('ck-life-label').textContent = 'Действует пока куб активен';
   document.getElementById('ck-key-display').textContent = key;
