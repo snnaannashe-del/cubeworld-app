@@ -5949,6 +5949,7 @@ function switchUniTab(tab,btn){
     _renderMineCubes(grid);
     // Then fetch fresh from server and update
     apiCall('/me/cubes').then(serverCubes=>{
+      if(!document.getElementById('uni-tab-mine').classList.contains('active'))return;
       if(serverCubes && serverCubes.length > 0){
         serverCubes.forEach(c=>{
           const existing=app.cubes.find(x=>x.backendId===c.id);
@@ -15171,21 +15172,13 @@ async function loadCryptoTicker(){
   _applyTickerAnim();
   const track=document.getElementById('ct-track');if(!track)return;
   try{
+    let d=null;
     try{const rp=await fetch(API+'/prices',{cache:'no-store'});if(rp.ok){const dp=await rp.json();if(dp&&dp.bitcoin&&dp.bitcoin.usd)d=dp;}}catch(_e){}
-    if(!d){
-      const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+_CT_COINS.map(c=>c.id).join(',')+'&vs_currencies=usd&include_24hr_change=true',{cache:'no-store'});
-      if(!r.ok)throw 0;
-    }
-    const d=await r.json();
+    if(!d){const cg=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+_CT_COINS.map(c=>c.id).join(',')+'&vs_currencies=usd&include_24hr_change=true',{cache:'no-store'});if(cg.ok)d=await cg.json();}
+    if(!d)throw 0;
     let h='';
     for(const c of _CT_COINS){const i=d[c.id];if(!i)continue;const chg=(i.usd_24h_change||0).toFixed(2);const cls=parseFloat(chg)>=0?'up':'dn';h+='<div class="ct-pill"><span class="ct-sym">'+c.sym+'</span><span class="ct-px">'+_ctFmt(i.usd)+'</span><span class="ct-chg '+cls+'">'+(parseFloat(chg)>=0?'+':'')+chg+'%</span></div>';}
-    if(h){
-      const full=h+h;
-      _ctSetHTML(full);
-      _applyTickerAnim();
-      // Cache real data with timestamp for next page load
-      try{localStorage.setItem('cw_ticker_cache',full);localStorage.setItem('cw_ticker_ts',Date.now().toString());}catch(e){}
-    }
+    if(h){const full=h+h;_ctSetHTML(full);_applyTickerAnim();try{localStorage.setItem('cw_ticker_cache',full);localStorage.setItem('cw_ticker_ts',Date.now().toString());}catch(e){}}
   }catch(e){}
   window._tickerTmr=setTimeout(loadCryptoTicker,30000);
 }
