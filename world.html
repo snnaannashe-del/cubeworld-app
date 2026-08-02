@@ -4759,15 +4759,12 @@ async function syncFromBackend(){
               speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1};
             app.cubes.push(cubeObj);
           }
-          // Add to myUniverse only if server didn't return an explicit list
-          // (if server list exists, it's authoritative — respect user's manual removals)
+          // Add to myUniverse only if server has no explicit saved list
           if(!_uniLoadedFromServer && !(app.myUniverse||[]).includes(c.id)){
             app.myUniverse=app.myUniverse||[];
             app.myUniverse.push(c.id);
             try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
-            if(wDone) addCubeToWorld(cubeObj);
-          } else if(_uniLoadedFromServer && (app.myUniverse||[]).includes(c.id)){
-            if(wDone) addCubeToWorld(cubeObj);
+            if(wDone) addCubeToWorld(cubeObj); // dedup-guarded
           }
         });
       }
@@ -4805,18 +4802,13 @@ async function syncFromBackend(){
         };
         app.cubes.push(cubeObj);
       }
-      // Add active own cubes to myUniverse — only if server didn't return explicit list
-      // If server list exists, respect user's manual removals (don't re-add removed cubes)
-      if(cubeObj.life > 0){
-        const alreadyInUni = (app.myUniverse||[]).includes(localId);
-        if(!_uniLoadedFromServer && !alreadyInUni){
-          if(!app.myUniverse) app.myUniverse=[];
-          app.myUniverse.push(localId);
-          try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
-          if(wDone) addCubeToWorld(cubeObj);
-        } else if(alreadyInUni && wDone){
-          addCubeToWorld(cubeObj);
-        }
+      // Add active own cubes to myUniverse — only if server has no explicit saved list
+      // If _uniLoadedFromServer=true, backend list is authoritative: skip auto-add
+      if(cubeObj.life > 0 && !_uniLoadedFromServer && !(app.myUniverse||[]).includes(localId)){
+        if(!app.myUniverse) app.myUniverse=[];
+        app.myUniverse.push(localId);
+        try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
+        if(wDone) addCubeToWorld(cubeObj); // dedup-guarded
       }
     });
     _saveMyCubesCache();
@@ -4839,14 +4831,16 @@ async function syncFromBackend(){
             speed:0.3+Math.random()*0.5, orbitR:0, orbitA:0, scale:1
           };
           app.cubes.push(cube);
-          // Only auto-add to universe if server didn't return explicit list
-          // (if it did, respect what user has checked/unchecked)
+          // Only auto-add to universe if server has no explicit saved list
           if(!_uniLoadedFromServer && !(app.myUniverse||[]).includes(localId)){
             app.myUniverse = app.myUniverse||[];
             app.myUniverse.push(localId);
             try{localStorage.setItem(_uniKey(),JSON.stringify(app.myUniverse));}catch(e){}
+            if(wDone) addCubeToWorld(cube); // only newly added ones; dedup-guarded
+          } else if((app.myUniverse||[]).includes(localId) && wDone){
+            // Cube is in universe (from server list) but was just discovered — add to canvas
+            addCubeToWorld(cube); // dedup-guarded: safe if already in wObjects
           }
-          if(wDone && (app.myUniverse||[]).includes(localId)) addCubeToWorld(cube);
         }
       });
       const cnt=document.getElementById('wb-count');
@@ -5551,7 +5545,11 @@ function _addObjToWorld(cube,i){
   wObjects.push(obj);
 }
 
-function addCubeToWorld(cube){_addObjToWorld(cube,undefined);}
+function addCubeToWorld(cube){
+  // Dedup guard: never add same cube twice to wObjects (prevents canvas label clones)
+  if(wObjects.find(o=>o.cube&&o.cube.id===cube.id)) return;
+  _addObjToWorld(cube,undefined);
+}
 
 function enterWorld(){
   loadCryptoTicker();
