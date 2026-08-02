@@ -4680,7 +4680,13 @@ async function syncFromBackend(){
       applyPrivacyMode();
     }
   }
-  // 3. Stats (online count)
+  // 3. Universe from backend (authoritative over localStorage)
+  const uniData = await apiCall('/me/universe');
+  if(uniData && Array.isArray(uniData.universe) && uniData.universe.length > 0){
+    app.myUniverse = uniData.universe;
+    try{localStorage.setItem(_uniKey(), JSON.stringify(app.myUniverse));}catch(e){}
+  }
+  // 3b. Stats (online count)
   const st = await apiCall('/stats');
   if(st){
     const cnt = document.getElementById('wb-count');
@@ -5242,6 +5248,7 @@ let wTheta=0.5,wPhi=0.3,wTarTheta=0.5,wTarPhi=0.3;
 let wDrag=false,wDragSX=0,wDragSY=0,wDragDX=0,wDragDY=0,wThetaD=0.5,wPhiD=0.3;
 let wHovId=null,wAutoRot=true,wMouseX=0,wMouseY=0;
 let wObjects=[],wStars=[];
+let wRafId=null; // guard against multiple RAF loops
 
 // Project a world-space point to screen coords using current scene rotation
 function wProject(x,y,z){
@@ -5351,7 +5358,7 @@ function wDrawCube(obj){
 }
 
 function wRenderLoop(){
-  requestAnimationFrame(wRenderLoop);
+  wRafId=requestAnimationFrame(wRenderLoop);
   if(!wCtx||wW<4||wH<4)return;
   const t=performance.now()/1000;
   // Auto-rotate & smooth lerp
@@ -5397,7 +5404,19 @@ function wRenderLoop(){
   // Labels drawn on canvas inside wDrawCube
 }
 
+function _refreshWorld(){
+  // Rebuild wObjects from current app.cubes+myUniverse WITHOUT restarting the RAF loop
+  wObjects=[];
+  const ov=document.getElementById('world-overlay');if(ov)ov.innerHTML='';
+  (app.cubes||[]).forEach((cube,i)=>{
+    if(cube.life<=0)return;
+    if(!(app.myUniverse||[]).includes(cube.id))return;
+    _addObjToWorld(cube,i);
+  });
+}
 function initWorld(){
+  // Cancel any existing RAF loop before starting a new one
+  if(wRafId){cancelAnimationFrame(wRafId);wRafId=null;}
   // Restore universe from localStorage (persists across reloads)
   try{
     const saved=localStorage.getItem(_uniKey());
@@ -5927,10 +5946,8 @@ function toggleMineCube(cubeId){
   const tog=document.getElementById('uni-tog-'+cubeId);
   if(card){card.classList.toggle('in-universe',uni.includes(cubeId));}
   if(tog){tog.textContent=uni.includes(cubeId)?'✓':'';}
-  // refresh world canvas
-  wObjects=[];wDone=false;
-  document.getElementById('world-overlay').innerHTML='';
-  requestAnimationFrame(initWorld);
+  // refresh world canvas without restarting RAF loop
+  if(wDone) _refreshWorld();
   const hint=document.getElementById('uni-hint');
   if(hint){updateUniHint();}
   showToast(uni.includes(cubeId)?'⬡ Куб добавлен в мир':'⬡ Куб убран из мира');
@@ -14992,10 +15009,8 @@ function saveUniverse(){
   localStorage.setItem(_uniKey(), JSON.stringify(selected));
   // Try to persist to backend (silent fail if endpoint missing)
   apiCall('/me/universe',{method:'POST',body:JSON.stringify({universe:selected})}).catch(()=>{});
-  // Refresh world
-  wObjects = []; wDone = false;
-  document.getElementById('world-overlay').innerHTML = '';
-  requestAnimationFrame(initWorld);
+  // Refresh world without restarting RAF loop
+  if(wDone) _refreshWorld();
   closeModal('modal-universe');
   showToast(`⬡ Вселенная обновлена — ${selected.length} кубов`);
 }
