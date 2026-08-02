@@ -4688,6 +4688,20 @@ async function syncFromBackend(){
     app.myUniverse = uniData.universe;
     _uniLoadedFromServer = true;
     try{localStorage.setItem(_uniKey(), JSON.stringify(app.myUniverse));}catch(e){}
+  } else {
+    // Server returned empty — fall back to localStorage preferences and upload them to server
+    // This handles first-time sync after backend deploy + users who set prefs before server was available
+    try{
+      const savedLocal = localStorage.getItem(_uniKey());
+      if(savedLocal){
+        const arr = JSON.parse(savedLocal);
+        if(Array.isArray(arr) && arr.length > 0){
+          app.myUniverse = arr;
+          _uniLoadedFromServer = true; // skip auto-add
+          apiCall('/me/universe',{method:'POST',body:JSON.stringify({universe:arr})}).catch(()=>{});
+        }
+      }
+    }catch(e){}
   }
   // 3b. Stats (online count)
   const st = await apiCall('/stats');
