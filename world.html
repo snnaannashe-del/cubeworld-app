@@ -15171,7 +15171,7 @@ async function loadCryptoTicker(){
   _applyTickerAnim();
   const track=document.getElementById('ct-track');if(!track)return;
   try{
-    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+_CT_COINS.map(c=>c.id).join(',')+'&vs_currencies=usd&include_24hr_change=true',{cache:'no-store'});
+    const r=await fetch(API+'/prices',{cache:'no-store'});
     if(!r.ok)throw 0;
     const d=await r.json();
     let h='';
