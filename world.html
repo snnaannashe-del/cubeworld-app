@@ -12871,6 +12871,7 @@ async function vfLike(postId,btn){
   if(!data) return;
   if(!app.vfLiked)app.vfLiked={};
   app.vfLiked[postId]=data.liked;
+  try{ localStorage.setItem('cw_vf_liked', JSON.stringify(app.vfLiked)); }catch(e){}
   if(heartEl){
     heartEl.classList.toggle('liked',data.liked);
     const ico=heartEl.querySelector('i.ti');
@@ -12935,6 +12936,8 @@ async function vfFollow(userId){
 }
 // Load persisted follow state
 (function(){ try{ const f=localStorage.getItem('cw_following'); if(f) app.vfFollowing=JSON.parse(f); }catch(e){} })();
+// Load persisted liked state
+(function(){ try{ const l=localStorage.getItem('cw_vf_liked'); if(l) app.vfLiked=JSON.parse(l); }catch(e){} })();
 
 async function openVfComments(postId){
   _vfCommentPostId=postId;
@@ -13073,7 +13076,9 @@ async function submitCreatePost(){
     video_url: payload.video_url||'',
     image_url: payload.image_url||'',
     description: payload.description||payload.title||'-',
-    music: payload.music||''
+    music: payload.music||'',
+    title: payload.title||'',
+    tags: payload.tags||[]
   };
   let data=null;
   try{
