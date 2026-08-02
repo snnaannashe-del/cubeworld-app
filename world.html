@@ -4643,7 +4643,11 @@ async function apiCall(path, methodOrOpts={}, bodyObj){
 }
 
 // ── Sync real data from backend ───────────────────────────────────────────
+let _syncLock=false;
 async function syncFromBackend(){
+  if(_syncLock)return;
+  _syncLock=true;
+  try{
   // 1. Balance + key type
   const bal = await apiCall('/cube/balance');
   if(bal){
@@ -4869,6 +4873,7 @@ async function syncFromBackend(){
   } catch(e){}
   // After all cubes loaded — rebuild canvas to match server universe
   if(wDone) _refreshWorld();
+  }catch(e){console.warn('syncFromBackend error',e);}finally{_syncLock=false;}
 }
 
 // Generic fetch helper with error swallowing (falls back silently)
@@ -15161,8 +15166,9 @@ window.addEventListener('resize',_applyTickerAnim);
 window.addEventListener('orientationchange',function(){setTimeout(_applyTickerAnim,150);});
 window.addEventListener('pageshow',function(){setTimeout(_applyTickerAnim,100);}); // iOS bfcache
 async function loadCryptoTicker(){
+  if(window._tickerTmr){clearTimeout(window._tickerTmr);window._tickerTmr=null;}
   _ctPlaceholder();
-  _applyTickerAnim(); // start animation immediately with placeholder
+  _applyTickerAnim();
   const track=document.getElementById('ct-track');if(!track)return;
   try{
     const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+_CT_COINS.map(c=>c.id).join(',')+'&vs_currencies=usd&include_24hr_change=true',{cache:'no-store'});
@@ -15178,7 +15184,7 @@ async function loadCryptoTicker(){
       try{localStorage.setItem('cw_ticker_cache',full);localStorage.setItem('cw_ticker_ts',Date.now().toString());}catch(e){}
     }
   }catch(e){}
-  setTimeout(loadCryptoTicker,30000);
+  window._tickerTmr=setTimeout(loadCryptoTicker,30000);
 }
 function _syncWbAcctHead(){
   const nameEl=document.getElementById('wb-acct-name');
