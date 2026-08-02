@@ -15128,13 +15128,15 @@ function _ctSetHTML(html){
 function _ctPlaceholder(){
   const tr=document.getElementById('ct-track');
   if(!tr||tr.innerHTML.length>10)return;
-  // Use cached real data only if fresh (< 5 minutes old)
+  // Show any cached data (it's real prices, not hardcoded stale values)
   try{
     const cached=localStorage.getItem('cw_ticker_cache');
-    const ts=parseInt(localStorage.getItem('cw_ticker_ts')||'0');
-    if(cached&&(Date.now()-ts)<300000){_ctSetHTML(cached);_applyTickerAnim();return;}
+    if(cached){_ctSetHTML(cached);_applyTickerAnim();return;}
   }catch(e){}
-  // Cache is stale or missing — don't show wrong prices, live data will populate shortly
+  // No cache yet — show loading dots so bar is visible while API loads
+  const _coins=['BTC','ETH','SOL','BNB','XRP','DOGE','ADA','AVAX','LINK','NEAR','DOT','UNI','ATOM','FIL'];
+  let _lh='';_coins.forEach(function(s){_lh+='<div class="ct-pill"><span class="ct-sym">'+s+'</span><span class="ct-px" style="opacity:.35">···</span></div>';});
+  _ctSetHTML(_lh+_lh);
 }
 function _applyTickerAnim(){
   const track=document.getElementById('ct-track');if(!track)return;
