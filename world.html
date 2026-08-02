@@ -2999,7 +2999,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
       <div class="sn-section">Инструменты</div>
       <div class="sn-item" onclick="switchSection('analytics',this);renderAnalytics()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-chart-bar"></i></span></span>Аналитика</div>
       <div class="sn-item" onclick="openReferralModal()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-link"></i></span></span>Рефералы</div>
-      <div class="sn-item" onclick="openPortfolio()"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-user-circle"></i></span></span>Мой профиль</div>
+
       <div class="sn-item" onclick="cwLogout()" style="color:#f87171"><span class="sn-icon"><span class="gi gi-32"><i class="ti ti-logout" style="color:#f87171"></i></span></span>Выйти / Сменить ключ</div>
       <div class="sn-divider"></div>
       <div style="padding:10px 12px 6px;font-size:10px;color:var(--text3);line-height:1.65">
@@ -3117,7 +3117,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
           <div class="vf-container" id="vf-container"></div>
         </div>
 
-        <!-- Desktop right: intentionally empty -->
+        <!-- Desktop right: Add Content panel -->
+        <div class="vf-create-side" id="vf-create-side">
+          <div class="vf-create-side-btn" onclick="openModal('modal-create-post')">
+            <div class="vf-create-side-icon">
+              <i class="ti ti-plus" style="font-size:32px;color:var(--accent)"></i>
+            </div>
+            <div class="vf-create-side-title">Добавить контент</div>
+            <div class="vf-create-side-desc">Опубликуй SHORT-видео или POST — текст, фото, файл</div>
+          </div>
+        </div>
         <!-- upload overlay -->
         <div class="vf-upload-overlay" id="vf-upload-overlay" style="display:none">
           <div class="vf-upload-modal">
