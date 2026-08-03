@@ -2860,6 +2860,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 ._vfs-item:last-child{border:none}
 ._vfs-item i{font-size:20px;opacity:.8}
 ._vfs-del{color:#ff5c5c}
+/* FIX 168c: desktop 16:9 + layout */
+@media(min-width:600px){
+  #_po-vid-wrap{position:absolute;top:50%!important;left:50%!important;bottom:auto!important;right:auto!important;transform:translate(-50%,-50%);height:90vh;width:calc(90vh * 9 / 16);border-radius:12px;overflow:hidden}
+}
+#_po-vid-wrap{position:absolute;inset:0}
+#_po2-right{display:flex;flex-direction:column;align-items:center;gap:20px;padding-bottom:8px}
+#_po2-left{flex:1;margin-right:16px}
 </style>
 </head>
 <body>
@@ -16366,13 +16373,18 @@ window._openPoVideo = function(idx){
   if(!ov){
     ov = document.createElement('div');
     ov.id = '_po-player2';
-    ov.style.cssText = 'position:fixed;inset:0;z-index:9000;background:#000;touch-action:none';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.92);opacity:0;transition:opacity .18s';
 
     var closeBtn = document.createElement('button');
     closeBtn.setAttribute('onclick','window._closePoPlayer()');
-    closeBtn.style.cssText = 'position:absolute;top:16px;left:16px;z-index:2;background:none;border:none;color:#fff;font-size:28px;cursor:pointer;line-height:1';
+    closeBtn.style.cssText = 'position:absolute;top:16px;left:16px;z-index:10;background:none;border:none;color:#fff;font-size:26px;cursor:pointer;line-height:1';
     closeBtn.innerHTML = '<i class="ti ti-x"></i>';
     ov.appendChild(closeBtn);
+
+    // Inner 16:9 video wrapper
+    var wrap = document.createElement('div');
+    wrap.id = '_po-vid-wrap';
+    ov.appendChild(wrap);
 
     var vid = document.createElement('video');
     vid.id = '_po-vid2';
@@ -16380,47 +16392,55 @@ window._openPoVideo = function(idx){
     vid.setAttribute('playsinline','');
     vid.autoplay = true;
     vid.loop = true;
-    ov.appendChild(vid);
+    wrap.appendChild(vid);
 
+    // Bottom overlay inside wrap
     var bot = document.createElement('div');
-    bot.style.cssText = 'position:absolute;bottom:0;left:0;right:0;padding:16px 16px 40px;background:linear-gradient(transparent,rgba(0,0,0,.75))';
+    bot.style.cssText = 'position:absolute;bottom:0;left:0;right:0;padding:16px 16px 40px;background:linear-gradient(transparent,rgba(0,0,0,.8));display:flex;align-items:flex-end;gap:0';
+
+    // LEFT: user + title
+    var leftCol = document.createElement('div');
+    leftCol.id = '_po2-left';
 
     var userEl = document.createElement('div');
     userEl.id = '_po2-user';
     userEl.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:6px';
-    bot.appendChild(userEl);
+    leftCol.appendChild(userEl);
 
     var titleEl = document.createElement('div');
     titleEl.id = '_po2-title';
-    titleEl.style.cssText = 'color:#fff;font-size:14px;opacity:.9;margin-bottom:16px';
-    bot.appendChild(titleEl);
+    titleEl.style.cssText = 'color:#fff;font-size:13px;opacity:.9;line-height:1.4';
+    leftCol.appendChild(titleEl);
 
-    var btnRow = document.createElement('div');
-    btnRow.style.cssText = 'display:flex;align-items:center;gap:28px';
+    bot.appendChild(leftCol);
+
+    // RIGHT: vertical action buttons
+    var rightCol = document.createElement('div');
+    rightCol.id = '_po2-right';
 
     var likeBtn = document.createElement('button');
     likeBtn.className = 'vf-fab-item';
     likeBtn.setAttribute('onclick','window._pop2Like()');
-    likeBtn.style.cssText = 'background:none;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;padding:0';
-    likeBtn.innerHTML = '<i id="_po2-like-ic" class="ti ti-heart"></i><span id="_po2-like-n" style="font-size:13px;opacity:.8"></span>';
-    btnRow.appendChild(likeBtn);
+    likeBtn.style.cssText = 'background:none;border:none;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0';
+    likeBtn.innerHTML = '<i id="_po2-like-ic" class="ti ti-heart" style="font-size:26px"></i><span id="_po2-like-n" style="font-size:11px;opacity:.8"></span>';
+    rightCol.appendChild(likeBtn);
 
     var cmtBtn = document.createElement('button');
     cmtBtn.className = 'vf-fab-item';
     cmtBtn.setAttribute('onclick','if(window._pop2Comment)window._pop2Comment()');
-    cmtBtn.style.cssText = 'background:none;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;padding:0';
-    cmtBtn.innerHTML = '<i class="ti ti-message-circle"></i><span id="_po2-cmt-n" style="font-size:13px;opacity:.8"></span>';
-    btnRow.appendChild(cmtBtn);
+    cmtBtn.style.cssText = 'background:none;border:none;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0';
+    cmtBtn.innerHTML = '<i class="ti ti-message-circle" style="font-size:26px"></i><span id="_po2-cmt-n" style="font-size:11px;opacity:.8"></span>';
+    rightCol.appendChild(cmtBtn);
 
     var shrBtn = document.createElement('button');
     shrBtn.className = 'vf-fab-item';
     shrBtn.setAttribute('onclick','window._pop2ShareMenu()');
     shrBtn.style.cssText = 'background:none;border:none;color:#fff;cursor:pointer;padding:0';
-    shrBtn.innerHTML = '<i class="ti ti-share-3"></i>';
-    btnRow.appendChild(shrBtn);
+    shrBtn.innerHTML = '<i class="ti ti-share-3" style="font-size:26px"></i>';
+    rightCol.appendChild(shrBtn);
 
-    bot.appendChild(btnRow);
-    ov.appendChild(bot);
+    bot.appendChild(rightCol);
+    wrap.appendChild(bot);
 
     var ty=0,sy=0,mv=false;
     ov.addEventListener('touchstart',function(e){sy=e.touches[0].clientY;mv=false;},{passive:true});
@@ -16428,7 +16448,7 @@ window._openPoVideo = function(idx){
     ov.addEventListener('touchend',function(){if(!mv)return;if(ty<-60)window._poVidNext();else if(ty>60)window._poVidPrev();ty=0;});
     document.body.appendChild(ov);
   }
-  setTimeout(function(){ov.classList.add('vis');},10);
+  setTimeout(function(){var o=document.getElementById('_po-player2');if(o)o.classList.add('vis');},10);
   window._poVidLoad(idx);
 };
 window._poVidLoad = function(i){
@@ -16447,9 +16467,9 @@ window._poVidLoad = function(i){
   var liEl = document.getElementById('_po2-like-ic');
   if(liEl){ liEl.className = p._liked ? 'ti ti-heart-filled' : 'ti ti-heart'; liEl.style.color = p._liked ? '#ff4d6d' : '#fff'; }
   var ln = document.getElementById('_po2-like-n');
-  if(ln) ln.textContent = p.like_count>0 ? (p.like_count>999 ? Math.round(p.like_count/1000)+'k' : p.like_count) : '';
+  if(ln) ln.textContent = p.like_count>0 ? (p.like_count>999?Math.round(p.like_count/1000)+'k':p.like_count) : '';
   var cn = document.getElementById('_po2-cmt-n');
-  if(cn) cn.textContent = p.comment_count>0 ? (p.comment_count>999 ? Math.round(p.comment_count/1000)+'k' : p.comment_count) : '';
+  if(cn) cn.textContent = p.comment_count>0 ? (p.comment_count>999?Math.round(p.comment_count/1000)+'k':p.comment_count) : '';
   window._poVidIdx = i;
 };
 
@@ -16515,11 +16535,11 @@ function _openVfShareSheet(isOwn, postId){
   var pid = String(postId);
   var h = '<div class="_vfs-handle"></div>';
   h += '<div class="_vfs-item _vfs-action" data-action="share" data-pid="'+pid+'"><i class="ti ti-share-3"></i>Поделиться</div>';
-  h += '<div class="_vfs-item _vfs-action" data-action="report" data-pid="'+pid+'"><i class="ti ti-flag"></i>Пожаловаться</div>';
   if(isOwn){
     h += '<div class="_vfs-item _vfs-action" data-action="edit" data-pid="'+pid+'"><i class="ti ti-pencil"></i>Редактировать</div>';
     h += '<div class="_vfs-item _vfs-del _vfs-action" data-action="delete" data-pid="'+pid+'"><i class="ti ti-trash"></i>Удалить</div>';
   }
+  h += '<div class="_vfs-item _vfs-action" data-action="report" data-pid="'+pid+'"><i class="ti ti-flag"></i>Пожаловаться</div>';
   h += '<div class="_vfs-item _vfs-action" data-action="cancel" style="opacity:.6"><i class="ti ti-x"></i>Отмена</div>';
   sh.innerHTML = h;
   var ov = document.getElementById('_vf-share-ov');
