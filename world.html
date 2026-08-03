@@ -16396,7 +16396,7 @@ window._openPoVideo = function(idx){
 
     // Bottom overlay inside wrap
     var bot = document.createElement('div');
-    bot.style.cssText = 'position:absolute;bottom:0;left:0;right:0;padding:16px 16px 40px;background:linear-gradient(transparent,rgba(0,0,0,.8));display:flex;align-items:flex-end;gap:0';
+    bot.style.cssText = 'position:absolute;bottom:0;left:0;right:0;padding:80px 14px 36px;background:linear-gradient(transparent,rgba(0,0,0,.88));display:flex;align-items:flex-end;gap:0';
 
     // LEFT: user + title
     var leftCol = document.createElement('div');
@@ -16459,11 +16459,12 @@ window._poVidLoad = function(i){
   if(vid){ vid.src = p.video_url||''; vid.load(); vid.play().catch(function(){}); }
   var uEl = document.getElementById('_po2-user');
   if(uEl){
-    var bdg = p._badge ? '<img src="'+p._badge+'" style="width:18px;height:18px;border-radius:50%;object-fit:cover">' : '';
-    uEl.innerHTML = '<span style="color:#fff;font-weight:600;font-size:14px">@'+(p._uname||p.username||'')+'</span>'+bdg;
+    var domUname = (document.getElementById('po-uname')||{}).textContent||'';
+    var uname = domUname || ('@'+(p._uname||p.username||''));
+    uEl.innerHTML = '<span style="color:#fff;font-weight:700;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,.6)">'+uname+'</span>';
   }
   var tEl = document.getElementById('_po2-title');
-  if(tEl) tEl.textContent = p.title||'';
+  if(tEl) tEl.textContent = [p.title,p.description].filter(Boolean).join(' · ');
   var liEl = document.getElementById('_po2-like-ic');
   if(liEl){ liEl.className = p._liked ? 'ti ti-heart-filled' : 'ti ti-heart'; liEl.style.color = p._liked ? '#ff4d6d' : '#fff'; }
   var ln = document.getElementById('_po2-like-n');
