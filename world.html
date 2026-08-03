@@ -11891,8 +11891,9 @@ function openPublicProfile(uid, name, avColor) {
     if(!prof||document.getElementById('portfolio-overlay').dataset.viewUid!==String(uid)) return;
     const avEl=document.getElementById('po-avatar');
     if(avEl){
-      if(prof.photoUrl){avEl.innerHTML=`<img src="${escHtml(prof.photoUrl)}" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;}
-      else if(prof.avatar){avEl.innerHTML=`<span style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:50%;background:${avColor||'linear-gradient(135deg,#0095F6,#5263FF)'};font-size:52px">${prof.avatar}</span>`;}
+      const avUrl=prof.photoUrl||prof.avatar_url;
+      if(avUrl&&(avUrl.startsWith('data:')||avUrl.startsWith('http')||avUrl.startsWith('/'))){avEl.innerHTML=`<img src="${escHtml(avUrl)}" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;}
+      else if(prof.avatar||avUrl){avEl.innerHTML=`<span style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:50%;background:${avColor||'linear-gradient(135deg,#0095F6,#5263FF)'};font-size:52px">${prof.avatar||avUrl}</span>`;}
     }
     const dispName=prof.display_name||prof.username||name;
     const uname=prof.username;
