@@ -4379,7 +4379,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <button id="po-edit-btn" class="po-edit-btn" onclick="closePortfolio();openMyProfile()">
       <i class="ti ti-edit" style="font-size:13px"></i> Изменить
     </button>
-    <div id="po-follow-wrap" style="display:none;position:relative"><button class="po-logo-btn" onclick="togglePoDropdown(event)" title="Действия"><span style="font:900 13px/1 system-ui,sans-serif;background:linear-gradient(135deg,#0095f6,#00c6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-1px;display:block">CW</span></button><div id="po-dropdown"><button class="po-dd-item" onclick="poActMsg()"><i class="ti ti-message"></i>Написать</button><button class="po-dd-item" onclick="poActCall()"><i class="ti ti-phone"></i>Позвонить</button><button class="po-dd-item" onclick="poActNotify()"><i class="ti ti-bell"></i>Уведомления</button><div class="po-dd-sep"></div><button class="po-dd-item po-dd-danger" onclick="poActBlock()"><i class="ti ti-ban"></i>Заблокировать</button></div></div>
+    <div id="po-follow-wrap" style="display:none;position:relative"><button id="po-follow-btn" style="display:none" onclick="poFollowBtnClick()">Подписаться</button><button class="po-logo-btn" onclick="togglePoDropdown(event)" title="Действия"><span style="font:900 13px/1 system-ui,sans-serif;background:linear-gradient(135deg,#0095f6,#00c6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-1px;display:block">CW</span></button><div id="po-dropdown"><button class="po-dd-item" onclick="poFollowDd()"><i class="ti ti-user-plus" id="po-dd-follow-icon"></i><span id="po-dd-follow-txt">Подписаться</span></button><div class="po-dd-sep"></div><button class="po-dd-item" onclick="poActMsg()"><i class="ti ti-message"></i>Написать</button><button class="po-dd-item" onclick="poActCall()"><i class="ti ti-phone"></i>Позвонить</button><button class="po-dd-item" onclick="poActNotify()"><i class="ti ti-bell"></i>Уведомления</button><div class="po-dd-sep"></div><button class="po-dd-item po-dd-danger" onclick="poActBlock()"><i class="ti ti-ban"></i>Заблокировать</button></div></div>
   </div>
   <div class="po-scroll" id="po-scroll">
     <!-- Hero -->
@@ -4409,12 +4409,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <div class="po-stat-lbl">Лайки</div>
       </div>
     </div>
-    <div id="po-actions" class="po-actions-row" style="display:none">
-      <button class="po-action-btn" onclick="poActMsg()"><i class="ti ti-message"></i><span>Написать</span></button>
-      <button class="po-action-btn" onclick="poActCall()"><i class="ti ti-phone"></i><span>Позвонить</span></button>
-      <button class="po-action-btn" onclick="poActNotify()"><i class="ti ti-bell"></i><span>Уведомления</span></button>
-      <button class="po-action-btn po-action-danger" onclick="poActBlock()"><i class="ti ti-ban"></i><span>Заблокировать</span></button>
-    </div>
+    
     <!-- Grid tabs -->
     <div class="po-tabs-bar">
       <button class="po-tab active" id="po-tab-short" onclick="poSetTab('short',this)">
@@ -9895,13 +9890,15 @@ async function _openMiniProfile(uid,name,avColor){
   let mc=document.getElementById('_mac_card');
   if(!mc){
     mc=document.createElement('div');mc.id='_mac_card';
-    mc.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-60%) scale(.9);background:rgba(8,20,60,.52);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border:1px solid rgba(100,180,255,.18);border-radius:22px;padding:28px 28px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;z-index:8200;min-width:210px;box-shadow:0 16px 48px rgba(0,0,0,.6);opacity:0;transition:transform .22s cubic-bezier(.34,1.56,.64,1),opacity .18s ease';
+    mc.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-60%) scale(.9);background:rgba(13,9,28,.94);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:28px 28px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;z-index:8200;min-width:210px;box-shadow:0 16px 48px rgba(0,0,0,.6);opacity:0;transition:transform .22s cubic-bezier(.34,1.56,.64,1),opacity .18s ease';
     mc.innerHTML='<div id="_mac_av" style="width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;background:linear-gradient(135deg,#667eea,#764ba2);flex-shrink:0;margin-bottom:2px"></div><div id="_mac_nm" style="color:#fff;font-size:17px;font-weight:600;text-align:center;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2"></div><button id="_mac_btn" style="margin-top:6px;padding:11px 28px;background:linear-gradient(135deg,#0095f6,#0060d0);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;width:100%;letter-spacing:.3px">Открыть профиль</button>';
     document.body.appendChild(mc);
   }
   window._macUid=uid;window._macName=name||'';window._macAv=avColor||'';
   const av=document.getElementById('_mac_av');
-  if(av){av.textContent=(name||'?')[0].toUpperCase();av.style.background=avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}
+  if(av){av.textContent=(name||'?')[0].toUpperCase();av.style.background=avColor||'linear-gradient(135deg,#0095f6,#0060d0)';
+  // Load real avatar from API
+  if(uid){try{fetch('https://cubeworld-backend.onrender.com/users/'+uid+'/mini',{headers:window._authHeaders||{}}).then(function(r){return r.ok?r.json():null;}).then(function(u){if(!u)return;const avNow=document.getElementById('_mac_av');if(!avNow)return;if(u.avatar_url){avNow.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';}else if(u.avatar_emoji){avNow.textContent=u.avatar_emoji;avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}else if(u.avatar_color){avNow.style.background=u.avatar_color;}}).catch(function(){});}catch(_){}}}
   const nm=document.getElementById('_mac_nm');if(nm)nm.textContent=name||'';
   const btn=document.getElementById('_mac_btn');
   if(btn)btn.onclick=function(){_closeMac();if(typeof openPublicProfile==='function')openPublicProfile(window._macUid,window._macName,window._macAv);};
@@ -16085,6 +16082,14 @@ const _grpOvId='grp-chat-overlay';
     // Show action row + logo dropdown for other users
     const fw=document.getElementById('po-follow-wrap');
     if(fw)fw.style.display='block';
+    // Sync follow dd text with hidden follow btn
+    setTimeout(function(){
+      const hb=document.getElementById('po-follow-btn');
+      const dt=document.getElementById('po-dd-follow-txt');
+      const ic=document.getElementById('po-dd-follow-icon');
+      if(hb&&dt){const txt=hb.textContent.trim();dt.textContent=txt;if(ic)ic.className=txt.indexOf('Отп')>=0?'ti ti-user-minus':'ti ti-user-plus';}
+    },300);
+    
     const acts=document.getElementById('po-actions');
     if(acts)acts.style.display='flex';
     const dd=document.getElementById('po-dropdown');
@@ -16135,6 +16140,21 @@ function poActNotify(){alert('Уведомления — скоро!');}
 function poActBlock(){
   const uid=(document.getElementById('portfolio-overlay')||{dataset:{}}).dataset.viewUid;
   if(uid&&confirm('Заблокировать пользователя?'))if(typeof closePortfolio==='function')closePortfolio();
+}
+function poFollowDd(){
+  const dd=document.getElementById('po-dropdown');
+  if(dd)dd.style.display='none';
+  if(typeof poFollowBtnClick==='function')poFollowBtnClick();
+  setTimeout(function(){
+    const hb=document.getElementById('po-follow-btn');
+    const dt=document.getElementById('po-dd-follow-txt');
+    const ic=document.getElementById('po-dd-follow-icon');
+    if(hb&&dt){
+      const txt=hb.textContent.trim();
+      dt.textContent=txt;
+      if(ic)ic.className=txt.indexOf('Отп')>=0?'ti ti-user-minus':'ti ti-user-plus';
+    }
+  },600);
 }
 </script>
 
