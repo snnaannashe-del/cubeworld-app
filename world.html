@@ -8410,8 +8410,8 @@ function showContactPanel(uid, name, avColor) {
     }
   }).catch(()=>{});
   document.getElementById('cp-name').textContent = name || '—';
-  document.getElementById('cp-uid').textContent = 'UID: ' + uid;
-  document.getElementById('cp-status').textContent = '⚪ CubeWorld';
+  document.getElementById('cp-uid').textContent = '';
+  const _cps=document.getElementById('cp-status');if(_cps)_cps.style.display='none';
   // Try to load shared media from DM history
   const dmKey = 'dm:'+uid;
   const msgs = (app.chatMessages[_DM_NAMESPACE]||{})[dmKey]||[];
@@ -11999,18 +11999,16 @@ function openPublicProfile(uid, name, avColor) {
     // 1) Try /activity/stats?user_id=
     const stats = await apiCall('/activity/stats?user_id='+uid).catch(()=>null);
     if(stats && (stats.followers!==undefined || stats.following!==undefined)) {
-      set('po-follows', stats.following??'—');
-      set('po-followers', stats.followers??'—');
-      set('po-likes', stats.reactions_received??'—');
-      return;
+      set('po-follows', stats.following??0);
+      set('po-followers', stats.followers??0);
+      set('po-likes', stats.reactions_received??0);
     }
     // 2) Try /users/{uid}
     const user = await apiCall('/users/'+uid).catch(()=>null);
     if(user && document.getElementById('portfolio-overlay').dataset.viewUid === String(uid)) {
-      set('po-follows', user.following_count??user.following??'—');
-      set('po-followers', user.followers_count??user.followers??'—');
-      set('po-likes', user.reactions_received??'—');
-      return;
+      set('po-follows', user.following_count??user.following??0);
+      set('po-followers', user.followers_count??user.followers??0);
+      set('po-likes', user.reactions_received??0);
     }
     // 3) Try GET /follow/{uid} — returns current follow status + counts
     const token = localStorage.getItem('cw_access_token');
