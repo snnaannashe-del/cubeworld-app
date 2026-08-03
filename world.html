@@ -2835,6 +2835,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .po-action-danger{color:#ff9090!important}
 .po-action-danger i{color:#ff7b7b!important}
 #po-follow-btn{display:none!important}
+#po-follow-wrap{margin-left:auto!important}
 </style>
 </head>
 <body>
@@ -16157,6 +16158,107 @@ function poFollowDd(){
     }
   },600);
 }
+
+// ===== FIX 164: portfolio grid + video player + follow stats =====
+(function(){
+  // Chain wrap openPublicProfile to load grid
+  const _oPP2=window.openPublicProfile;
+  window.openPublicProfile=function(uid,name,avColor){
+    if(typeof _oPP2==='function')_oPP2(uid,name,avColor);
+    window._poUid=uid;
+    setTimeout(function(){_loadPoGrid(uid);},700);
+  };
+
+  window._loadPoGrid=async function(uid){
+    const grid=document.getElementById('po-grid');
+    if(!grid)return;
+    grid.innerHTML='<div style="color:rgba(255,255,255,.35);text-align:center;padding:48px 0;width:100%;grid-column:1/-1">Загрузка...</div>';
+    try{
+      const posts=await apiCall('/feed?user_id='+uid+'&limit=50');
+      if(!Array.isArray(posts)||posts.length===0){
+        grid.innerHTML='<div style="color:rgba(255,255,255,.35);text-align:center;padding:48px 0;width:100%;grid-column:1/-1">Нет публикаций</div>';
+        return;
+      }
+      const shorts=posts.filter(function(p){return p.video_url;});
+      window._poShorts=shorts;
+      if(shorts.length===0){
+        grid.innerHTML='<div style="color:rgba(255,255,255,.35);text-align:center;padding:48px 0;width:100%;grid-column:1/-1">Нет видео</div>';
+        return;
+      }
+      grid.innerHTML=shorts.map(function(p,i){
+        return '<div onclick="_openPoVideo('+i+')" style="aspect-ratio:9/16;background:#111;border-radius:8px;overflow:hidden;position:relative;cursor:pointer;flex-shrink:0">'+
+          '<video src="'+p.video_url+'#t=1" preload="metadata" muted playsinline style="width:100%;height:100%;object-fit:cover"></video>'+
+          '<div style="position:absolute;inset:0;background:rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center">'+
+          '<div style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.52);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff">▶</div></div>'+
+          '<div style="position:absolute;bottom:5px;left:7px;font-size:11px;color:rgba(255,255,255,.8);text-shadow:0 1px 2px rgba(0,0,0,.8)">'+(p.view_count||p.views||0)+' 👁</div>'+
+        '</div>';
+      }).join('');
+    }catch(e){
+      grid.innerHTML='<div style="color:rgba(255,255,255,.35);text-align:center;padding:48px 0;width:100%;grid-column:1/-1">Ошибка загрузки</div>';
+    }
+  };
+
+  window._openPoVideo=function(idx){
+    const posts=window._poShorts||[];
+    if(!posts[idx])return;
+    let ov=document.getElementById('_po_player');
+    if(!ov){
+      ov=document.createElement('div');
+      ov.id='_po_player';
+      ov.style.cssText='position:fixed;inset:0;background:#000;z-index:9100;display:none;flex-direction:column;align-items:stretch';
+      ov.innerHTML=
+        '<div style="position:absolute;top:16px;left:16px;z-index:3">'+
+        '<button onclick="_closePoPlayer()" style="background:rgba(0,0,0,.65);border:none;color:#fff;font-size:20px;width:42px;height:42px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">&#8592;</button>'+
+        '</div>'+
+        '<video id="_po_vid" style="flex:1;width:100%;max-height:100%;object-fit:contain" controls autoplay playsinline webkit-playsinline x5-playsinline></video>'+
+        '<div id="_po_vid_info" style="position:absolute;bottom:0;left:0;right:0;padding:14px 16px 32px;color:#fff;font-size:14px;background:linear-gradient(transparent,rgba(0,0,0,.75));pointer-events:none"></div>';
+      document.body.appendChild(ov);
+      var ty=0;
+      ov.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
+      ov.addEventListener('touchend',function(e){
+        var dy=ty-e.changedTouches[0].clientY;
+        if(Math.abs(dy)>55){if(dy>0)window._poVidNext();else window._poVidPrev();}
+      },{passive:true});
+    }
+    ov.style.display='flex';
+    window._poVidCur=idx;
+    window._poVidLoad(idx);
+  };
+
+  window._poVidLoad=function(i){
+    var p=(window._poShorts||[])[i];if(!p)return;
+    var v=document.getElementById('_po_vid');
+    var inf=document.getElementById('_po_vid_info');
+    if(v){v.src=p.video_url;v.load();v.play().catch(function(){});}
+    if(inf)inf.textContent=p.description||p.content||'';
+    window._poVidCur=i;
+  };
+  window._poVidNext=function(){var n=(window._poVidCur||0)+1;if(n<(window._poShorts||[]).length)window._poVidLoad(n);};
+  window._poVidPrev=function(){var p=(window._poVidCur||0)-1;if(p>=0)window._poVidLoad(p);};
+  window._closePoPlayer=function(){
+    var ov=document.getElementById('_po_player');
+    if(ov){ov.style.display='none';var v=document.getElementById('_po_vid');if(v){v.pause();v.src='';}}
+  };
+
+  // Override poFollowDd to also call API + update follower count
+  var _origPFD=window.poFollowDd;
+  window.poFollowDd=function(){
+    if(typeof _origPFD==='function')_origPFD();
+    var uid=window._poUid;if(!uid)return;
+    // Update follower count locally
+    setTimeout(function(){
+      var hb=document.getElementById('po-follow-btn');
+      var fr=document.getElementById('po-followers');
+      if(hb&&fr){
+        var isNowFollowing=hb.textContent.indexOf('Отп')>=0;
+        var cur=parseInt(fr.textContent)||0;
+        fr.textContent=Math.max(0,isNowFollowing?cur+1:cur-1);
+      }
+      // Call real follow API
+      try{apiCall('/follow/'+uid,{method:'POST'}).catch(function(){});}catch(_){}
+    },400);
+  };
+})();
 </script>
 
 <!-- ══ NEW MODALS ══════════════════════════════ -->
