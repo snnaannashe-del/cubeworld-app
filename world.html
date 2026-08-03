@@ -12000,6 +12000,34 @@ function poSetTab(tab, btn){
     _renderPortfolioGrid();
   }
 }
+function _renderPublicProfileGrid(uid, posts){
+  const grid=document.getElementById('po-grid');
+  if(!grid) return;
+  const isVideoPost=p=>(p.post_type||p.type||'short')==='short';
+  const filtered=_poTab==='short'?posts.filter(p=>isVideoPost(p)):posts.filter(p=>!isVideoPost(p));
+  if(!filtered.length){
+    const isShort=_poTab==='short';
+    grid.innerHTML=`<div style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:40vh;padding:40px 20px;gap:14px">
+      <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:30px">${isShort?'🎬':'📝'}</div>
+      <div style="font-size:15px;font-weight:700;color:#e0e0f8">${isShort?'Нет коротких видео':'Нет постов'}</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.4);text-align:center;max-width:240px">Пользователь ещё не публиковал контент</div>
+    </div>`;
+    return;
+  }
+  grid.innerHTML=filtered.slice(0,30).map(p=>{
+    const isVideo=isVideoPost(p);
+    const thumb=p.thumbnail||p.media_url||p.image_url||'';
+    const bg=thumb?`background:url('${escHtml(thumb)}') center/cover no-repeat #111`:`background:rgba(255,255,255,.05)`;
+    const inner=thumb?`<img class="po-cell-thumb" src="${escHtml(thumb)}" alt="" onerror="this.style.display='none'">`:
+      `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:28px">${isVideo?'🎬':'📝'}</div>`;
+    const typeChip=isVideo
+      ? `<div class="po-type-chip short"><svg width="7" height="7" viewBox="0 0 8 8" fill="none" style="display:inline;vertical-align:middle;margin-right:2px"><polygon points="2,1 7,4 2,7" fill="white"/></svg>SHORT</div>`
+      : `<div class="po-type-chip post">POST</div>`;
+    const views=p.views||p.view_count||0;
+    return `<div class="po-cell" style="${bg}">${inner}${typeChip}<div class="po-cell-views">${views>0?_fmtNum(views):''}</div></div>`;
+  }).join('');
+}
+
 function _renderPortfolioGrid(){
   const grid=document.getElementById('po-grid');
   if(!grid) return;
