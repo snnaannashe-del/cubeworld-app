@@ -2834,6 +2834,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .po-action-btn i{font-size:20px;color:#5bc8ff}
 .po-action-danger{color:#ff9090!important}
 .po-action-danger i{color:#ff7b7b!important}
+#po-follow-btn{display:none!important}
 </style>
 </head>
 <body>
@@ -9890,7 +9891,7 @@ async function _openMiniProfile(uid,name,avColor){
   let mc=document.getElementById('_mac_card');
   if(!mc){
     mc=document.createElement('div');mc.id='_mac_card';
-    mc.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-60%) scale(.9);background:rgba(13,9,28,.94);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:28px 28px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;z-index:8200;min-width:210px;box-shadow:0 16px 48px rgba(0,0,0,.6);opacity:0;transition:transform .22s cubic-bezier(.34,1.56,.64,1),opacity .18s ease';
+    mc.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-60%) scale(.9);background:#020211;backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:28px 28px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;z-index:8200;min-width:210px;box-shadow:0 16px 48px rgba(0,0,0,.6);opacity:0;transition:transform .22s cubic-bezier(.34,1.56,.64,1),opacity .18s ease';
     mc.innerHTML='<div id="_mac_av" style="width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;background:linear-gradient(135deg,#667eea,#764ba2);flex-shrink:0;margin-bottom:2px"></div><div id="_mac_nm" style="color:#fff;font-size:17px;font-weight:600;text-align:center;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2"></div><button id="_mac_btn" style="margin-top:6px;padding:11px 28px;background:linear-gradient(135deg,#0095f6,#0060d0);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;width:100%;letter-spacing:.3px">Открыть профиль</button>';
     document.body.appendChild(mc);
   }
@@ -9898,7 +9899,7 @@ async function _openMiniProfile(uid,name,avColor){
   const av=document.getElementById('_mac_av');
   if(av){av.textContent=(name||'?')[0].toUpperCase();av.style.background=avColor||'linear-gradient(135deg,#0095f6,#0060d0)';
   // Load real avatar from API
-  if(uid){try{fetch('https://cubeworld-backend.onrender.com/users/'+uid+'/mini',{headers:window._authHeaders||{}}).then(function(r){return r.ok?r.json():null;}).then(function(u){if(!u)return;const avNow=document.getElementById('_mac_av');if(!avNow)return;if(u.avatar_url){avNow.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';}else if(u.avatar_emoji){avNow.textContent=u.avatar_emoji;avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}else if(u.avatar_color){avNow.style.background=u.avatar_color;}}).catch(function(){});}catch(_){}}}
+  if(uid){try{fetch('https://cubeworld-backend.onrender.com/users/'+uid,{headers:window._authHeaders||{}}).then(function(r){return r.ok?r.json():null;}).then(function(u){if(!u)return;const avNow=document.getElementById('_mac_av');if(!avNow)return;if(u.avatar_url){avNow.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';}else if(u.avatar_emoji){avNow.textContent=u.avatar_emoji;avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}else if(u.avatar_color){avNow.style.background=u.avatar_color;}}).catch(function(){});}catch(_){}}}
   const nm=document.getElementById('_mac_nm');if(nm)nm.textContent=name||'';
   const btn=document.getElementById('_mac_btn');
   if(btn)btn.onclick=function(){_closeMac();if(typeof openPublicProfile==='function')openPublicProfile(window._macUid,window._macName,window._macAv);};
@@ -16078,7 +16079,7 @@ const _grpOvId='grp-chat-overlay';
 (function(){
   const _oPP=window.openPublicProfile;
   window.openPublicProfile=function(uid,name,avColor){
-    if(typeof _oPP==='function')_oPP(uid,name,avColor);
+    if(typeof _oPP==='function')_oPP(uid,name,avColor);{const _fb=document.getElementById('po-follow-btn');if(_fb)_fb.style.setProperty('display','none','important');}
     // Show action row + logo dropdown for other users
     const fw=document.getElementById('po-follow-wrap');
     if(fw)fw.style.display='block';
