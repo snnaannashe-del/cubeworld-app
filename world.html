@@ -1262,12 +1262,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .del-chat-opt.danger{color:#ff5c5c}
 .del-chat-opt.danger i{color:#ff5c5c}
 .del-chat-cancel{display:flex;align-items:center;justify-content:center;padding:14px;margin:8px 16px 0;border-radius:12px;background:rgba(255,255,255,.06);cursor:pointer;font-size:14px;font-weight:600;color:var(--text2)}
-.del-chat-cancel:hover{background:rgba(255,255,255,.1)}
-
-/* ── Contact profile panel (slide in from right over DM overlay) ── */
-#contact-panel{position:fixed;top:0;right:0;bottom:0;width:320px;max-width:100%;background:#0d0d22;z-index:700;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,0,.18,1);display:flex;flex-direction:column;overflow:hidden;box-shadow:-8px 0 40px rgba(0,0,0,.6)}
-#contact-panel.open{transform:translateX(0)}
-@media(max-width:768px){#contact-panel{width:100%}}
+.del-chat-cancel:hover{background:rgba(255,255,255,}
 .cp-topbar{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);background:rgba(5,5,20,.97)}
 .cp-avatar-big{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;flex-shrink:0;margin:0 auto}
 .cp-name{font-size:17px;font-weight:700;color:#fff;text-align:center;margin:8px 0 2px}
@@ -2815,6 +2810,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .wb-wallet{order:9;flex-shrink:0}
 }
 
+
+/* Fix-161: Public profile actions + logo dropdown + mini author card */
+.po-logo-btn{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;padding:0}
+.po-logo-btn:hover{background:rgba(255,255,255,.17)}
+#po-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:rgba(10,7,26,.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.13);border-radius:16px;min-width:190px;padding:6px 0;z-index:9999;box-shadow:0 10px 40px rgba(0,0,0,.6);display:none}
+.po-dd-item{display:flex;align-items:center;gap:11px;width:100%;padding:11px 18px;background:none;border:none;color:#eee;font-size:14px;cursor:pointer;text-align:left;transition:.15s;font-family:inherit}
+.po-dd-item:hover{background:rgba(255,255,255,.08)}
+.po-dd-item i{font-size:17px;opacity:.8}
+.po-dd-danger{color:#ff6b6b!important}
+.po-dd-danger i{color:#ff6b6b!important;opacity:1}
+.po-dd-danger:hover{background:rgba(255,107,107,.1)!important}
+.po-actions-row{display:flex;gap:8px;justify-content:center;padding:14px 16px 8px;flex-wrap:wrap}
+.po-action-btn{display:flex;flex-direction:column;align-items:center;gap:5px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px 10px 10px;color:#ddd;font-size:11px;cursor:pointer;flex:1;min-width:62px;transition:.2s;font-family:inherit}
+.po-action-btn:hover{background:rgba(255,255,255,.14)}
+.po-action-btn i{font-size:20px;color:#fff}
+.po-action-danger,.po-action-danger i{color:#ff6b6b!important}
 </style>
 </head>
 <body>
@@ -4360,9 +4371,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <button id="po-edit-btn" class="po-edit-btn" onclick="closePortfolio();openMyProfile()">
       <i class="ti ti-edit" style="font-size:13px"></i> Изменить
     </button>
-    <button id="po-follow-btn" class="po-edit-btn" style="display:none" onclick="poFollowBtnClick()">
-      Подписаться
-    </button>
+    <div id="po-follow-wrap" style="display:none;position:relative"><button id="po-logo-btn" class="po-logo-btn" onclick="togglePoDropdown(event)" title="Действия"><span style="font:900 15px/1 system-ui,sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-1px;display:block">CW</span></button><div id="po-dropdown" class="po-dropdown-menu"><button class="po-dd-item" onclick="poActMsg()"><i class="ti ti-message"></i> Написать</button><button class="po-dd-item" onclick="poActCall()"><i class="ti ti-phone"></i> Позвонить</button><button class="po-dd-item" onclick="poActNotify()"><i class="ti ti-bell"></i> Уведомления</button><button class="po-dd-item po-dd-danger" onclick="poActBlock()"><i class="ti ti-ban"></i> Заблокировать</button></div></div>
   </div>
   <div class="po-scroll" id="po-scroll">
     <!-- Hero -->
@@ -4391,6 +4400,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <div class="po-stat-val" id="po-likes">0</div>
         <div class="po-stat-lbl">Лайки</div>
       </div>
+    </div>
+    <div id="po-actions" class="po-actions-row" style="display:none">
+      <button class="po-action-btn" onclick="poActMsg()"><i class="ti ti-message" style="font-size:20px"></i><span>Написать</span></button>
+      <button class="po-action-btn" onclick="poActCall()"><i class="ti ti-phone" style="font-size:20px"></i><span>Позвонить</span></button>
+      <button class="po-action-btn" onclick="poActNotify()"><i class="ti ti-bell" style="font-size:20px"></i><span>Уведомления</span></button>
+      <button class="po-action-btn po-action-danger" onclick="poActBlock()"><i class="ti ti-ban" style="font-size:20px"></i><span>Заблокировать</span></button>
     </div>
     <!-- Grid tabs -->
     <div class="po-tabs-bar">
@@ -6888,7 +6903,7 @@ function _makeChatRow(r, onclickFn, opts) {
       avEl.style.cursor = 'pointer';
       avEl.addEventListener('click', e=>{
         e.stopPropagation();
-        if(window.innerWidth<=768) showContactPanel(_rUid, _rName, _rBg);
+        if(window.innerWidth<=768) openPublicProfile(_rUid, _rName, _rBg);
         else showMiniCard(_rUid, _rName, _rBg, avEl);
       });
       avEl.addEventListener('mouseenter', ()=>{ if(window.innerWidth>768) showMiniCard(_rUid, _rName, _rBg, avEl); });
@@ -7545,7 +7560,7 @@ function _buildDmMsg(m) {
     avEl2.addEventListener('click', e=>{
       e.stopPropagation();
       if(isMobile()) {
-        showContactPanel(uid2, name2, ac2);
+        openPublicProfile(uid2, name2, ac2);
       } else {
         showMiniCard(uid2, name2, ac2, avEl2);
       }
@@ -7755,7 +7770,7 @@ function toggleDmSearch() {
 function dmCoAvClick() {
   if(!_chatActiveDm) return;
   const avEl  = document.getElementById('dm-co-av');
-  showContactPanel(_chatActiveDm.user_id, _chatActiveDm.display_name, avEl?.style.background||'');
+  openPublicProfile(_chatActiveDm.user_id, _chatActiveDm.display_name, avEl?.style.background||'');
 }
 
 // ── #5 Scroll-to-bottom button ────────────────────────────────────────────
@@ -8346,95 +8361,7 @@ function dmCtxReact(emoji) {
 
 // ── Contact Profile Panel ─────────────────────────────────────────────────
 let _contactPanelUid = null;
-function showContactPanel(uid, name, avColor) {
-  _contactPanelUid = uid;
-  sessionStorage.setItem('cw_last_overlay',JSON.stringify({type:'contactPanel',uid:String(uid||''),name:name||''}));
-  // Avatar
-  const avEl = document.getElementById('cp-av');
-  const letter = (name||'?')[0].toUpperCase();
-  avEl.textContent = letter;
-  avEl.style.background = avColor || 'linear-gradient(135deg,#0095F6,#5263FF)';
-  avEl.style.color = '#fff';
-  avEl.style.display = 'flex';
-  avEl.style.alignItems = 'center';
-  avEl.style.justifyContent = 'center';
-  avEl.style.borderRadius = '50%';
-  // Async: load real avatar from backend
-  apiCall('/users/'+uid).then(prof=>{
-    if(!prof||_contactPanelUid!==uid) return;
-    const avUrl=prof.photoUrl||prof.avatar_url;
-    const avEl2=document.getElementById('cp-av');
-    if(!avEl2) return;
-    if(avUrl&&(avUrl.startsWith('data:')||avUrl.startsWith('http')||avUrl.startsWith('/'))){
-      avEl2.textContent='';avEl2.style.background='';
-      avEl2.innerHTML='<img src="'+avUrl+'" alt="a" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
-    } else if(prof.avatar||avUrl){
-      avEl2.textContent='';avEl2.style.background='transparent';
-      avEl2.innerHTML='<span style="font-size:36px;line-height:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%">'+(prof.avatar||avUrl)+'</span>';
-    }
-    // Username
-    const unEl=document.getElementById('cp-uname');
-    if(unEl) unEl.textContent=prof.username?'@'+prof.username:'';
-  }).catch(()=>{});
-  // Follow status + counts
-  apiCall('/follow/'+uid).then(fd=>{
-    if(!fd||_contactPanelUid!==uid) return;
-    // Stats
-    const statsEl=document.getElementById('cp-stats');
-    const statsSection=document.getElementById('cp-stats-section');
-    if(statsEl){
-      const fc=fd.followers_count??0, fwc=fd.following_count??0;
-      statsEl.innerHTML='<span><b>'+fc+'</b> подписчиков</span><span><b>'+fwc+'</b> подписок</span>';
-    }
-    if(statsSection) statsSection.style.display='';
-    // Follow button state
-    const fBtn=document.getElementById('cp-follow-btn');
-    if(fBtn){
-      const icon=fBtn.querySelector('i'), lbl=fBtn.querySelector('.cp-action-lbl');
-      if(fd.following){
-        if(icon) icon.className='ti ti-user-check';
-        if(lbl) lbl.textContent='Отписаться';
-        fBtn.dataset.following='true';
-      } else {
-        if(icon) icon.className='ti ti-user-plus';
-        if(lbl) lbl.textContent='Подписаться';
-        fBtn.dataset.following='false';
-      }
-    }
-  }).catch(()=>{});
-  document.getElementById('cp-name').textContent = name || '—';
-  document.getElementById('cp-uid').textContent = '';
-  const _cps=document.getElementById('cp-status');if(_cps)_cps.style.display='none';
-  // Try to load shared media from DM history
-  const dmKey = 'dm:'+uid;
-  const msgs = (app.chatMessages[_DM_NAMESPACE]||{})[dmKey]||[];
-  const media = msgs.filter(m=>m.type==='image'||m.type==='video');
-  const mediaGrid = document.getElementById('cp-media-grid');
-  const mediaSection = document.getElementById('cp-media-section');
-  if(media.length && mediaGrid) {
-    mediaGrid.innerHTML = media.slice(-9).map(m=>`
-      <div style="width:calc(33.3% - 3px);aspect-ratio:1;background:#1a1a35;border-radius:6px;overflow:hidden;cursor:pointer"
-           onclick="openLightbox&&openLightbox('${escHtml(m.fileUrl||'')}','${m.type}')">
-        ${m.type==='image'
-          ? `<img src="${escHtml(m.fileUrl||'')}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`
-          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:26px">🎬</div>`}
-      </div>`).join('');
-    mediaSection.style.display = 'block';
-  } else if(mediaSection) {
-    mediaSection.style.display = 'none';
-  }
-  // Open panel
-  const panel = document.getElementById('contact-panel');
-  panel.style.display = 'flex';
-  panel.style.flexDirection = 'column';
-  requestAnimationFrame(()=>panel.classList.add('open'));
-}
-function closeContactPanel() {
-  sessionStorage.removeItem('cw_last_overlay');
-  const panel = document.getElementById('contact-panel');
-  panel.classList.remove('open');
-  setTimeout(()=>{ panel.style.display='none'; _contactPanelUid=null; }, 320);
-}
+
 function cpAction(type) {
   const uid = _contactPanelUid;
   if(!uid) return;
@@ -8518,7 +8445,7 @@ function hideMiniCard(delay) {
 }
 function cmc_open_profile() {
   hideMiniCard(0);
-  if(_cmc_uid) showContactPanel(_cmc_uid, _cmc_name, _cmc_avColor);
+  if(_cmc_uid) openPublicProfile(_cmc_uid, _cmc_name, _cmc_avColor);
 }
 
 function buildReactionsHtml(reactions, msgId) {
@@ -9868,31 +9795,30 @@ function suiViewProfile(uid, name, e){
   _openMiniProfile(uid, name);
 }
 
-async function _openMiniProfile(uid, name){
-  openSrchModal();
-  const usersTab=document.querySelector('#srch-tabs .srch-tab:nth-child(3)');
-  setSrchTab('users', usersTab);
-  const body=document.getElementById('srch-body');
-  if(!body) return;
-  const letter=(name||'?')[0].toUpperCase();
-  body.innerHTML=`<div style="padding:20px;text-align:center">
-    <div style="width:56px;height:56px;border-radius:50%;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:24px;color:#fff;font-weight:700;margin-bottom:10px">${letter}</div>
-    <div style="font-weight:700;font-size:15px;color:#e0e0f8;margin-bottom:4px">${escHtml(name||'Пользователь')}</div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:14px">UID #${uid}</div>
-    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-      <button class="btn btn-accent" style="padding:7px 16px;font-size:12px" onclick="closeSrchModal();switchSection('chat',null);setTimeout(()=>openDmWith(${uid},'${escHtml(name||'')}'),80)">💬 Написать</button>
-      <button class="btn btn-ghost" style="padding:7px 16px;font-size:12px" id="mini-follow-btn-${uid}" onclick="vfFollow('${uid}');this.textContent=((app.vfFollowing||{})[${uid}]?'✓ Подписан':'➕ Подписаться')">➕ Подписаться</button>
-    </div>
-    <div id="mini-posts-${uid}" style="margin-top:16px;font-size:12px;color:var(--text3);text-align:center">⏳ Загружаем посты…</div>
-  </div>`;
-  // Try loading from global feed cache first
-  const feedPosts=(_vfPosts||[]).filter(p=>String(p.user_id)===String(uid));
-  _renderMiniPosts(uid, feedPosts);
-  // Also reload feed to get fresh data if not loaded
-  if(!_vfPosts.length){
-    const data=await apiCall('/feed');
-    if(Array.isArray(data)){ _vfPosts=data; _renderMiniPosts(uid, data.filter(p=>String(p.user_id)===String(uid))); }
+async function _openMiniProfile(uid,name,avColor){
+  let mc=document.getElementById('_mac_sheet');
+  if(!mc){
+    mc=document.createElement('div');mc.id='_mac_sheet';
+    mc.style.cssText='position:fixed;bottom:0;left:0;right:0;background:rgba(10,7,26,.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,.1);border-radius:22px 22px 0 0;z-index:8100;padding:16px 24px 40px;display:flex;flex-direction:column;align-items:center;gap:14px;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.18,1)';
+    mc.innerHTML='<div style="width:42px;height:4px;background:rgba(255,255,255,.18);border-radius:2px;margin-bottom:4px"></div><div id="_mac_av" style="width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;background:linear-gradient(135deg,#667eea,#764ba2);flex-shrink:0"></div><div id="_mac_nm" style="color:#fff;font-size:17px;font-weight:600;text-align:center;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div><button id="_mac_btn" style="width:100%;max-width:320px;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:2px">Посмотреть профиль</button>';
+    document.body.appendChild(mc);
   }
+  window._macUid=uid;window._macName=name||'';window._macAv=avColor||'';
+  const av=document.getElementById('_mac_av');
+  if(av){av.textContent=(name||'?')[0].toUpperCase();if(avColor)av.style.background=avColor;}
+  const nm=document.getElementById('_mac_nm');if(nm)nm.textContent=name||'';
+  const btn=document.getElementById('_mac_btn');
+  if(btn)btn.onclick=function(){_closeMac();openPublicProfile(window._macUid,window._macName,window._macAv);};
+  let bd=document.getElementById('_mac_bd');
+  if(!bd){bd=document.createElement('div');bd.id='_mac_bd';bd.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:8099';bd.onclick=_closeMac;document.body.appendChild(bd);}
+  bd.style.display='block';
+  mc.style.display='flex';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){mc.style.transform='translateY(0)';});});
+}
+function _closeMac(){
+  const mc=document.getElementById('_mac_sheet');
+  if(mc){mc.style.transform='translateY(100%)';setTimeout(function(){mc.style.display='none';},320);}
+  const bd=document.getElementById('_mac_bd');if(bd)bd.style.display='none';
 }
 
 function _renderMiniPosts(uid, posts){
@@ -11926,7 +11852,7 @@ function _restoreLastOverlay(){
     else if(_rd.type==='portfolio')
       setTimeout(()=>{openPortfolio();setTimeout(_hideRB,300);},80);
     else if(_rd.type==='contactPanel'&&_rd.uid)
-      setTimeout(()=>{showContactPanel(_rd.uid,_rd.name||'');setTimeout(_hideRB,300);},80);
+      setTimeout(()=>{openPublicProfile(_rd.uid,_rd.name||'');setTimeout(_hideRB,300);},80);
     else _hideRB();
   }catch(e){const _rb2=document.getElementById('cw-restore-backdrop');if(_rb2)_rb2.style.display='none';}
 }
@@ -12772,7 +12698,7 @@ function showTopBars(){
 }
 (function initCubeScrollHide(){
   function setup(){
-    if(sessionStorage.getItem('cw_last_overlay')){const _rb6=document.getElementById('cw-restore-backdrop');if(_rb6)_rb6.style.display='block';}try{const _rl0=JSON.parse(sessionStorage.getItem('cw_last_overlay')||'null');const _pc0=JSON.parse(sessionStorage.getItem('cw_po_data')||'null');if(_rl0&&_rl0.type==='portfolio'&&_pc0){const _po0=document.getElementById('portfolio-overlay');if(_po0){_po0.style.display='flex';const _st0=(id,v)=>{const e=document.getElementById(id);if(e&&v!==undefined)e.textContent=v;};_st0('po-header-name',_pc0.name);_st0('po-uname',_pc0.uname);_st0('po-follows',_pc0.follows);_st0('po-followers',_pc0.followers);_st0('po-likes',_pc0.likes);const _av0=document.getElementById('po-avatar');if(_av0&&_pc0.avHtml)_av0.innerHTML=_pc0.avHtml;const _b0=document.getElementById('po-type-badge');if(_b0){_b0.textContent=_pc0.badge||'';_b0.className=_pc0.badgeCls||'po-type-badge pub';}const _rb0=document.getElementById('cw-restore-backdrop');if(_rb0)_rb0.style.display='none';}}}catch(_e0){}
+    if(sessionStorage.getItem('cw_last_overlay')){const _rb6=document.getElementById('cw-restore-backdrop');if(_rb6)_rb6.style.display='block';}try{const _rl0=JSON.parse(sessionStorage.getItem('cw_last_overlay')||'null');const _pc0=JSON.parse(sessionStorage.getItem('cw_po_data')||'null');if(_rl0&&_rl0.type==='portfolio'&&_pc0){const _po0=document.getElementById('portfolio-overlay');if(_po0){_po0.style.display='flex';const _st0=(id,v)=>{const e=document.getElementById(id);if(e&&v!==undefined)e.textContent=v;};_st0('po-header-name',_pc0.name);_st0('po-uname',_pc0.uname);_st0('po-follows',_pc0.follows);_st0('po-followers',_pc0.followers);_st0('po-likes',_pc0.likes);const _av0=document.getElementById('po-avatar');if(_av0&&_pc0.avHtml)_av0.innerHTML=_pc0.avHtml;const _b0=document.getElementById('po-type-badge');if(_b0){_b0.textContent=_pc0.badge||'';_b0.className=_pc0.badgeCls||'po-type-badge pub';}const _rb0=document.getElementById('cw-restore-backdrop');if(_rb0)_rb0.style.display='none';}}}catch(_e0){}try{const _pp1=JSON.parse(sessionStorage.getItem('cw_pp_data')||'null');const _rl1=JSON.parse(sessionStorage.getItem('cw_last_overlay')||'null');if(_pp1&&_pp1.uid&&_rl1&&_rl1.type){const _ov1=document.getElementById('portfolio-overlay');if(_ov1){_ov1.style.display='flex';const _h1=document.getElementById('po-header-name');if(_h1)_h1.textContent=_pp1.name||'';const _a1=document.getElementById('po-avatar');if(_a1)_a1.innerHTML='<span style="font-size:26px;font-weight:700">'+((_pp1.name||'?')[0].toUpperCase())+'</span>';const _fw1=document.getElementById('po-follow-wrap');if(_fw1)_fw1.style.display='block';const _ac1=document.getElementById('po-actions');if(_ac1)_ac1.style.display='flex';const _ed1=document.getElementById('po-edit-btn');if(_ed1)_ed1.style.display='none';const _rb1=document.getElementById('cw-restore-backdrop');if(_rb1)_rb1.style.display='none';}}}catch(_e1){}
     const cs = document.getElementById('cube-switcher');
     if(!cs) return;
     function onScroll(e){
@@ -16054,6 +15980,54 @@ const _grpOvId='grp-chat-overlay';
     // achievement popup disabled
   };
 })();
+
+// Fix-161 runtime patches
+(function(){
+  // Patch openPublicProfile to show action buttons + cache data
+  const _oPP=window.openPublicProfile;
+  window.openPublicProfile=function(uid,name,avColor){
+    if(typeof _oPP==='function')_oPP(uid,name,avColor);
+    const acts=document.getElementById('po-actions');
+    if(acts)acts.style.display='flex';
+    const fw=document.getElementById('po-follow-wrap');
+    if(fw)fw.style.display='block';
+    const dd=document.getElementById('po-dropdown');
+    if(dd)dd.style.display='none';
+    try{sessionStorage.setItem('cw_pp_data',JSON.stringify({uid:uid,name:name||'',avColor:avColor||''}));}catch(_){}
+  };
+  // Patch closePortfolio to clear pp_data and hide action buttons
+  const _oCPF=window.closePortfolio;
+  window.closePortfolio=function(){
+    if(typeof _oCPF==='function')_oCPF();
+    const acts=document.getElementById('po-actions');
+    if(acts)acts.style.display='none';
+    const fw=document.getElementById('po-follow-wrap');
+    if(fw)fw.style.display='none';
+    const dd=document.getElementById('po-dropdown');
+    if(dd)dd.style.display='none';
+    try{sessionStorage.removeItem('cw_pp_data');}catch(_){}
+  };
+})();
+function togglePoDropdown(e){
+  e.stopPropagation();
+  const dd=document.getElementById('po-dropdown');
+  if(dd)dd.style.display=dd.style.display==='block'?'none':'block';
+}
+document.addEventListener('click',function(){const dd=document.getElementById('po-dropdown');if(dd)dd.style.display='none';});
+function poActMsg(){
+  const ov=document.getElementById('portfolio-overlay');
+  const uid=ov?ov.dataset.viewUid:'';
+  const nm=(document.getElementById('po-header-name')||{}).textContent||'';
+  if(typeof closePortfolio==='function')closePortfolio();
+  if(uid){setTimeout(function(){if(typeof openDm==='function')openDm(uid,nm);else if(typeof startDm==='function')startDm(uid);},150);}
+}
+function poActCall(){alert('Звонок — скоро!');}
+function poActNotify(){alert('Уведомления — скоро!');}
+function poActBlock(){
+  const ov=document.getElementById('portfolio-overlay');
+  const uid=ov?ov.dataset.viewUid:'';
+  if(uid&&confirm('Заблокировать пользователя?')){if(typeof closePortfolio==='function')closePortfolio();}
+}
 </script>
 
 <!-- ══ NEW MODALS ══════════════════════════════ -->
@@ -16288,62 +16262,7 @@ const _grpOvId='grp-chat-overlay';
 </div>
 
 <!-- ══ CONTACT PROFILE PANEL ══════════════════════════════════════════════ -->
-<div id="contact-panel">
-  <div class="cp-topbar">
-    <button onclick="closeContactPanel()" style="background:none;border:none;color:var(--accent);font-size:22px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-arrow-left"></i></button>
-    <span style="font-size:15px;font-weight:700;color:#fff;flex:1">Профиль</span>
-    <button style="background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer" onclick="openContactFullProfile()"><i class="ti ti-dots-vertical"></i></button>
-  </div>
-  <div style="flex:1;overflow-y:auto;padding-bottom:16px">
-    <!-- Avatar + name -->
-    <div style="padding:24px 20px 12px;text-align:center;border-bottom:1px solid var(--border)">
-      <div class="cp-avatar-big" id="cp-av" style="width:72px;height:72px;font-size:28px;margin:0 auto 10px">👤</div>
-      <div class="cp-name" id="cp-name">—</div>
-      <div id="cp-uname" style="font-size:12px;color:var(--text2);margin-top:1px;opacity:.8"></div>
-      <div class="cp-uid" id="cp-uid"></div>
-      <div class="cp-status" id="cp-status" style="display:none">🟢 онлайн</div>
-    </div>
-    <!-- Quick actions -->
-    <div class="cp-actions">
-      <div class="cp-action" onclick="cpAction('message')">
-        <i class="ti ti-message-circle"></i><span class="cp-action-lbl">Написать</span>
-      </div>
-      <div class="cp-action" onclick="cpAction('call')">
-        <i class="ti ti-phone"></i><span class="cp-action-lbl">Позвонить</span>
-      </div>
-      <div class="cp-action" onclick="cpAction('portfolio')">
-        <i class="ti ti-layout-grid"></i><span class="cp-action-lbl">Портфолио</span>
-      </div>
-      <div class="cp-action" id="cp-follow-btn" onclick="cpAction('add')">
-        <i class="ti ti-user-plus"></i><span class="cp-action-lbl">Контакт</span>
-      </div>
-    </div>
-    <!-- Stats -->
-    <div class="cp-section" id="cp-stats-section" style="display:none">
-      <div class="cp-section-title">Активность</div>
-      <div id="cp-stats" style="font-size:12px;color:var(--text2);display:flex;gap:16px"></div>
-    </div>
-    <!-- Shared media -->
-    <div class="cp-section" id="cp-media-section" style="display:none">
-      <div class="cp-section-title" style="display:flex;align-items:center;justify-content:space-between">
-        Общие медиа
-        <span style="font-size:10px;color:var(--accent);cursor:pointer" onclick="closeContactPanel()">Все</span>
-      </div>
-      <div class="cp-media-grid" id="cp-media-grid"></div>
-    </div>
-    <!-- Notification / block -->
-    <div class="cp-section">
-      <div class="del-chat-opt" onclick="cpAction('mute')" style="padding:10px 0;margin:0">
-        <i class="ti ti-bell-off" style="font-size:16px;color:var(--text2);width:22px;text-align:center"></i>
-        <span style="font-size:13px;color:var(--text2)">Уведомления</span>
-      </div>
-      <div class="del-chat-opt danger" onclick="cpAction('block')" style="padding:10px 0;margin:0">
-        <i class="ti ti-ban" style="font-size:16px;width:22px;text-align:center"></i>
-        <span style="font-size:13px">Заблокировать</span>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 <!-- ══ CONTACT MINI HOVER CARD ════════════════════════════════════════════ -->
 <div id="contact-mini-card"
