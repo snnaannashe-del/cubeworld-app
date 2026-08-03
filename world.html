@@ -16159,38 +16159,57 @@ function poFollowDd(){
   },600);
 }
 
-// ===== FIX 164: portfolio grid + video player + follow stats =====
+// ===== FIX 165: portfolio grid (client-side uid filter) + follow bidirectional =====
 (function(){
-  // Chain wrap openPublicProfile to load grid
-  const _oPP2=window.openPublicProfile;
+  // Wrap openPublicProfile - loads grid + syncs follow state
+  var _oPP3=window.openPublicProfile;
   window.openPublicProfile=function(uid,name,avColor){
-    if(typeof _oPP2==='function')_oPP2(uid,name,avColor);
-    window._poUid=uid;
-    setTimeout(function(){_loadPoGrid(uid);},700);
+    if(typeof _oPP3==='function')_oPP3(uid,name,avColor);
+    window._poUid=String(uid);
+    // Sync follow button from localStorage
+    setTimeout(function(){
+      var fw=JSON.parse(localStorage.getItem('cw_following')||'{}');
+      var isF=!!(fw[String(uid)]);
+      var hb=document.getElementById('po-follow-btn');
+      var dt=document.getElementById('po-dd-follow-txt');
+      var ic=document.getElementById('po-dd-follow-icon');
+      if(hb){hb.textContent=isF?'Отписаться':'Подписаться';}
+      if(dt){dt.textContent=isF?'Отписаться':'Подписаться';}
+      if(ic){ic.className=isF?'ti ti-user-minus':'ti ti-user-plus';}
+    },350);
+    setTimeout(function(){_loadPoGrid(String(uid));},700);
+  };
+
+  // Also wrap openPortfolio (own profile) to load own posts
+  var _oP3=window.openPortfolio;
+  window.openPortfolio=function(){
+    if(typeof _oP3==='function')_oP3();
+    var myUid=localStorage.getItem('cw_user_id')||'';
+    if(myUid){window._poUid=myUid;setTimeout(function(){_loadPoGrid(myUid);},700);}
   };
 
   window._loadPoGrid=async function(uid){
-    const grid=document.getElementById('po-grid');
+    var grid=document.getElementById('po-grid');
     if(!grid)return;
     grid.innerHTML='<div style="color:rgba(255,255,255,.35);text-align:center;padding:48px 0;width:100%;grid-column:1/-1">Загрузка...</div>';
     try{
-      const posts=await apiCall('/feed?user_id='+uid+'&limit=50');
-      if(!Array.isArray(posts)||posts.length===0){
+      var all=await apiCall('/feed?limit=200');
+      if(!Array.isArray(all))all=[];
+      // Filter by this user's id (backend doesn't support user_id filter)
+      var uidInt=parseInt(uid,10);
+      var posts=all.filter(function(p){return p.user_id===uidInt;});
+      var shorts=posts.filter(function(p){return !!(p.video_url);});
+      window._poShorts=shorts;
+      if(shorts.length===0){
         grid.innerHTML='<div style="color:rgba(255,255,255,.35);text-align:center;padding:48px 0;width:100%;grid-column:1/-1">Нет публикаций</div>';
         return;
       }
-      const shorts=posts.filter(function(p){return p.video_url;});
-      window._poShorts=shorts;
-      if(shorts.length===0){
-        grid.innerHTML='<div style="color:rgba(255,255,255,.35);text-align:center;padding:48px 0;width:100%;grid-column:1/-1">Нет видео</div>';
-        return;
-      }
       grid.innerHTML=shorts.map(function(p,i){
-        return '<div onclick="_openPoVideo('+i+')" style="aspect-ratio:9/16;background:#111;border-radius:8px;overflow:hidden;position:relative;cursor:pointer;flex-shrink:0">'+
+        return '<div onclick="_openPoVideo('+i+')" style="aspect-ratio:9/16;background:#111;border-radius:8px;overflow:hidden;position:relative;cursor:pointer">'+
           '<video src="'+p.video_url+'#t=1" preload="metadata" muted playsinline style="width:100%;height:100%;object-fit:cover"></video>'+
           '<div style="position:absolute;inset:0;background:rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center">'+
-          '<div style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.52);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff">▶</div></div>'+
-          '<div style="position:absolute;bottom:5px;left:7px;font-size:11px;color:rgba(255,255,255,.8);text-shadow:0 1px 2px rgba(0,0,0,.8)">'+(p.view_count||p.views||0)+' 👁</div>'+
+          '<div style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.52);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff">&#9654;</div></div>'+
+          '<div style="position:absolute;bottom:5px;left:7px;font-size:11px;color:rgba(255,255,255,.8);text-shadow:0 1px 2px rgba(0,0,0,.8)">'+(p.view_count||p.views||0)+' &#128065;</div>'+
         '</div>';
       }).join('');
     }catch(e){
@@ -16199,18 +16218,17 @@ function poFollowDd(){
   };
 
   window._openPoVideo=function(idx){
-    const posts=window._poShorts||[];
+    var posts=window._poShorts||[];
     if(!posts[idx])return;
-    let ov=document.getElementById('_po_player');
+    var ov=document.getElementById('_po_player');
     if(!ov){
-      ov=document.createElement('div');
-      ov.id='_po_player';
+      ov=document.createElement('div');ov.id='_po_player';
       ov.style.cssText='position:fixed;inset:0;background:#000;z-index:9100;display:none;flex-direction:column;align-items:stretch';
       ov.innerHTML=
         '<div style="position:absolute;top:16px;left:16px;z-index:3">'+
         '<button onclick="_closePoPlayer()" style="background:rgba(0,0,0,.65);border:none;color:#fff;font-size:20px;width:42px;height:42px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">&#8592;</button>'+
         '</div>'+
-        '<video id="_po_vid" style="flex:1;width:100%;max-height:100%;object-fit:contain" controls autoplay playsinline webkit-playsinline x5-playsinline></video>'+
+        '<video id="_po_vid" style="flex:1;width:100%;max-height:100%;object-fit:contain" controls autoplay playsinline webkit-playsinline></video>'+
         '<div id="_po_vid_info" style="position:absolute;bottom:0;left:0;right:0;padding:14px 16px 32px;color:#fff;font-size:14px;background:linear-gradient(transparent,rgba(0,0,0,.75));pointer-events:none"></div>';
       document.body.appendChild(ov);
       var ty=0;
@@ -16220,9 +16238,7 @@ function poFollowDd(){
         if(Math.abs(dy)>55){if(dy>0)window._poVidNext();else window._poVidPrev();}
       },{passive:true});
     }
-    ov.style.display='flex';
-    window._poVidCur=idx;
-    window._poVidLoad(idx);
+    ov.style.display='flex';window._poVidCur=idx;window._poVidLoad(idx);
   };
 
   window._poVidLoad=function(i){
@@ -16240,570 +16256,35 @@ function poFollowDd(){
     if(ov){ov.style.display='none';var v=document.getElementById('_po_vid');if(v){v.pause();v.src='';}}
   };
 
-  // Override poFollowDd to also call API + update follower count
+  // Override poFollowDd: bidirectional toggle + API call + metric update
   var _origPFD=window.poFollowDd;
-  window.poFollowDd=function(){
-    if(typeof _origPFD==='function')_origPFD();
+  window.poFollowDd=async function(){
     var uid=window._poUid;if(!uid)return;
-    // Update follower count locally
+    // Determine current state BEFORE original call
+    var fw=JSON.parse(localStorage.getItem('cw_following')||'{}');
+    var wasFollowing=!!(fw[uid]);
+    var nowFollowing=!wasFollowing;
+    // Update localStorage
+    fw[uid]=nowFollowing;
+    localStorage.setItem('cw_following',JSON.stringify(fw));
+    // Call original (updates button text)
+    if(typeof _origPFD==='function')_origPFD();
+    // Force correct text regardless
     setTimeout(function(){
       var hb=document.getElementById('po-follow-btn');
+      var dt=document.getElementById('po-dd-follow-txt');
+      var ic=document.getElementById('po-dd-follow-icon');
+      var txt=nowFollowing?'Отписаться':'Подписаться';
+      if(hb)hb.textContent=txt;
+      if(dt)dt.textContent=txt;
+      if(ic)ic.className=nowFollowing?'ti ti-user-minus':'ti ti-user-plus';
+      // Update follower count
       var fr=document.getElementById('po-followers');
-      if(hb&&fr){
-        var isNowFollowing=hb.textContent.indexOf('Отп')>=0;
-        var cur=parseInt(fr.textContent)||0;
-        fr.textContent=Math.max(0,isNowFollowing?cur+1:cur-1);
-      }
-      // Call real follow API
-      try{apiCall('/follow/'+uid,{method:'POST'}).catch(function(){});}catch(_){}
-    },400);
+      if(fr){var cur=parseInt(fr.textContent)||0;fr.textContent=Math.max(0,nowFollowing?cur+1:cur-1);}
+    },50);
+    // Call backend
+    try{await apiCall('/follow/'+uid,{method:'POST'});}catch(_){}
   };
 })();
+})();
 </script>
-
-<!-- ══ NEW MODALS ══════════════════════════════ -->
-
-<!-- Signal Detail -->
-<div class="modal-backdrop" id="modal-signal-detail">
-  <div class="modal" style="max-width:460px">
-    <h3>📊 Детали сигнала</h3>
-    <input type="hidden" id="sdm-sig-id">
-    <div class="sdm-header">
-      <span class="sdm-dir-badge long" id="sdm-dir">LONG ↑</span>
-      <span class="sdm-pair" id="sdm-pair">BTC/USDT</span>
-      <span class="sdm-pnl2" id="sdm-pnl2">+42%</span>
-    </div>
-    <div class="sdm-grid">
-      <div class="sdm-field"><div class="sdm-field-lbl">Вход</div><div class="sdm-field-val entry" id="sdm-entry">$0</div></div>
-      <div class="sdm-field"><div class="sdm-field-lbl">Take Profit</div><div class="sdm-field-val tp" id="sdm-tp">$0</div></div>
-      <div class="sdm-field"><div class="sdm-field-lbl">Stop Loss</div><div class="sdm-field-val sl" id="sdm-sl">$0</div></div>
-    </div>
-    <div class="sdm-stats">
-      <span class="sdm-stat-pill" id="sdm-wr">✅ 78% Win</span>
-      <span class="sdm-stat-pill" id="sdm-subs">👥 234 подп.</span>
-      <span class="sdm-stat-pill" id="sdm-rr">⚖️ R:R 3.2:1</span>
-      <span class="sdm-stat-pill" id="sdm-time">🕐 2м назад</span>
-      <span class="sdm-stat-pill" id="sdm-author">👤 анон</span>
-    </div>
-    <div class="sdm-pnl-calc">
-      <div class="sdm-pnl-title">💰 P&L Калькулятор</div>
-      <div class="sdm-calc-row">
-        <span style="font-size:12px;color:var(--text2);white-space:nowrap">Вложить</span>
-        <input class="sdm-calc-input" id="sdm-calc-amount" type="number" placeholder="0 USDT" oninput="calcSignalPnL()">
-        <span style="font-size:12px;color:var(--text3)">→</span>
-        <div class="sdm-calc-result" id="sdm-calc-result"></div>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modal-signal-detail')">Закрыть</button>
-      <button class="btn btn-accent" onclick="copyTrade(document.getElementById('sdm-pair').textContent,'long',this)">📋 Копи-трейд</button>
-      <button class="btn btn-gold" style="background:rgba(74,222,128,.2);border:1px solid rgba(74,222,128,.4);color:var(--green)" onclick="executeSignalTrade(document.getElementById('sdm-sig-id').value)">📊 Открыть сделку (5 CUBE)</button>
-    </div>
-  </div>
-</div>
-
-<!-- Post Full View -->
-<div class="modal-backdrop" id="modal-post-full">
-  <div class="modal post-full-modal" style="max-width:520px">
-    <input type="hidden" id="pfm-post-id">
-    <div class="pfm-header">
-      <div class="pfm-ava" id="pfm-ava">👤</div>
-      <div>
-        <div class="pfm-author" id="pfm-author"></div>
-        <div class="pfm-time" id="pfm-time"></div>
-      </div>
-    </div>
-    <div class="pfm-body" id="pfm-body"></div>
-    <div class="pfm-reactions" id="pfm-reactions"></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modal-post-full')">Закрыть</button>
-      <button class="btn" style="background:rgba(255,255,255,.07);border:1px solid var(--border)" onclick="sharePfm()">↗ Поделиться</button>
-      <button class="btn btn-gold" style="background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);color:var(--gold)" onclick="tipPfm()">💰 Чаевые</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ UNIVERSE MANAGER ══════════════════════════════ -->
-<div class="modal-backdrop" id="modal-universe">
-  <div class="modal">
-    <h3>⬡ Моя вселенная</h3>
-    <div class="uni-tabs">
-      <button class="uni-tab active" id="uni-tab-all" onclick="switchUniTab('all',this)">Все кубы</button>
-      <button class="uni-tab" id="uni-tab-mine" onclick="switchUniTab('mine',this)">Мои кубы</button>
-    </div>
-    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Выбери кубы которые вращаются в твоём мире. Нажми на куб чтобы добавить/убрать.</p>
-    <input class="uni-search" id="uni-search" type="text" placeholder="🔍 Поиск кубов по названию..." oninput="filterUniGrid(this.value)">
-    <div class="uni-grid" id="uni-grid"></div>
-    <div class="uni-hint" id="uni-hint"></div>
-    <div style="display:flex;gap:8px;margin-top:16px">
-      <button class="btn btn-ghost" onclick="closeModal('modal-universe')" style="flex:0 0 auto;padding:12px 16px">Отмена</button>
-      <button class="uni-create-btn" onclick="closeModal('modal-universe');openCreateCube()">+ Создать куб</button>
-      <button class="uni-save-btn" onclick="saveUniverse()">✓ Сохранить</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ LIGHTBOX ════════════════════════════════════════════════════════ -->
-<div id="lightbox" onclick="closeLightbox()">
-  <button id="lb-close" onclick="closeLightbox()">✕</button>
-  <img id="lb-img" src="" style="display:none" alt="">
-  <video id="lb-vid" src="" style="display:none" controls></video>
-</div>
-
-<!-- ══ GROUP CONTEXT MENU ══════════════════════════════════════════════ -->
-<div class="gco-ctx" id="gco-ctx" style="display:none">
-  <div class="gco-ctx-item" onclick="gcoCtxReply()">↩ Ответить</div>
-  <div class="gco-ctx-item" onclick="gcoCtxCopy()">📋 Копировать</div>
-  <div class="gco-ctx-item" onclick="gcoCtxPin()">📌 Закрепить</div>
-  <div class="gco-ctx-sep"></div>
-  <div class="gco-ctx-item danger" onclick="gcoCtxDelete()">🗑 Удалить</div>
-</div>
-
-<!-- ══ NAI OVERLAY (NET SEARCH AI CHAT) ════════════════════════════════ -->
-<div id="nai-overlay">
-  <div class="nai-topbar">
-    <button class="nai-back-btn" onclick="closeNetSearch()">← Назад</button>
-    <div class="nai-logo" id="nai-logo">🤖</div>
-    <div class="nai-title">
-      <div class="nai-tname" id="nai-pname">AI</div>
-      <div class="nai-tsub" id="nai-tsub">● Готов к ответу</div>
-    </div>
-    <button class="nai-open-btn" id="nai-open-btn" onclick="">↗ Открыть</button>
-  </div>
-  <div class="nai-msgs" id="nai-msgs"></div>
-  <div class="nai-input-row">
-    <input class="nai-input" id="nai-input" placeholder="Задай вопрос…"
-      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();naiSend();}">
-    <button class="nai-send-btn" onclick="naiSend()">↑</button>
-  </div>
-</div>
-
-<!-- ══ STORY VIEWER OVERLAY ════════════════════════════════════════════ -->
-<div id="story-overlay">
-  <div class="story-progress-bar" id="story-prog-bar"></div>
-  <div class="story-header">
-    <div class="story-av-sm" id="story-av-sm">?</div>
-    <div style="flex:1">
-      <div id="story-user-name" style="font-size:13px;font-weight:700;color:#fff"></div>
-      <div id="story-time-ago" style="font-size:10px;color:rgba(255,255,255,.5)"></div>
-    </div>
-    <button class="story-close" onclick="closeStoryViewer()">✕</button>
-  </div>
-  <div class="story-content" id="story-content" onclick="storyNext()"></div>
-</div>
-
-<!-- ══ ONBOARDING OVERLAY ══════════════════════════════════════════════ -->
-<div id="onboard-overlay">
-  <div class="onboard-card">
-    <div class="onboard-icon" id="ob-icon">🌐</div>
-    <div class="onboard-title" id="ob-title">Добро пожаловать в CubeWorld</div>
-    <div class="onboard-sub" id="ob-sub">Анонимная соцсеть нового поколения. Общайся, создавай контент и зарабатывай CUBE токены.</div>
-    <div class="onboard-steps" id="ob-dots"></div>
-    <button class="onboard-next" id="ob-next-btn" onclick="onboardNext()">Начать →</button>
-    <div class="onboard-skip" onclick="onboardFinish()">Пропустить</div>
-  </div>
-</div>
-
-<!-- ══ ACHIEVEMENT TOAST ════════════════════════════════════════════════ -->
-<div id="ach-toast">
-  <div class="ach-rays"></div>
-  <div class="ach-icon" id="ach-icon">🏆</div>
-  <div class="ach-label">Достижение разблокировано</div>
-  <div class="ach-name" id="ach-name">Первый пост</div>
-  <div class="ach-desc" id="ach-desc">Вы опубликовали первый пост!</div>
-</div>
-
-<!-- ══ SHARE SHEET ══════════════════════════════════════════════════════ -->
-<div id="share-backdrop" onclick="closeShareSheet()"></div>
-<div id="share-sheet">
-  <div class="share-handle"></div>
-  <div class="share-title">Поделиться</div>
-  <div class="share-grid" id="share-grid"></div>
-  <div class="share-url-row">
-    <div class="share-url" id="share-url-text"></div>
-    <button class="share-copy-btn" onclick="shareCopyLink()">Копировать</button>
-  </div>
-</div>
-
-<!-- ══ COMMENTS PANEL ══════════════════════════════════════════════════ -->
-<div class="vfc-panel" id="vfc-panel">
-  <div class="vfc-sheet">
-    <div class="vfc-header">
-      <div style="width:28px"></div>
-      <div class="vfc-title">Комментарии</div>
-      <button class="vfc-close" onclick="closeComments()">✕</button>
-    </div>
-    <div class="vfc-list" id="vfc-list"></div>
-    <div class="vfc-input-row">
-      <input class="vfc-input" id="vfc-input" placeholder="Написать комментарий…"
-        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitVfcComment();}">
-      <button class="vfc-send" onclick="submitVfcComment()">↑</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ PROFILE EDIT MODAL ══════════════════════════════════════════════ -->
-<div class="modal-overlay" id="modal-profile-edit" onclick="if(event.target===this)closeModal('modal-profile-edit')">
-  <div class="modal-box" style="max-width:400px">
-    <div class="modal-header">
-      <div class="modal-title">Редактировать профиль</div>
-      <button class="modal-close" onclick="closeModal('modal-profile-edit')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div style="font-size:12px;color:var(--text3);margin-bottom:6px">Аватар</div>
-      <div class="prof-avatar-grid" id="prof-av-grid"></div>
-      <div style="font-size:12px;color:var(--text3);margin-bottom:6px">Имя</div>
-      <input class="inp" id="prof-name-inp" placeholder="Введите имя…" style="margin-bottom:12px">
-      <div style="font-size:12px;color:var(--text3);margin-bottom:6px">Bio</div>
-      <textarea class="inp" id="prof-bio-inp" placeholder="Расскажи о себе…" rows="3" style="resize:none;margin-bottom:16px"></textarea>
-      <button class="btn-primary" style="width:100%" onclick="saveProfileEdit()">Сохранить</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ SWIPE FEEDBACK INDICATOR ════════════════════════════════════════ -->
-<div class="swipe-indicator" id="swipe-indicator"></div>
-
-<!-- ══ FAB FIXED OVERLAY (outside all overflow:hidden parents) ══════════ -->
-<div id="vf-fab-overlay" style="display:none;position:fixed;z-index:500;right:14px;flex-direction:column;align-items:center;gap:10px;padding-bottom:12px"></div>
-
-<!-- ══ DELETE CHAT MODAL ══════════════════════════════════════════════════ -->
-<div id="del-chat-modal" onclick="hideDelChatModal()">
-  <div id="del-chat-sheet" onclick="event.stopPropagation()">
-    <div class="del-chat-header">
-      <div class="del-chat-name" id="del-chat-modal-name">Переписка</div>
-      <div class="del-chat-sub">Выберите действие</div>
-    </div>
-    <div class="del-chat-opt" onclick="deleteChatForMe()">
-      <i class="ti ti-trash" style="color:var(--text2)"></i>
-      <div>
-        <div style="font-weight:600">Удалить только у меня</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px">История переписки исчезнет только у тебя</div>
-      </div>
-    </div>
-    <div class="del-chat-opt danger" onclick="deleteChatForBoth()">
-      <i class="ti ti-trash-x"></i>
-      <div>
-        <div style="font-weight:600">Удалить у обоих</div>
-        <div style="font-size:11px;color:rgba(255,92,92,.7);margin-top:2px">Сообщения исчезнут и у тебя, и у собеседника</div>
-      </div>
-    </div>
-    <div class="del-chat-cancel" onclick="hideDelChatModal()">Отмена</div>
-  </div>
-</div>
-
-<!-- ══ CONTACT PROFILE PANEL ══════════════════════════════════════════════ -->
-<div id="contact-panel">
-  <div class="cp-topbar">
-    <button onclick="closeContactPanel()" style="background:none;border:none;color:var(--accent);font-size:22px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-arrow-left"></i></button>
-    <span style="font-size:15px;font-weight:700;color:#fff;flex:1">Профиль</span>
-    <button style="background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer" onclick="openContactFullProfile()"><i class="ti ti-dots-vertical"></i></button>
-  </div>
-  <div style="flex:1;overflow-y:auto;padding-bottom:16px">
-    <!-- Avatar + name -->
-    <div style="padding:24px 20px 12px;text-align:center;border-bottom:1px solid var(--border)">
-      <div class="cp-avatar-big" id="cp-av" style="width:72px;height:72px;font-size:28px;margin:0 auto 10px">👤</div>
-      <div class="cp-name" id="cp-name">—</div>
-      <div id="cp-uname" style="font-size:12px;color:var(--text2);margin-top:1px;opacity:.8"></div>
-      <div class="cp-uid" id="cp-uid"></div>
-      <div class="cp-status" id="cp-status" style="display:none">🟢 онлайн</div>
-    </div>
-    <!-- Quick actions -->
-    <div class="cp-actions">
-      <div class="cp-action" onclick="cpAction('message')">
-        <i class="ti ti-message-circle"></i><span class="cp-action-lbl">Написать</span>
-      </div>
-      <div class="cp-action" onclick="cpAction('call')">
-        <i class="ti ti-phone"></i><span class="cp-action-lbl">Позвонить</span>
-      </div>
-      <div class="cp-action" onclick="cpAction('portfolio')">
-        <i class="ti ti-layout-grid"></i><span class="cp-action-lbl">Портфолио</span>
-      </div>
-      <div class="cp-action" id="cp-follow-btn" onclick="cpAction('add')">
-        <i class="ti ti-user-plus"></i><span class="cp-action-lbl">Контакт</span>
-      </div>
-    </div>
-    <!-- Stats -->
-    <div class="cp-section" id="cp-stats-section" style="display:none">
-      <div class="cp-section-title">Активность</div>
-      <div id="cp-stats" style="font-size:12px;color:var(--text2);display:flex;gap:16px"></div>
-    </div>
-    <!-- Shared media -->
-    <div class="cp-section" id="cp-media-section" style="display:none">
-      <div class="cp-section-title" style="display:flex;align-items:center;justify-content:space-between">
-        Общие медиа
-        <span style="font-size:10px;color:var(--accent);cursor:pointer" onclick="closeContactPanel()">Все</span>
-      </div>
-      <div class="cp-media-grid" id="cp-media-grid"></div>
-    </div>
-    <!-- Notification / block -->
-    <div class="cp-section">
-      <div class="del-chat-opt" onclick="cpAction('mute')" style="padding:10px 0;margin:0">
-        <i class="ti ti-bell-off" style="font-size:16px;color:var(--text2);width:22px;text-align:center"></i>
-        <span style="font-size:13px;color:var(--text2)">Уведомления</span>
-      </div>
-      <div class="del-chat-opt danger" onclick="cpAction('block')" style="padding:10px 0;margin:0">
-        <i class="ti ti-ban" style="font-size:16px;width:22px;text-align:center"></i>
-        <span style="font-size:13px">Заблокировать</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ CONTACT MINI HOVER CARD ════════════════════════════════════════════ -->
-<div id="contact-mini-card"
-     onmouseenter="clearTimeout(_cmcHideTimer)"
-     onmouseleave="hideMiniCard(150)">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-    <div class="cmc-av" id="cmc-av" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0095F6,#5263FF);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0">👤</div>
-    <div>
-      <div class="cmc-name" id="cmc-name" style="font-size:14px;font-weight:700;color:#fff">—</div>
-      <div class="cmc-uid" id="cmc-uid" style="font-size:10px;color:var(--text3);margin-top:1px"></div>
-    </div>
-  </div>
-  <button class="cmc-btn" onclick="cmc_open_profile()" style="width:100%;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:600;padding:6px 10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px"><i class="ti ti-user" style="font-size:12px"></i> Открыть профиль</button>
-</div>
-
-<!-- ══ ИЗБРАННОЕ CHAT OVERLAY ═════════════════════════════════════════════ -->
-<div id="fav-chat-overlay">
-  <!-- Topbar -->
-  <div class="gco-topbar">
-    <button onclick="closeFavChat()" style="background:none;border:none;color:var(--accent);font-size:22px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0">
-      <i class="ti ti-arrow-left"></i>
-    </button>
-    <div class="gco-av-circle" style="background:linear-gradient(135deg,#f9c74f,#f8961e);font-size:20px;flex-shrink:0">⭐</div>
-    <div class="gco-tg-info">
-      <div class="gco-name">Избранное</div>
-      <div class="gco-tg-sub">⭐ Сохранённые сообщения</div>
-    </div>
-  </div>
-  <!-- Reply bar (fav can reply-quote too) -->
-  <div class="gco-reply-bar" id="fav-reply-bar" style="display:none">
-    <div style="width:3px;height:32px;background:var(--accent);border-radius:2px;flex-shrink:0"></div>
-    <div class="gco-reply-info">
-      <div class="gco-reply-author" id="fav-reply-author"></div>
-      <div class="gco-reply-text" id="fav-reply-text"></div>
-    </div>
-    <button class="gco-reply-cancel" onclick="cancelFavReply()">✕</button>
-  </div>
-  <!-- Messages -->
-  <div style="flex:1;position:relative;min-height:0;overflow:hidden;display:flex;flex-direction:column">
-    <div class="gco-msgs" id="fav-msgs">
-      <div style="text-align:center;color:var(--text3);padding:32px 16px;font-size:13px" id="fav-empty">Нет сохранённых сообщений.<br>Нажми ⭐ в любом сообщении чтобы сохранить.</div>
-    </div>
-  </div>
-  <!-- Input row — identical to DM chat -->
-  <div class="gco-input-row" style="position:relative">
-    <button class="gco-icon-btn" onclick="document.getElementById('fav-file-input').click()" title="Прикрепить" style="width:36px;height:36px;flex-shrink:0">
-      <i class="ti ti-paperclip" style="font-size:16px"></i>
-    </button>
-    <div style="position:relative;flex:1">
-      <textarea class="gco-input" id="fav-input" placeholder="Написать…" rows="1"
-        autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="true"
-        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendFavNote();}"
-        oninput="gcoAutoGrow(this)"></textarea>
-    </div>
-    <button class="gco-icon-btn" onclick="favToggleEmoji()" title="Эмодзи" style="width:36px;height:36px;flex-shrink:0">
-      <i class="ti ti-mood-smile" style="font-size:16px"></i>
-    </button>
-    <!-- Timer button — same as DM -->
-    <button id="fav-expire-btn" onclick="toggleFavExpire(event)" title="Таймер сообщения">∞</button>
-    <div id="fav-expire-popup">
-      <div class="dm-exp-opt active" data-val="" onclick="setFavExpire(this,'')">∞ Навсегда</div>
-      <div class="dm-exp-opt" data-val="300" onclick="setFavExpire(this,'300')">⏱ 5 минут</div>
-      <div class="dm-exp-opt" data-val="3600" onclick="setFavExpire(this,'3600')">⏱ 1 час</div>
-      <div class="dm-exp-opt" data-val="86400" onclick="setFavExpire(this,'86400')">⏱ 24 часа</div>
-      <div class="dm-exp-opt" data-val="604800" onclick="setFavExpire(this,'604800')">⏱ 7 дней</div>
-    </div>
-    <button class="gco-send" onclick="sendFavNote()" title="Отправить">
-      <i class="ti ti-send" style="font-size:15px"></i>
-    </button>
-  </div>
-  <!-- Hidden file input -->
-  <input type="file" id="fav-file-input" accept="image/*,video/*,.pdf,.doc,.docx,.zip" style="display:none" onchange="favHandleFile(this)">
-</div>
-
-<!-- Fav message context menu -->
-<div id="fav-ctx-overlay" onclick="hideFavMsgMenu()" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.45)">
-  <div id="fav-ctx-sheet" onclick="event.stopPropagation()" style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:18px 18px 0 0;padding:8px 0 max(16px,env(safe-area-inset-bottom));max-height:55vh;transform:translateY(100%)">
-    <div style="width:36px;height:4px;background:rgba(255,255,255,.18);border-radius:4px;margin:8px auto 12px"></div>
-    <div style="display:flex;justify-content:center;gap:6px;padding:8px 16px 14px;border-bottom:1px solid var(--border)">
-      <span class="dm-ctx-react-btn" onclick="favCtxReact('👍')">👍</span>
-      <span class="dm-ctx-react-btn" onclick="favCtxReact('❤️')">❤️</span>
-      <span class="dm-ctx-react-btn" onclick="favCtxReact('😂')">😂</span>
-      <span class="dm-ctx-react-btn" onclick="favCtxReact('😮')">😮</span>
-      <span class="dm-ctx-react-btn" onclick="favCtxReact('🔥')">🔥</span>
-      <span class="dm-ctx-react-btn" onclick="favCtxReact('💯')">💯</span>
-    </div>
-    <div class="dm-ctx-btn" onclick="hideFavMsgMenu();if(_favCtxMsg)startFavReply(_favCtxMsg)"><i class="ti ti-arrow-back-up"></i> Ответить</div>
-    <div class="dm-ctx-btn" onclick="favCtxCopy()"><i class="ti ti-copy"></i> Скопировать</div>
-    <div class="dm-ctx-btn danger" onclick="favDelMsg()"><i class="ti ti-trash"></i> Удалить из избранного</div>
-  </div>
-</div>
-
-<!-- ══ DM DELETE MESSAGE CONFIRM ══════════════════════════════════════════ -->
-<div id="dm-del-overlay" onclick="hideDmDelOverlay()">
-  <div id="dm-del-sheet" onclick="event.stopPropagation()">
-    <div style="text-align:center;font-weight:700;font-size:15px;color:#fff;padding:18px 18px 10px">Удалить сообщение?</div>
-    <div class="del-chat-opt" onclick="dmDelForMe()">
-      <i class="ti ti-trash" style="color:var(--text2)"></i>
-      <div>
-        <div style="font-weight:600">Только у меня</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px">Сообщение исчезнет только у тебя</div>
-      </div>
-    </div>
-    <div class="del-chat-opt danger" onclick="dmDelForBoth()">
-      <i class="ti ti-trash-x"></i>
-      <div>
-        <div style="font-weight:600">У обоих участников</div>
-        <div style="font-size:11px;color:rgba(255,92,92,.7);margin-top:2px">Сообщение пропадёт у вас обоих</div>
-      </div>
-    </div>
-    <div class="del-chat-cancel" onclick="hideDmDelOverlay()">Отмена</div>
-  </div>
-</div>
-
-<!-- ══ DM MESSAGE CONTEXT MENU ═══════════════════════════════════════════ -->
-<div id="dm-ctx-overlay" onclick="hideDmMsgMenu()">
-  <div id="dm-ctx-sheet" onclick="event.stopPropagation()">
-    <!-- Preview -->
-    <div class="dm-ctx-preview">
-      <div class="dm-ctx-picon" id="dm-ctx-icon">💬</div>
-      <div class="dm-ctx-ptext" id="dm-ctx-text"></div>
-    </div>
-    <!-- Quick reactions -->
-    <div class="dm-ctx-reacts">
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('👍')">👍</span>
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('❤️')">❤️</span>
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('😂')">😂</span>
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('😮')">😮</span>
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('🔥')">🔥</span>
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('💯')">💯</span>
-      <span class="dm-ctx-react-btn" onclick="dmCtxReact('🚀')">🚀</span>
-    </div>
-    <!-- Actions -->
-    <div class="dm-ctx-btn" onclick="dmCtxReply()"><i class="ti ti-arrow-back-up"></i> Ответить</div>
-    <div class="dm-ctx-btn" onclick="dmCtxCopy()"><i class="ti ti-copy"></i> Скопировать</div>
-    <div class="dm-ctx-btn" id="dm-ctx-edit-btn" onclick="dmCtxEdit()"><i class="ti ti-edit"></i> Изменить</div>
-    <div class="dm-ctx-btn" onclick="dmCtxForward()"><i class="ti ti-corner-up-right"></i> Переслать</div>
-    <div class="dm-ctx-btn" onclick="dmCtxPin()"><i class="ti ti-pin"></i> Закрепить</div>
-    <div class="dm-ctx-btn" onclick="dmCtxSave()"><i class="ti ti-star"></i> В избранное</div>
-    <div class="dm-ctx-divider"></div>
-    <div class="dm-ctx-btn danger" onclick="dmCtxDelete()"><i class="ti ti-trash"></i> Удалить</div>
-  </div>
-</div>
-
-<!-- ══ MSG ACTION BOTTOM SHEET ══════════════════════════════════════════ -->
-<div id="msg-action-sheet" style="display:none;position:fixed;inset:0;z-index:9800">
-  <div id="mas-backdrop" onclick="gcoHideCtxMenu()" style="position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px)"></div>
-  <div id="mas-sheet" style="position:absolute;bottom:0;left:0;right:0;background:#14142a;border-radius:20px 20px 0 0;overflow:hidden;transform:translateY(100%);transition:transform .25s cubic-bezier(.32,0,.18,1)">
-    <!-- Message preview -->
-    <div id="mas-preview" style="padding:14px 18px 12px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;gap:10px;align-items:flex-start">
-      <div style="width:3px;min-height:36px;border-radius:2px;background:var(--accent);flex-shrink:0"></div>
-      <div style="min-width:0;flex:1">
-        <div id="mas-author" style="font-size:11px;color:var(--accent);font-weight:700;margin-bottom:4px"></div>
-        <div id="mas-text" style="font-size:13px;color:var(--text2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical"></div>
-      </div>
-    </div>
-    <!-- Quick reactions row -->
-    <div style="display:flex;gap:6px;padding:10px 18px 4px;border-bottom:1px solid rgba(255,255,255,.07);overflow-x:auto">
-      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('👍')">👍</button>
-      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('❤️')">❤️</button>
-      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('😂')">😂</button>
-      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('😮')">😮</button>
-      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('😢')">😢</button>
-      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('🔥')">🔥</button>
-      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('🎉')">🎉</button>
-      <button class="gco-epick" style="font-size:22px;width:40px;height:40px;background:rgba(255,255,255,.06);border:none;border-radius:10px;cursor:pointer" onclick="gcoReactFromCtx('💯')">💯</button>
-    </div>
-    <!-- Actions -->
-    <div style="padding:6px 0 8px">
-      <div class="mas-item" onclick="gcoCtxReply()"><i class="ti ti-arrow-back-up" style="color:#0095F6"></i> Ответить</div>
-      <div class="mas-item" onclick="gcoCtxCopy()"><i class="ti ti-copy"></i> Скопировать</div>
-      <div class="mas-item" id="mas-edit" onclick="gcoCtxEdit()" style="display:none"><i class="ti ti-pencil"></i> Изменить</div>
-      <div class="mas-item" onclick="gcoCtxPin()"><i class="ti ti-pin"></i> Закрепить</div>
-      <div class="mas-item" onclick="gcoCtxForward()"><i class="ti ti-arrow-forward-up"></i> Переслать</div>
-      <div style="height:1px;background:rgba(255,255,255,.07);margin:4px 14px"></div>
-      <div class="mas-item" onclick="gcoCtxSelectText()"><i class="ti ti-text-size"></i> Выбрать текст</div>
-      <div class="mas-item" onclick="gcoCtxSelect()"><i class="ti ti-checkbox"></i> Выбрать</div>
-      <div class="mas-item" id="mas-delete" onclick="gcoCtxDelete()" style="color:#f87171"><i class="ti ti-trash" style="color:#f87171"></i> Удалить</div>
-    </div>
-    <div style="height:env(safe-area-inset-bottom,0px)"></div>
-  </div>
-</div>
-
-<!-- ══ BUBBLE TEXT SELECTION POPUP ════════════════════════════════════ -->
-<div id="bub-sel-popup" style="display:none;position:fixed;z-index:9950;background:#1e1e38;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:5px;box-shadow:0 8px 32px rgba(0,0,0,.85);backdrop-filter:blur(16px);min-width:200px">
-  <!-- Main actions (shown first) -->
-  <div id="bsp-main">
-    <div class="bsp-item" onclick="bspCopy()"><i class="ti ti-copy"></i> Скопировать</div>
-    <div class="bsp-item" onclick="bspReply()"><i class="ti ti-arrow-back-up" style="color:#0095F6"></i> Ответить</div>
-    <div class="bsp-item" onclick="bspForward()"><i class="ti ti-arrow-forward-up"></i> Переслать</div>
-    <div class="bsp-sep"></div>
-    <div class="bsp-item" onclick="bspShowFmt()"><i class="ti ti-text-size"></i> Форматировать <i class="ti ti-chevron-right" style="margin-left:auto;color:rgba(255,255,255,.3);font-size:12px"></i></div>
-  </div>
-  <!-- Format submenu -->
-  <div id="bsp-fmt-sub" style="display:none;flex-direction:column">
-    <div class="bsp-item" style="color:rgba(255,255,255,.5);font-size:11px;padding:6px 13px 2px" onclick="bspHideFmt()"><i class="ti ti-arrow-left"></i> Назад</div>
-    <div class="bsp-sep"></div>
-    <div class="bsp-fmt-item" onclick="bspFmtBubble('quote')"><div class="bsp-fmt-icon">❝</div> Цитата</div>
-    <div class="bsp-fmt-item" onclick="bspFmtBubble('spoiler')"><div class="bsp-fmt-icon">👁</div> Скрытый</div>
-    <div class="bsp-fmt-item" onclick="bspFmtBubble('bold')"><div class="bsp-fmt-icon"><b>B</b></div> Жирный</div>
-    <div class="bsp-fmt-item" onclick="bspFmtBubble('italic')"><div class="bsp-fmt-icon"><i>I</i></div> Курсив</div>
-    <div class="bsp-fmt-item" onclick="bspFmtBubble('mono')"><div class="bsp-fmt-icon" style="font-family:monospace">M</div> Моноширинный</div>
-    <div class="bsp-fmt-item" onclick="bspFmtBubble('link')"><div class="bsp-fmt-icon">🔗</div> Ссылка</div>
-    <div class="bsp-fmt-item" onclick="bspFmtBubble('date')"><div class="bsp-fmt-icon">📅</div> Дата</div>
-    <div class="bsp-fmt-item" onclick="bspFmtBubble('strike')"><div class="bsp-fmt-icon"><s>S</s></div> Зачёркнутый</div>
-    <div class="bsp-fmt-item" onclick="bspFmtBubble('under')"><div class="bsp-fmt-icon"><u>U</u></div> Подчёркнутый</div>
-  </div>
-</div>
-
-<!-- ══ FORMAT POPUP (legacy, kept for compat) ═══════════════════════════ -->
-<div id="msg-fmt-popup2" style="display:none;position:fixed;z-index:9900"></div>
-
-<!-- ══ FILE VIEWER OVERLAY ══════════════════════════════════════════════ -->
-<div id="fv-overlay" style="display:none;position:fixed;inset:0;z-index:9500;background:#0a0a1a;flex-direction:column">
-  <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.4);flex-shrink:0">
-    <button onclick="closeFv()" style="background:none;border:none;color:#e0e0f8;font-size:22px;cursor:pointer;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0"><i class="ti ti-arrow-left"></i></button>
-    <div style="flex:1;min-width:0"><div id="fv-name" style="font-size:13px;font-weight:600;color:#e0e0f8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div></div>
-    <a id="fv-dl-btn" target="_blank" download style="background:rgba(0,149,246,.2);border:1px solid rgba(0,149,246,.4);color:#0095F6;border-radius:8px;padding:6px 12px;font-size:12px;text-decoration:none;flex-shrink:0"><i class="ti ti-download"></i> Скачать</a>
-  </div>
-  <div id="fv-body" style="flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center"></div>
-</div>
-
-<!-- ══ MSG FORMAT POPUP ══════════════════════════════════════════════════ -->
-<div id="msg-fmt-popup" style="display:none;position:fixed;z-index:9600;background:#1a1a2e;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:6px;box-shadow:0 8px 32px rgba(0,0,0,.7)">
-  <div style="display:flex;gap:2px;flex-wrap:wrap;max-width:260px">
-    <button class="mfp-btn" onclick="mfpApply('bold')" title="Жирный"><b>B</b></button>
-    <button class="mfp-btn" onclick="mfpApply('italic')" title="Курсив"><i>I</i></button>
-    <button class="mfp-btn" onclick="mfpApply('strike')" title="Зачеркнутый"><s>S</s></button>
-    <button class="mfp-btn" onclick="mfpApply('under')" title="Подчеркнутый"><u>U</u></button>
-    <button class="mfp-btn" onclick="mfpApply('mono')" title="Моноширный" style="font-family:monospace">M</button>
-    <button class="mfp-btn" onclick="mfpApply('quote')" title="Цитата">❝</button>
-    <button class="mfp-btn" onclick="mfpApply('spoiler')" title="Скрытый">👁</button>
-    <button class="mfp-btn" onclick="mfpApply('link')" title="Ссылка">🔗</button>
-  </div>
-</div>
-
-<!-- ══ MULTI-SELECT BAR ══════════════════════════════════════════════════ -->
-<div id="msg-select-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9400;background:#0d0d28;border-top:1px solid rgba(255,255,255,.1);padding:10px 16px;display:none;align-items:center;gap:10px">
-  <span id="msg-select-count" style="flex:1;font-size:13px;color:#e0e0f8;font-weight:600">0 выбрано</span>
-  <button onclick="gcoSelectAction('forward')" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;padding:6px 10px;border-radius:8px"><i class="ti ti-arrow-forward-up"></i> Переслать</button>
-  <button onclick="gcoSelectAction('delete')" style="background:none;border:none;color:#f87171;font-size:13px;cursor:pointer;padding:6px 10px;border-radius:8px"><i class="ti ti-trash"></i> Удалить</button>
-  <button onclick="gcoExitSelect()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:6px"><i class="ti ti-x"></i></button>
-</div>
-
-
-<div id="cw-restore-backdrop" style="position:fixed;inset:0;background:#0a0a0f;z-index:9997;display:none;transition:opacity .35s"></div>
-
-<div id="shorts-player" style="display:none;position:fixed;inset:0;z-index:9999;background:#000;touch-action:none">
-  <button onclick="closeShortsPlayer()" style="position:absolute;top:16px;left:16px;z-index:10;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:24px;width:44px;height:44px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
-  <div id="sp-counter" style="position:absolute;top:20px;left:50%;transform:translateX(-50%);z-index:10;color:rgba(255,255,255,.7);font-size:13px;font-weight:600"></div>
-  <div id="sp-video-wrap" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
-    <video id="sp-video" style="width:100%;height:100%;object-fit:contain" playsinline controls></video>
-  </div>
-  <button id="sp-prev" onclick="spNav(-1)" style="position:absolute;top:50%;left:12px;transform:translateY(-50%);z-index:10;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:22px;width:40px;height:60px;border-radius:8px;cursor:pointer">‹</button>
-  <button id="sp-next" onclick="spNav(1)" style="position:absolute;top:50%;right:12px;transform:translateY(-50%);z-index:10;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:22px;width:40px;height:60px;border-radius:8px;cursor:pointer">›</button>
-</div>
-</body>
-</html>
