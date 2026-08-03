@@ -2815,6 +2815,25 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   .wb-wallet{order:9;flex-shrink:0}
 }
 
+
+/* Fix-162: Public profile logo-dropdown + action buttons */
+#po-follow-wrap{position:relative;display:none}
+.po-logo-btn{width:40px;height:40px;border-radius:50%;background:rgba(0,149,246,.15);border:1.5px solid rgba(0,149,246,.4);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;padding:0;flex-shrink:0}
+.po-logo-btn:hover{background:rgba(0,149,246,.28);border-color:rgba(0,149,246,.7)}
+#po-dropdown{position:absolute;top:calc(100% + 10px);right:0;background:rgba(6,16,50,.62);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border:1px solid rgba(0,149,246,.22);border-radius:18px;min-width:196px;padding:7px 0;z-index:9999;box-shadow:0 12px 48px rgba(0,80,200,.25);display:none}
+.po-dd-item{display:flex;align-items:center;gap:12px;width:100%;padding:12px 18px;background:none;border:none;color:#e8f4ff;font-size:14px;cursor:pointer;text-align:left;transition:.15s;font-family:inherit}
+.po-dd-item:hover{background:rgba(0,149,246,.12)}
+.po-dd-item i{font-size:17px;opacity:.85;color:#5bc8ff}
+.po-dd-danger{color:#ff7b7b!important}
+.po-dd-danger i{color:#ff7b7b!important}
+.po-dd-danger:hover{background:rgba(255,80,80,.1)!important}
+.po-dd-sep{height:1px;background:rgba(0,149,246,.15);margin:4px 12px}
+.po-actions-row{display:flex;gap:8px;justify-content:center;padding:14px 16px 6px}
+.po-action-btn{display:flex;flex-direction:column;align-items:center;gap:5px;background:rgba(0,149,246,.1);border:1px solid rgba(0,149,246,.22);border-radius:15px;padding:13px 8px 10px;color:#c8e8ff;font-size:11px;cursor:pointer;flex:1;min-width:60px;transition:.2s;font-family:inherit}
+.po-action-btn:hover{background:rgba(0,149,246,.2);border-color:rgba(0,149,246,.4)}
+.po-action-btn i{font-size:20px;color:#5bc8ff}
+.po-action-danger{color:#ff9090!important}
+.po-action-danger i{color:#ff7b7b!important}
 </style>
 </head>
 <body>
@@ -4360,9 +4379,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
     <button id="po-edit-btn" class="po-edit-btn" onclick="closePortfolio();openMyProfile()">
       <i class="ti ti-edit" style="font-size:13px"></i> Изменить
     </button>
-    <button id="po-follow-btn" class="po-edit-btn" style="display:none" onclick="poFollowBtnClick()">
-      Подписаться
-    </button>
+    <div id="po-follow-wrap" style="display:none;position:relative"><button class="po-logo-btn" onclick="togglePoDropdown(event)" title="Действия"><span style="font:900 13px/1 system-ui,sans-serif;background:linear-gradient(135deg,#0095f6,#00c6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-1px;display:block">CW</span></button><div id="po-dropdown"><button class="po-dd-item" onclick="poActMsg()"><i class="ti ti-message"></i>Написать</button><button class="po-dd-item" onclick="poActCall()"><i class="ti ti-phone"></i>Позвонить</button><button class="po-dd-item" onclick="poActNotify()"><i class="ti ti-bell"></i>Уведомления</button><div class="po-dd-sep"></div><button class="po-dd-item po-dd-danger" onclick="poActBlock()"><i class="ti ti-ban"></i>Заблокировать</button></div></div>
   </div>
   <div class="po-scroll" id="po-scroll">
     <!-- Hero -->
@@ -4391,6 +4408,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <div class="po-stat-val" id="po-likes">0</div>
         <div class="po-stat-lbl">Лайки</div>
       </div>
+    </div>
+    <div id="po-actions" class="po-actions-row" style="display:none">
+      <button class="po-action-btn" onclick="poActMsg()"><i class="ti ti-message"></i><span>Написать</span></button>
+      <button class="po-action-btn" onclick="poActCall()"><i class="ti ti-phone"></i><span>Позвонить</span></button>
+      <button class="po-action-btn" onclick="poActNotify()"><i class="ti ti-bell"></i><span>Уведомления</span></button>
+      <button class="po-action-btn po-action-danger" onclick="poActBlock()"><i class="ti ti-ban"></i><span>Заблокировать</span></button>
     </div>
     <!-- Grid tabs -->
     <div class="po-tabs-bar">
@@ -12771,7 +12794,7 @@ function showTopBars(){
 }
 (function initCubeScrollHide(){
   function setup(){
-    if(sessionStorage.getItem('cw_last_overlay')){const _rb6=document.getElementById('cw-restore-backdrop');if(_rb6)_rb6.style.display='block';}try{const _rl0=JSON.parse(sessionStorage.getItem('cw_last_overlay')||'null');const _pc0=JSON.parse(sessionStorage.getItem('cw_po_data')||'null');if(_rl0&&_rl0.type==='portfolio'&&_pc0){const _po0=document.getElementById('portfolio-overlay');if(_po0){_po0.style.display='flex';const _st0=(id,v)=>{const e=document.getElementById(id);if(e&&v!==undefined)e.textContent=v;};_st0('po-header-name',_pc0.name);_st0('po-uname',_pc0.uname);_st0('po-follows',_pc0.follows);_st0('po-followers',_pc0.followers);_st0('po-likes',_pc0.likes);const _av0=document.getElementById('po-avatar');if(_av0&&_pc0.avHtml)_av0.innerHTML=_pc0.avHtml;const _b0=document.getElementById('po-type-badge');if(_b0){_b0.textContent=_pc0.badge||'';_b0.className=_pc0.badgeCls||'po-type-badge pub';}const _rb0=document.getElementById('cw-restore-backdrop');if(_rb0)_rb0.style.display='none';}}}catch(_e0){}
+    if(sessionStorage.getItem('cw_last_overlay')){const _rb6=document.getElementById('cw-restore-backdrop');if(_rb6)_rb6.style.display='block';}try{const _rl0=JSON.parse(sessionStorage.getItem('cw_last_overlay')||'null');const _pc0=JSON.parse(sessionStorage.getItem('cw_po_data')||'null');if(_rl0&&_rl0.type==='portfolio'&&_pc0){const _po0=document.getElementById('portfolio-overlay');if(_po0){_po0.style.display='flex';const _st0=(id,v)=>{const e=document.getElementById(id);if(e&&v!==undefined)e.textContent=v;};_st0('po-header-name',_pc0.name);_st0('po-uname',_pc0.uname);_st0('po-follows',_pc0.follows);_st0('po-followers',_pc0.followers);_st0('po-likes',_pc0.likes);const _av0=document.getElementById('po-avatar');if(_av0&&_pc0.avHtml)_av0.innerHTML=_pc0.avHtml;const _b0=document.getElementById('po-type-badge');if(_b0){_b0.textContent=_pc0.badge||'';_b0.className=_pc0.badgeCls||'po-type-badge pub';}const _rb0=document.getElementById('cw-restore-backdrop');if(_rb0)_rb0.style.display='none';}}}catch(_e0){}try{const _pp2=JSON.parse(sessionStorage.getItem('cw_pp_data')||'null');if(_pp2&&_pp2.uid&&_pp2.displayName){const _ov2=document.getElementById('portfolio-overlay');if(_ov2){_ov2.style.display='flex';const _st2=(id,v)=>{const e=document.getElementById(id);if(e&&v)e.textContent=v;};_st2('po-header-name',_pp2.displayName);_st2('po-uname',_pp2.uname);_st2('po-follows',_pp2.follows);_st2('po-followers',_pp2.followers);_st2('po-likes',_pp2.likes);const _av2=document.getElementById('po-avatar');if(_av2&&_pp2.avHtml)_av2.innerHTML=_pp2.avHtml;const _b2=document.getElementById('po-type-badge');if(_b2){_b2.textContent=_pp2.badge||'';_b2.className=_pp2.badgeCls||'';}const _fw2=document.getElementById('po-follow-wrap');if(_fw2)_fw2.style.display='block';const _ac2=document.getElementById('po-actions');if(_ac2)_ac2.style.display='flex';const _ed2=document.getElementById('po-edit-btn');if(_ed2)_ed2.style.display='none';const _rb2=document.getElementById('cw-restore-backdrop');if(_rb2)_rb2.style.display='none';}}}catch(_e2){}
     const cs = document.getElementById('cube-switcher');
     if(!cs) return;
     function onScroll(e){
@@ -16053,6 +16076,66 @@ const _grpOvId='grp-chat-overlay';
     // achievement popup disabled
   };
 })();
+
+// Fix-162: Public profile logo-dropdown + action buttons + instant reload
+(function(){
+  const _oPP=window.openPublicProfile;
+  window.openPublicProfile=function(uid,name,avColor){
+    if(typeof _oPP==='function')_oPP(uid,name,avColor);
+    // Show action row + logo dropdown for other users
+    const fw=document.getElementById('po-follow-wrap');
+    if(fw)fw.style.display='block';
+    const acts=document.getElementById('po-actions');
+    if(acts)acts.style.display='flex';
+    const dd=document.getElementById('po-dropdown');
+    if(dd)dd.style.display='none';
+    // Save display data after API loads (4s delay)
+    setTimeout(function(){
+      try{
+        const ov=document.getElementById('portfolio-overlay');
+        if(!ov||ov.dataset.viewUid!==String(uid))return;
+        sessionStorage.setItem('cw_pp_data',JSON.stringify({
+          uid:String(uid),name:name||'',avColor:avColor||'',
+          displayName:(document.getElementById('po-header-name')||{}).textContent||'',
+          uname:(document.getElementById('po-uname')||{}).textContent||'',
+          badge:(document.getElementById('po-type-badge')||{}).textContent||'',
+          badgeCls:(document.getElementById('po-type-badge')||{}).className||'',
+          follows:(document.getElementById('po-follows')||{}).textContent||'0',
+          followers:(document.getElementById('po-followers')||{}).textContent||'0',
+          likes:(document.getElementById('po-likes')||{}).textContent||'0',
+          avHtml:(document.getElementById('po-avatar')||{}).innerHTML||''
+        }));
+      }catch(_){}
+    },4000);
+  };
+  const _oCPF=window.closePortfolio;
+  window.closePortfolio=function(){
+    if(typeof _oCPF==='function')_oCPF();
+    const fw=document.getElementById('po-follow-wrap');if(fw)fw.style.display='none';
+    const acts=document.getElementById('po-actions');if(acts)acts.style.display='none';
+    const dd=document.getElementById('po-dropdown');if(dd)dd.style.display='none';
+    try{sessionStorage.removeItem('cw_pp_data');}catch(_){}
+  };
+})();
+function togglePoDropdown(e){
+  e.stopPropagation();
+  const dd=document.getElementById('po-dropdown');
+  if(dd)dd.style.display=dd.style.display==='block'?'none':'block';
+}
+document.addEventListener('click',function(){const dd=document.getElementById('po-dropdown');if(dd)dd.style.display='none';});
+function poActMsg(){
+  const ov=document.getElementById('portfolio-overlay');
+  const uid=ov?ov.dataset.viewUid:'';
+  const nm=(document.getElementById('po-header-name')||{}).textContent||'';
+  if(typeof closePortfolio==='function')closePortfolio();
+  if(uid)setTimeout(function(){if(typeof openDm==='function')openDm(uid,nm);},150);
+}
+function poActCall(){alert('Звонок — скоро!');}
+function poActNotify(){alert('Уведомления — скоро!');}
+function poActBlock(){
+  const uid=(document.getElementById('portfolio-overlay')||{dataset:{}}).dataset.viewUid;
+  if(uid&&confirm('Заблокировать пользователя?'))if(typeof closePortfolio==='function')closePortfolio();
+}
 </script>
 
 <!-- ══ NEW MODALS ══════════════════════════════ -->
