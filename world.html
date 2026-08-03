@@ -8356,6 +8356,7 @@ function dmCtxReact(emoji) {
 let _contactPanelUid = null;
 function showContactPanel(uid, name, avColor) {
   _contactPanelUid = uid;
+  sessionStorage.setItem('cw_last_overlay',JSON.stringify({type:'contactPanel',uid:String(uid||''),name:name||''}));
   // Avatar
   const avEl = document.getElementById('cp-av');
   const letter = (name||'?')[0].toUpperCase();
@@ -8437,6 +8438,7 @@ function showContactPanel(uid, name, avColor) {
   requestAnimationFrame(()=>panel.classList.add('open'));
 }
 function closeContactPanel() {
+  sessionStorage.removeItem('cw_last_overlay');
   const panel = document.getElementById('contact-panel');
   panel.classList.remove('open');
   setTimeout(()=>{ panel.style.display='none'; _contactPanelUid=null; }, 320);
@@ -11776,6 +11778,7 @@ function peRemoveLink(i){
 //  PORTFOLIO PAGE
 // ════════════════════════════════════════════════
 function openPortfolio(){
+  sessionStorage.setItem('cw_last_overlay',JSON.stringify({type:'portfolio'}));
   const p=app.myProfile;
   const privacy=p.privacy||'public';
   const isHidden=privacy==='hidden';
@@ -11918,7 +11921,17 @@ function openPortfolio(){
   _chatOverlayBackdrop(true);
   try{ localStorage.setItem('cw_last_overlay','portfolio'); }catch(e){}
 }
+function _restoreLastOverlay(){
+  try{
+    const _rd=JSON.parse(sessionStorage.getItem('cw_last_overlay')||'null');
+    if(!_rd) return;
+    if(_rd.type==='publicProfile'&&_rd.uid) setTimeout(()=>openPublicProfile(_rd.uid,'',''),200);
+    else if(_rd.type==='portfolio') setTimeout(()=>openPortfolio(),200);
+    else if(_rd.type==='contactPanel'&&_rd.uid) setTimeout(()=>showContactPanel(_rd.uid,_rd.name||''),200);
+  }catch(e){}
+}
 function closePortfolio(){
+  sessionStorage.removeItem('cw_last_overlay');
   const overlay = document.getElementById('portfolio-overlay');
   overlay.classList.remove('open');
   delete overlay.dataset.viewUid;
@@ -11937,6 +11950,7 @@ function closePortfolio(){
 // ── Public profile of another user ────────────────────────────────────────
 function openPublicProfile(uid, name, avColor) {
   if(!uid) return;
+  sessionStorage.setItem('cw_last_overlay',JSON.stringify({type:'publicProfile',uid:String(uid)}));
   const overlay = document.getElementById('portfolio-overlay');
   overlay.dataset.viewUid = uid;
 
@@ -15494,6 +15508,7 @@ function addWbAccount(){
   if (_lastView === 'interior' && _lastCube) enterInterior(_lastCube);
 
   // Hide splash overlay now that auth is done
+  setTimeout(_restoreLastOverlay, 600);
   const splash = document.getElementById('cw-splash');
   if(splash){ splash.classList.add('hide'); setTimeout(()=>splash.remove(), 400); }
 
