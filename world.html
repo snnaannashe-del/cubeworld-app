@@ -420,11 +420,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #cs-bird-btn.show{opacity:1;pointer-events:auto}
 
 /* ── FEED FAB (speed-dial action button) ── */
-.vf-fab-wrap{position:absolute;right:12px;bottom:80px;z-index:15;display:flex;flex-direction:column;align-items:center;gap:0}
-.vf-fab-trigger{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.7);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.4);transition:transform .22s,background .18s;flex-shrink:0;backdrop-filter:blur(8px)}
+.vf-fab-wrap{position:absolute;right:12px;bottom:80px;z-index:15;display:flex;flex-direction:row;align-items:center;gap:0}
+.vf-fab-trigger{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.7);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.4);transition:transform .22s,background .18s;flex-shrink:0;backdrop-filter:blur(8px)}.vf-fab-trigger{display:none!important}
 .vf-fab-trigger:hover,.vf-fab-trigger:active{transform:scale(1.08);background:rgba(255,255,255,.15);color:#fff}
-.vf-fab-items{display:flex;flex-direction:column;align-items:center;gap:10px;padding-bottom:12px;padding-top:4px;max-height:0;overflow:hidden;opacity:0;pointer-events:none;transition:max-height .38s cubic-bezier(.4,0,.2,1),opacity .25s}
-.vf-fab-wrap.open .vf-fab-items{max-height:420px;opacity:1;pointer-events:auto;overflow:visible}
+.vf-fab-items{display:flex;flex-direction:row;align-items:center;gap:20px;padding:0;max-height:none;overflow:visible;opacity:1;pointer-events:auto}
+
 .vf-fab-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;background:none;border:none;padding:0;color:#fff;outline:none;transform:translateY(8px);transition:transform .25s}
 .vf-fab-wrap.open .vf-fab-item{transform:translateY(0)}
 /* author avatar stays above FAB items */
@@ -12909,12 +12909,7 @@ function renderFeed(){
       ${hasVideo?`<div class="vf-progress"><div class="vf-progress-fill" id="vf-prog-${post.id}"></div></div>`:''}
       <div class="vf-fab-wrap" id="vf-fab-${post.id}">
         <div class="vf-fab-items">
-          ${!isMine?`<div class="vf-fab-author">
-            <div class="vfa-author-av" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">
-              ${letter}
-              <div class="vfa-follow-dot${isFollowing?' following':''}" id="vfa-fd-${post.user_id}" onclick="event.stopPropagation();vfFollow('${post.user_id}')">${isFollowing?'✓':'+'}</div>
-            </div>
-          </div>`:''}
+          
           <button class="vf-fab-item" onclick="vfLike('${post.id}',this)">
             <div class="vfa-icon${isLiked?' liked':''}" id="vfa-heart-${post.id}"><i class="ti ti-heart${isLiked?'-filled':''}"></i></div>
             <span class="vfa-count" id="vfa-lc-${post.id}">${_fmtN(post.likes||0)}</span>
@@ -12927,14 +12922,14 @@ function renderFeed(){
             <div class="vfa-icon"><i class="ti ti-share-3"></i></div>
             <span class="vfa-count">${_fmtN(post.share_count||0)||''}</span>
           </button>
-          <div class="vf-fab-item" style="cursor:default">
+          <div class="vf-fab-item" style="display:none">
             <div class="vfa-icon"><i class="ti ti-eye"></i></div>
             <span class="vfa-count" id="vfa-vc-${post.id}">${_fmtN(post.view_count||0)}</span>
           </div>
         </div>
-        <button class="vf-fab-trigger" onclick="toggleVfFab('${post.id}')">
+        <span style="display:none"><button class="vf-fab-trigger" onclick="toggleVfFab('${post.id}')">
           <i class="ti ti-layout-grid"></i>
-        </button>
+        </button></span>
       </div>
       <div class="vf-info">
         <div class="vfi-author-row">
