@@ -2868,7 +2868,7 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
 @media(max-width:768px){.vf-comments-panel{bottom:64px!important}}
 /* FIX 168 */
 .vf-fab-item .ti{font-size:28px!important}
-#_vf-share-sheet{position:fixed;bottom:0;left:0;right:0;z-index:10200;background:rgba(6,16,50,.95);border-radius:18px 18px 0 0;transform:translateY(100%);transition:transform .25s;padding:0 0 env(safe-area-inset-bottom,0px)}
+#_vf-share-sheet{position:fixed;bottom:0;left:0;right:0;z-index:10200;background:var(--card,#1a1a2e);border-top:1px solid var(--border,#2a2a4a);border-radius:18px 18px 0 0;transform:translateY(100%);transition:transform .25s;padding:0 0 env(safe-area-inset-bottom,0px);box-shadow:0 -8px 40px rgba(0,0,0,.7)}
 #_vf-share-sheet.open{transform:translateY(0)}
 #_vf-share-ov{position:fixed;inset:0;z-index:10199;background:rgba(0,0,0,.5);display:none}
 #_vf-share-ov.open{display:block}
@@ -2886,8 +2886,8 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
 #_po2-left{flex:1;margin-right:16px}
 /* FIX 168f */
 @media(min-width:600px){
-  #_vf-share-sheet{left:50%!important;right:auto!important;width:min(480px,100vw);transform:translateX(-50%) translateY(100%)!important}
-  #_vf-share-sheet.open{transform:translateX(-50%) translateY(0)!important}
+  #_vf-share-sheet{left:var(--sheet-left,50%)!important;right:auto!important;width:var(--sheet-width,min(480px,100vw));transform:translateX(0) translateY(100%)!important;border-radius:18px 18px 0 0}
+  #_vf-share-sheet.open{transform:translateX(0) translateY(0)!important}
 }
 </style>
 </head>
@@ -16642,6 +16642,32 @@ window._doVfReport = function(pid){
 // ===== END FIX 166 =====
 </script>
 
+<script>
+// FIX 178: Align #_vf-share-sheet to #vf-feed-col on desktop
+(function(){
+  function _alignShareSheet(){
+    var sh=document.getElementById('_vf-share-sheet');
+    if(!sh) return;
+    var fc=document.getElementById('vf-feed-col');
+    if(fc && window.innerWidth>=600){
+      var r=fc.getBoundingClientRect();
+      sh.style.setProperty('--sheet-left', Math.round(r.left)+'px');
+      sh.style.setProperty('--sheet-width', Math.round(r.width)+'px');
+    } else {
+      sh.style.removeProperty('--sheet-left');
+      sh.style.removeProperty('--sheet-width');
+    }
+  }
+  window.addEventListener('resize',_alignShareSheet);
+  // Run whenever share sheet opens
+  var _orig = window._openVfShareSheet;
+  Object.defineProperty(window,'_openVfShareSheet',{
+    get:function(){return function(){if(_orig)_orig.apply(this,arguments);setTimeout(_alignShareSheet,0);};},
+    set:function(v){_orig=v;},configurable:true
+  });
+  setTimeout(_alignShareSheet,500);
+})();
+</script>
 <!-- FIX 176: Restore missing #modal-universe -->
 <div class="modal-backdrop" id="modal-universe">
   <div class="modal" style="max-width:min(560px,calc(100vw - 24px));width:100%;max-height:90svh;box-sizing:border-box;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:0">
