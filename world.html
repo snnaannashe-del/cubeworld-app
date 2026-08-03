@@ -16130,13 +16130,7 @@ function togglePoDropdown(e){
   if(dd)dd.style.display=dd.style.display==='block'?'none':'block';
 }
 document.addEventListener('click',function(){const dd=document.getElementById('po-dropdown');if(dd)dd.style.display='none';});
-function poActMsg(){
-  const ov=document.getElementById('portfolio-overlay');
-  const uid=ov?ov.dataset.viewUid:'';
-  const nm=(document.getElementById('po-header-name')||{}).textContent||'';
-  if(typeof closePortfolio==='function')closePortfolio();
-  if(uid)setTimeout(function(){if(typeof openDm==='function')openDm(uid,nm);},150);
-}
+function poActMsg(){var dd=document.getElementById('po-dropdown');if(dd)dd.style.display='none';var uid=window._poUid;var nm=window._poName||'Пользователь';if(uid&&typeof openDmWith==='function'){if(typeof closePortfolio==='function')closePortfolio();openDmWith(uid,nm);}}
 function poActCall(){alert('Звонок — скоро!');}
 function poActNotify(){alert('Уведомления — скоро!');}
 function poActBlock(){
@@ -16165,7 +16159,7 @@ function poFollowDd(){
   var _oPP3=window.openPublicProfile;
   window.openPublicProfile=function(uid,name,avColor){
     if(typeof _oPP3==='function')_oPP3(uid,name,avColor);
-    window._poUid=String(uid);
+    window._poUid=String(uid);window._poName=name||"";
     // Sync follow button from localStorage
     setTimeout(function(){
       var fw=JSON.parse(localStorage.getItem('cw_following')||'{}');
