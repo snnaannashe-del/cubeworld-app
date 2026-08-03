@@ -8366,6 +8366,20 @@ function showContactPanel(uid, name, avColor) {
   avEl.style.alignItems = 'center';
   avEl.style.justifyContent = 'center';
   avEl.style.borderRadius = '50%';
+  // Async: load real avatar from backend
+  apiCall('/users/'+uid).then(prof=>{
+    if(!prof||_contactPanelUid!==uid) return;
+    const avUrl=prof.photoUrl||prof.avatar_url;
+    const avEl2=document.getElementById('cp-av');
+    if(!avEl2) return;
+    if(avUrl&&(avUrl.startsWith('data:')||avUrl.startsWith('http')||avUrl.startsWith('/'))){
+      avEl2.textContent='';avEl2.style.background='';
+      avEl2.innerHTML='<img src="'+avUrl+'" alt="a" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
+    } else if(prof.avatar||avUrl){
+      avEl2.textContent='';
+      avEl2.innerHTML='<span style="font-size:36px;line-height:1">'+(prof.avatar||avUrl)+'</span>';
+    }
+  }).catch(()=>{});
   document.getElementById('cp-name').textContent = name || '—';
   document.getElementById('cp-uid').textContent = 'UID: ' + uid;
   document.getElementById('cp-status').textContent = '🟢 онлайн';
@@ -11828,10 +11842,25 @@ function openPortfolio(){
     set('po-follows', stats.following||0);
     set('po-followers', stats.followers||0);
     set('po-likes', stats.reactions_received||0);
+    // Fetch real follow counts from /follow endpoint
+    const _mrid=String(localStorage.getItem('cw_user_id')||'0');
+    if(_mrid&&_mrid!=='0') apiCall('/follow/'+_mrid).then(fd=>{
+      if(!fd) return;
+      if(fd.followers_count!==undefined) set('po-followers', fd.followers_count);
+      if(fd.following_count!==undefined) set('po-follows', fd.following_count);
+    }).catch(()=>{});
   });
 
   // ── Grid ────────────────────────────────────────
-  _renderPortfolioGrid();
+  _renderPortfolioGrid(); // initial from cache
+  // Fetch own posts from API for accurate display
+  const _myRawPo=String(localStorage.getItem('cw_user_id')||'0');
+  if(_myRawPo&&_myRawPo!=='0') apiCall('/feed/user/'+_myRawPo).then(posts=>{
+    if(!Array.isArray(posts)) return;
+    _publicProfileUidCache=_myRawPo;
+    _publicProfilePostsCache=posts;
+    _renderPublicProfileGrid(_myRawPo, posts);
+  }).catch(()=>{});
 
   // ── Restore own-profile buttons ─────────────────
   delete document.getElementById('portfolio-overlay').dataset.viewUid;
@@ -12012,6 +12041,8 @@ function poSetTab(tab, btn){
   const viewUid=overlay?.dataset.viewUid;
   if(viewUid && _publicProfileUidCache===String(viewUid) && _publicProfilePostsCache){
     _renderPublicProfileGrid(viewUid, _publicProfilePostsCache);
+  } else if(!viewUid && _publicProfileUidCache && _publicProfilePostsCache){
+    _renderPublicProfileGrid(_publicProfileUidCache, _publicProfilePostsCache);
   } else {
     _renderPortfolioGrid();
   }
