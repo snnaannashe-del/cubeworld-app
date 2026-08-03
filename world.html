@@ -13014,6 +13014,7 @@ function renderFeed(){
     entries.forEach(entry=>{
       const postId=entry.target.dataset.postId;
       if(entry.isIntersecting){
+        document.getElementById('vf-comments-panel')?.classList.remove('open');
         const vid=entry.target.querySelector('video.vf-video');
         if(vid){ vid.muted=_vfMuted; vid.play().catch(()=>{}); _vfStartProgress(entry.target,postId); }
         // TikTok-style: count view after 3 seconds
@@ -16615,30 +16616,28 @@ window._doVfReport = function(pid){
 })();
 
 
-// FIX 173: close comments panel on tap outside
+// FIX 174: close comments on outside tap (backdrop) + on video change
 (function(){
-  function _initCpBackdrop(){
-    document.addEventListener('touchstart',function(e){
-      var p=document.getElementById('vfc-panel')||document.querySelector('#vf-comments-panel');
-      if(!p) return;
-      var isOpen=p.classList.contains('open')||p.style.display!='none';
-      if(isOpen&&!p.contains(e.target)){
-        if(typeof closeComments==='function') closeComments();
-        else p.classList.remove('open');
-      }
-    },{passive:true});
-    document.addEventListener('mousedown',function(e){
-      var p=document.getElementById('vfc-panel')||document.querySelector('#vf-comments-panel');
-      if(!p) return;
-      var isOpen=p.classList.contains('open')||p.style.display!='none';
-      if(isOpen&&!p.contains(e.target)){
-        if(typeof closeComments==='function') closeComments();
-        else p.classList.remove('open');
-      }
-    });
+  function _initCpBdrop(){
+    var panel=document.getElementById('vf-comments-panel');
+    if(!panel) return;
+    var bd=document.createElement('div');
+    bd.id='_vfcp_bd';
+    bd.style.cssText='position:absolute;inset:0;z-index:24;display:none;background:transparent;';
+    if(panel.parentElement) panel.parentElement.insertBefore(bd,panel);
+    bd.addEventListener('touchstart',function(e){
+      e.preventDefault();e.stopPropagation();
+      panel.classList.remove('open');
+    },{passive:false});
+    bd.addEventListener('click',function(){panel.classList.remove('open');});
+    new MutationObserver(function(){
+      bd.style.display=panel.classList.contains('open')?'block':'none';
+    }).observe(panel,{attributes:true,attributeFilter:['class']});
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',_initCpBackdrop);
-  else _initCpBackdrop();
+  setTimeout(function(){
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',_initCpBdrop);
+    else _initCpBdrop();
+  },100);
 })();
 // ===== END FIX 166 =====
 </script>
