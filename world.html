@@ -12570,6 +12570,7 @@ function closeVfFab(){
 }
 
 function _openVfFabContent(postId){
+  if(_curSection!=='feed'){closeVfFab();return;}
   const post=_vfPosts.find(p=>String(p.id)===String(postId));
   if(!post) return;
   const trigger=document.querySelector(`#vf-fab-${postId} .vf-fab-trigger`);
