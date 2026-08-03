@@ -2855,9 +2855,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 i.ti-share-3{color:#0095f6!important;font-size:12px!important}
 .vf-fab-items button:last-of-type .vfa-count{display:none!important}
 .vf-fab-items{align-items:flex-start!important}
+.vf-fab-item .vfa-icon{display:flex;align-items:center;justify-content:center;line-height:1}
 .vf-fab-item .ti{filter:url('#_cw_erode')!important}
 /* FIX 168 */
-.vf-fab-item .ti{font-size:40px!important}
+.vf-fab-item .ti{font-size:28px!important}
 #_vf-share-sheet{position:fixed;bottom:0;left:0;right:0;z-index:10200;background:rgba(6,16,50,.95);border-radius:18px 18px 0 0;transform:translateY(100%);transition:transform .25s;padding:0 0 env(safe-area-inset-bottom,0px)}
 #_vf-share-sheet.open{transform:translateY(0)}
 #_vf-share-ov{position:fixed;inset:0;z-index:10199;background:rgba(0,0,0,.5);display:none}
@@ -16595,4 +16596,4 @@ window._doVfReport = function(pid){
 
 // ===== END FIX 166 =====
 </script>
-<svg id="_cw_svg_filters" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><defs><filter id="_cw_erode" color-interpolation-filters="sRGB"><feMorphology operator="erode" in="SourceGraphic" radius="1.2"/></filter></defs></svg>
+<svg id="_cw_svg_filters" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><defs><filter id="_cw_erode" color-interpolation-filters="sRGB"><feMorphology operator="erode" in="SourceGraphic" radius="2.0"/></filter></defs></svg>
