@@ -8376,13 +8376,42 @@ function showContactPanel(uid, name, avColor) {
       avEl2.textContent='';avEl2.style.background='';
       avEl2.innerHTML='<img src="'+avUrl+'" alt="a" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
     } else if(prof.avatar||avUrl){
-      avEl2.textContent='';
-      avEl2.innerHTML='<span style="font-size:36px;line-height:1">'+(prof.avatar||avUrl)+'</span>';
+      avEl2.textContent='';avEl2.style.background='transparent';
+      avEl2.innerHTML='<span style="font-size:36px;line-height:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%">'+(prof.avatar||avUrl)+'</span>';
+    }
+    // Username
+    const unEl=document.getElementById('cp-uname');
+    if(unEl) unEl.textContent=prof.username?'@'+prof.username:'';
+  }).catch(()=>{});
+  // Follow status + counts
+  apiCall('/follow/'+uid).then(fd=>{
+    if(!fd||_contactPanelUid!==uid) return;
+    // Stats
+    const statsEl=document.getElementById('cp-stats');
+    const statsSection=document.getElementById('cp-stats-section');
+    if(statsEl){
+      const fc=fd.followers_count??0, fwc=fd.following_count??0;
+      statsEl.innerHTML='<span><b>'+fc+'</b> подписчиков</span><span><b>'+fwc+'</b> подписок</span>';
+    }
+    if(statsSection) statsSection.style.display='';
+    // Follow button state
+    const fBtn=document.getElementById('cp-follow-btn');
+    if(fBtn){
+      const icon=fBtn.querySelector('i'), lbl=fBtn.querySelector('.cp-action-lbl');
+      if(fd.following){
+        if(icon) icon.className='ti ti-user-check';
+        if(lbl) lbl.textContent='Отписаться';
+        fBtn.dataset.following='true';
+      } else {
+        if(icon) icon.className='ti ti-user-plus';
+        if(lbl) lbl.textContent='Подписаться';
+        fBtn.dataset.following='false';
+      }
     }
   }).catch(()=>{});
   document.getElementById('cp-name').textContent = name || '—';
   document.getElementById('cp-uid').textContent = 'UID: ' + uid;
-  document.getElementById('cp-status').textContent = '🟢 онлайн';
+  document.getElementById('cp-status').textContent = '⚪ CubeWorld';
   // Try to load shared media from DM history
   const dmKey = 'dm:'+uid;
   const msgs = (app.chatMessages[_DM_NAMESPACE]||{})[dmKey]||[];
@@ -8430,7 +8459,24 @@ function cpAction(type) {
     const avColor = cpAv ? cpAv.style.background : '';
     openPublicProfile(uid, cpName ? cpName.textContent : '', avColor);
   } else if(type==='add') {
-    showToast('✅ Контакт добавлен!');
+    const fBtn=document.getElementById('cp-follow-btn');
+    const isF=fBtn?.dataset.following==='true';
+    apiCall('/follow/'+uid,{method:isF?'DELETE':'POST'}).then(()=>{
+      if(fBtn){
+        const icon=fBtn.querySelector('i'),lbl=fBtn.querySelector('.cp-action-lbl');
+        if(isF){
+          if(icon)icon.className='ti ti-user-plus';
+          if(lbl)lbl.textContent='Подписаться';
+          fBtn.dataset.following='false';
+          showToast('Вы отписались');
+        } else {
+          if(icon)icon.className='ti ti-user-check';
+          if(lbl)lbl.textContent='Отписаться';
+          fBtn.dataset.following='true';
+          showToast('✅ Вы подписались!');
+        }
+      }
+    }).catch(()=>showToast('Ошибка сети'));
   } else if(type==='mute') {
     showToast('🔕 Уведомления отключены');
   } else if(type==='block') {
@@ -16198,6 +16244,7 @@ const _grpOvId='grp-chat-overlay';
     <div style="padding:24px 20px 12px;text-align:center;border-bottom:1px solid var(--border)">
       <div class="cp-avatar-big" id="cp-av" style="width:72px;height:72px;font-size:28px;margin:0 auto 10px">👤</div>
       <div class="cp-name" id="cp-name">—</div>
+      <div id="cp-uname" style="font-size:12px;color:var(--text2);margin-top:1px;opacity:.8"></div>
       <div class="cp-uid" id="cp-uid"></div>
       <div class="cp-status" id="cp-status" style="display:inline-flex">🟢 онлайн</div>
     </div>
@@ -16212,7 +16259,7 @@ const _grpOvId='grp-chat-overlay';
       <div class="cp-action" onclick="cpAction('portfolio')">
         <i class="ti ti-layout-grid"></i><span class="cp-action-lbl">Портфолио</span>
       </div>
-      <div class="cp-action" onclick="cpAction('add')">
+      <div class="cp-action" id="cp-follow-btn" onclick="cpAction('add')">
         <i class="ti ti-user-plus"></i><span class="cp-action-lbl">Контакт</span>
       </div>
     </div>
