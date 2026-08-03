@@ -2867,6 +2867,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #_po-vid-wrap{position:absolute;inset:0}
 #_po2-right{display:flex;flex-direction:column;align-items:center;gap:20px;padding-bottom:8px}
 #_po2-left{flex:1;margin-right:16px}
+/* FIX 168f */
+@media(min-width:600px){
+  #_vf-share-sheet{left:50%!important;right:auto!important;width:min(480px,100vw);transform:translateX(-50%) translateY(100%)!important}
+  #_vf-share-sheet.open{transform:translateX(-50%) translateY(0)!important}
+}
 </style>
 </head>
 <body>
@@ -12780,7 +12785,7 @@ function _openVfFabContent(postId){
       <div class="vfa-icon"><i class="ti ti-message-circle"></i></div>
       <span class="vfa-count" id="vfa-cc2-${post.id}">${_fmtN(post.comment_count||0)}</span>
     </button>
-    <button class="vf-fab-item" onclick="vfShare('${post.id}')">
+    <button class="vf-fab-item" onclick="vfShare('${post.id}','${post.user_id}')">
       <div class="vfa-icon"><i class="ti ti-share-3"></i></div>
       <span class="vfa-count">${_fmtN(post.share_count||0)||''}</span>
     </button>
@@ -16381,7 +16386,6 @@ window._openPoVideo = function(idx){
     closeBtn.innerHTML = '<i class="ti ti-x"></i>';
     ov.appendChild(closeBtn);
 
-    // Inner 16:9 video wrapper
     var wrap = document.createElement('div');
     wrap.id = '_po-vid-wrap';
     ov.appendChild(wrap);
@@ -16394,52 +16398,54 @@ window._openPoVideo = function(idx){
     vid.loop = true;
     wrap.appendChild(vid);
 
-    // Bottom overlay inside wrap
     var bot = document.createElement('div');
-    bot.style.cssText = 'position:absolute;bottom:0;left:0;right:0;padding:80px 14px 36px;background:linear-gradient(transparent,rgba(0,0,0,.88));display:flex;align-items:flex-end;gap:0';
+    bot.style.cssText = 'position:absolute;bottom:0;left:0;right:0;padding-top:80px;background:linear-gradient(transparent,rgba(0,0,0,.88));display:flex;flex-direction:column;justify-content:flex-end';
 
-    // LEFT: user + title
-    var leftCol = document.createElement('div');
-    leftCol.id = '_po2-left';
+    var info = document.createElement('div');
+    info.style.cssText = 'padding:0 14px 8px';
 
     var userEl = document.createElement('div');
     userEl.id = '_po2-user';
-    userEl.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:6px';
-    leftCol.appendChild(userEl);
+    userEl.style.cssText = 'font-weight:700;font-size:14px;color:#fff;margin-bottom:3px;text-shadow:0 1px 4px rgba(0,0,0,.7)';
+    info.appendChild(userEl);
 
     var titleEl = document.createElement('div');
     titleEl.id = '_po2-title';
-    titleEl.style.cssText = 'color:#fff;font-size:13px;opacity:.9;line-height:1.4';
-    leftCol.appendChild(titleEl);
+    titleEl.style.cssText = 'color:rgba(255,255,255,.9);font-size:13px;margin-bottom:3px;line-height:1.4';
+    info.appendChild(titleEl);
 
-    bot.appendChild(leftCol);
+    var tagsEl = document.createElement('div');
+    tagsEl.id = '_po2-tags';
+    tagsEl.style.cssText = 'color:#60a5fa;font-size:12px;margin-bottom:4px';
+    info.appendChild(tagsEl);
 
-    // RIGHT: vertical action buttons
-    var rightCol = document.createElement('div');
-    rightCol.id = '_po2-right';
+    bot.appendChild(info);
+
+    var btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;align-items:center;gap:24px;padding:8px 14px 36px';
 
     var likeBtn = document.createElement('button');
     likeBtn.className = 'vf-fab-item';
     likeBtn.setAttribute('onclick','window._pop2Like()');
-    likeBtn.style.cssText = 'background:none;border:none;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0';
+    likeBtn.style.cssText = 'background:none;border:none;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:0';
     likeBtn.innerHTML = '<i id="_po2-like-ic" class="ti ti-heart" style="font-size:26px"></i><span id="_po2-like-n" style="font-size:11px;opacity:.8"></span>';
-    rightCol.appendChild(likeBtn);
+    btnRow.appendChild(likeBtn);
 
     var cmtBtn = document.createElement('button');
     cmtBtn.className = 'vf-fab-item';
     cmtBtn.setAttribute('onclick','if(window._pop2Comment)window._pop2Comment()');
-    cmtBtn.style.cssText = 'background:none;border:none;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0';
+    cmtBtn.style.cssText = 'background:none;border:none;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:0';
     cmtBtn.innerHTML = '<i class="ti ti-message-circle" style="font-size:26px"></i><span id="_po2-cmt-n" style="font-size:11px;opacity:.8"></span>';
-    rightCol.appendChild(cmtBtn);
+    btnRow.appendChild(cmtBtn);
 
     var shrBtn = document.createElement('button');
     shrBtn.className = 'vf-fab-item';
     shrBtn.setAttribute('onclick','window._pop2ShareMenu()');
     shrBtn.style.cssText = 'background:none;border:none;color:#fff;cursor:pointer;padding:0';
     shrBtn.innerHTML = '<i class="ti ti-share-3" style="font-size:26px"></i>';
-    rightCol.appendChild(shrBtn);
+    btnRow.appendChild(shrBtn);
 
-    bot.appendChild(rightCol);
+    bot.appendChild(btnRow);
     wrap.appendChild(bot);
 
     var ty=0,sy=0,mv=false;
@@ -16458,20 +16464,23 @@ window._poVidLoad = function(i){
   var vid = document.getElementById('_po-vid2');
   if(vid){ vid.src = p.video_url||''; vid.load(); vid.play().catch(function(){}); }
   var uEl = document.getElementById('_po2-user');
-  if(uEl){
-    var domUname = (document.getElementById('po-uname')||{}).textContent||'';
-    var uname = domUname || ('@'+(p._uname||p.username||''));
-    uEl.innerHTML = '<span style="color:#fff;font-weight:700;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,.6)">'+uname+'</span>';
-  }
+  if(uEl){ var dn=(document.getElementById('po-uname')||{}).textContent||''; uEl.textContent=dn||('@'+(p._uname||p.username||'')); }
   var tEl = document.getElementById('_po2-title');
-  if(tEl) tEl.textContent = [p.title,p.description].filter(Boolean).join(' · ');
-  var liEl = document.getElementById('_po2-like-ic');
-  if(liEl){ liEl.className = p._liked ? 'ti ti-heart-filled' : 'ti ti-heart'; liEl.style.color = p._liked ? '#ff4d6d' : '#fff'; }
-  var ln = document.getElementById('_po2-like-n');
-  if(ln) ln.textContent = p.like_count>0 ? (p.like_count>999?Math.round(p.like_count/1000)+'k':p.like_count) : '';
-  var cn = document.getElementById('_po2-cmt-n');
-  if(cn) cn.textContent = p.comment_count>0 ? (p.comment_count>999?Math.round(p.comment_count/1000)+'k':p.comment_count) : '';
-  window._poVidIdx = i;
+  if(tEl) tEl.textContent=[p.title,p.description].filter(Boolean).join(' · ');
+  var tagsEl = document.getElementById('_po2-tags');
+  if(tagsEl){
+    var tags=p.tags;
+    if(Array.isArray(tags)&&tags.length) tagsEl.textContent=tags.map(function(t){return '#'+t;}).join(' ');
+    else if(typeof tags==='string'&&tags.trim()) tagsEl.textContent=tags.split(',').map(function(t){return '#'+t.trim();}).join(' ');
+    else tagsEl.textContent='';
+  }
+  var liEl=document.getElementById('_po2-like-ic');
+  if(liEl){liEl.className=p._liked?'ti ti-heart-filled':'ti ti-heart';liEl.style.color=p._liked?'#ff4d6d':'#fff';}
+  var ln=document.getElementById('_po2-like-n');
+  if(ln) ln.textContent=p.like_count>0?(p.like_count>999?Math.round(p.like_count/1000)+'k':p.like_count):'';
+  var cn=document.getElementById('_po2-cmt-n');
+  if(cn) cn.textContent=p.comment_count>0?(p.comment_count>999?Math.round(p.comment_count/1000)+'k':p.comment_count):'';
+  window._poVidIdx=i;
 };
 
 window._poVidNext=function(){var i=(window._poVidIdx||0)+1;if(i<(window._poShorts||[]).length)window._poVidLoad(i);};
@@ -16499,8 +16508,14 @@ window._pop2Like=async function(){
 
 window._mkDotBtn = function(){ return ''; };
 
-window.vfShare = function(postId){
-  _openVfShareSheet(false, postId);
+function _getMyUid(){
+  return window.myUid || (window.app&&window.app.myProfile&&(window.app.myProfile.uid||window.app.myProfile.id)) || '';
+}
+
+window.vfShare = function(postId, postUid){
+  var uid = _getMyUid();
+  var isOwn = !!(uid && postUid && String(postUid) === String(uid));
+  _openVfShareSheet(isOwn, postId);
 };
 
 window._pop2ShareMenu = function(){
@@ -16508,7 +16523,8 @@ window._pop2ShareMenu = function(){
   var idx = window._poVidIdx||0;
   var post = pp && pp[idx];
   if(!post) return;
-  var isOwn = String(post.user_id) === String(window.myUid||'');
+  var uid = _getMyUid();
+  var isOwn = !!(uid && String(post.user_id) === String(uid));
   _openVfShareSheet(isOwn, post.id);
 };
 
@@ -16522,45 +16538,45 @@ function _openVfShareSheet(isOwn, postId){
     sh = document.createElement('div');
     sh.id = '_vf-share-sheet';
     document.body.appendChild(sh);
-    sh.addEventListener('click', function(e){
-      var el = e.target.closest('._vfs-action');
+    sh.addEventListener('click',function(e){
+      var el=e.target.closest('._vfs-action');
       if(!el) return;
-      var a = el.dataset.action, pid = el.dataset.pid;
+      var a=el.dataset.action,pid=el.dataset.pid;
       if(a==='share') window._doVfShare(pid);
       else if(a==='report') window._doVfReport(pid);
-      else if(a==='edit'){ if(window._vfEditPost) window._vfEditPost(pid); window._closeVfShareSheet(); }
-      else if(a==='delete'){ if(window._vfDeletePost) window._vfDeletePost(pid); window._closeVfShareSheet(); }
+      else if(a==='edit'){if(window._vfEditPost)window._vfEditPost(pid);window._closeVfShareSheet();}
+      else if(a==='delete'){if(window._vfDeletePost)window._vfDeletePost(pid);window._closeVfShareSheet();}
       else if(a==='cancel') window._closeVfShareSheet();
     });
   }
-  var pid = String(postId);
-  var h = '<div class="_vfs-handle"></div>';
-  h += '<div class="_vfs-item _vfs-action" data-action="share" data-pid="'+pid+'"><i class="ti ti-share-3"></i>Поделиться</div>';
+  var pid=String(postId);
+  var h='<div class="_vfs-handle"></div>';
+  h+='<div class="_vfs-item _vfs-action" data-action="share" data-pid="'+pid+'"><i class="ti ti-share-3"></i>Поделиться</div>';
   if(isOwn){
-    h += '<div class="_vfs-item _vfs-action" data-action="edit" data-pid="'+pid+'"><i class="ti ti-pencil"></i>Редактировать</div>';
-    h += '<div class="_vfs-item _vfs-del _vfs-action" data-action="delete" data-pid="'+pid+'"><i class="ti ti-trash"></i>Удалить</div>';
+    h+='<div class="_vfs-item _vfs-action" data-action="edit" data-pid="'+pid+'"><i class="ti ti-pencil"></i>Редактировать</div>';
+    h+='<div class="_vfs-item _vfs-del _vfs-action" data-action="delete" data-pid="'+pid+'"><i class="ti ti-trash"></i>Удалить</div>';
   }
-  h += '<div class="_vfs-item _vfs-action" data-action="report" data-pid="'+pid+'"><i class="ti ti-flag"></i>Пожаловаться</div>';
-  h += '<div class="_vfs-item _vfs-action" data-action="cancel" style="opacity:.6"><i class="ti ti-x"></i>Отмена</div>';
-  sh.innerHTML = h;
-  var ov = document.getElementById('_vf-share-ov');
+  h+='<div class="_vfs-item _vfs-action" data-action="report" data-pid="'+pid+'"><i class="ti ti-flag"></i>Пожаловаться</div>';
+  h+='<div class="_vfs-item _vfs-action" data-action="cancel" style="opacity:.6"><i class="ti ti-x"></i>Отмена</div>';
+  sh.innerHTML=h;
+  var ov=document.getElementById('_vf-share-ov');
   if(ov) ov.classList.add('open');
   sh.classList.add('open');
 }
 
 window._closeVfShareSheet = function(){
-  var sh = document.getElementById('_vf-share-sheet');
-  var ov = document.getElementById('_vf-share-ov');
+  var sh=document.getElementById('_vf-share-sheet');
+  var ov=document.getElementById('_vf-share-ov');
   if(sh) sh.classList.remove('open');
   if(ov) ov.classList.remove('open');
 };
 
 window._doVfShare = function(pid){
   window._closeVfShareSheet();
-  var url = location.origin + location.pathname + '#post=' + pid;
-  if(navigator.share){ navigator.share({url:url}).catch(function(){}); }
-  else if(navigator.clipboard){ navigator.clipboard.writeText(url).then(function(){ alert('Ссылка скопирована'); }); }
-  else{ prompt('Скопируйте ссылку:',url); }
+  var url=location.origin+location.pathname+'#post='+pid;
+  if(navigator.share){navigator.share({url:url}).catch(function(){});}
+  else if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){alert('Ссылка скопирована');});}
+  else{prompt('Скопируйте ссылку:',url);}
 };
 
 window._doVfReport = function(pid){
