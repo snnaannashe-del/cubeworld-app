@@ -3149,8 +3149,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
         <!-- comment panel slides from bottom -->
         <div class="vf-comments-panel" id="vf-comments-panel">
           <div class="vfcp-header">
-            <span class="vfcp-title">Комментарии <span id="vfcp-count" style="color:var(--text3);font-weight:400"></span></span>
             <button class="vfcp-close" onclick="closeVfComments()">✕</button>
+            <span class="vfcp-title">Комментарии <span id="vfcp-count" style="color:var(--text3);font-weight:400"></span></span>
           </div>
           <div class="vfcp-list" id="vfcp-list"></div>
           <div class="vfcp-input-row">
@@ -11941,6 +11941,14 @@ function openPublicProfile(uid, name, avColor) {
   // Grid: placeholder
   const grid = document.getElementById('po-grid');
   if(grid) grid.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text3);font-size:13px">Публикации загружаются...</div>';
+  _publicProfileUidCache = null;
+  (async()=>{
+    const posts = await apiCall('/feed/user/'+uid).catch(()=>[]);
+    if(document.getElementById('portfolio-overlay').dataset.viewUid !== String(uid)) return;
+    _publicProfilePostsCache = Array.isArray(posts)?posts:[];
+    _publicProfileUidCache = String(uid);
+    _renderPublicProfileGrid(String(uid), _publicProfilePostsCache);
+  })();
 
   overlay.classList.add('open');
 }
@@ -11978,11 +11986,19 @@ function poToggleInfo(){
   }
 }
 let _poTab='short';
+let _publicProfilePostsCache = null;
+let _publicProfileUidCache = null;
 function poSetTab(tab, btn){
   _poTab=tab;
   document.querySelectorAll('.po-tab').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
-  _renderPortfolioGrid();
+  const overlay=document.getElementById('portfolio-overlay');
+  const viewUid=overlay?.dataset.viewUid;
+  if(viewUid && _publicProfileUidCache===String(viewUid) && _publicProfilePostsCache){
+    _renderPublicProfileGrid(viewUid, _publicProfilePostsCache);
+  } else {
+    _renderPortfolioGrid();
+  }
 }
 function _renderPortfolioGrid(){
   const grid=document.getElementById('po-grid');
@@ -12586,7 +12602,7 @@ function _openVfFabContent(postId){
     </button>
     <div class="vf-fab-item" style="cursor:default">
       <div class="vfa-icon"><i class="ti ti-eye"></i></div>
-      <span class="vfa-count">${_fmtN(post.view_count||0)}</span>
+      <span class="vfa-count" id="vfa-vc-${post.id}">${_fmtN(post.view_count||0)}</span>
     </div>`;
 
   _vfFabOpen=postId;
@@ -12797,7 +12813,10 @@ function renderFeed(){
       if(entry.isIntersecting){
         const vid=entry.target.querySelector('video.vf-video');
         if(vid){ vid.muted=_vfMuted; vid.play().catch(()=>{}); _vfStartProgress(entry.target,postId); }
-        if(postId) _trackPostView(postId);
+        // TikTok-style: count view after 3 seconds
+        if(postId && !_vfViewedPosts.has(String(postId))){
+          _vfViewTimers[postId]=setTimeout(()=>_trackPostView(postId),3000);
+        }
         // If FAB overlay is open, update it for the new visible card
         if(_vfFabOpen && postId && _vfFabOpen!==postId) _openVfFabContent(postId);
       } else {
@@ -12805,6 +12824,7 @@ function renderFeed(){
         if(vid){ vid.pause(); vid.currentTime=0; }
         const bar=postId?document.getElementById('vf-prog-'+postId):null;
         if(bar) bar.style.width='0';
+        if(postId && _vfViewTimers[postId]){ clearTimeout(_vfViewTimers[postId]); delete _vfViewTimers[postId]; }
       }
     });
   },{root:container,threshold:0.65});
@@ -12880,6 +12900,12 @@ async function vfLike(postId,btn){
   if(lcEl) lcEl.textContent=_fmtN(data.likes);
   const p=_vfPosts.find(x=>String(x.id)===String(postId));
   if(p) p.likes=data.likes;
+  document.querySelectorAll('[id^="vfi-lc-'+postId+'"]').forEach(el=>{ el.textContent=_fmtN(data.likes); });
+  document.querySelectorAll('[id^="vfi-heart-'+postId+'"]').forEach(el=>{
+    el.classList.toggle('liked',data.liked);
+    const ico=el.querySelector('i.ti');
+    if(ico) ico.className=data.liked?'ti ti-heart-filled':'ti ti-heart';
+  });
 }
 
 async function vfFollow(userId){
@@ -13160,12 +13186,16 @@ function vfFilterType(type, el){
 
 // ═══ VIEW COUNTING ════════════════════════════════════════════════
 const _vfViewedPosts = new Set();
+const _vfViewTimers = {};
 function _trackPostView(postId){
   if(_vfViewedPosts.has(String(postId))) return;
   _vfViewedPosts.add(String(postId));
+  delete _vfViewTimers[postId];
   apiCall('/feed/'+postId+'/view','POST').catch(()=>{});
   const vcEl=document.getElementById('vfa-vc-'+postId);
   if(vcEl){const n=parseInt(vcEl.textContent.replace(/\D/g,'')||'0')+1; vcEl.textContent=_fmtN(n);}
+  const p=_vfPosts.find(x=>String(x.id)===String(postId));
+  if(p) p.view_count=(p.view_count||0)+1;
 }
 
 // ═══════════════════════════════════════════════════════════════════
