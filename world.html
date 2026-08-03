@@ -16653,12 +16653,13 @@ window._doVfReport = function(pid){
       <button class="uni-tab active" id="uni-tab-all" onclick="switchUniTab('all',this)">Все кубы</button>
       <button class="uni-tab" id="uni-tab-mine" onclick="switchUniTab('mine',this)">Мои кубы</button>
     </div>
-    <input type="text" class="uni-search" placeholder="Поиск кубов..." oninput="filterUniGrid(this.value)" style="width:100%;box-sizing:border-box;margin-bottom:8px">
+    <input type="text" class="uni-search" placeholder="🔍 Поиск кубов по названию..." oninput="filterUniGrid(this.value)" style="width:100%;box-sizing:border-box;margin-bottom:8px">
     <div id="uni-hint" class="uni-hint"></div>
     <div id="uni-grid" class="uni-grid"></div>
-    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
-      <button class="uni-save-btn" style="flex:1" onclick="saveUniverse()">💾 Сохранить</button>
-      <button class="uni-create-btn" onclick="closeModal('modal-universe');openCreateCube()">&#x2795; Создать</button>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button onclick="closeModal('modal-universe')" style="padding:10px 16px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:14px;font-weight:500">Отмена</button>
+      <button class="uni-create-btn" style="flex:1" onclick="closeModal('modal-universe');openCreateCube()">+ Создать куб</button>
+      <button class="uni-save-btn" style="flex:1" onclick="saveUniverse()">✓ Сохранить</button>
     </div>
   </div>
 </div>
