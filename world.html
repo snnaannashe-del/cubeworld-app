@@ -64,9 +64,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .badge-free{background:rgba(74,222,128,.12);color:var(--green);border:1px solid rgba(74,222,128,.25)}
 .badge-premium{background:rgba(251,191,36,.12);color:var(--gold);border:1px solid rgba(251,191,36,.25)}
 .mono{font-family:'Courier New',Courier,monospace}
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;z-index:2000;padding:16px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;z-index:2000;padding:16px;overflow-y:auto}
 .modal-backdrop.open{display:flex}
-.modal{background:linear-gradient(160deg,#0e0e28,#0a0a1e);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-xl);padding:28px;min-width:320px;max-width:460px;width:90%;animation:scaleIn .2s ease;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04) inset}
+.modal{background:linear-gradient(160deg,#0e0e28,#0a0a1e);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-xl);padding:28px;min-width:320px;max-width:460px;width:90%;animation:scaleIn .2s ease;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04) inset;max-height:calc(100dvh - 40px);overflow-y:auto;}
 .modal h3{font-size:16px;font-weight:800;margin-bottom:16px;color:#e8e8ff;letter-spacing:.02em}
 .modal label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;margin-top:12px;font-weight:600;letter-spacing:.03em;text-transform:uppercase}
 .modal input,.modal select,.modal textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;color:#e0e0f8;padding:10px 13px;font-size:13px;font-family:inherit;outline:none;transition:border-color var(--transition),background var(--transition);box-sizing:border-box}
