@@ -16752,6 +16752,108 @@ window._doVfReport = function(pid){
   wireAll();
 })();
 
+
+/* FIX 192: shorts thumbs + fast player + full-screen + swipe */
+(function fixVideo(){
+
+/* 1. Generate canvas thumbnail for each SHORT video card in feed */
+function _makeThumb(url,replaceVid,card){
+  if(!url||!/\.(mp4|webm|mov)/i.test(url))return;
+  var v=document.createElement('video');
+  v.crossOrigin='anonymous';v.muted=true;v.preload='metadata';v.src=url;
+  v.addEventListener('loadeddata',function(){try{v.currentTime=1.5;}catch(e){}});
+  v.addEventListener('seeked',function(){
+    try{
+      var c=document.createElement('canvas');
+      c.width=v.videoWidth||360;c.height=v.videoHeight||640;
+      c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+      var img=document.createElement('img');
+      img.src=c.toDataURL('image/jpeg',0.85);
+      img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;z-index:2';
+      var wrap=replaceVid?replaceVid.parentNode:(card&&card.querySelector('[class*="media"],[class*="thumb"],[class*="preview"],[class*="img"]'));
+      if(wrap){
+        if(replaceVid){replaceVid.style.opacity='0';}
+        wrap.style.position='relative';
+        wrap.appendChild(img);
+      }
+    }catch(e){}
+    v.removeAttribute('src');v.load();
+  });
+  v.load();
+}
+
+function patchFeedCards(){
+  var containers=['.vf-scroll','.feed-container','.shorts-grid','#feed-section','[id*="feed"]','[class*="feed"]'];
+  var found={};
+  containers.forEach(function(sel){
+    var el=document.querySelector(sel);
+    if(!el)return;
+    el.querySelectorAll('video').forEach(function(v){
+      var url=v.src||v.getAttribute('src')||v.currentSrc||'';
+      if(!url||v._tp)return;
+      v._tp=1;
+      found[url]=1;
+      var card=v.closest('[onclick*="Shorts"],[onclick*="Player"],[class*="card"],[class*="vf-"]');
+      _makeThumb(url,v,card);
+    });
+  });
+  if(window._vfPosts){
+    window._vfPosts.forEach(function(p){
+      if(p.post_type!=='short'&&p.type!=='short')return;
+      var url=p.file_url||p.video_url||p.media_url||'';
+      if(!url||found[url])return;
+      var card=document.querySelector('[onclick*="'+p.id+'"]');
+      if(card&&!card._tp){card._tp=1;var v2=card.querySelector('video');_makeThumb(url,v2,card);}
+    });
+  }
+}
+
+/* 2. Override _spLoad: instant clear + loop + full-screen cover */
+window._spLoad=function(idx){
+  var p=window._spPosts&&window._spPosts[idx];
+  if(!p)return;
+  var vid=document.getElementById('sp-video');
+  if(!vid)return;
+  if(!vid._fw){
+    vid._fw=1;
+    vid.setAttribute('playsinline','');
+    vid.setAttribute('loop','');
+    vid.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;z-index:0';
+  }
+  vid.pause();
+  vid.removeAttribute('src');
+  vid.load();
+  var url=p.file_url||p.media_url||p.video_url||'';
+  if(!url)return;
+  vid.src=url;
+  vid.load();
+  vid.play().catch(function(){
+    vid.onclick=function(){vid.play();vid.onclick=null;};
+  });
+  var ctr=document.getElementById('sp-counter');
+  if(ctr)ctr.textContent=(idx+1)+' / '+window._spPosts.length;
+  var pe=document.getElementById('sp-prev'),ne=document.getElementById('sp-next');
+  if(pe)pe.style.opacity=idx>0?'1':'0.3';
+  if(ne)ne.style.opacity=idx<window._spPosts.length-1?'1':'0.3';
+};
+
+/* 3. Better swipe: 40px threshold, ignore horizontal */
+var sp=document.getElementById('shorts-player');
+if(sp){
+  var ty=0,tx=0;
+  sp.ontouchstart=function(e){ty=e.touches[0].clientY;tx=e.touches[0].clientX;};
+  sp.ontouchend=function(e){
+    var dy=ty-e.changedTouches[0].clientY;
+    var dx=tx-e.changedTouches[0].clientX;
+    if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>40)window.spNav(dy>0?1:-1);
+  };
+}
+
+/* 4. Run + watch for new cards */
+patchFeedCards();
+setInterval(patchFeedCards,2000);
+
+})();
 </script>
 
 <div class="modal-backdrop" id="modal-universe" style="display:none"><div class="modal" style="max-width:min(560px,calc(100vw - 24px));width:100%;max-height:90svh;box-sizing:border-box;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:0">
