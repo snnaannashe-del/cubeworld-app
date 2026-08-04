@@ -12204,7 +12204,7 @@ function _renderPublicProfileGrid(uid, posts){
   }
   const _poGridPosts=filtered;grid.innerHTML=filtered.slice(0,30).map(p=>{
     const isVideo=isVideoPost(p);
-    const thumb=p.thumbnail||(!isVideo&&(p.media_url||p.image_url))||'';const _vidSrc=isVideo?(p.file_url||p.media_url||p.video_url||''):'';
+    const thumb=p.thumbnail||(!isVideo&&(p.media_url||p.image_url))||'';const _vidSrc=isVideo?(p.file_url||p.media_url||(p.video_url?p.video_url.replace('/upload/','/upload/fl_progressive,q_auto/'):'')||''):'';
     const bg=thumb?`background:url('${escHtml(thumb)}') center/cover no-repeat #111`:`${_vidSrc?'<video class="po-cell-thumb" src="'+escHtml(_vidSrc)+'#t=0.001" muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0"></video>':'<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:24px">▶</div>'}`;
     const typeChip=isVideo
       ? `<div class="po-type-chip short"><svg width="7" height="7" viewBox="0 0 8 8" fill="none" style="display:inline;vertical-align:middle;margin-right:2px"><polygon points="2,1 7,4 2,7" fill="white"/></svg>SHORT</div>`
@@ -12951,7 +12951,7 @@ function renderFeed(){
       }
     } else {
       // SHORT: video
-      const vid = post.video_url || '';
+      const vid = (post.video_url||'').replace('/upload/','/upload/fl_progressive,q_auto/');
       if(vid){
         const ytM = vid.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
         if(ytM){
@@ -16911,7 +16911,7 @@ setInterval(patchFeedCards,2000);
       fd.append('file',file,file.name||'video.mp4');
       fd.append('upload_preset','CubeWorld');
       var t=await xhrUp('https://api.cloudinary.com/v1_1/iwkzkg89/video/upload',fd,function(p){setS('Uploading '+p+'%...');setB(p);});
-      if(t){try{var j=JSON.parse(t);if(j.secure_url)url=j.secure_url;}catch(e){}}
+      if(t){try{var j=JSON.parse(t);if(j.secure_url)url=j.secure_url.replace('/upload/','/upload/fl_progressive,q_auto/');}catch(e){}}
       setB(100);
       if(url){
         window._cpmVideoUrl=url;
