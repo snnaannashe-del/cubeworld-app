@@ -16753,12 +16753,12 @@ window._doVfReport = function(pid){
   };
   wireAll();
 })();
-/* FIX 189: YouTube-only clean embed */
+/* FIX 190: YouTube clean player - thumb + play btn + oversized iframe */
 (function fixYT(){
   function ytId(u){var m=(u||'').match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
   function isVidUrl(u){return !!(ytId(u)||(u&&u.match(/\.(mp4|webm|mov)(\?|$)/i)));}
-  function ytThumb(id){return 'https://img.youtube.com/vi/'+id+'/hqdefault.jpg';}
-  function ytEmbed(id){return 'https://www.youtube.com/embed/'+id+'?autoplay=1&playsinline=1&controls=0&rel=0&modestbranding=1';}
+  function ytThumb(id){return 'https://img.youtube.com/vi/'+id+'/maxresdefault.jpg';}
+  function ytSrc(id){return 'https://www.youtube.com/embed/'+id+'?autoplay=1&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&origin='+encodeURIComponent(location.origin);}
   function clearUrlPreview(){
     var p=document.getElementById('cpm-url-preview');
     if(p){p.innerHTML='';p.style.display='none';}
@@ -16775,7 +16775,7 @@ window._doVfReport = function(pid){
     inp.addEventListener('input',function(){
       var url=this.value.trim(),yid=ytId(url);
       if(yid){
-        prev.innerHTML='<div style="position:relative;padding-top:56.25%;background:#000"><img src="'+ytThumb(yid)+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><svg width="64" height="44" viewBox="0 0 64 44"><rect width="64" height="44" rx="10" fill="#FF0000"/><polygon points="26,10 50,22 26,34" fill="#fff"/></svg></div><div style="position:absolute;bottom:8px;left:10px;background:#FF0000;border-radius:5px;padding:3px 8px;font-size:11px;font-weight:700;color:#fff">YouTube</div></div>';
+        prev.innerHTML='<div style="position:relative;padding-top:56.25%;background:#000"><img src="'+ytThumb(yid)+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div style="width:56px;height:56px;background:rgba(0,0,0,.7);border-radius:50%;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 22 22"><polygon points="6,3 20,11 6,19" fill="white"/></svg></div></div></div>';
         prev.style.display='';
       } else {prev.innerHTML='';prev.style.display='none';}
     });
@@ -16798,12 +16798,7 @@ window._doVfReport = function(pid){
   };
   var _origOpen=window.openShortsPlayer;
   window.openShortsPlayer=function(posts,idx,uid){
-    if(posts){
-      window._ytSP=posts.filter(function(p){
-        var u=p.video_url||'';var f=p.file_url||'';
-        return !!(u||(f&&f.match(/\.mp4|\.webm|\.mov/i)));
-      });
-    }
+    if(posts){window._ytSP=posts.filter(function(p){var u=p.video_url||'';var f=p.file_url||'';return !!(u||(f&&f.match(/\.mp4|\.webm|\.mov/i)));});}
     _origOpen&&_origOpen.apply(this,arguments);
   };
   var _origSpLoad=window._spLoad;
@@ -16812,47 +16807,65 @@ window._doVfReport = function(pid){
     var posts=window._ytSP||[];
     var p=posts[i];if(!p) return;
     var url=p.video_url||p.file_url||p.media_url||'';
-    var yid=ytId(url);
-    if(!yid) return;
+    var yid=ytId(url);if(!yid) return;
     var vid=document.getElementById('sp-video');if(!vid) return;
     try{vid.pause();}catch(e){}
-    vid.removeAttribute('src');
-    vid.style.display='none';
+    vid.removeAttribute('src');vid.style.display='none';
     var sp=vid.closest('[class*="shorts"],[class*="sp-"]')||vid.parentElement;
     if(!sp) return;
-    if(getComputedStyle(sp).position==='static') sp.style.position='relative';
-    var old=sp.querySelector('.ytFr');if(old) old.remove();
-    var old2=sp.querySelector('.ytBadge');if(old2) old2.remove();
-    var fr=document.createElement('iframe');
-    fr.className='ytFr';
-    fr.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;border:none;z-index:6;background:#000';
-    fr.allow='autoplay; fullscreen; picture-in-picture';
-    fr.allowFullscreen=true;
-    fr.src=ytEmbed(yid);
-    sp.appendChild(fr);
-    var badge=document.createElement('div');badge.className='ytBadge';
-    badge.style.cssText='position:absolute;top:14px;right:14px;z-index:20;display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);pointer-events:none';
-    badge.innerHTML='<svg width="14" height="10" viewBox="0 0 14 10"><rect width="14" height="10" rx="3" fill="#FF0000"/><polygon points="5.5,2 10.5,5 5.5,8" fill="#fff"/></svg> YouTube';
-    sp.appendChild(badge);
+    sp.style.position='relative';
+    sp.style.overflow='hidden';
+    // Remove old
+    ['ytWrap'].forEach(function(c){var el=sp.querySelector('.'+c);if(el)el.remove();});
+    // Clean wrapper
+    var wrap=document.createElement('div');
+    wrap.className='ytWrap';
+    wrap.style.cssText='position:absolute;inset:0;z-index:6;overflow:hidden;background:#000;cursor:pointer';
+    // Thumbnail
+    var thumb=document.createElement('img');
+    thumb.src=ytThumb(yid);
+    thumb.onerror=function(){this.src='https://img.youtube.com/vi/'+yid+'/hqdefault.jpg';};
+    thumb.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';
+    // Play button
+    var btn=document.createElement('div');
+    btn.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center';
+    btn.innerHTML='<div style="width:80px;height:80px;background:rgba(0,0,0,.65);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)"><svg width="32" height="32" viewBox="0 0 32 32"><polygon points="9,4 28,16 9,28" fill="white"/></svg></div>';
+    wrap.appendChild(thumb);
+    wrap.appendChild(btn);
+    sp.appendChild(wrap);
+    // On tap: load iframe (oversized -60px top to clip YT title bar, overflow hidden clips it)
+    var played=false;
+    wrap.addEventListener('click',function(){
+      if(played) return;
+      played=true;
+      thumb.style.display='none';
+      btn.style.display='none';
+      var fr=document.createElement('iframe');
+      fr.className='ytFr';
+      // Oversized: -60px top hides YouTube channel/title bar; extra height hides bottom logo
+      fr.style.cssText='position:absolute;top:-60px;left:0;width:100%;height:calc(100% + 110px);border:none;background:#000';
+      fr.allow='autoplay; fullscreen; picture-in-picture';
+      fr.src=ytSrc(yid);
+      wrap.appendChild(fr);
+      // Tap-to-pause overlay (transparent, sits on top)
+      var tapper=document.createElement('div');
+      tapper.style.cssText='position:absolute;inset:0;z-index:10;';
+      var isPaused=false;
+      tapper.addEventListener('click',function(){
+        isPaused=!isPaused;
+        fr.contentWindow.postMessage(JSON.stringify({event:'command',func:isPaused?'pauseVideo':'playVideo',args:[]}),'*');
+      });
+      wrap.appendChild(tapper);
+    });
   };
   var _origClose=window.closeShortsPlayer;
   window.closeShortsPlayer=function(){
-    document.querySelectorAll('.ytFr').forEach(function(f){f.src='';f.remove();});
-    document.querySelectorAll('.ytBadge').forEach(function(b){b.remove();});
+    document.querySelectorAll('.ytWrap').forEach(function(w){
+      var fr=w.querySelector('.ytFr');if(fr){fr.contentWindow.postMessage(JSON.stringify({event:'command',func:'stopVideo',args:[]}),'*');fr.src='';}
+      w.remove();
+    });
     _origClose&&_origClose.apply(this,arguments);
   };
-  function patchFeedCards(){
-    document.querySelectorAll('.vf-short-wrap,.short-wrap,div[class*="short"]').forEach(function(wrap){
-      if(wrap._ytDone) return;
-      var vid=wrap.querySelector('video');if(!vid) return;
-      var vsrc=vid.currentSrc||vid.src||vid.getAttribute('src')||'';
-      var yid2=ytId(vsrc);if(!yid2) return;
-      wrap._ytDone=true;
-      wrap.innerHTML='<iframe src="https://www.youtube.com/embed/'+yid2+'?playsinline=1&controls=0&rel=0&modestbranding=1" style="width:100%;height:100%;border:none;display:block;border-radius:inherit;" allow="autoplay;fullscreen" allowfullscreen></iframe>';
-    });
-  }
-  setTimeout(patchFeedCards,1500);
-  new MutationObserver(function(){setTimeout(patchFeedCards,400);}).observe(document.body,{childList:true,subtree:true});
   wireUrlPreview();
 })();
 
