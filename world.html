@@ -16855,7 +16855,7 @@ setInterval(patchFeedCards,2000);
 
 })();
 
-/* FIX 193: fast video upload - catbox.moe large files + XHR progress + openCreatePost fix */
+/* FIX 193b: background video compress (captureStream->MediaRecorder) + XHR progress */
 (function fixFastUpload(){
   var _oco=window.openCreatePost;
   window.openCreatePost=function(){
@@ -16866,56 +16866,109 @@ setInterval(patchFeedCards,2000);
     };
     try{if(_oco)_oco();}finally{document.getElementById=_gi;}
     window._cpmVideoUrl='';window._cpmImageUrl='';
+    window._cpm193abort=true;
     var prev=_gi('cpm-video-preview');if(prev){prev.style.display='none';prev.innerHTML='';}
     var lbl=_gi('cpm-video-drop-label');if(lbl){lbl.textContent='Select video';lbl.style.display='block';}
     var bar=_gi('cpm-video-bar');if(bar&&bar.parentElement)bar.parentElement.style.display='none';
   };
+
+  function xhrUp(url,fd,onPct){
+    return new Promise(function(res){
+      var xhr=new XMLHttpRequest();xhr.open('POST',url);
+      xhr.upload.onprogress=function(e){if(e.lengthComputable&&onPct)onPct(Math.round(e.loaded/e.total*100));};
+      xhr.onload=function(){res(xhr.responseText);};
+      xhr.onerror=function(){res(null);};
+      xhr.timeout=120000;xhr.ontimeout=function(){res(null);};
+      xhr.send(fd);
+    });
+  }
+
+  function parseTG(t){
+    try{var j=JSON.parse(t);return Array.isArray(j)&&j[0]&&j[0].src?'https://telegra.ph'+j[0].src:null;}catch(e){return null;}
+  }
+
+  async function uploadToTG(blob,name,setS,setB,bOff){
+    bOff=bOff||0;
+    var fd=new FormData();fd.append('file',blob,name||'video.webm');
+    var t=await xhrUp('https://telegra.ph/upload',fd,function(p){setS('Uploading '+p+'%...');setB(bOff+Math.round(p*(1-bOff/100)));});
+    return parseTG(t);
+  }
+
+  async function compressVideo(file,setS,setB){
+    var objUrl=URL.createObjectURL(file);
+    var vid=document.createElement('video');
+    vid.src=objUrl;vid.preload='auto';vid.volume=0;
+    vid.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;pointer-events:none';
+    document.body.appendChild(vid);
+    setS('Loading...');
+    var ok=await new Promise(function(res){
+      vid.onloadedmetadata=function(){res(true);};
+      vid.onerror=function(){res(false);};
+      setTimeout(function(){res(false);},10000);
+      vid.load();
+    });
+    if(!ok){document.body.removeChild(vid);URL.revokeObjectURL(objUrl);return null;}
+    var dur=vid.duration||60;
+    var kbps=Math.max(200,Math.min(580,Math.floor(4.2*8*1024*1024/dur/1000)*1000));
+    var stream;
+    try{stream=vid.captureStream();}catch(e){document.body.removeChild(vid);URL.revokeObjectURL(objUrl);return null;}
+    var mimes=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+    var mime='video/webm';
+    for(var i=0;i<mimes.length;i++){if(typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported(mimes[i])){mime=mimes[i];break;}}
+    var chunks=[];
+    var rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:kbps,audioBitsPerSecond:64000});
+    rec.ondataavailable=function(e){if(e.data&&e.data.size>0)chunks.push(e.data);};
+    var blob=await new Promise(function(res){
+      rec.onstop=function(){
+        try{document.body.removeChild(vid);}catch(e){}
+        URL.revokeObjectURL(objUrl);
+        res(chunks.length?new Blob(chunks,{type:mime}):null);
+      };
+      rec.onerror=function(){try{document.body.removeChild(vid);}catch(e){}URL.revokeObjectURL(objUrl);res(null);};
+      vid.ontimeupdate=function(){
+        if(window._cpm193abort){try{rec.stop();}catch(e){}vid.pause();return;}
+        var p=Math.round(vid.currentTime/dur*100);
+        setS('Compressing '+p+'%...');setB(Math.round(p*0.75));
+      };
+      vid.onended=function(){setTimeout(function(){try{rec.stop();}catch(e){}},300);};
+      rec.start(500);
+      vid.play().catch(function(){try{rec.stop();}catch(e){};});
+    });
+    return blob;
+  }
+
   window.cpmHandleVideoFile=async function(input){
     var file=input.files[0];if(!file)return;
     var label=document.getElementById('cpm-video-drop-label');
     var preview=document.getElementById('cpm-video-preview');
     var bar=document.getElementById('cpm-video-bar');
-    window._cpmVideoUrl='';
-    function setStatus(txt){if(label){label.textContent=txt;label.style.display='block';}}
-    function setBar(pct){if(bar){bar.style.width=pct+'%';if(bar.parentElement)bar.parentElement.style.display='block';}}
-    setStatus('Preparing...');setBar(2);
+    window._cpmVideoUrl='';window._cpm193abort=false;
+    function setS(t){if(label){label.textContent=t;label.style.display='block';}}
+    function setB(p){if(bar){bar.style.width=p+'%';if(bar.parentElement)bar.parentElement.style.display='block';}}
+    setS('Preparing...');setB(2);
     var url=null;
-    var BIG=5*1024*1024;
-    if(file.size>BIG){
-      url=await new Promise(function(resolve){
-        var fd=new FormData();
-        fd.append('reqtype','fileupload');
-        fd.append('fileToUpload',file);
-        var xhr=new XMLHttpRequest();
-        xhr.open('POST','https://catbox.moe/user/api.php');
-        xhr.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);setStatus('Uploading '+p+'%...');setBar(p);}};
-        xhr.onload=function(){var u=xhr.responseText.trim();resolve(u.startsWith('https://')?u:null);};
-        xhr.onerror=function(){resolve(null);};
-        xhr.timeout=180000;xhr.ontimeout=function(){resolve(null);};
-        xhr.send(fd);
-      });
+    var BIG=4.8*1024*1024;
+    if(file.size<=BIG){
+      var fd=new FormData();fd.append('file',file,file.name||'video.mp4');
+      var t=await xhrUp('https://telegra.ph/upload',fd,function(p){setS('Uploading '+p+'%...');setB(p);});
+      url=parseTG(t);
+    } else {
+      var compressed=null;
+      try{compressed=await compressVideo(file,setS,setB);}catch(e){}
+      if(compressed){
+        var mb=(compressed.size/1024/1024).toFixed(1);
+        setS('Compressed to '+mb+'MB, uploading...');setB(76);
+        url=await uploadToTG(compressed,'video.webm',setS,setB,75);
+      }
     }
-    if(!url){
-      url=await new Promise(function(resolve){
-        var fd=new FormData();
-        fd.append('file',file,file.name||'video.mp4');
-        var xhr=new XMLHttpRequest();
-        xhr.open('POST','https://telegra.ph/upload');
-        xhr.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);setStatus('Uploading '+p+'%...');setBar(p);}};
-        xhr.onload=function(){try{var j=JSON.parse(xhr.responseText);resolve(Array.isArray(j)&&j[0]&&j[0].src?'https://telegra.ph'+j[0].src:null);}catch(ex){resolve(null);}};
-        xhr.onerror=function(){resolve(null);};
-        xhr.timeout=60000;xhr.ontimeout=function(){resolve(null);};
-        xhr.send(fd);
-      });
-    }
-    setBar(100);
+    setB(100);
     if(url){
       window._cpmVideoUrl=url;
       if(preview){preview.style.display='block';preview.innerHTML='<video src="'+url+'" style="max-width:100%;max-height:140px;border-radius:8px" controls></video>';}
       if(label)label.style.display='none';
-      if(bar&&bar.parentElement)bar.parentElement.style.display='none';
+      if(bar&&bar.parentElement)setTimeout(function(){bar.parentElement.style.display='none';},1500);
     } else {
-      setStatus('Upload failed - try smaller file');
+      setS('Upload failed');
       if(typeof showToast==='function')showToast('Video upload failed');
     }
   };
