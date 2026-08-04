@@ -2877,8 +2877,8 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
 ._vfs-item:last-child{border:none}
 ._vfs-item i{font-size:20px;opacity:.8}
 ._vfs-del{color:#ff5c5c}
-._vfs-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px}
-._vfs-close-btn{background:none;border:none;color:inherit;font-size:22px;cursor:pointer;padding:4px 6px;opacity:.7;line-height:1}
+._vfs-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border,#2a2a4a)}
+._vfs-hdr-title{font-size:16px;font-weight:700;cursor:pointer}._vfs-close-btn{background:none;border:none;color:inherit;font-size:20px;cursor:pointer;padding:4px 6px;opacity:.7;line-height:1}
 ._vfs-bigbtn{padding:16px 14px;font-size:15px;font-weight:600;gap:10px;border-bottom:1px solid var(--border,#2a2a4a)}
 ._vfs-bigbtn:last-child{border-bottom:none}
 /* FIX 168c: desktop 16:9 + layout */
@@ -16573,8 +16573,7 @@ function _openVfShareSheet(isOwn, postId){
   }
     var pid=String(postId);
   var isOwn2=!!isOwn;
-  var h='<div class="_vfs-handle"></div>';
-  h+='<div class="_vfs-hdr"><span class="_vfs-action" data-action="cancel" data-pid="'+pid+'" style="cursor:pointer;font-size:15px;font-weight:600;opacity:.85">Отмена</span><button class="_vfs-close-btn _vfs-action" data-action="cancel" data-pid="'+pid+'">✕</button></div>';
+  var h='<div class="_vfs-hdr"><span class="_vfs-action _vfs-hdr-title" data-action="cancel" data-pid="'+pid+'">Отмена</span><button class="_vfs-close-btn _vfs-action" data-action="cancel" data-pid="'+pid+'">✕</button></div>';
   h+='<div class="_vfs-item _vfs-action _vfs-bigbtn" data-action="share" data-pid="'+pid+'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Поделиться</div>';
   if(isOwn2){
     h+='<div class="_vfs-item _vfs-action _vfs-bigbtn" data-action="edit" data-pid="'+pid+'"><i class="ti ti-pencil"></i>Редактировать</div>';
