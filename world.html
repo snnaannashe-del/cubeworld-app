@@ -2865,6 +2865,12 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
   #v-int:has(#sec-feed.active) #int-topbar,
   #v-int:has(#sec-feed.active) #cube-switcher{display:none!important;}
 }
+/* FIX 183: Feed UI slides out when panel opens */
+.vf-info,.vf-actions{transition:transform .28s cubic-bezier(.4,0,.2,1),opacity .28s}
+#mob-nav{transition:transform .28s cubic-bezier(.4,0,.2,1)}
+body.feed-ui-hide .vf-info,body.feed-ui-hide .vf-actions{transform:translateY(150%);opacity:0;pointer-events:none}
+body.feed-ui-hide #mob-nav{transform:translateY(100%)}
+body.feed-ui-hide .vf-tabs-drawer:not(.hidden){transform:translateY(-110%)}
 /* FIX 171 */
 .vfcp-header{justify-content:space-between!important}
 .vfcp-title{order:1}
@@ -16690,6 +16696,23 @@ window._doVfReport = function(pid){
   // Setup on load and whenever feed becomes active
   setTimeout(setup,600);
   document.addEventListener('click',()=>setTimeout(setup,80),{passive:true,capture:false});
+})();
+
+/* FIX 183: Feed UI slides out when comment/share panel opens */
+(function(){
+  function showFeedUI(){ document.body.classList.remove('feed-ui-hide'); }
+  function hideFeedUI(){ document.body.classList.add('feed-ui-hide'); }
+  // Wait for functions to be defined, then patch
+  setTimeout(function(){
+    var _oC=window.openComments;
+    window.openComments=function(){ hideFeedUI(); return _oC&&_oC.apply(this,arguments); };
+    var _cC=window.closeComments;
+    window.closeComments=function(){ showFeedUI(); return _cC&&_cC.apply(this,arguments); };
+    var _oS=window.openShareSheet;
+    window.openShareSheet=function(){ hideFeedUI(); return _oS&&_oS.apply(this,arguments); };
+    var _cS=window.closeShareSheet;
+    window.closeShareSheet=function(){ showFeedUI(); return _cS&&_cS.apply(this,arguments); };
+  },200);
 })();
 </script>
 
