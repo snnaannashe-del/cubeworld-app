@@ -2859,6 +2859,11 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
 .vf-fab-item:first-child{align-self:center!important}
 .vf-fab-items button:nth-of-type(1){order:2}.vf-fab-items button:nth-of-type(2){order:1}.vf-fab-items button:nth-of-type(3){order:3}
 .vf-fab-item .ti{filter:url('#_cw_erode')!important}
+
+/* FIX 181: Hide topbar + cube-switcher on mobile feed */
+@media(max-width:599px){
+  #int-topbar,#cube-switcher{display:none!important;}
+}
 /* FIX 171 */
 .vfcp-header{justify-content:space-between!important}
 .vfcp-title{order:1}
