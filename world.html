@@ -16856,7 +16856,7 @@ setInterval(patchFeedCards,2000);
 })();
 
 /*
-/* FIX 193e: video upload via Cloudinary (direct from browser, no backend timeout) */
+/* FIX 193f: Cloudinary upload + inject cpm-video-url into DOM for submit */
 (function fixFastUpload(){
   function disableBtn(){var b=document.getElementById('cpm-submit-btn');if(b)b.disabled=true;}
   function enableBtn(){var b=document.getElementById('cpm-submit-btn');if(b)b.disabled=false;}
@@ -16882,6 +16882,9 @@ setInterval(patchFeedCards,2000);
       try{await window._cpm193Promise;}catch(e){}
       enableBtn();
     }
+    var vu=document.getElementById('cpm-video-url');
+    if(!vu){vu=document.createElement('input');vu.type='hidden';vu.id='cpm-video-url';document.body.appendChild(vu);}
+    vu.value=window._cpmVideoUrl||'';
     if(_osc)_osc();
   };
   function xhrUp(url,fd,onPct){
