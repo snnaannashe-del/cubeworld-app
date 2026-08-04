@@ -16753,7 +16753,7 @@ window._doVfReport = function(pid){
   };
   wireAll();
 })();
-/* FIX 188: YouTube/TikTok corrected */
+/* FIX 188c: YT iframe + TikTok official embed.js */
 (function fixYTTK(){
   function ytId(u){var m=(u||'').match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
   function tkId(u){var m=(u||'').match(/tiktok\.com\/@[^\/]+\/video\/(\d+)/);if(m)return m[1];m=(u||'').match(/tiktok\.com\/t\/([A-Za-z0-9]+)/);return m?m[1]:null;}
@@ -16761,7 +16761,6 @@ window._doVfReport = function(pid){
   function isVidUrl(u){return !!(ytId(u)||isTk(u)||(u&&u.match(/\.(mp4|webm|mov)(\?|$)/i)));}
   function ytThumb(id){return 'https://img.youtube.com/vi/'+id+'/hqdefault.jpg';}
   function ytEmbed(id){return 'https://www.youtube.com/embed/'+id+'?autoplay=1&playsinline=1';}
-  function tkEmbed(id){return 'https://www.tiktok.com/embed/v2/'+id;}
   function clearUrlPreview(){
     var p=document.getElementById('cpm-url-preview');
     if(p){p.innerHTML='';p.style.display='none';}
@@ -16819,8 +16818,8 @@ window._doVfReport = function(pid){
     var p=posts[i];
     if(!p) return;
     var url=p.video_url||p.file_url||p.media_url||'';
-    var yid=ytId(url),tid=tkId(url);
-    if(!yid&&!tid) return;
+    var yid=ytId(url),tid=tkId(url),tk=isTk(url);
+    if(!yid&&!tk) return;
     var vid=document.getElementById('sp-video');
     if(!vid) return;
     try{vid.pause();}catch(e){}
@@ -16829,15 +16828,33 @@ window._doVfReport = function(pid){
     var sp=vid.closest('[class*="shorts"],[class*="sp-"]')||vid.parentElement;
     if(!sp) return;
     if(getComputedStyle(sp).position==='static') sp.style.position='relative';
-    var old=sp.querySelector('.yttkFr');if(old) old.remove();
-    var fr=document.createElement('iframe');
-    fr.className='yttkFr';
-    fr.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;border:none;z-index:6;background:#000';
-    fr.allow='autoplay; fullscreen; picture-in-picture';
-    fr.allowFullscreen=true;
-    fr.src=yid?ytEmbed(yid):(tid?tkEmbed(tid):url);
-    sp.appendChild(fr);
-    var old2=sp.querySelector('.yttkBadge');if(old2)old2.remove();
+    // Clean up old embeds
+    ['yttkFr','yttkTk','yttkBadge'].forEach(function(c){var el=sp.querySelector('.'+c);if(el)el.remove();});
+    if(yid){
+      // YouTube: standard iframe embed
+      var fr=document.createElement('iframe');
+      fr.className='yttkFr';
+      fr.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;border:none;z-index:6;background:#000';
+      fr.allow='autoplay; fullscreen; picture-in-picture';
+      fr.allowFullscreen=true;
+      fr.src=ytEmbed(yid);
+      sp.appendChild(fr);
+    } else if(tk){
+      // TikTok: official blockquote + embed.js approach
+      var tkDiv=document.createElement('div');
+      tkDiv.className='yttkTk';
+      tkDiv.style.cssText='position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;background:#010101;overflow:hidden';
+      var vid2id=tid||'';
+      tkDiv.innerHTML='<blockquote class="tiktok-embed" cite="'+url+'" data-video-id="'+vid2id+'" style="max-width:340px;min-width:280px;margin:0;border:none"><section></section></blockquote>';
+      sp.appendChild(tkDiv);
+      // Remove old embed.js and reload to pick up new blockquote
+      var old=document.querySelector('script[src*="tiktok.com/embed.js"]');
+      if(old)old.remove();
+      var s=document.createElement('script');s.async=true;
+      s.src='https://www.tiktok.com/embed.js';
+      document.head.appendChild(s);
+    }
+    // Badge
     var badge=document.createElement('div');badge.className='yttkBadge';
     badge.style.cssText='position:absolute;top:14px;right:14px;z-index:20;display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);pointer-events:none';
     badge.innerHTML=yid?'<svg width="14" height="10" viewBox="0 0 14 10"><rect width="14" height="10" rx="3" fill="#FF0000"/><polygon points="5.5,2 10.5,5 5.5,8" fill="#fff"/></svg> YouTube':'<svg width="10" height="12" viewBox="0 0 30 34"><path d="M28,12.5c-3.3,0-6.1-2.2-7.1-5.1V22c0,5-4,9-9,9S3,27,3,22s4-9,9-9c.3,0,.7,0,1,.1V19c-.3-.1-.7-.1-1-.1-2.8,0-5,2.2-5,5s2.2,5,5,5,5-2.2,5-5V0h5.9c.3,3.4,3,6.1,6.1,6.5V12.5Z" fill="white"/></svg> TikTok';
@@ -16845,7 +16862,7 @@ window._doVfReport = function(pid){
   };
   var _origClose=window.closeShortsPlayer;
   window.closeShortsPlayer=function(){
-    document.querySelectorAll('.yttkFr').forEach(function(f){f.src='';f.remove();});
+    document.querySelectorAll('.yttkFr,.yttkTk').forEach(function(f){if(f.tagName==='IFRAME')f.src='';f.remove();});
     document.querySelectorAll('.yttkBadge').forEach(function(b){b.remove();});
     _origClose&&_origClose.apply(this,arguments);
   };
@@ -16855,11 +16872,15 @@ window._doVfReport = function(pid){
       var vid=wrap.querySelector('video');
       if(!vid) return;
       var vsrc=vid.currentSrc||vid.src||vid.getAttribute('src')||'';
-      var yid2=ytId(vsrc),tid2=tkId(vsrc),tk2=isTk(vsrc);
+      var yid2=ytId(vsrc),tk2=isTk(vsrc),tid2=tkId(vsrc);
       if(!yid2&&!tk2) return;
       wrap._yttkDone=true;
-      var embedSrc=yid2?('https://www.youtube.com/embed/'+yid2+'?playsinline=1'):(tid2?tkEmbed(tid2):vsrc);
-      wrap.innerHTML='<iframe src="'+embedSrc+'" style="width:100%;height:100%;border:none;display:block;border-radius:inherit;" allow="autoplay;fullscreen" allowfullscreen></iframe>';
+      if(yid2){
+        wrap.innerHTML='<iframe src="https://www.youtube.com/embed/'+yid2+'?playsinline=1" style="width:100%;height:100%;border:none;display:block;border-radius:inherit;" allow="autoplay;fullscreen" allowfullscreen></iframe>';
+      } else {
+        wrap.innerHTML='<blockquote class="tiktok-embed" cite="'+vsrc+'" data-video-id="'+(tid2||'')+'" style="max-width:100%;min-width:200px;margin:0;border:none"><section></section></blockquote>';
+        var s2=document.createElement('script');s2.async=true;s2.src='https://www.tiktok.com/embed.js';document.head.appendChild(s2);
+      }
     });
   }
   setTimeout(patchFeedCards,1500);
