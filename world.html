@@ -3276,6 +3276,7 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
             </div>
             <input class="cpm-inp" id="cpm-image-url" placeholder="или вставь ссылку на фото/файл" style="margin-top:6px">
             <input class="cpm-inp" id="cpm-title-ball" placeholder="📌 Заголовок поста">
+            <input class="cpm-inp" id="cpm-music-ball" placeholder="🎵 Музыка (необязательно)">
             <textarea class="cpm-inp cpm-inp-ta" id="cpm-desc-ball" placeholder="Что на уме? Текст, мысль, новость…" style="min-height:90px"></textarea>
             <input class="cpm-inp" id="cpm-tags-ball" placeholder="#хэштег1 #хэштег2 …">
           </div>
@@ -16692,55 +16693,62 @@ window._doVfReport = function(pid){
   document.addEventListener('click',()=>setTimeout(setup,80),{passive:true,capture:false});
 })();
 
-/* FIX 185: Post form validation */
+/* FIX 185b: Post form validation */
 (function patchCpm(){
   function cLen(s){return[...s].length;}
   function cTags(s){return s.trim().split(/\s+/).filter(t=>t.startsWith('#')&&t.length>1).length;}
   function validate(field,val){
-    if(!val)return'';
-    const n=cLen(val);
-    if(field==='title'){if(n<3)return'\u0417\u0430\u0433\u043e\u043b\u043e\u0432\u043e\u043a: \u043c\u0438\u043d. 3 \u0441\u0438\u043c\u0432\u043e\u043b\u0430';if(n>40)return'\u0417\u0430\u0433\u043e\u043b\u043e\u0432\u043e\u043a: \u043c\u0430\u043a\u0441. 40 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432';}
-    if(field==='music'){if(n<5)return'\u041c\u0443\u0437\u044b\u043a\u0430: \u043c\u0438\u043d. 5 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432';if(n>45)return'\u041c\u0443\u0437\u044b\u043a\u0430: \u043c\u0430\u043a\u0441. 45 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432';}
-    if(field==='desc'){if(n<5)return'\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435: \u043c\u0438\u043d. 5 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432';if(n>700)return'\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435: \u043c\u0430\u043a\u0441. 700 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432';}
+    if(!val)return'';const n=cLen(val);
+    if(field==='title'){if(n<3)return'\u0417\u0430\u0433\u043e\u043b\u043e\u0432\u043e\u043a: \u043c\u0438\u043d. 3';if(n>40)return'\u0417\u0430\u0433\u043e\u043b\u043e\u0432\u043e\u043a: \u043c\u0430\u043a\u0441. 40';}
+    if(field==='music'){if(n<5)return'\u041c\u0443\u0437\u044b\u043a\u0430: \u043c\u0438\u043d. 5';if(n>45)return'\u041c\u0443\u0437\u044b\u043a\u0430: \u043c\u0430\u043a\u0441. 45';}
+    if(field==='desc'){if(n<5)return'\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435: \u043c\u0438\u043d. 5';if(n>700)return'\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435: \u043c\u0430\u043a\u0441. 700';}
     if(field==='tags'){const t=cTags(val);if(t<1)return'\u0414\u043e\u0431\u0430\u0432\u044c \u0445\u043e\u0442\u044f \u0431\u044b 1 \u0445\u044d\u0448\u0442\u0435\u0433 (#\u0442\u0435\u0433)';if(t>5)return'\u041c\u0430\u043a\u0441. 5 \u0445\u044d\u0448\u0442\u0435\u0433\u043e\u0432';}
     return'';
   }
-  function hint(el,msg,counter){
+  function hint(el,msg,ctr){
     let h=el._cpmH;
     if(!h){h=document.createElement('div');h.style.cssText='font-size:11px;margin:-4px 0 6px 2px;transition:color .2s';el.parentNode.insertBefore(h,el.nextSibling);el._cpmH=h;}
-    if(msg){h.style.color='#e05555';h.textContent=msg;}
-    else if(counter){h.style.color='var(--text2,#888)';h.textContent=counter;}
-    else{h.textContent='';}
+    h.style.color=msg?'#e05555':'var(--text2,#888)';
+    h.textContent=msg||(ctr||'');
     el.style.outline=msg?'1.5px solid rgba(220,50,50,.6)':'';
   }
+  function clearHints(){
+    ['cpm-title-short','cpm-title-ball','cpm-music','cpm-music-ball','cpm-desc-short','cpm-desc-ball','cpm-tags-short','cpm-tags-ball'].forEach(id=>{
+      const el=document.getElementById(id);if(!el)return;
+      el.style.outline='';if(el._cpmH){el._cpmH.textContent='';el._cpmH.style.color='';}
+      el._cpmWired=false;
+    });
+    const E=document.getElementById('cpm-err');if(E){E.textContent='';E.style.display='none';}
+  }
   function wire(id,field,max){
-    const el=document.getElementById(id);
-    if(!el||el._cpmWired)return;el._cpmWired=true;
+    const el=document.getElementById(id);if(!el||el._cpmWired)return;el._cpmWired=true;
     el.addEventListener('input',function(){
       const v=this.value,err=validate(field,v);
-      if(field==='tags'){hint(this,err||'',v?cTags(v)+'/5 \u0445\u044d\u0448\u0442\u0435\u0433\u043e\u0432':'');}
-      else{hint(this,err||'',v?cLen(v)+'/'+max:'')}
+      hint(this,err||'',v?(field==='tags'?cTags(v)+'/5 \u0445\u044d\u0448\u0442\u0435\u0433\u043e\u0432':cLen(v)+'/'+max):'');
     });
   }
   function wireAll(){
     wire('cpm-title-short','title',40);wire('cpm-title-ball','title',40);
-    wire('cpm-music','music',45);
+    wire('cpm-music','music',45);wire('cpm-music-ball','music',45);
     wire('cpm-desc-short','desc',700);wire('cpm-desc-ball','desc',700);
     wire('cpm-tags-short','tags',5);wire('cpm-tags-ball','tags',5);
   }
   const _oo=window.openCreatePost;
-  window.openCreatePost=function(){_oo&&_oo.apply(this,arguments);setTimeout(wireAll,80);};
+  window.openCreatePost=function(){_oo&&_oo.apply(this,arguments);setTimeout(()=>{clearHints();wireAll();},80);};
+  const _oSel=window.cpmSelectType;
+  window.cpmSelectType=function(t){_oSel&&_oSel.apply(this,arguments);setTimeout(()=>{clearHints();wireAll();},50);};
   const _os=window.submitCreatePost;
   window.submitCreatePost=function(){
     const isS=window._cpmType==='short';
     const T=document.getElementById(isS?'cpm-title-short':'cpm-title-ball');
+    const M=document.getElementById(isS?'cpm-music':'cpm-music-ball');
     const D=document.getElementById(isS?'cpm-desc-short':'cpm-desc-ball');
     const G=document.getElementById(isS?'cpm-tags-short':'cpm-tags-ball');
-    const M=isS?document.getElementById('cpm-music'):null;
     const E=document.getElementById('cpm-err');
     const errs=[];
     [[T,'title'],[M,'music'],[D,'desc'],[G,'tags']].forEach(([el,f])=>{if(el&&el.value){const e=validate(f,el.value);if(e)errs.push(e);}});
     if(errs.length){if(E){E.textContent=errs[0];E.style.display='';}return;}
+    if(E){E.textContent='';E.style.display='none';}
     _os&&_os.apply(this,arguments);
   };
   wireAll();
