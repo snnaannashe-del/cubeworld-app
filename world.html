@@ -16994,6 +16994,33 @@ setInterval(patchFeedCards,2000);
   };
   window.spNav=function(dir){var ni=(window._spIdx||0)+dir;if(!window._spPosts||ni<0||ni>=window._spPosts.length)return;window._spIdx=ni;window._spLoad(ni);};
 })();
+
+/* == SP SENDER CLICK v1 == */
+(function(){
+  if(window._spSenderClickWired) return;
+  window._spSenderClickWired = true;
+  document.addEventListener('click', function(e){
+    var nm = e.target.closest ? e.target.closest('.vfi-name') : null;
+    if(!nm) return;
+    var card = nm.closest('.vf-card');
+    if(!card) return;
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    var vid = card.querySelector('video');
+    var desc = card.querySelector('.vfi-desc');
+    var mrow = card.querySelector('.vfi-music');
+    var msc = mrow ? mrow.textContent.replace(/[^\x20-\x7E]/g,'').trim() : '';
+    var post = {
+      type: 'short',
+      file_url: vid ? vid.src : '',
+      sender: nm.textContent.replace('@','').trim(),
+      title: desc ? desc.textContent.trim() : '',
+      description: '',
+      music: msc
+    };
+    window.openShortsPlayer([post], 0, '');
+  }, true);
+})();
 </script>
 
 <div class="modal-backdrop" id="modal-universe" style="display:none"><div class="modal" style="max-width:min(560px,calc(100vw - 24px));width:100%;max-height:90svh;box-sizing:border-box;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:0">
