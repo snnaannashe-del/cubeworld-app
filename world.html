@@ -16856,11 +16856,10 @@ setInterval(patchFeedCards,2000);
 })();
 
 /*
-/* FIX 193d: video upload via backend /upload/video (no size limit) + XHR progress */
+/* FIX 193e: video upload via Cloudinary (direct from browser, no backend timeout) */
 (function fixFastUpload(){
   function disableBtn(){var b=document.getElementById('cpm-submit-btn');if(b)b.disabled=true;}
   function enableBtn(){var b=document.getElementById('cpm-submit-btn');if(b)b.disabled=false;}
-
   var _oco=window.openCreatePost;
   window.openCreatePost=function(){
     var _gi=document.getElementById.bind(document);
@@ -16876,7 +16875,6 @@ setInterval(patchFeedCards,2000);
     var lbl=_gi('cpm-video-drop-label');if(lbl){lbl.textContent='Select video';lbl.style.display='block';}
     var bar=_gi('cpm-video-bar');if(bar&&bar.parentElement)bar.parentElement.style.display='none';
   };
-
   var _osc=window.submitCreatePost;
   window.submitCreatePost=async function(){
     if(typeof _cpmType!=='undefined'&&_cpmType==='short'&&window._cpm193Promise){
@@ -16886,7 +16884,6 @@ setInterval(patchFeedCards,2000);
     }
     if(_osc)_osc();
   };
-
   function xhrUp(url,fd,onPct){
     return new Promise(function(res){
       var xhr=new XMLHttpRequest();xhr.open('POST',url);
@@ -16896,7 +16893,6 @@ setInterval(patchFeedCards,2000);
       xhr.send(fd);
     });
   }
-
   window.cpmHandleVideoFile=async function(input){
     var file=input.files[0];if(!file)return;
     var label=document.getElementById('cpm-video-drop-label');
@@ -16905,23 +16901,14 @@ setInterval(patchFeedCards,2000);
     window._cpmVideoUrl='';window._cpm193abort=false;window._cpm193Promise=null;
     function setS(t){if(label){label.textContent=t;label.style.display='block';}}
     function setB(p){if(bar){bar.style.width=p+'%';if(bar.parentElement)bar.parentElement.style.display='block';}}
-    setS('Connecting...');setB(2);disableBtn();
-
+    setS('Uploading '+Math.round(file.size/1024/1024*10)/10+'MB...');setB(2);disableBtn();
     window._cpm193Promise=(async function(){
       var url=null;
-      // Try backend first (no size limit, CORS enabled)
-      var apiBase=typeof CUBE_API!=='undefined'?CUBE_API:'https://cubeworld-backend.onrender.com';
-      var fd=new FormData();fd.append('file',file,file.name||'video.mp4');
-      setS('Uploading '+Math.round(file.size/1024/1024*10)/10+'MB...');
-      var t=await xhrUp(apiBase+'/upload/video',fd,function(p){setS('Uploading '+p+'%...');setB(p);});
-      if(t){try{var j=JSON.parse(t);if(j.url)url=j.url;}catch(e){}}
-      // Fallback: telegra.ph for small files
-      if(!url&&file.size<4.8*1024*1024){
-        setS('Uploading...');setB(5);
-        var fd2=new FormData();fd2.append('file',file,file.name||'video.mp4');
-        var t2=await xhrUp('https://telegra.ph/upload',fd2,function(p){setS('Uploading '+p+'%...');setB(p);});
-        if(t2){try{var j2=JSON.parse(t2);if(Array.isArray(j2)&&j2[0]&&j2[0].src)url='https://telegra.ph'+j2[0].src;}catch(e){}}
-      }
+      var fd=new FormData();
+      fd.append('file',file,file.name||'video.mp4');
+      fd.append('upload_preset','CubeWorld');
+      var t=await xhrUp('https://api.cloudinary.com/v1_1/iwkzkg89/video/upload',fd,function(p){setS('Uploading '+p+'%...');setB(p);});
+      if(t){try{var j=JSON.parse(t);if(j.secure_url)url=j.secure_url;}catch(e){}}
       setB(100);
       if(url){
         window._cpmVideoUrl=url;
