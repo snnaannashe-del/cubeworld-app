@@ -73,7 +73,7 @@ async def get_current_user(creds: Optional[HTTPAuthorizationCredentials] = Depen
     db.update_last_seen(user["id"])
     return user
 
-# ── Pydantic models ───────────────────────────────────────────────────────────
+# ââ Pydantic models âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 class LoginRequest(BaseModel):
     key: str
@@ -104,7 +104,7 @@ class PremiumActivateRequest(BaseModel):
 class CreateCubeRequest(BaseModel):
     name: str
     description: str = ""
-    icon: str = "📦"
+    icon: str = "ð¦"
     color: str = "#0095F6"
     type: str = "public"
     life_hours: int = 24
@@ -121,7 +121,7 @@ class SetCubeHandleRequest(BaseModel):
 class CreateGroupRequest(BaseModel):
     name: str
     description: Optional[str] = ''
-    icon: Optional[str] = '👥'
+    icon: Optional[str] = 'ð¥'
     type: Optional[str] = 'public'  # public | private
 
 class SetGroupHandleRequest(BaseModel):
@@ -172,7 +172,7 @@ class SendDmRequest(BaseModel):
     file_size: Optional[str] = None
     file_url: Optional[str] = None
 
-# ── Auth ──────────────────────────────────────────────────────────────────────
+# ââ Auth ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 @app.post("/auth/generate")
 async def generate_key(request: Request):
@@ -241,7 +241,7 @@ async def logout(body: RefreshRequest):
     db.delete_session(db.hash_token(body.refresh_token))
     return {"ok": True}
 
-# ── User ──────────────────────────────────────────────────────────────────────
+# ââ User ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 @app.get("/me")
 async def get_me(user=Depends(get_current_user)):
@@ -266,7 +266,7 @@ async def update_me(body: UpdateProfileRequest, user=Depends(get_current_user)):
 
 @app.post("/signals")
 async def create_signal_standalone(body: CreateSignalRequest, user=Depends(get_current_user)):
-    """Standalone signal — not tied to a specific cube."""
+    """Standalone signal â not tied to a specific cube."""
     try:
         cube_id = 1  # default global cube
         sid = db.create_signal(cube_id, user["id"], body.ticker, body.direction,
@@ -281,19 +281,19 @@ async def set_username(body: SetUsernameRequest, user=Depends(get_current_user))
     import re
     uname = body.username.strip().lower().lstrip('@')
     if not re.match(r'^[a-z0-9_]{4,24}$', uname):
-        raise HTTPException(400, "Юзернейм: 4-24 символа, только a-z 0-9 _")
+        raise HTTPException(400, "Ð®Ð·ÐµÑÐ½ÐµÐ¹Ð¼: 4-24 ÑÐ¸Ð¼Ð²Ð¾Ð»Ð°, ÑÐ¾Ð»ÑÐºÐ¾ a-z 0-9 _")
     ok = db.set_username(user["id"], uname)
     if not ok:
-        raise HTTPException(409, "Этот @username уже занят")
+        raise HTTPException(409, "Ð­ÑÐ¾Ñ @username ÑÐ¶Ðµ Ð·Ð°Ð½ÑÑ")
     return {"ok": True, "username": uname}
 
-# ── User Search ────────────────────────────────────────────────────────────────
+# ââ User Search ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 @app.get("/users/search")
 async def search_users(q: str = "", limit: int = 20, user=Depends(get_current_user)):
     """Search users by @username, display_name, key_prefix, or #ID."""
     if not q.strip():
-        raise HTTPException(400, "Пустой запрос")
+        raise HTTPException(400, "ÐÑÑÑÐ¾Ð¹ Ð·Ð°Ð¿ÑÐ¾Ñ")
     results = db.search_users(q.strip(), min(limit, 50), exclude_id=user["id"])
     return [
         {
@@ -312,7 +312,7 @@ async def search_users(q: str = "", limit: int = 20, user=Depends(get_current_us
 async def search_cubes_endpoint(q: str = "", limit: int = 20):
     """Search cubes by @handle or name."""
     if not q.strip():
-        raise HTTPException(400, "Пустой запрос")
+        raise HTTPException(400, "ÐÑÑÑÐ¾Ð¹ Ð·Ð°Ð¿ÑÐ¾Ñ")
     results = db.search_cubes(q.strip(), min(limit, 50))
     return [
         {
@@ -320,7 +320,7 @@ async def search_cubes_endpoint(q: str = "", limit: int = 20):
             "uid":    f"#G{r['id']}",
             "name":   r["name"],
             "handle": f"@{r['handle']}" if r.get("handle") else f"#G{r['id']}",
-            "icon":   r.get("icon","🧊"),
+            "icon":   r.get("icon","ð§"),
             "color":  r.get("color","#0095F6"),
             "type":   r.get("type","public"),
             "life_left": r.get("life_left_seconds",0),
@@ -334,10 +334,10 @@ async def set_cube_handle(cube_id: int, body: SetCubeHandleRequest, user=Depends
     import re
     handle = body.handle.strip().lower().lstrip('@')
     if not re.match(r'^[a-z0-9_]{3,24}$', handle):
-        raise HTTPException(400, "Handle: 3-24 символа, только a-z 0-9 _")
+        raise HTTPException(400, "Handle: 3-24 ÑÐ¸Ð¼Ð²Ð¾Ð»Ð°, ÑÐ¾Ð»ÑÐºÐ¾ a-z 0-9 _")
     ok = db.set_cube_handle(cube_id, user["id"], handle)
     if not ok:
-        raise HTTPException(409, "Этот @handle уже занят или ты не владелец")
+        raise HTTPException(409, "Ð­ÑÐ¾Ñ @handle ÑÐ¶Ðµ Ð·Ð°Ð½ÑÑ Ð¸Ð»Ð¸ ÑÑ Ð½Ðµ Ð²Ð»Ð°Ð´ÐµÐ»ÐµÑ")
     return {"ok": True, "handle": handle}
 
 @app.post("/wallet/link")
@@ -354,7 +354,7 @@ async def my_wallets(user=Depends(get_current_user)):
     conn.close()
     return [dict(r) for r in rows]
 
-# ── Premium ───────────────────────────────────────────────────────────────────
+# ââ Premium âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 @app.get("/premium/status")
 async def premium_status(user=Depends(get_current_user)):
@@ -366,9 +366,9 @@ async def premium_status(user=Depends(get_current_user)):
 async def activate_premium(body: PremiumActivateRequest, user=Depends(get_current_user)):
     db.activate_premium(user["id"], body.months, body.payment_method, body.tx_hash)
     db.record_activity(user["id"], "invite")  # reward for upgrading
-    return {"ok": True, "message": f"Premium активирован на {body.months} мес."}
+    return {"ok": True, "message": f"Premium Ð°ÐºÑÐ¸Ð²Ð¸ÑÐ¾Ð²Ð°Ð½ Ð½Ð° {body.months} Ð¼ÐµÑ."}
 
-# ── Activity tracking ─────────────────────────────────────────────────────────
+# ââ Activity tracking âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 @app.post("/activity/ping")
 async def activity_ping(user=Depends(get_current_user)):
@@ -388,29 +388,29 @@ class ActivityEventRequest(BaseModel):
 @app.post("/activity/event")
 async def activity_event(body: ActivityEventRequest, user=Depends(get_current_user)):
     db.record_activity(user["id"], body.event)
-    # Milestone rewards — award CUBE at activity milestones and notify via WS
+    # Milestone rewards â award CUBE at activity milestones and notify via WS
     stats = db.get_my_activity_stats(user["id"])
     bonus = 0
     reason = ""
     if body.event == "message":
         msgs = stats.get("messages", 0)
         if msgs > 0 and msgs % 10 == 0:
-            bonus, reason = 5, f"+5 CUBE · {msgs} сообщений"
+            bonus, reason = 5, f"+5 CUBE Â· {msgs} ÑÐ¾Ð¾Ð±ÑÐµÐ½Ð¸Ð¹"
     elif body.event == "post":
         posts = stats.get("posts", 0)
         if posts > 0 and posts % 5 == 0:
-            bonus, reason = 10, f"+10 CUBE · {posts} постов"
+            bonus, reason = 10, f"+10 CUBE Â· {posts} Ð¿Ð¾ÑÑÐ¾Ð²"
     elif body.event == "invite":
         invites = stats.get("invites", 0)
         if invites > 0 and invites % 1 == 0:
-            bonus, reason = 50, "+50 CUBE · реферал"
+            bonus, reason = 50, "+50 CUBE Â· ÑÐµÑÐµÑÐ°Ð»"
     if bonus:
         db.add_cube_balance(user["id"], float(bonus), "activity", description=reason)
         new_bal = db.get_cube_balance(user["id"])
         await _notify_user(user["id"], {"type": "balance_update", "balance": new_bal, "reason": reason})
     return {"ok": True, "bonus": bonus}
 
-# ── Rewards ───────────────────────────────────────────────────────────────────
+# ââ Rewards âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 @app.get("/rewards/estimate")
 async def reward_estimate(user=Depends(get_current_user)):
@@ -424,7 +424,7 @@ async def reward_claim(body: RewardClaimRequest, user=Depends(get_current_user))
     if err:
         raise HTTPException(400, err)
     return {"ok": True, "usd": amount, "wallet": body.wallet_address,
-            "message": f"Заявка на ${amount:.2f} создана. Выплата в течение 24ч."}
+            "message": f"ÐÐ°ÑÐ²ÐºÐ° Ð½Ð° ${amount:.2f} ÑÐ¾Ð·Ð´Ð°Ð½Ð°. ÐÑÐ¿Ð»Ð°ÑÐ° Ð² ÑÐµÑÐµÐ½Ð¸Ðµ 24Ñ."}
 
 @app.get("/rewards/history")
 async def reward_history(user=Depends(get_current_user)):
@@ -450,7 +450,7 @@ async def reward_pool_info():
 async def cube_balance(user=Depends(get_current_user)):
     return {"balance": db.get_cube_balance(user["id"]), "key_type": user["key_type"]}
 
-# ── Groups ────────────────────────────────────────────────────────────────────
+# ââ Groups ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 import re as _re
 _HANDLE_RE = _re.compile(r'^[a-z0-9_]{3,24}$')
@@ -489,7 +489,7 @@ async def create_group(body: CreateGroupRequest, user=Depends(get_current_user))
     if not body.name.strip():
         raise HTTPException(400, "Name required")
     gtype = body.type if body.type in ('public', 'private') else 'public'
-    gid = db.create_group(user["id"], body.name.strip(), body.description or '', body.icon or '👥', gtype)
+    gid = db.create_group(user["id"], body.name.strip(), body.description or '', body.icon or 'ð¥', gtype)
     if not gid:
         raise HTTPException(500, "Could not create group")
     groups = db.get_my_groups(user["id"])
@@ -634,14 +634,14 @@ async def get_group_members(group_id: int, user=Depends(get_current_user)):
 async def join_group_by_key(body: JoinGroupByKeyRequest, user=Depends(get_current_user)):
     g = db.join_group_by_key(body.key.strip(), user["id"])
     if not g:
-        raise HTTPException(404, "Ключ не найден или группа недоступна")
+        raise HTTPException(404, "ÐÐ»ÑÑ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½ Ð¸Ð»Ð¸ Ð³ÑÑÐ¿Ð¿Ð° Ð½ÐµÐ´Ð¾ÑÑÑÐ¿Ð½Ð°")
     return {"joined": True, "group": g}
 
 @app.post("/groups/{group_id}/set-key")
 async def set_group_key(group_id: int, body: SetGroupKeyRequest, user=Depends(get_current_user)):
     ok = db.set_group_key(group_id, user["id"], body.key.strip())
     if not ok:
-        raise HTTPException(403, "Только владелец может установить ключ")
+        raise HTTPException(403, "Ð¢Ð¾Ð»ÑÐºÐ¾ Ð²Ð»Ð°Ð´ÐµÐ»ÐµÑ Ð¼Ð¾Ð¶ÐµÑ ÑÑÑÐ°Ð½Ð¾Ð²Ð¸ÑÑ ÐºÐ»ÑÑ")
     return {"ok": True}
 
 @app.post("/feed/{post_id}/view")
@@ -664,7 +664,7 @@ async def upload_file(file: UploadFile = File(...),
     cld_cloud  = os.getenv("CLOUDINARY_CLOUD_NAME", "")
     cld_preset = os.getenv("CLOUDINARY_UPLOAD_PRESET", "")
 
-    # ── Cloudinary upload (permanent) ──────────────────────────────────
+    # ââ Cloudinary upload (permanent) ââââââââââââââââââââââââââââââââââ
     if cld_cloud and cld_preset:
         try:
             import io
@@ -682,7 +682,7 @@ async def upload_file(file: UploadFile = File(...),
             # fall through to local storage if Cloudinary fails
             pass
 
-    # ── Local temp storage (fallback) ──────────────────────────────────
+    # ââ Local temp storage (fallback) ââââââââââââââââââââââââââââââââââ
     ext = os.path.splitext(file.filename or "file")[1].lower() or ".bin"
     allowed = {".jpg",".jpeg",".png",".gif",".webp",".mp4",".webm",".mov",
                ".pdf",".zip",".txt",".doc",".docx",".csv",".xls",".xlsx"}
@@ -697,7 +697,7 @@ async def upload_file(file: UploadFile = File(...),
     return {"url": url, "filename": file.filename, "size": len(content),
             "ok": True, "storage": "local_temp"}
 
-# ── Cubes CRUD ────────────────────────────────────────────────────────────────
+# ââ Cubes CRUD ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 @app.get("/cubes")
 async def list_cubes():
@@ -728,7 +728,7 @@ async def delete_all_user_cubes(secret: str = ""):
 async def delete_cube(cube_id: int, user=Depends(get_current_user)):
     deleted = db.delete_cube(cube_id, user["id"])
     if not deleted:
-        raise HTTPException(status_code=404, detail="Куб не найден или вы не владелец")
+        raise HTTPException(status_code=404, detail="ÐÑÐ± Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½ Ð¸Ð»Ð¸ Ð²Ñ Ð½Ðµ Ð²Ð»Ð°Ð´ÐµÐ»ÐµÑ")
     return {"ok": True, "deleted_id": cube_id}
 
 @app.post("/cubes/{cube_id}/kick")
@@ -744,17 +744,17 @@ async def kick_user_from_cube(cube_id: int, request: Request, user=Depends(get_c
         target_uid = int(uid_str)
     except ValueError:
         raise HTTPException(400, "invalid uid")
-    # Check ownership directly — works even on expired/inactive cubes
+    # Check ownership directly â works even on expired/inactive cubes
     conn = db.get_db()
     cur = conn.cursor()
     cur.execute(db._q("SELECT owner_id FROM cubes WHERE id=?"), (cube_id,))
     row = cur.fetchone()
     conn.close()
     if not row:
-        raise HTTPException(404, "Куб не найден")
+        raise HTTPException(404, "ÐÑÐ± Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½")
     row_owner = row["owner_id"] if db._PG else row[0]
     if int(row_owner) != int(user["id"]):
-        raise HTTPException(403, "Вы не владелец куба")
+        raise HTTPException(403, "ÐÑ Ð½Ðµ Ð²Ð»Ð°Ð´ÐµÐ»ÐµÑ ÐºÑÐ±Ð°")
     # Record ban (ignore if already banned)
     try:
         db.ban_user_from_cube(cube_id, target_uid, int(user["id"]))
@@ -801,18 +801,18 @@ async def get_cube_online_members(cube_id: int, user=Depends(get_current_user)):
                     "is_online": False
                 }
     except Exception:
-        pass  # safe fallback — live users are already in seen
+        pass  # safe fallback â live users are already in seen
     # 3. Exclude the requesting user (owner) from kick list
     owner_uid = int(user["id"])
     return [v for v in seen.values() if int(v["id"]) != owner_uid]
 
 @app.post("/cubes/join")
 async def join_cube_by_key(body: JoinCubeRequest):
-    """Resolve a cube invite key — returns cube info if valid."""
+    """Resolve a cube invite key â returns cube info if valid."""
     key = body.cube_key.strip().upper()
     cube = db.get_cube_by_key(key)
     if not cube:
-        raise HTTPException(status_code=404, detail="Ключ не найден или куб истёк")
+        raise HTTPException(status_code=404, detail="ÐÐ»ÑÑ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½ Ð¸Ð»Ð¸ ÐºÑÐ± Ð¸ÑÑÑÐº")
     return {
         "id":         cube["id"],
         "name":       cube["name"],
@@ -829,7 +829,7 @@ async def get_cube_key(cube_id: int, user=Depends(get_current_user)):
     """Owner-only: retrieve the cube's invite key."""
     key = db.get_cube_key(cube_id, user["id"])
     if key is None:
-        raise HTTPException(status_code=403, detail="Только создатель может видеть ключ")
+        raise HTTPException(status_code=403, detail="Ð¢Ð¾Ð»ÑÐºÐ¾ ÑÐ¾Ð·Ð´Ð°ÑÐµÐ»Ñ Ð¼Ð¾Ð¶ÐµÑ Ð²Ð¸Ð´ÐµÑÑ ÐºÐ»ÑÑ")
     return {"cube_key": key, "ok": True}
 
 @app.get("/cubes/{cube_id}/messages")
@@ -874,7 +874,7 @@ async def get_dm_history(other_user_id: int, user=Depends(get_current_user)):
     history = db.get_dm_history(user["id"], other_user_id)
     return history
 
-# ── Global Video Feed ────────────────────────────────────────────────────────
+# ââ Global Video Feed ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 @app.get("/feed")
 async def get_global_feed(limit: int = 30, offset: int = 0):
@@ -970,7 +970,7 @@ async def unfollow(target_id: int, user=Depends(get_current_user)):
     counts = db.get_follow_counts(target_id)
     return {"ok": True, "following": False, **counts}
 
-# ── Cube Posts (legacy) ───────────────────────────────────────────────────────
+# ââ Cube Posts (legacy) âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 @app.get("/cubes/{cube_id}/posts")
 async def get_posts(cube_id: int):
@@ -1004,7 +1004,7 @@ async def create_signal(cube_id: int, body: CreateSignalRequest, user=Depends(ge
                                body.entry_price, body.tp_price, body.sl_price, body.content[:500])
     return {"id": sig_id, "ok": True}
 
-# ── Admin / Stats ─────────────────────────────────────────────────────────────
+# ââ Admin / Stats âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 @app.post("/admin/reset")
 async def admin_reset(request: Request):
@@ -1047,9 +1047,9 @@ async def stats():
 async def health():
     return {"status": "ok", "version": "5.1.0", "kick_route": "active", "cube_visitors": "active"}
 
-# ── WebSocket: per-cube rooms ─────────────────────────────────────────────────
+# ââ WebSocket: per-cube rooms âââââââââââââââââââââââââââââââââââââââââââââââââ
 # cube_rooms: { cube_id_str: { user_id_str: {"ws": websocket, "display_name": str} } }
-# user_ws: { user_id_str: websocket }  — tracks the most recent WS for each user (for direct notifications)
+# user_ws: { user_id_str: websocket }  â tracks the most recent WS for each user (for direct notifications)
 
 cube_rooms: Dict[str, Dict[str, dict]] = {}
 user_ws: Dict[str, object] = {}
@@ -1198,7 +1198,7 @@ async def ws_cube(websocket: WebSocket, token: str, cube_id: str):
                 await _send_to_user(cube_id, user_id, {**out, "type": "message_ack"})
 
             elif msg_type == "react":
-                # {type:"react", msg_id:X, emoji:"👍"}
+                # {type:"react", msg_id:X, emoji:"ð"}
                 react_msg_id = data.get("msg_id")
                 emoji = str(data.get("emoji", ""))[:8]
                 if react_msg_id and emoji:
@@ -1275,10 +1275,10 @@ async def ws_cube(websocket: WebSocket, token: str, cube_id: str):
                     "online_users": _online_list(cube_id)
                 })
 
-# ── WebSocket: group chat room ───────────────────────────────────────────────
+# ââ WebSocket: group chat room âââââââââââââââââââââââââââââââââââââââââââââââ
 @app.websocket("/ws/group/{token}/{group_id}")
 async def ws_group(websocket: WebSocket, token: str, group_id: str):
-    """Real-time WebSocket for group chat — receives group_msg broadcasts."""
+    """Real-time WebSocket for group chat â receives group_msg broadcasts."""
     await websocket.accept()
     user_id = None
     try:
@@ -1334,7 +1334,7 @@ connected_users: dict = {}
 
 @app.websocket("/ws/{token}")
 async def websocket_legacy(websocket: WebSocket, token: str):
-    """Global user WebSocket — for DM delivery when user is not in any cube."""
+    """Global user WebSocket â for DM delivery when user is not in any cube."""
     await websocket.accept()
     user_id = None
     try:
@@ -1370,3 +1370,21 @@ async def websocket_legacy(websocket: WebSocket, token: str):
     finally:
         connected_users.pop(user_id, None)
         user_ws.pop(user_id, None)
+
+
+# -- Video upload endpoint --
+import time as _time
+
+@app.post("/upload/video")
+async def upload_video(file: UploadFile = File(...)):
+    ext = os.path.splitext(file.filename or "video.mp4")[1]
+    if ext.lower() not in (".mp4", ".webm", ".mov", ".avi", ".mkv", ".3gp"):
+        ext = ".mp4"
+    filename = "v_" + str(int(_time.time())) + "_" + uuid.uuid4().hex[:8] + ext
+    dest = os.path.join(UPLOAD_DIR, filename)
+    try:
+        with open(dest, "wb") as f:
+            shutil.copyfileobj(file.file, f)
+    except Exception as e:
+        raise HTTPException(500, str(e))
+    return {"url": "https://cubeworld-backend.onrender.com/uploads/" + filename}
