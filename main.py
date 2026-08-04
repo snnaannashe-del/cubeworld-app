@@ -876,6 +876,23 @@ async def get_dm_history(other_user_id: int, user=Depends(get_current_user)):
 
 # ââ Global Video Feed ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
+
+@app.delete("/feed/{post_id}")
+async def delete_feed_post(post_id: int, user=Depends(get_current_user)):
+    """Delete a feed post (own post only, or admin)."""
+    deleted = db.delete_feed_post(post_id, user["id"])
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Post not found or not yours")
+    return {"ok": True, "deleted_id": post_id}
+
+@app.delete("/admin/feed/videos")
+async def admin_delete_video_posts(secret: str = ""):
+    """Admin: delete all posts that have a video_url."""
+    if secret != "cw-admin-reset-2025":
+        raise HTTPException(status_code=403, detail="Forbidden")
+    deleted = db.admin_delete_video_posts()
+    return {"ok": True, "deleted": deleted}
+
 @app.get("/feed")
 async def get_global_feed(limit: int = 30, offset: int = 0):
     return db.get_global_feed(limit=min(limit,100), offset=offset)
