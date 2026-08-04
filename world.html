@@ -3260,7 +3260,6 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
               <div class="file-preview" id="cpm-video-preview" style="display:none"></div>
               <div class="upload-progress" id="cpm-video-progress"><div class="upload-progress-bar" id="cpm-video-bar"></div></div>
             </div>
-            <input class="cpm-inp" id="cpm-video-url" placeholder="или вставь ссылку YouTube / .mp4" style="margin-top:6px">
             <input class="cpm-inp" id="cpm-title-short" placeholder="📌 Заголовок (необязательно)">
             <input class="cpm-inp" id="cpm-music" placeholder="🎵 Музыка (необязательно)">
             <textarea class="cpm-inp cpm-inp-ta" id="cpm-desc-short" placeholder="Описание…"></textarea>
@@ -3274,7 +3273,6 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
               <div class="file-preview" id="cpm-image-preview" style="display:none"></div>
               <div class="upload-progress" id="cpm-image-progress"><div class="upload-progress-bar" id="cpm-image-bar"></div></div>
             </div>
-            <input class="cpm-inp" id="cpm-image-url" placeholder="или вставь ссылку на фото/файл" style="margin-top:6px">
             <input class="cpm-inp" id="cpm-title-ball" placeholder="📌 Заголовок поста">
             <input class="cpm-inp" id="cpm-music-ball" placeholder="🎵 Музыка (необязательно)">
             <textarea class="cpm-inp cpm-inp-ta" id="cpm-desc-ball" placeholder="Что на уме? Текст, мысль, новость…" style="min-height:90px"></textarea>
@@ -16752,151 +16750,6 @@ window._doVfReport = function(pid){
     _os&&_os.apply(this,arguments);
   };
   wireAll();
-})();
-/* FIX 190b: feed thumbs back + proper YT chrome masking */
-(function fixYT(){
-  function ytId(u){var m=(u||'').match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
-  function isVidUrl(u){return !!(ytId(u)||(u&&u.match(/\.(mp4|webm|mov)(\?|$)/i)));}
-  function ytThumb(id){return 'https://img.youtube.com/vi/'+id+'/maxresdefault.jpg';}
-  function ytSrc(id){return 'https://www.youtube.com/embed/'+id+'?autoplay=1&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&origin='+encodeURIComponent(location.origin);}
-  function clearUrlPreview(){
-    var p=document.getElementById('cpm-url-preview');
-    if(p){p.innerHTML='';p.style.display='none';}
-    var u=document.getElementById('cpm-video-url');
-    if(u){u.value='';u._ytW=false;}
-  }
-  function wireUrlPreview(){
-    var inp=document.getElementById('cpm-video-url');
-    if(!inp||inp._ytW) return;
-    inp._ytW=true;
-    inp.placeholder=new TextDecoder().decode(new Uint8Array([208,178,209,129,209,130,208,176,208,178,209,140,32,209,129,209,129,209,139,208,187,208,186,209,131,32,89,111,117,84,117,98,101,32,47,32,102,105,108,101,46,109,112,52]));
-    var prev=document.getElementById('cpm-url-preview');
-    if(!prev){prev=document.createElement('div');prev.id='cpm-url-preview';prev.style.cssText='display:none;border-radius:12px;overflow:hidden;margin:4px 0 6px;';inp.parentNode.insertBefore(prev,inp.nextSibling);}
-    inp.addEventListener('input',function(){
-      var url=this.value.trim(),yid=ytId(url);
-      if(yid){
-        prev.innerHTML='<div style="position:relative;padding-top:56.25%;background:#000"><img src="'+ytThumb(yid)+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div style="width:56px;height:56px;background:rgba(0,0,0,.7);border-radius:50%;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 22 22"><polygon points="6,3 20,11 6,19" fill="white"/></svg></div></div></div>';
-        prev.style.display='';
-      } else {prev.innerHTML='';prev.style.display='none';}
-    });
-  }
-  var _oo=window.openCreatePost;
-  window.openCreatePost=function(){_oo&&_oo.apply(this,arguments);setTimeout(function(){clearUrlPreview();wireUrlPreview();},100);};
-  var _oSel=window.cpmSelectType;
-  window.cpmSelectType=function(t){_oSel&&_oSel.apply(this,arguments);setTimeout(function(){clearUrlPreview();wireUrlPreview();},60);};
-  var _origSub=window.submitCreatePost;
-  window.submitCreatePost=function(){
-    if(window._cpmType==='short'){
-      var urlVal=(document.getElementById('cpm-video-url')?document.getElementById('cpm-video-url').value:'').trim();
-      if(!window._cpmVideoUrl&&!isVidUrl(urlVal)){
-        var E=document.getElementById('cpm-err');
-        if(E){E.textContent=new TextDecoder().decode(new Uint8Array([208,183,208,176,208,179,209,128,209,131,208,183,208,184,32,208,178,208,184,208,180,208,181,208,190,32,208,184,208,187,208,184,32,209,129,209,129,209,139,208,187,208,186,209,131,32,89,111,117,84,117,98,101]));E.style.display='';}
-        return;
-      }
-    }
-    _origSub&&_origSub.apply(this,arguments);
-  };
-  var _origOpen=window.openShortsPlayer;
-  window.openShortsPlayer=function(posts,idx,uid){
-    if(posts){window._ytSP=posts.filter(function(p){var u=p.video_url||'';var f=p.file_url||'';return !!(u||(f&&f.match(/\.mp4|\.webm|\.mov/i)));});}
-    _origOpen&&_origOpen.apply(this,arguments);
-  };
-  var _origSpLoad=window._spLoad;
-  window._spLoad=function(i){
-    _origSpLoad&&_origSpLoad.apply(this,arguments);
-    var posts=window._ytSP||[];
-    var p=posts[i];if(!p) return;
-    var url=p.video_url||p.file_url||p.media_url||'';
-    var yid=ytId(url);if(!yid) return;
-    var vid=document.getElementById('sp-video');if(!vid) return;
-    try{vid.pause();}catch(e){}
-    vid.removeAttribute('src');vid.style.display='none';
-    var sp=vid.closest('[class*="shorts"],[class*="sp-"]')||vid.parentElement;
-    if(!sp) return;
-    sp.style.cssText+='position:relative;overflow:hidden;';
-    document.querySelectorAll('.ytWrap').forEach(function(w){w.remove();});
-    // Full wrapper covers entire sp
-    var wrap=document.createElement('div');
-    wrap.className='ytWrap';
-    wrap.style.cssText='position:absolute;inset:0;z-index:6;overflow:hidden;background:#000;';
-    // Thumb + play overlay
-    var cover=document.createElement('div');
-    cover.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;';
-    var img=document.createElement('img');
-    img.src=ytThumb(yid);
-    img.onerror=function(){this.src='https://img.youtube.com/vi/'+yid+'/hqdefault.jpg';};
-    img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
-    var playBtn=document.createElement('div');
-    playBtn.style.cssText='position:relative;z-index:3;width:80px;height:80px;background:rgba(0,0,0,.65);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
-    playBtn.innerHTML='<svg width="32" height="32" viewBox="0 0 32 32"><polygon points="10,4 28,16 10,28" fill="white"/></svg>';
-    cover.appendChild(img);
-    cover.appendChild(playBtn);
-    wrap.appendChild(cover);
-    sp.appendChild(wrap);
-    cover.addEventListener('click',function(){
-      cover.style.display='none';
-      // Mask div: hides YouTube chrome at top (56px) and bottom (44px)
-      var mask=document.createElement('div');
-      mask.style.cssText='position:absolute;top:56px;left:0;right:0;bottom:44px;overflow:hidden;z-index:4;';
-      // iframe positioned inside mask, oversized so it fills whole sp
-      var fr=document.createElement('iframe');
-      fr.className='ytFr';
-      fr.style.cssText='position:absolute;top:-56px;left:0;width:100%;height:calc(100% + 100px);border:none;background:#000;';
-      fr.allow='autoplay; fullscreen; picture-in-picture';
-      fr.src=ytSrc(yid);
-      mask.appendChild(fr);
-      wrap.appendChild(mask);
-      // Black bars to cover top/bottom chrome areas
-      ['top:0;height:60px;','bottom:0;height:48px;'].forEach(function(css){
-        var bar=document.createElement('div');
-        bar.style.cssText='position:absolute;left:0;right:0;background:#000;z-index:5;'+css;
-        wrap.appendChild(bar);
-      });
-      // Tap overlay for pause/play
-      var tapper=document.createElement('div');
-      tapper.style.cssText='position:absolute;inset:0;z-index:6;cursor:pointer;';
-      var paused=false;
-      tapper.addEventListener('click',function(){
-        paused=!paused;
-        try{fr.contentWindow.postMessage(JSON.stringify({event:'command',func:paused?'pauseVideo':'playVideo',args:[]}),'*');}catch(e){}
-      });
-      wrap.appendChild(tapper);
-    });
-  };
-  var _origClose=window.closeShortsPlayer;
-  window.closeShortsPlayer=function(){
-    document.querySelectorAll('.ytWrap').forEach(function(w){
-      var fr=w.querySelector('.ytFr');
-      if(fr){try{fr.contentWindow.postMessage(JSON.stringify({event:'command',func:'stopVideo',args:[]}),'*');}catch(e){}fr.src='';}
-      w.remove();
-    });
-    _origClose&&_origClose.apply(this,arguments);
-  };
-  // Feed card thumbnails for YouTube shorts in the grid
-  function patchFeedCards(){
-    document.querySelectorAll('.vf-short-wrap,.short-wrap,div[class*="short"]').forEach(function(wrap){
-      if(wrap._ytDone) return;
-      var vid=wrap.querySelector('video');if(!vid) return;
-      var vsrc=vid.currentSrc||vid.src||vid.getAttribute('src')||'';
-      var yid2=ytId(vsrc);if(!yid2) return;
-      wrap._ytDone=true;
-      var thumb2=ytThumb(yid2);
-      wrap.style.cssText+='position:relative;overflow:hidden;background:#000;cursor:pointer;';
-      vid.style.display='none';
-      var img2=document.createElement('img');
-      img2.src=thumb2;
-      img2.onerror=function(){this.src='https://img.youtube.com/vi/'+yid2+'/hqdefault.jpg';};
-      img2.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
-      var p2=document.createElement('div');
-      p2.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;';
-      p2.innerHTML='<div style="width:36px;height:36px;background:rgba(0,0,0,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 14 14"><polygon points="3,1 13,7 3,13" fill="white"/></svg></div>';
-      wrap.appendChild(img2);
-      wrap.appendChild(p2);
-    });
-  }
-  setTimeout(patchFeedCards,1500);
-  new MutationObserver(function(){setTimeout(patchFeedCards,400);}).observe(document.body,{childList:true,subtree:true});
-  wireUrlPreview();
 })();
 
 </script>
