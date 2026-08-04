@@ -2865,11 +2865,10 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
   #v-int:has(#sec-feed.active) #int-topbar,
   #v-int:has(#sec-feed.active) #cube-switcher{display:none!important;}
 }
-/* FIX 183: Feed UI slides out when panel opens */
+/* FIX 183b: Feed tabs + reactions slide out on panel open */
 .vf-info,.vf-actions{transition:transform .28s cubic-bezier(.4,0,.2,1),opacity .28s}
-#mob-nav{transition:transform .28s cubic-bezier(.4,0,.2,1)}
-body.feed-ui-hide .vf-info,body.feed-ui-hide .vf-actions{transform:translateY(150%);opacity:0;pointer-events:none}
-body.feed-ui-hide #mob-nav{transform:translateY(100%)}
+body.feed-ui-hide .vf-info{transform:translateY(140%);opacity:0;pointer-events:none}
+body.feed-ui-hide .vf-actions{transform:translateY(140%);opacity:0;pointer-events:none}
 body.feed-ui-hide .vf-tabs-drawer:not(.hidden){transform:translateY(-110%)}
 /* FIX 171 */
 .vfcp-header{justify-content:space-between!important}
@@ -16698,21 +16697,29 @@ window._doVfReport = function(pid){
   document.addEventListener('click',()=>setTimeout(setup,80),{passive:true,capture:false});
 })();
 
-/* FIX 183: Feed UI slides out when comment/share panel opens */
+/* FIX 183b: Feed tabs + reactions slide via MutationObserver on panel open */
 (function(){
-  function showFeedUI(){ document.body.classList.remove('feed-ui-hide'); }
-  function hideFeedUI(){ document.body.classList.add('feed-ui-hide'); }
-  // Wait for functions to be defined, then patch
-  setTimeout(function(){
-    var _oC=window.openComments;
-    window.openComments=function(){ hideFeedUI(); return _oC&&_oC.apply(this,arguments); };
-    var _cC=window.closeComments;
-    window.closeComments=function(){ showFeedUI(); return _cC&&_cC.apply(this,arguments); };
-    var _oS=window.openShareSheet;
-    window.openShareSheet=function(){ hideFeedUI(); return _oS&&_oS.apply(this,arguments); };
-    var _cS=window.closeShareSheet;
-    window.closeShareSheet=function(){ showFeedUI(); return _cS&&_cS.apply(this,arguments); };
-  },200);
+  function applyHide(hide){
+    document.body.classList.toggle('feed-ui-hide', hide);
+  }
+  function watchPanel(id){
+    var el=document.getElementById(id);
+    if(!el) return false;
+    new MutationObserver(function(){
+      applyHide(
+        (document.getElementById('vfc-panel')?.classList.contains('open'))||
+        (document.getElementById('share-sheet')?.classList.contains('open'))
+      );
+    }).observe(el,{attributes:true,attributeFilter:['class']});
+    return true;
+  }
+  function trySetup(){
+    var ok1=watchPanel('vfc-panel');
+    var ok2=watchPanel('share-sheet');
+    if(!ok1||!ok2) setTimeout(trySetup,400);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',trySetup);
+  else trySetup();
 })();
 </script>
 
