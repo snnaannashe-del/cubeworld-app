@@ -989,7 +989,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .swipe-indicator{position:fixed;left:0;top:50%;transform:translateY(-50%);width:4px;height:60px;background:var(--accent);border-radius:0 4px 4px 0;opacity:0;transition:opacity .2s;pointer-events:none;z-index:601}
 .swipe-indicator.show{opacity:1}
 /* ── FEED SNAP SCROLL ── */
-.vf-container{flex:1;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;position:relative}
+.vf-container{flex:1;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;position:relative;overscroll-behavior-y:contain;will-change:scroll-position;touch-action:pan-y}
 .vf-container::-webkit-scrollbar{display:none}
 /* Each card = exactly one viewport page */
 .vf-card{
@@ -16649,6 +16649,47 @@ window._doVfReport = function(pid){
   },100);
 })();
 // ===== END FIX 166 =====
+
+/* FIX 182: Ultra-fast feed snap — faster than TikTok */
+(function initFeedSnap(){
+  function setup(){
+    const cont=document.getElementById('vf-container');
+    if(!cont||cont._snapReady)return;
+    cont._snapReady=true;
+    let sy=0,ss=0,ih=0,dragging=false;
+    const getH=()=>{const el=cont.querySelector('.vf-item');return el?el.offsetHeight||cont.clientHeight:cont.clientHeight;};
+    const snapTo=top=>{const max=cont.scrollHeight-cont.clientHeight;cont.scrollTop=Math.max(0,Math.min(Math.round(top),max));};
+    // MOBILE: follow finger with zero lag, snap instantly on release
+    cont.addEventListener('touchstart',e=>{
+      sy=e.touches[0].clientY;ss=cont.scrollTop;ih=getH();dragging=true;
+    },{passive:true});
+    cont.addEventListener('touchmove',e=>{
+      if(!dragging)return;
+      e.preventDefault();
+      cont.scrollTop=ss+(sy-e.touches[0].clientY);
+    },{passive:false});
+    cont.addEventListener('touchend',e=>{
+      if(!dragging)return;dragging=false;
+      const dy=sy-e.changedTouches[0].clientY;
+      const h=ih||getH();
+      if(Math.abs(dy)<25){snapTo(Math.round(ss/h)*h);}
+      else{const dir=dy>0?1:-1;snapTo(Math.round(ss/h)*h+dir*h);}
+    },{passive:true});
+    // DESKTOP: one post per wheel tick, 300ms cooldown
+    let wlock=false;
+    cont.addEventListener('wheel',e=>{
+      e.preventDefault();
+      if(wlock)return;wlock=true;
+      const h=getH();
+      const dir=e.deltaY>0?1:-1;
+      snapTo(Math.round(cont.scrollTop/h)*h+dir*h);
+      setTimeout(()=>wlock=false,300);
+    },{passive:false});
+  }
+  // Setup on load and whenever feed becomes active
+  setTimeout(setup,600);
+  document.addEventListener('click',()=>setTimeout(setup,80),{passive:true,capture:false});
+})();
 </script>
 
 ax-width:min(560px,calc(100vw - 24px));width:100%;max-height:90svh;box-sizing:border-box;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:0">
