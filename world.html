@@ -3260,6 +3260,7 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
               <div class="file-preview" id="cpm-video-preview" style="display:none"></div>
               <div class="upload-progress" id="cpm-video-progress"><div class="upload-progress-bar" id="cpm-video-bar"></div></div>
             </div>
+           <input class="cpm-inp" id="cpm-title-short" placeholder="📌 Заголовок (необязательно)">
             <input class="cpm-inp" id="cpm-music" placeholder="🎵 Музыка (необязательно)">
             <textarea class="cpm-inp cpm-inp-ta" id="cpm-desc-short" placeholder="Описание…"></textarea>
             <input class="cpm-inp" id="cpm-tags-short" placeholder="#хэштег1 #хэштег2 …">
@@ -3272,8 +3273,9 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
               <div class="file-preview" id="cpm-image-preview" style="display:none"></div>
               <div class="upload-progress" id="cpm-image-progress"><div class="upload-progress-bar" id="cpm-image-bar"></div></div>
             </div>
-            <input class="cpm-inp" id="cpm-title-ball" placeholder="📌 Заголовок поста">
-            <input class="cpm-inp" " placeholder="Что на уме? Текст, мысль, новость…" style="min-height:90px"></textarea>
+           <input class="cpm-inp" id="cpm-title-ball" placeholder="📌 Заголовок поста">
+            <input class="cpm-inp" id="cpm-music-ball" placeholder="🎵 Музыка (необязательно)">
+            <textarea class="cpm-inp cpm-inp-ta" id="cpm-desc-ball" placeholder="Что на уме? Текст, мысль, новость…" style="min-height:90px"></textarea>
             <input class="cpm-inp" id="cpm-tags-ball" placeholder="#хэштег1 #хэштег2 …">
           </div>
           <div id="cpm-err" style="font-size:11px;color:var(--red);min-height:14px;margin-top:4px"></div>
@@ -16753,4 +16755,22 @@ window._doVfReport = function(pid){
 </script>
 
 <div class="modal-backdrop" id="modal-universe" style="display:none"><div class="modal" style="max-width:min(560px,calc(100vw - 24px));width:100%;max-height:90svh;box-sizing:border-box;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:0">
-    <div style
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <h3 style="margin:0;font-size:17px;font-weight:700">🌐 Мой Юниверс</h3>
+      <button onclick="closeModal('modal-universe')" style="background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;padding:4px 8px;line-height:1">&#x2715;</button>
+    </div>
+    <div class="uni-tabs">
+      <button class="uni-tab active" id="uni-tab-all" onclick="switchUniTab('all',this)">Все кубы</button>
+      <button class="uni-tab" id="uni-tab-mine" onclick="switchUniTab('mine',this)">Мои кубы</button>
+    </div>
+    <input type="text" class="uni-search" placeholder="🔍 Поиск кубов по названию..." oninput="filterUniGrid(this.value)" style="width:100%;box-sizing:border-box;margin-bottom:8px">
+    <div id="uni-hint" class="uni-hint"></div>
+    <div id="uni-grid" class="uni-grid"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button onclick="closeModal('modal-universe')" style="padding:10px 16px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:14px;font-weight:500">Отмена</button>
+      <button class="uni-create-btn" style="flex:1" onclick="closeModal('modal-universe');openCreateCube()">+ Создать куб</button>
+      <button class="uni-save-btn" style="flex:1" onclick="saveUniverse()">✓ Сохранить</button>
+    </div>
+  </div>
+</div>
+<svg id="_cw_svg_filters" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><defs><filter id="_cw_erode" color-interpolation-filters="sRGB"><feMorphology operator="dilate" in="SourceGraphic" radius="0.5"/></filter></defs></svg>
