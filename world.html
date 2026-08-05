@@ -16590,6 +16590,7 @@ window._pop2ShareMenu = function(){
 };
 
 function _openVfShareSheet(isOwn, postId){
+  window._vfSharePostId=postId;var _sfab=document.getElementById('vf-fab-'+postId);_sfab?.classList.add('acts-hidden');_sfab?.closest('.vf-card')?.querySelector('.vf-info')?.classList.add('acts-hidden');
   var sh = document.getElementById('_vf-share-sheet');
   if(!sh){
     var ov2 = document.createElement('div');
@@ -16630,6 +16631,7 @@ window._closeVfShareSheet = function(){
   var ov=document.getElementById('_vf-share-ov');
   if(sh) sh.classList.remove('open');
   if(ov) ov.classList.remove('open');
+  if(window._vfSharePostId){var _sfab=document.getElementById('vf-fab-'+window._vfSharePostId);_sfab?.classList.remove('acts-hidden');_sfab?.closest('.vf-card')?.querySelector('.vf-info')?.classList.remove('acts-hidden');window._vfSharePostId=null;}
 };
 
 window._doVfShare = function(pid){
