@@ -16623,13 +16623,14 @@ function _openVfShareSheet(isOwn, postId){
   sh.innerHTML=h;
   var ov=document.getElementById('_vf-share-ov');
   if(ov) ov.classList.add('open');
+  var _card=document.getElementById('vf-fab-'+postId)?.closest('.vf-card');if(_card){var _cr=_card.getBoundingClientRect();sh.style.left=_cr.left+'px';sh.style.right=(window.innerWidth-_cr.right)+'px';}
   sh.classList.add('open');
 }
 
 window._closeVfShareSheet = function(){
   var sh=document.getElementById('_vf-share-sheet');
   var ov=document.getElementById('_vf-share-ov');
-  if(sh) sh.classList.remove('open');
+  if(sh){sh.classList.remove('open');sh.style.left='';sh.style.right='';}
   if(ov) ov.classList.remove('open');
   if(window._vfSharePostId){var _sfab=document.getElementById('vf-fab-'+window._vfSharePostId);_sfab?.classList.remove('acts-hidden');_sfab?.closest('.vf-card')?.querySelector('.vf-info')?.classList.remove('acts-hidden');window._vfSharePostId=null;}
 };
