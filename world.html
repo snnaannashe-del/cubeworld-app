@@ -16670,9 +16670,9 @@ window._doVfReport = function(pid){
     if(panel.parentElement) panel.parentElement.insertBefore(bd,panel);
     bd.addEventListener('touchstart',function(e){
       e.preventDefault();e.stopPropagation();
-      panel.classList.remove('open');
+      closeVfComments();
     },{passive:false});
-    bd.addEventListener('click',function(){panel.classList.remove('open');});
+    bd.addEventListener('click',function(){closeVfComments();});
     new MutationObserver(function(){
       bd.style.display=panel.classList.contains('open')?'block':'none';
     }).observe(panel,{attributes:true,attributeFilter:['class']});
