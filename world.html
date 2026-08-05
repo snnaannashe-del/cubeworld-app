@@ -9958,7 +9958,7 @@ function suiViewProfile(uid, name, e){
   _openMiniProfile(uid, name);
 }
 
-async function _openMiniProfile(uid,name,avColor){
+async function _openMiniProfile(uid,name,avColor,avUrl){
   let mc=document.getElementById('_mac_card');
   if(!mc){
     mc=document.createElement('div');mc.id='_mac_card';
@@ -9968,9 +9968,9 @@ async function _openMiniProfile(uid,name,avColor){
   }
   window._macUid=uid;window._macName=name||'';window._macAv=avColor||'';
   const av=document.getElementById('_mac_av');
-  if(av){av.textContent=(name||'?')[0].toUpperCase();av.style.background=avColor||'linear-gradient(135deg,#0095f6,#0060d0)';
+  if(av){if(avUrl&&avUrl.startsWith('http')){av.innerHTML='<img src="'+avUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';}else{av.textContent=avUrl||(name||'?')[0].toUpperCase();av.style.background=avColor||'linear-gradient(135deg,#0095f6,#0060d0)';};
   // Load real avatar from API
-  if(uid){try{fetch('https://cubeworld-backend.onrender.com/users/'+uid,{headers:window._authHeaders||{}}).then(function(r){return r.ok?r.json():null;}).then(function(u){if(!u)return;const avNow=document.getElementById('_mac_av');if(!avNow)return;if(u.avatar_url&&u.avatar_url.indexOf('http')===0){avNow.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';}else if(u.avatar_emoji||u.avatar_url){avNow.textContent=u.avatar_emoji;avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}else if(u.avatar_color){avNow.style.background=u.avatar_color;}}).catch(function(){});}catch(_){}}}
+  if(uid){try{fetch('https://cubeworld-backend.onrender.com/users/'+uid,{headers:window._authHeaders||{}}).then(function(r){return r.ok?r.json():null;}).then(function(u){if(!u)return;const avNow=document.getElementById('_mac_av');if(!avNow)return;if(u.avatar_url&&u.avatar_url.indexOf('http')===0){avNow.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';}else if(u.avatar_emoji||u.avatar_url){avNow.textContent=u.avatar_emoji||u.avatar_url;avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}else if(u.avatar_color){avNow.style.background=u.avatar_color;}}).catch(function(){});}catch(_){}}}
   const nm=document.getElementById('_mac_nm');if(nm)nm.textContent=name||'';
   const btn=document.getElementById('_mac_btn');
   if(btn)btn.onclick=function(){_closeMac();if(typeof openPublicProfile==='function')openPublicProfile(window._macUid,window._macName,window._macAv);};
@@ -11261,8 +11261,8 @@ function launchCubeRun(){ closeModal('modal-games'); openModal('modal-cuberun');
 // ════════════════════════════════════════════════
 //  AUTHOR PROFILE CLICK (from feed posts)
 // ════════════════════════════════════════════════
-function clickAuthor(userId, name){
-  if(userId && String(userId)!=='0') _openMiniProfile(userId, name);
+function clickAuthor(userId, name, avUrl){
+  if(userId && String(userId)!=='0') _openMiniProfile(userId, name, '', avUrl);
   else openMemberProfile(name, '👤', 'online');
 }
 
@@ -12806,7 +12806,7 @@ function _openVfFabContent(postId){
 
   ov.innerHTML=`
     ${!isMine?`<div class="vf-fab-author" style="margin-bottom:4px">
-      <div class="vfa-author-av" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">
+      <div class="vfa-author-av" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}','${escHtml(post.avatar_url||'')}')">
         ${letter}
         <div class="vfa-follow-dot${isFollowing?' following':''}" id="vfa-fd2-${post.user_id}" onclick="event.stopPropagation();vfFollow('${post.user_id}')">${isFollowing?'✓':'+'}</div>
       </div>
@@ -13015,7 +13015,7 @@ function renderFeed(){
       </div>
       <div class="vf-info" onclick="_vfiToggle(event,this)">
         <div class="vfi-author-row">
-          <span class="vfi-av" onclick="event.stopPropagation();clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">${post.avatar_url?`<img src="${post.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:(post.display_name||'?')[0].toUpperCase()}</span><span class="vfi-name">${escHtml(post.display_name||'Аноним')}</span>${typeBadge}
+          <span class="vfi-av" onclick="event.stopPropagation();clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">${post.avatar_url&&post.avatar_url.startsWith('http')?`<img src="${post.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:(post.avatar_url&&post.avatar_url.length<10?post.avatar_url:null)||(post.display_name||'?')[0].toUpperCase()}</span><span class="vfi-name">${escHtml(post.display_name||'Аноним')}</span>${typeBadge}
         </div>
         ${post.title?`<div class="vfi-title">${escHtml(post.title)}</div>`:''}
         <div class="vfi-desc">${escHtml(post.description||post.content||'')}</div>
