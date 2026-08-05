@@ -13252,15 +13252,7 @@ async function submitVfComment(){
   await openVfComments(_vfCommentPostId);
 }
 
-function vfShare(postId){
-  const fab=document.getElementById('vf-fab-'+postId);
-  const _infoEl=fab?.closest('.vf-card')?.querySelector('.vf-info');
-  fab?.classList.add('acts-hidden');_infoEl?.classList.add('acts-hidden');
-  const restore=()=>{ setTimeout(()=>{fab?.classList.remove('acts-hidden');_infoEl?.classList.remove('acts-hidden');},400); };
-  const url=window.location.href.split('?')[0]+'?post='+postId;
-  if(navigator.share){navigator.share({title:'CubeWorld',url}).then(restore).catch(restore);}
-  else{navigator.clipboard.writeText(url).then(()=>{showToast('\u0421\u0441\u044b\u043b\u043a\u0430 \u0441\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u0430! \uD83D\uDD17');restore();}).catch(()=>{showToast('\u0421\u043a\u043e\u043f\u0438\u0440\u0443\u0439 URL: '+url);restore();});}
-}
+function vfShare(postId){var btn=document.getElementById('vf-fab-'+postId);var card=btn?btn.closest('.vf-card'):null;if(!card)return;btn.classList.add('acts-hidden');card.querySelector('.vf-info')?.classList.add('acts-hidden');window._vfSharePostId=postId;document.getElementById('_vf-share-sheet')?.remove();document.getElementById('_vf-share-ov')?.remove();var ov=document.createElement('div');ov.id='_vf-share-ov';ov.onclick=function(){window._closeVfShareSheet();};card.appendChild(ov);var sh=document.createElement('div');sh.id='_vf-share-sheet';var _h='<div style="padding:16px 20px 8px;font-weight:700;font-size:15px;color:#e0e0f8">Поделиться</div><div style="display:flex;flex-direction:column;gap:2px;padding:0 8px 16px"><button class="_vfs-action" data-action="copy" data-pid="'+postId+'" style="background:none;border:none;color:#e0e0f8;font-size:14px;padding:14px 12px;text-align:left;border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:12px">📋 Скопировать ссылку</button><button class="_vfs-action" data-action="native" data-pid="'+postId+'" style="background:none;border:none;color:#e0e0f8;font-size:14px;padding:14px 12px;text-align:left;border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:12px">📤 Поделиться через...</button><button class="_vfs-action" data-action="cancel" data-pid="'+postId+'" style="background:none;border:none;color:#888;font-size:14px;padding:14px 12px;text-align:left;border-radius:12px;cursor:pointer">Отмена</button></div>';sh.innerHTML=_h;sh.addEventListener('click',function(e){var el=e.target.closest('._vfs-action');if(!el)return;var a=el.dataset.action,pid=el.dataset.pid;if(a==='cancel')window._closeVfShareSheet();else if(a==='copy'){try{navigator.clipboard.writeText(location.origin+location.pathname+'?post='+pid);}catch(e2){}window._closeVfShareSheet();}else if(a==='native'){try{navigator.share({url:location.origin+location.pathname+'?post='+pid});}catch(e2){}window._closeVfShareSheet();}else if(typeof window._doVfShare==='function')window._doVfShare(a,pid);});card.appendChild(sh);sh.classList.add('open');ov.classList.add('open');}
 
 function openVideoUpload(){ openCreatePost(); }  // legacy → new modal
 function closeVideoUpload(){ closeModal('modal-create-post'); }
