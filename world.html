@@ -4769,6 +4769,7 @@ async function syncFromBackend(){
         app.myProfile.photoUrl = null;
       }
       _syncTopbarAvatar();
+      try{localStorage.setItem('cw_my_profile',JSON.stringify(app.myProfile));}catch(e){}
     }
     // Restore account_type from DB (survives browser clear)
     if(me.account_type){
