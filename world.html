@@ -990,7 +990,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .swipe-indicator{position:fixed;left:0;top:50%;transform:translateY(-50%);width:4px;height:60px;background:var(--accent);border-radius:0 4px 4px 0;opacity:0;transition:opacity .2s;pointer-events:none;z-index:601}
 .swipe-indicator.show{opacity:1}
 /* ── FEED SNAP SCROLL ── */
-.vf-container{flex:1;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;position:relative;overscroll-behavior-y:contain;will-change:scroll-position;touch-action:pan-y}
+.vf-container{flex:1;overflow-y:scroll;overflow-x:hidden;scroll-snap-type:y mandatory;overscroll-behavior-y:contain;will-change:transform;touch-action:pan-y;position:relative;transform:translateZ(0)}
 .vf-container::-webkit-scrollbar{display:none}
 /* Each card = exactly one viewport page */
 .vf-card{
@@ -999,6 +999,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
   position:relative;background:#000;
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;flex-shrink:0;
+  will-change:transform;
   /* force exact height equal to the container visible height */
   min-height:0
 }
@@ -12901,6 +12902,44 @@ function showTopBars(){
   else setTimeout(setup, 600);
 })();
 
+function _initVfTouchSnap(con){
+  if(con._vfTS){try{con.removeEventListener('touchstart',con._vfTS,{passive:true});}catch(e){}}
+  if(con._vfTE){try{con.removeEventListener('touchend',con._vfTE,{passive:true});}catch(e){}}
+  if(con._vfWH){try{con.removeEventListener('wheel',con._vfWH);}catch(e){}}
+  let _ty0=0,_tt0=0,_stl0=0,_busy=false;
+  con._vfTS=function(e){if(_busy)return;_ty0=e.touches[0].clientY;_tt0=Date.now();_stl0=con.scrollTop;};
+  con._vfTE=function(e){
+    const dy=_ty0-e.changedTouches[0].clientY;
+    const dt=Math.max(1,Date.now()-_tt0);
+    const vel=dy/dt;
+    const h=con.clientHeight;if(!h)return;
+    const cur=Math.round(_stl0/h);
+    const n=con.querySelectorAll('.vf-card').length;
+    let next=cur;
+    if(Math.abs(vel)>0.12||Math.abs(dy)>h*0.15){next=cur+(vel>0?1:-1);}
+    next=Math.max(0,Math.min(next,n-1));
+    if(next===cur)return;
+    _busy=true;
+    con.style.scrollSnapType='none';
+    con.scrollTo({top:next*h,behavior:'smooth'});
+    setTimeout(()=>{con.style.scrollSnapType='y mandatory';_busy=false;},450);
+  };
+  con._vfWH=function(e){
+    e.preventDefault();if(_busy)return;
+    const h=con.clientHeight;if(!h)return;
+    const cur=Math.round(con.scrollTop/h);
+    const n=con.querySelectorAll('.vf-card').length;
+    const next=Math.max(0,Math.min(cur+(e.deltaY>0?1:-1),n-1));
+    if(next===cur)return;
+    _busy=true;
+    con.style.scrollSnapType='none';
+    con.scrollTo({top:next*h,behavior:'smooth'});
+    setTimeout(()=>{con.style.scrollSnapType='y mandatory';_busy=false;},450);
+  };
+  con.addEventListener('touchstart',con._vfTS,{passive:true});
+  con.addEventListener('touchend',con._vfTE,{passive:true});
+  con.addEventListener('wheel',con._vfWH,{passive:false});
+}
 function renderFeed(){
   const container = document.getElementById('vf-container');
   if(!container) return;
@@ -13071,6 +13110,7 @@ function renderFeed(){
   window._vfRO = new ResizeObserver(()=>requestAnimationFrame(_fixCardHeights));
   window._vfRO.observe(container);
   container.querySelectorAll('.vf-card').forEach(c=>_vfObserver.observe(c));
+  _initVfTouchSnap(container);
 }
 
 let _vfMuted = false; // start with audio
