@@ -2906,7 +2906,20 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
   #_vf-share-sheet.open{transform:translateY(0)!important}
 }
 </style>
-<style id="_modal_scroll_fix">.modal{max-height:calc(100svh - 40px) !important;overflow-y:auto !important;-webkit-overflow-scrolling:touch}.modal-actions{position:sticky;bottom:0;background:linear-gradient(160deg,#0e0e28,#0a0a1e);padding-top:12px;margin-top:4px;z-index:2;border-top:1px solid rgba(255,255,255,.06)}</style></head>
+<style id="_modal_scroll_fix">.modal{max-height:calc(100svh - 40px) !important;overflow-y:auto !important;-webkit-overflow-scrolling:touch}.modal-actions{position:sticky;bottom:0;background:linear-gradient(160deg,#0e0e28,#0a0a1e);padding-top:12px;margin-top:4px;z-index:2;border-top:1px solid rgba(255,255,255,.06)}
+/* Stream button */
+.vf-stream-btn{display:flex;align-items:center;gap:10px;padding:12px 18px;background:rgba(255,68,68,0.12);border:1.5px solid rgba(255,68,68,0.35);border-radius:14px;cursor:pointer;color:#FF4444;font-weight:600;font-size:15px;width:100%;transition:background 0.2s;}
+.vf-stream-btn:hover{background:rgba(255,68,68,0.22);}
+.vf-stream-btn i{flex-shrink:0;}
+/* Live stream overlay */
+#live-stream-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;}
+#live-stream-overlay.open{display:flex;}
+#live-video{width:100%;max-width:480px;border-radius:16px;object-fit:cover;max-height:70vh;}
+.live-badge{background:#FF4444;color:#fff;padding:4px 12px;border-radius:20px;font-weight:700;font-size:13px;letter-spacing:1px;margin-bottom:16px;animation:livePulse 1.2s infinite;}
+@keyframes livePulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+.live-stop-btn{margin-top:20px;padding:12px 32px;background:#FF4444;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;border-radius:40px;}
+.mms-red{background:rgba(255,68,68,0.15);}
+</style></head>
 <body>
 
 <!-- ══════════ LANDING ══════════ -->
@@ -3161,6 +3174,10 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
           <div class="mms-icon mms-orange"><i class="ti ti-plug-connected" style="color:#FB923C"></i></div>
           <span>API Хаб</span>
         </button>
+        <button class="mms-item" onclick="openLiveStream();closeMobMore()">
+          <div class="mms-icon mms-red"><i class="ti ti-video" style="color:#FF4444"></i></div>
+          <span>Стримить</span>
+        </button>
 
       </div>
       <div class="mms-footer">
@@ -3198,6 +3215,10 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
 
         <!-- Desktop right: Add Content panel -->
         <div class="vf-create-side" id="vf-create-side">
+            <div class="vf-stream-btn" onclick="openLiveStream()">
+            <i class="ti ti-video" style="font-size:20px"></i>
+            <span>Стримить</span>
+          </div>
           <div class="vf-create-side-btn" onclick="openModal('modal-create-post')">
             <div class="vf-create-side-icon">
               <i class="ti ti-plus" style="font-size:32px;color:var(--accent)"></i>
@@ -16869,6 +16890,28 @@ function _vfLoadAvatars(){
         });
       }).catch(function(){});
   });
+}
+
+function openLiveStream(){
+  var ov=document.getElementById('live-stream-overlay');
+  if(!ov){
+    ov=document.createElement('div');
+    ov.id='live-stream-overlay';
+    ov.innerHTML='<div class="live-badge">● LIVE</div><video id="live-video" autoplay muted playsinline></video><button class="live-stop-btn" onclick="stopLiveStream()">Остановить стрим</button>';
+    document.body.appendChild(ov);
+  }
+  ov.classList.add('open');
+  if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false}).then(function(stream){
+      var v=document.getElementById('live-video');
+      if(v){v.srcObject=stream;window._liveStream=stream;}
+    }).catch(function(){showToast('Нет доступа к камере');ov.classList.remove('open');});
+  } else {showToast('Камера не поддерживается');}
+}
+function stopLiveStream(){
+  if(window._liveStream){window._liveStream.getTracks().forEach(t=>t.stop());window._liveStream=null;}
+  var ov=document.getElementById('live-stream-overlay');
+  if(ov)ov.classList.remove('open');
 }
 </script>
 
