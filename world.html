@@ -11539,7 +11539,7 @@ const STATUS_OPTS=[{v:'online',l:'В сети',c:'#00b894'},{v:'busy',l:'Зан�
   const savedUid=localStorage.getItem('cw_user_id');
   if(savedUid&&app.myProfile){app.myProfile.id=savedUid;app.myProfile.uid=savedUid;}
   // Sync topbar avatar after restore
-  setTimeout(_syncTopbarAvatar, 0);
+  _syncTopbarAvatar();
 })();
 
 // Sync profile avatar → topbar avatar button
