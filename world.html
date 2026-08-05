@@ -9958,6 +9958,11 @@ function suiViewProfile(uid, name, e){
   _openMiniProfile(uid, name);
 }
 
+// Avatar cache for instant reload
+const _AVC = 'cw_av_cache';
+function _avGet(uid){try{return(JSON.parse(localStorage.getItem(_AVC)||'{}'))[uid]||null;}catch(e){return null;}}
+function _avSet(uid,av,color){try{const c=JSON.parse(localStorage.getItem(_AVC)||'{}');c[uid]={av:av||'',color:color||''};localStorage.setItem(_AVC,JSON.stringify(c));}catch(e){}}
+function _avApply(el,av,color){if(!el)return;if(color)el.style.background=color;if(av&&av.indexOf('http')===0){el.innerHTML='<img src="'+av+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.remove()">';}else if(av){el.textContent=av;}}
 async function _openMiniProfile(uid,name,avColor,avUrl){
   let mc=document.getElementById('_mac_card');
   if(!mc){
@@ -9970,7 +9975,7 @@ async function _openMiniProfile(uid,name,avColor,avUrl){
   const av=document.getElementById('_mac_av');
   if(av){if(avUrl&&avUrl.startsWith('http')){av.innerHTML='<img src="'+avUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';}else{av.textContent=avUrl||(name||'?')[0].toUpperCase();av.style.background=avColor||'linear-gradient(135deg,#0095f6,#0060d0)';};
   // Load real avatar from API
-  if(uid){try{fetch('https://cubeworld-backend.onrender.com/users/'+uid,{headers:window._authHeaders||{}}).then(function(r){return r.ok?r.json():null;}).then(function(u){if(!u)return;const avNow=document.getElementById('_mac_av');if(!avNow)return;if(u.avatar_url&&u.avatar_url.indexOf('http')===0){avNow.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';}else if(u.avatar_emoji||u.avatar_url){avNow.textContent=u.avatar_emoji||u.avatar_url;avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}else if(u.avatar_color){avNow.style.background=u.avatar_color;}}).catch(function(){});}catch(_){}}}
+  if(uid){try{fetch('https://cubeworld-backend.onrender.com/users/'+uid,{headers:window._authHeaders||{}}).then(function(r){return r.ok?r.json():null;}).then(function(u){if(!u)return;const avNow=document.getElementById('_mac_av');if(!avNow)return;if(u.avatar_url&&u.avatar_url.indexOf('http')===0){avNow.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';}else if(u.avatar_emoji||u.avatar_url){avNow.textContent=u.avatar_emoji||u.avatar_url;avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}else if(u.avatar_color){avNow.style.background=u.avatar_color;;_avSet(uid,u.avatar_url,u.avatar_color);document.querySelectorAll('[data-uid="'+uid+'"]').forEach(function(e){_avApply(e,u.avatar_url,u.avatar_color);})}}).catch(function(){});}catch(_){}}}
   const nm=document.getElementById('_mac_nm');if(nm)nm.textContent=name||'';
   const btn=document.getElementById('_mac_btn');
   if(btn)btn.onclick=function(){_closeMac();if(typeof openPublicProfile==='function')openPublicProfile(window._macUid,window._macName,window._macAv);};
@@ -13089,6 +13094,31 @@ function renderFeed(){
   window._vfRO = new ResizeObserver(()=>requestAnimationFrame(_fixCardHeights));
   window._vfRO.observe(container);
   container.querySelectorAll('.vf-card').forEach(c=>_vfObserver.observe(c));
+  // Apply cached avatars instantly, fetch missing ones in bg
+  (function(){
+    var avEls=container.querySelectorAll('[data-uid]');
+    var missing=[];
+    for(var i=0;i<avEls.length;i++){
+      var el=avEls[i];
+      var uid=el.getAttribute('data-uid');
+      if(!uid)continue;
+      var cached=_avGet(uid);
+      if(cached&&cached.av){_avApply(el,cached.av,cached.color);}
+      else{missing.push(uid);}
+    }
+    // Deduplicate
+    var seen={};
+    missing=missing.filter(function(u){if(seen[u])return false;seen[u]=1;return true;});
+    missing.forEach(function(uid){
+      fetch(API_BASE+'/users/'+uid,{headers:window._authHeaders||{}})
+        .then(function(r){return r.ok?r.json():null;})
+        .then(function(u){
+          if(!u)return;
+          _avSet(uid,u.avatar_url,u.avatar_color);
+          document.querySelectorAll('[data-uid="'+uid+'"]').forEach(function(e){_avApply(e,u.avatar_url,u.avatar_color);});
+        }).catch(function(){});
+    });
+  })();
   _initVfSnap(container);
 }
 
