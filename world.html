@@ -12770,7 +12770,6 @@ function vfSwitchTab2(tab, el){
   if(tab==='rec'){    _vfTab='following'; _vfTypeFilter='all'; loadVideoFeed(); return; }
   if(tab==='top'){    _vfTab='top'; _vfTypeFilter='all'; loadVideoFeed(); return; }
 }
-// Restore feed tab from last session(function(){try{var _t=localStorage.getItem('cw_feed_tab');if(!_t||_t==='shorts')return;document.querySelectorAll('.vf-tab2').forEach(function(b){b.classList.remove('active');if((b.getAttribute('onclick')||'').indexOf("'"+_t+"'")!==-1)b.classList.add('active');});if(_t==='post'){_vfTab='foryou';_vfTypeFilter='ball';}else if(_t==='rec'){_vfTab='following';_vfTypeFilter='all';}else if(_t==='top'){_vfTab='top';_vfTypeFilter='all';}}catch(_e){}})();
 
 // Toggle tabs drawer visibility (chevron collapses header)
 let _vfTabsDrawerHidden = false;
@@ -13486,6 +13485,7 @@ function vfFire(postId, btn){
 
 // ═══ FEED TYPE FILTER ════════════════════════════════════════════
 let _vfTypeFilter = 'all';
+// Restore feed tab from last session(function(){try{var _t=localStorage.getItem('cw_feed_tab');if(!_t||_t==='shorts')return;document.querySelectorAll('.vf-tab2').forEach(function(b){b.classList.remove('active');if((b.getAttribute('onclick')||'').indexOf("'"+_t+"'")!==-1)b.classList.add('active');});if(_t==='post'){_vfTab='foryou';_vfTypeFilter='ball';}else if(_t==='rec'){_vfTab='following';_vfTypeFilter='all';}else if(_t==='top'){_vfTab='top';_vfTypeFilter='all';}}catch(_e){}})();
 function vfFilterType(type, el){
   _vfTypeFilter=type;
   document.querySelectorAll('.vf-pill').forEach(p=>p.classList.remove('active'));
