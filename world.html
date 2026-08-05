@@ -9975,7 +9975,7 @@ async function _openMiniProfile(uid,name,avColor,avUrl){
   const btn=document.getElementById('_mac_btn');
   if(btn)btn.onclick=function(){_closeMac();if(typeof openPublicProfile==='function')openPublicProfile(window._macUid,window._macName,window._macAv);};
   let bd=document.getElementById('_mac_bd');
-  if(!bd){bd=document.createElement('div');bd.id='_mac_bd';bd.style.cssText='position:fixed;inset:0;background:transparent;z-index:8199;pointer-events:none';bd.onclick=_closeMac;document.body.appendChild(bd);}
+  if(!bd){bd=document.createElement('div');bd.id='_mac_bd';bd.style.cssText='position:fixed;inset:0;background:transparent;z-index:8199;pointer-events:auto';bd.onclick=_closeMac;document.body.appendChild(bd);}
   bd.style.display='block';
   mc.style.display='flex';
   requestAnimationFrame(function(){requestAnimationFrame(function(){mc.style.opacity='1';mc.style.transform='translate(-50%,-50%) scale(1)';});});
