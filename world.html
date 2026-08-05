@@ -384,10 +384,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 
 /* Desktop: 9:16 centred column + right create-post panel */
 @media(min-width:769px){
-  #sec-feed{flex-direction:row;align-items:stretch;background:#000}
-  .vf-feed-col{display:flex;flex-direction:column;height:100%;flex:1;position:relative;background:#000}
-  /* create-side: hidden on desktop — feed fills full width */
-  .vf-create-side{display:none!important}
+  #sec-feed{flex-direction:row;align-items:stretch;background:#0a0a14}
+  .vf-feed-col{display:flex;flex-direction:column;height:100%;flex-shrink:0;position:relative;background:#000}
+  /* create-side: only visible when sec-feed is the active section */
+  .vf-create-side{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:rgba(255,255,255,.02);border-left:1px solid rgba(255,255,255,.06)}
+  #sec-feed.active .vf-create-side{display:flex}
   .vf-create-side-btn{display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;padding:28px 40px;border-radius:20px;border:1.5px dashed rgba(255,255,255,.14);transition:all .2s;background:transparent}
   .vf-create-side-btn:hover{border-color:rgba(0,149,246,.5);background:rgba(0,149,246,.04)}
   .vf-create-side-icon{width:64px;height:64px;border-radius:20px;background:rgba(0,149,246,.12);border:1px solid rgba(0,149,246,.25);display:flex;align-items:center;justify-content:center}
@@ -3170,7 +3171,7 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
         <div class="vf-header" id="vf-header" style="display:none"></div>
 
         <!-- Desktop: 9:16 feed column -->
-        <div class="vf-feed-col" id="vf-feed-col" style="width:100%">
+        <div class="vf-feed-col" id="vf-feed-col" style="width:min(calc(100vh*9/16),430px)">
           <!-- Bird button: shows when tabs are hidden, calls toggleVfTabsDrawer() -->
           <button class="vf-tabs-bird" id="vf-tabs-bird" onclick="toggleVfTabsDrawer()">
             <i class="ti ti-chevron-down" style="font-size:11px"></i>
@@ -6451,7 +6452,7 @@ function initInteriorData(cubeId){
     {id:'s3',pair:'XRP/USDT',dir:'long',entry:'0.892',tp:'0.980',sl:'0.840',author:'G057•••CUBE',time:'2ч',reactions:{rocket:45,like:22},pnl:'+1.2%'},
   ];
 
-  renderChatRooms();renderGroups();renderChannels();renderSignals();
+  renderFeed();renderChatRooms();renderGroups();renderChannels();renderSignals();
 
   // ── Load real data from server in background ──────────────────────────────
   (async()=>{
@@ -12730,8 +12731,6 @@ let _vfObserver = null;
 let _vfCommentPostId = null;
 
 async function loadVideoFeed(){
-  const _lc=document.getElementById('vf-container');
-  if(_lc&&!_lc.querySelector('.vf-card'))_lc.innerHTML='<div class="vf-empty" style="opacity:.4"><div class="vf-empty-icon" style="font-size:32px">⟳</div></div>';
   const url = _vfTab==='following' ? '/feed/following' : '/feed';
   const data = await apiCall(url);
   _vfPosts = data && data.length ? data : _vfPlaceholders();
@@ -12960,7 +12959,7 @@ function renderFeed(){
         if(ytM){
           mediaHtml=`<div class="vf-iframe-wrap"><iframe src="https://www.youtube.com/embed/${ytM[1]}?autoplay=0&mute=1&controls=1&modestbranding=1&rel=0&playsinline=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div>`;
         } else {
-          mediaHtml=`<div class="vf-short-wrap"><video class="vf-video" src="${escHtml(vid)}" loop playsinline webkit-playsinline preload="metadata" onloadedmetadata="try{this.currentTime=0.001}catch(e){}" onclick="_vfTogglePlay(this)"></video></div><div class="vf-pause-indicator" id="vf-pi-${post.id}"><div class="vf-pause-icon">▶</div></div>`;
+          mediaHtml=`<div class="vf-short-wrap"><video class="vf-video" src="${escHtml(vid)}#t=0.001" loop playsinline webkit-playsinline preload="none" onclick="_vfTogglePlay(this)"></video></div><div class="vf-pause-indicator" id="vf-pi-${post.id}"><div class="vf-pause-icon">▶</div></div>`;
         }
       } else {
         const bg=['#1a1a4e','#1e0a2e','#0a2e1e','#2e1a0a','#0a1e2e'];
@@ -13029,7 +13028,7 @@ function renderFeed(){
         document.getElementById('vf-comments-panel')?.classList.remove('open');
         const vid=entry.target.querySelector('video.vf-video');
         if(vid){
-          if(vid.readyState<2){ vid.preload='auto'; vid.load(); }
+          if(vid.readyState===0){ vid.preload='auto'; vid.load(); }
           vid.muted=_vfMuted;
           const _tryPlay=()=>{ vid.play().catch(()=>{ if(!vid.muted){ vid.muted=true; vid.play().catch(()=>{}); } }); };
           if(vid.readyState>=2){ _tryPlay(); } else { vid.addEventListener('loadeddata',_tryPlay,{once:true}); }
@@ -13068,25 +13067,12 @@ function renderFeed(){
   container.querySelectorAll('.vf-card').forEach(c=>_vfObserver.observe(c));
 }
 
-let _vfMuted = false; // unmuted by default
+let _vfMuted = false; // start with audio
 
 function _vfUnlockAudio(){
   _vfMuted=false;
   document.querySelectorAll('.vf-video').forEach(v=>{ v.muted=false; if(!v.paused) v.play().catch(()=>{}); });
 }
-
-// Auto-unlock on first user interaction (handles reload without nav click)
-(function(){
-  const _u=()=>{
-    _vfUnlockAudio();
-    document.removeEventListener('touchstart',_u,true);
-    document.removeEventListener('click',_u,true);
-    document.removeEventListener('keydown',_u,true);
-  };
-  document.addEventListener('touchstart',_u,{once:true,capture:true,passive:true});
-  document.addEventListener('click',_u,{once:true,capture:true});
-  document.addEventListener('keydown',_u,{once:true,capture:true});
-})();
 
 function _vfShowSoundHint(){
   if(document.getElementById('vf-sound-hint')) return;
