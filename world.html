@@ -9976,6 +9976,7 @@ async function _openMiniProfile(uid,name,avColor,avUrl){
   if(av){if(avUrl&&avUrl.startsWith('http')){av.innerHTML='<img src="'+avUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';}else{av.textContent=avUrl||(name||'?')[0].toUpperCase();av.style.background=avColor||'linear-gradient(135deg,#0095f6,#0060d0)';};
   // Load real avatar from API
   if(uid){try{fetch('https://cubeworld-backend.onrender.com/users/'+uid,{headers:window._authHeaders||{}}).then(function(r){return r.ok?r.json():null;}).then(function(u){if(!u)return;const avNow=document.getElementById('_mac_av');if(!avNow)return;if(u.avatar_url&&u.avatar_url.indexOf('http')===0){avNow.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';}else if(u.avatar_emoji||u.avatar_url){avNow.textContent=u.avatar_emoji||u.avatar_url;avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}else if(u.avatar_color){avNow.style.background=u.avatar_color;;_avSet(uid,u.avatar_url,u.avatar_color);document.querySelectorAll('[data-uid="'+uid+'"]').forEach(function(e){_avApply(e,u.avatar_url,u.avatar_color);})}}).catch(function(){});}catch(_){}}}
+  var _c=_avGet(uid);if(_c&&_c.av&&av){_avApply(av,_c.av,_c.color);}
   const nm=document.getElementById('_mac_nm');if(nm)nm.textContent=name||'';
   const btn=document.getElementById('_mac_btn');
   if(btn)btn.onclick=function(){_closeMac();if(typeof openPublicProfile==='function')openPublicProfile(window._macUid,window._macName,window._macAv);};
