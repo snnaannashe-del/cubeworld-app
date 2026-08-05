@@ -420,7 +420,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 #cs-bird-btn.show{opacity:1;pointer-events:auto}
 
 /* ── FEED FAB (speed-dial action button) ── */
-.vf-fab-wrap{position:absolute;right:12px;bottom:25px;z-index:15;display:flex;flex-direction:row;align-items:center;gap:0}
+.vf-fab-wrap{position:absolute;right:12px;bottom:25px;z-index:15;display:flex;flex-direction:row;align-items:center;gap:0;transition:opacity .28s,transform .32s cubic-bezier(.4,0,.2,1)}
+.vf-fab-wrap.acts-hidden{opacity:0!important;pointer-events:none!important;transform:translateY(90px)}
 .vf-fab-trigger{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.7);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.4);transition:transform .22s,background .18s;flex-shrink:0;backdrop-filter:blur(8px)}.vf-fab-trigger{display:none!important}
 .vf-fab-trigger:hover,.vf-fab-trigger:active{transform:scale(1.08);background:rgba(255,255,255,.15);color:#fff}
 .vf-fab-items{display:flex;flex-direction:row;align-items:center;gap:20px;padding:0;max-height:none;overflow:visible;opacity:1;pointer-events:auto}
@@ -13250,9 +13251,12 @@ async function submitVfComment(){
 }
 
 function vfShare(postId){
+  const fab=document.getElementById('vf-fab-'+postId);
+  fab?.classList.add('acts-hidden');
+  const restore=()=>{ setTimeout(()=>fab?.classList.remove('acts-hidden'),400); };
   const url=window.location.href.split('?')[0]+'?post='+postId;
-  if(navigator.share){navigator.share({title:'CubeWorld',url}).catch(()=>{});}
-  else{navigator.clipboard.writeText(url).then(()=>showToast('Ссылка скопирована! 🔗')).catch(()=>showToast('Скопируй URL: '+url));}
+  if(navigator.share){navigator.share({title:'CubeWorld',url}).then(restore).catch(restore);}
+  else{navigator.clipboard.writeText(url).then(()=>{showToast('\u0421\u0441\u044b\u043b\u043a\u0430 \u0441\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u0430! \uD83D\uDD17');restore();}).catch(()=>{showToast('\u0421\u043a\u043e\u043f\u0438\u0440\u0443\u0439 URL: '+url);restore();});}
 }
 
 function openVideoUpload(){ openCreatePost(); }  // legacy → new modal
