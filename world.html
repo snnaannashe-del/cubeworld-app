@@ -9977,12 +9977,10 @@ async function _openMiniProfile(uid,name,avColor,avUrl){
   let bd=document.getElementById('_mac_bd');
   if(!bd){bd=document.createElement('div');bd.id='_mac_bd';bd.style.cssText='position:fixed;inset:0;background:transparent;z-index:8199;pointer-events:auto';bd.onclick=_closeMac;document.body.appendChild(bd);}
   bd.style.display='block';
-  if(!window._macTS){window._macTS=function(e){window._macTY=e.touches[0].clientY;};window._macTE=function(e){if(window._macTY!=null&&Math.abs(e.changedTouches[0].clientY-window._macTY)>40)_closeMac();window._macTY=null;};}
-  document.addEventListener('touchstart',window._macTS,true);document.addEventListener('touchend',window._macTE,true);
   mc.style.display='flex';
   requestAnimationFrame(function(){requestAnimationFrame(function(){mc.style.opacity='1';mc.style.transform='translate(-50%,-50%) scale(1)';});});
 }
-function _closeMac(){document.removeEventListener('touchstart',window._macTS,true);document.removeEventListener('touchend',window._macTE,true);
+function _closeMac(){
   const mc=document.getElementById('_mac_card');
   if(mc){mc.style.opacity='0';mc.style.transform='translate(-50%,-60%) scale(.9)';setTimeout(function(){mc.style.display='none';},200);}
   const bd=document.getElementById('_mac_bd');if(bd)bd.style.display='none';
@@ -16791,7 +16789,7 @@ window._doVfReport = function(pid){
   wireAll();
 })();
 
-function _vfiToggle(e,el){e.stopPropagation();el.classList.toggle('vfi-exp');}
+function _vfiToggle(e,el){e.stopPropagation();const expanding=!el.classList.contains('vfi-exp');el.classList.toggle('vfi-exp');const con=document.getElementById('vf-container');if(!con)return;if(con._vfiSS){con.removeEventListener('touchstart',con._vfiSS);con.removeEventListener('touchend',con._vfiSE);con._vfiSS=null;con._vfiSE=null;}if(expanding){con._vfiTY=null;con._vfiSS=function(ev){con._vfiTY=ev.touches[0].clientY;};con._vfiSE=function(ev){if(con._vfiTY!=null&&(ev.changedTouches[0].clientY-con._vfiTY)>40){el.classList.remove('vfi-exp');if(con._vfiSS){con.removeEventListener('touchstart',con._vfiSS);con.removeEventListener('touchend',con._vfiSE);con._vfiSS=null;con._vfiSE=null;}}con._vfiTY=null;};con.addEventListener('touchstart',con._vfiSS);con.addEventListener('touchend',con._vfiSE);}}
 function _vfLoadAvatars(){
   const els=document.querySelectorAll('.vfi-av[data-uid]:not([data-av-loaded])');
   if(!els.length)return;
