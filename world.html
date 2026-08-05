@@ -1039,13 +1039,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vfa-follow-dot{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:22px;height:22px;border-radius:50%;background:#fe2c55;color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center;line-height:1;border:2px solid #000;font-weight:700;cursor:pointer}
 .vfa-follow-dot.following{background:rgba(255,255,255,.25);font-size:11px}
 /* bottom info overlay */
-.vf-info{position:absolute;bottom:0;left:0;right:76px;padding:16px 16px 22px;z-index:10;transition:opacity .28s,transform .32s cubic-bezier(.4,0,.2,1)}.vf-info.acts-hidden{opacity:0!important;pointer-events:none!important;transform:translateY(60px)}
+.vf-info{position:absolute;bottom:0;left:0;right:auto;max-width:65%;padding:16px 16px 22px;z-index:10;transition:opacity .28s,transform .32s cubic-bezier(.4,0,.2,1);cursor:pointer}.vf-info.acts-hidden{opacity:0!important;pointer-events:none!important;transform:translateY(60px)}
 .vfi-author-row{display:flex;align-items:center;gap:7px;margin-bottom:6px}
 .vfi-av{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;cursor:pointer;color:#fff}
 .vfi-name{font-size:14px;font-weight:800;color:#fff;cursor:pointer;text-shadow:0 1px 6px rgba(0,0,0,.8);letter-spacing:.01em}
 .vfi-title{font-size:15px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:4px;text-shadow:0 1px 6px rgba(0,0,0,.8)}
 .vfi-desc{font-size:13px;color:#fff;line-height:1.5;margin-bottom:6px;text-shadow:0 1px 5px rgba(0,0,0,.7);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .vfi-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.vfi-desc,.vfi-music,.vfi-tags{display:none!important}
+.vf-info.vfi-exp .vfi-desc{display:-webkit-box!important}
+.vf-info.vfi-exp .vfi-music{display:flex!important}
+.vf-info.vfi-exp .vfi-tags{display:flex!important}
 .vfi-tag{font-size:11px;color:var(--accent);background:rgba(0,149,246,.12);border-radius:8px;padding:2px 7px;cursor:pointer}
 .vfi-music{font-size:12px;color:rgba(255,255,255,.9);display:flex;align-items:center;gap:5px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
 .vfi-disc{display:inline-block;animation:vfSpin 4s linear infinite}
@@ -13009,9 +13013,9 @@ function renderFeed(){
           <i class="ti ti-layout-grid"></i>
         </button></span>
       </div>
-      <div class="vf-info">
+      <div class="vf-info" onclick="_vfiToggle(event,this)">
         <div class="vfi-author-row">
-          <span class="vfi-av" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">${(post.display_name||'?')[0].toUpperCase()}</span><span class="vfi-name" onclick="clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">${escHtml(post.display_name||'Аноним')}</span>${typeBadge}
+          <span class="vfi-av" onclick="event.stopPropagation();clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">${(post.display_name||'?')[0].toUpperCase()}</span><span class="vfi-name">${escHtml(post.display_name||'Аноним')}</span>${typeBadge}
         </div>
         ${post.title?`<div class="vfi-title">${escHtml(post.title)}</div>`:''}
         <div class="vfi-desc">${escHtml(post.description||post.content||'')}</div>
@@ -16784,6 +16788,8 @@ window._doVfReport = function(pid){
   };
   wireAll();
 })();
+
+function _vfiToggle(e,el){e.stopPropagation();el.classList.toggle('vfi-exp');}
 </script>
 
 <div class="modal-backdrop" id="modal-universe" style="display:none"><div class="modal" style="max-width:min(560px,calc(100vw - 24px));width:100%;max-height:90svh;box-sizing:border-box;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:0">
