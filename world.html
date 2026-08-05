@@ -412,9 +412,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vf-tabs-toggle{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.45);font-size:18px;margin-left:auto;padding:6px 8px;transition:all .2s;display:flex;align-items:center}
 .vf-tabs-toggle:hover{color:#fff}
 /* Persistent bird button — shows when tabs are hidden */
-.vf-tabs-bird{position:absolute;top:8px;right:13px;z-index:31;background:transparent;border:1.5px solid rgba(255,255,255,0.6);border-radius:50%;width:28px;height:28px;color:rgba(255,255,255,.9);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;padding:0;transition:opacity .25s,transform .25s;opacity:0;pointer-events:none}
+.vf-tabs-bird{position:absolute;top:8px;right:13px;z-index:31;background:transparent;border:1.5px solid rgba(255,255,255,0.35);border-radius:50%;width:28px;height:28px;color:rgba(255,255,255,.9);-webkit-tap-highlight-color:transparent;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;padding:0;transition:opacity .25s,transform .25s;opacity:0;pointer-events:none}
 .vf-tabs-bird.show{opacity:1;pointer-events:auto}
-.vf-tabs-bird:hover{background:transparent;color:#fff}.vf-tabs-bird:active{background:transparent;border-color:#fff}
+.vf-tabs-bird:hover{background:transparent;color:#fff}.vf-tabs-bird:active{background:transparent;border-color:rgba(255,255,255,0.35);outline:none}
 /* Cube-switcher bird button (mobile) — shows when cs is hidden */
 #cs-bird-btn{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:1200;background:rgba(10,10,30,.8);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 14px;color:rgba(255,255,255,.7);cursor:pointer;font-size:11px;display:flex;align-items:center;gap:5px;transition:opacity .25s;opacity:0;pointer-events:none}
 #cs-bird-btn.show{opacity:1;pointer-events:auto}
