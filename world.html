@@ -2908,10 +2908,9 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
 </style>
 <style id="_modal_scroll_fix">.modal{max-height:calc(100svh - 40px) !important;overflow-y:auto !important;-webkit-overflow-scrolling:touch}.modal-actions{position:sticky;bottom:0;background:linear-gradient(160deg,#0e0e28,#0a0a1e);padding-top:12px;margin-top:4px;z-index:2;border-top:1px solid rgba(255,255,255,.06)}
 /* Stream button */
-.vf-stream-btn{display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;padding:28px 40px;border-radius:20px;border:1.5px solid rgba(255,68,68,0.4);background:rgba(255,68,68,0.07);transition:all .2s;width:100%;margin-bottom:12px;}
-.vf-stream-btn:hover{background:rgba(255,68,68,0.14);border-color:rgba(255,68,68,0.7);transform:translateY(-1px);}
-.vf-stream-icon-wrap{width:72px;height:72px;border-radius:20px;background:rgba(255,68,68,0.18);display:flex;align-items:center;justify-content:center;position:relative;}
-.vf-stream-live-dot{position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:#FF4444;border-radius:50%;border:2px solid var(--bg,#0d1117);animation:livePulse 1.2s infinite;}
+.vf-stream-btn{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:10px 20px;border-radius:14px;border:1.5px dashed rgba(255,68,68,0.45);background:rgba(255,68,68,0.06);transition:all .2s;width:100%;margin-bottom:10px;position:relative;}
+.vf-stream-btn:hover{background:rgba(255,68,68,0.12);border-color:rgba(255,68,68,0.75);}
+.vf-stream-live-dot{width:7px;height:7px;background:#FF4444;border-radius:50%;flex-shrink:0;animation:livePulse 1.2s infinite;}
 /* Live stream overlay */
 #live-stream-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;}
 #live-stream-overlay.open{display:flex;}
@@ -3217,12 +3216,9 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
         <!-- Desktop right: Add Content panel -->
         <div class="vf-create-side" id="vf-create-side">
             <div class="vf-stream-btn" onclick="openLiveStream()">
-            <div class="vf-stream-icon-wrap">
-              <i class="ti ti-video" style="font-size:32px;color:#FF4444"></i>
-              <span class="vf-stream-live-dot"></span>
-            </div>
-            <div class="vf-create-side-title">Стримить</div>
-            <div class="vf-create-side-desc">Запусти прямой эфир — зрители увидят тебя live</div>
+            <span class="vf-stream-live-dot"></span>
+            <i class="ti ti-video" style="font-size:16px;color:#FF4444"></i>
+            <span style="font-size:14px;font-weight:600;color:#FF4444">Стримить</span>
           </div>
           <div class="vf-create-side-btn" onclick="openModal('modal-create-post')">
             <div class="vf-create-side-icon">
