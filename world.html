@@ -3260,9 +3260,9 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
           <div class="vfcp-list" id="vfcp-list"></div>
           <div class="vfcp-input-row">
             <input class="vfcp-input" id="vfcp-input" placeholder="Написать комментарий..." onkeydown="if(event.key==='Enter')submitVfComment()">
-            <button class="gco-icon-btn" onclick="toggleVfcpEmoji()" title="Эмодзи" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:16px"></i></button>
+            <button class="gco-icon-btn" onclick="toggleVfcpEmoji()" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:16px"></i></button>
             <div style="position:relative;flex-shrink:0">
-              <button id="vfcp-expire-btn" class="gco-icon-btn" onclick="toggleVfcpExpire(event)" title="На сколько" style="width:36px;height:36px;font-size:16px">∞</button>
+              <button id="vfcp-expire-btn" class="gco-icon-btn" onclick="toggleVfcpExpire(event)" style="width:36px;height:36px;font-size:16px">∞</button>
               <div id="vfcp-expire-popup" class="dm-expire-popup" style="display:none;bottom:44px;right:0">
                 <div class="dm-exp-opt active" data-val="" onclick="setVfcpExpire(this,'')">∞ Навсегда</div>
                 <div class="dm-exp-opt" data-val="300" onclick="setVfcpExpire(this,'300')">⏱ 5 минут</div>
@@ -16937,7 +16937,7 @@ function toggleVfcpEmoji(){
   var p=document.getElementById('vfcp-emoji-pop');
   if(!p){
     p=document.createElement('div');p.id='vfcp-emoji-pop';
-    p.style.cssText='position:absolute;bottom:56px;left:0;right:0;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:8px;display:flex;flex-wrap:wrap;gap:3px;z-index:200;max-height:150px;overflow-y:auto';
+    p.style.cssText='position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:var(--bg2,#1a1a2e);border:1px solid var(--border,#333);border-radius:12px;padding:8px;display:none;flex-wrap:wrap;gap:3px;z-index:500;max-height:160px;overflow-y:auto;box-shadow:0 4px 24px rgba(0,0,0,.7)';
     var emojis='😀😂😍🥰😎🤔😢😡🔥❤️👍👎✅🎉💯🙏😊🤣😅😁🤪😏😒😔😭😤😡🤯🥳😇🤩🤗😴🤧🤒🥴🫡💪🏆🌈🦋🌸🍀🚀⭐🌟💫✨🎵💡🔑';
     [...emojis].forEach(e=>{
       var b=document.createElement('button');
@@ -16946,7 +16946,7 @@ function toggleVfcpEmoji(){
       p.appendChild(b);
     });
     var row=document.querySelector('.vfcp-input-row');
-    if(row&&row.parentNode){row.parentNode.style.position='relative';row.parentNode.insertBefore(p,row);}
+    if(row){row.style.position='relative';row.appendChild(p);}
   }
   p.style.display=p.style.display==='none'?'flex':'none';
 }
