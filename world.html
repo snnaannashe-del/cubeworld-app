@@ -12766,9 +12766,11 @@ let _vfObserver = null;
 let _vfCommentPostId = null;
 
 async function loadVideoFeed(){
+  window._vfLoading=true;renderFeed();
   const url = _vfTab==='following' ? '/feed/following' : '/feed';
   const data = await apiCall(url);
   _vfPosts = data && data.length ? data : _vfPlaceholders();
+  window._vfLoading=false;
   renderFeed();setTimeout(_vfLoadAvatars,400);
 }
 
@@ -12926,8 +12928,8 @@ function showTopBars(){
     document.querySelectorAll('.sn-item,.mnb').forEach(btn=>{
       btn.addEventListener('click', ()=>showTopBars());
     });
-  // Render correct feed tab on page load
-  try{var _ft2=localStorage.getItem('cw_feed_tab');if(_ft2&&_ft2!=='shorts'){if(_ft2==='rec'||_ft2==='top'){loadVideoFeed();}else{renderFeed();}}}catch(_e2){}
+  // Load feed on page load (loading spinner prevents empty flash)
+  try{loadVideoFeed();}catch(_e2){}
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', setup);
   else setTimeout(setup, 600);
@@ -12967,6 +12969,7 @@ function renderFeed(){
   if(_vfTab==='top') posts=[...posts].sort((a,b)=>(b.likes||0)-(a.likes||0));
 
   if(!posts.length){
+    if(window._vfLoading){container.innerHTML='<div style="height:60vh;display:flex;align-items:center;justify-content:center"><div style="width:34px;height:34px;border:3.5px solid rgba(255,255,255,0.08);border-top-color:#0095F6;border-radius:50%;animation:spin .85s linear infinite"></div></div>';return;}
     const _emptyIcon = _vfTypeFilter==='short'?'🎬':_vfTypeFilter==='ball'?'📝':'✨';
     const _emptyLabel = _vfTypeFilter==='short'?'Нет видео (SHORT)':_vfTypeFilter==='ball'?'Нет постов (POST)':'Лента пуста';
     container.innerHTML=`<div class="vf-empty"><div class="vf-empty-icon">${_emptyIcon}</div><div class="vf-empty-text">${_emptyLabel}</div><div class="vf-empty-sub">Нажми ✏️ Создать — опубликуй SHORT или POST,<br>и он появится здесь сразу!</div></div>`;
@@ -13510,7 +13513,7 @@ function vfFire(postId, btn){
 // ═══ FEED TYPE FILTER ════════════════════════════════════════════
 let _vfTypeFilter = 'all';
 // Restore feed tab from last session
-(function(){try{var _t=localStorage.getItem('cw_feed_tab');if(!_t||_t==='shorts')return;document.querySelectorAll('.vf-tab2').forEach(function(b){b.classList.remove('active');if((b.getAttribute('onclick')||'').indexOf("'"+_t+"'")!==-1)b.classList.add('active');});if(_t==='post'){_vfTab='foryou';_vfTypeFilter='ball';}else if(_t==='rec'){_vfTab='following';_vfTypeFilter='all';}else if(_t==='top'){_vfTab='top';_vfTypeFilter='all';}}catch(_e){}})();
+(function(){try{var _t=localStorage.getItem('cw_feed_tab');if(!_t||_t==='shorts'){if(_t==='shorts')_vfTypeFilter='short';return;}document.querySelectorAll('.vf-tab2').forEach(function(b){b.classList.remove('active');if((b.getAttribute('onclick')||'').indexOf("'"+_t+"'")!==-1)b.classList.add('active');});if(_t==='post'){_vfTab='foryou';_vfTypeFilter='ball';}else if(_t==='rec'){_vfTab='following';_vfTypeFilter='all';}else if(_t==='top'){_vfTab='top';_vfTypeFilter='all';}}catch(_e){}})();
 function vfFilterType(type, el){
   _vfTypeFilter=type;
   document.querySelectorAll('.vf-pill').forEach(p=>p.classList.remove('active'));
