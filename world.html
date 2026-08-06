@@ -3260,6 +3260,17 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
           <div class="vfcp-list" id="vfcp-list"></div>
           <div class="vfcp-input-row">
             <input class="vfcp-input" id="vfcp-input" placeholder="Написать комментарий..." onkeydown="if(event.key==='Enter')submitVfComment()">
+            <button class="gco-icon-btn" onclick="toggleVfcpEmoji()" title="Эмодзи" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:16px"></i></button>
+            <div style="position:relative;flex-shrink:0">
+              <button id="vfcp-expire-btn" class="gco-icon-btn" onclick="toggleVfcpExpire(event)" title="На сколько" style="width:36px;height:36px;font-size:16px">∞</button>
+              <div id="vfcp-expire-popup" class="dm-expire-popup" style="display:none;bottom:44px;right:0">
+                <div class="dm-exp-opt active" data-val="" onclick="setVfcpExpire(this,'')">∞ Навсегда</div>
+                <div class="dm-exp-opt" data-val="300" onclick="setVfcpExpire(this,'300')">⏱ 5 минут</div>
+                <div class="dm-exp-opt" data-val="3600" onclick="setVfcpExpire(this,'3600')">⏱ 1 час</div>
+                <div class="dm-exp-opt" data-val="86400" onclick="setVfcpExpire(this,'86400')">⏱ 24 часа</div>
+                <div class="dm-exp-opt" data-val="604800" onclick="setVfcpExpire(this,'604800')">⏱ 7 дней</div>
+              </div>
+            </div>
             <button class="vfcp-send" onclick="submitVfComment()">→</button>
           </div>
         </div>
@@ -16918,6 +16929,42 @@ function stopLiveStream(){
   if(window._liveStream){window._liveStream.getTracks().forEach(t=>t.stop());window._liveStream=null;}
   var ov=document.getElementById('live-stream-overlay');
   if(ov)ov.classList.remove('open');
+}
+
+// Comment emoji + expire
+window._vfcpExpire='';
+function toggleVfcpEmoji(){
+  var p=document.getElementById('vfcp-emoji-pop');
+  if(!p){
+    p=document.createElement('div');p.id='vfcp-emoji-pop';
+    p.style.cssText='position:absolute;bottom:56px;left:0;right:0;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:8px;display:flex;flex-wrap:wrap;gap:3px;z-index:200;max-height:150px;overflow-y:auto';
+    var emojis='😀😂😍🥰😎🤔😢😡🔥❤️👍👎✅🎉💯🙏😊🤣😅😁🤪😏😒😔😭😤😡🤯🥳😇🤩🤗😴🤧🤒🥴🫡💪🏆🌈🦋🌸🍀🚀⭐🌟💫✨🎵💡🔑';
+    [...emojis].forEach(e=>{
+      var b=document.createElement('button');
+      b.textContent=e;b.style.cssText='background:none;border:none;cursor:pointer;font-size:20px;padding:2px;border-radius:6px';
+      b.onclick=function(){var inp=document.getElementById('vfcp-input');if(inp){inp.value+=e;inp.focus();}p.style.display='none';};
+      p.appendChild(b);
+    });
+    var row=document.querySelector('.vfcp-input-row');
+    if(row&&row.parentNode){row.parentNode.style.position='relative';row.parentNode.insertBefore(p,row);}
+  }
+  p.style.display=p.style.display==='none'?'flex':'none';
+}
+function toggleVfcpExpire(e){
+  e.stopPropagation();
+  var pop=document.getElementById('vfcp-expire-popup');
+  if(!pop)return;
+  var vis=pop.style.display!=='none';
+  pop.style.display=vis?'none':'block';
+  if(!vis){document.addEventListener('click',function _h(){pop.style.display='none';document.removeEventListener('click',_h);},{once:true});}
+}
+function setVfcpExpire(el,val){
+  window._vfcpExpire=val;
+  document.querySelectorAll('#vfcp-expire-popup .dm-exp-opt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+  var btn=document.getElementById('vfcp-expire-btn');
+  if(btn)btn.innerHTML=val?'⏱':'∞';
+  document.getElementById('vfcp-expire-popup').style.display='none';
 }
 </script>
 
