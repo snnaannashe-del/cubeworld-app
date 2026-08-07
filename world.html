@@ -13423,13 +13423,13 @@ function _vfcpReplyCard(r,cid){
   const meta=document.createElement('div');meta.className='vfcp-meta';meta.textContent=rt;
   const acts=document.createElement('div');acts.className='vfcp-actions';acts.style.marginTop='4px';
   const lkBtn=document.createElement('button');lkBtn.className='vfcp-act-btn'+(r.user_like==='like'?' liked':'');
-  lkBtn.id='vfcp-rlk-'+r.id;lkBtn.innerHTML='👍 <span>'+(r.likes||0)+'</span>';
+  lkBtn.id='vfcp-rlk-'+r.id;lkBtn.innerHTML='<i class="ti ti-thumb-up" style="font-size:14px"></i> <span>'+(r.likes||0)+'</span>';
   lkBtn.onclick=function(){vfcpReplyLike(cid,r.id,0);};
   const dkBtn=document.createElement('button');dkBtn.className='vfcp-act-btn'+(r.user_like==='dislike'?' disliked':'');
-  dkBtn.id='vfcp-rdk-'+r.id;dkBtn.innerHTML='👎 <span>'+(r.dislikes||0)+'</span>';
+  dkBtn.id='vfcp-rdk-'+r.id;dkBtn.innerHTML='<i class="ti ti-thumb-down" style="font-size:14px"></i> <span>'+(r.dislikes||0)+'</span>';
   dkBtn.onclick=function(){vfcpReplyLike(cid,r.id,1);};
   const rpBtn=document.createElement('button');rpBtn.className='vfcp-act-btn';
-  rpBtn.innerHTML='💬 <span>Ответить</span>';
+  rpBtn.innerHTML='<i class="ti ti-message-reply" style="font-size:14px"></i> <span>Ответить</span>';
   rpBtn.onclick=function(){vfcpShowNestedReply(cid,r.display_name||'');};
   acts.append(lkBtn,dkBtn,rpBtn);
   if(isOwn){
