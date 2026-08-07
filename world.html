@@ -13308,186 +13308,157 @@ async function vfFollow(userId){
 
 async function openVfComments(postId){
   _vfCommentPostId=postId;
-  const _fabEl=document.getElementById('vf-fab-'+postId);_fabEl?.classList.add('acts-hidden');_fabEl?.closest('.vf-card')?.querySelector('.vf-info')?.classList.add('acts-hidden');
+  document.getElementById('vf-fab-'+postId)?.classList.add('acts-hidden');
   const panel=document.getElementById('vf-comments-panel');
   const list=document.getElementById('vfcp-list');
   const cnt=document.getElementById('vfcp-count');
   if(!panel) return;
-  list.innerHTML='<div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">Загружаем...</div>';
+  list.innerHTML='<div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">\\u0417\\u0430\\u0433\\u0440\\u0443\\u0436\\u0430\\u0435\\u043c...</div>';
   panel.classList.add('open');
   const data=await apiCall('/feed/'+postId+'/comments');
-  if(!data){list.innerHTML='<div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">Ошибка загрузки</div>';return;}
+  if(!data){list.innerHTML='<div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">\\u041e\\u0448\\u0438\\u0431\\u043a\\u0430 \\u0437\\u0430\\u0433\\u0440\\u0443\\u0437\\u043a\\u0438</div>';return;}
   if(cnt) cnt.textContent=data.length?`(${data.length})`:'';
   const lcEl=document.getElementById('vfa-cc-'+postId);
   if(lcEl) lcEl.textContent=_fmtN(data.length);
   list.innerHTML='';
-  if(!data.length){list.innerHTML='<div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">Нет комментариев · Будь первым!</div>';return;}
+  if(!data.length){list.innerHTML='<div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">\\u041d\\u0435\\u0442 \\u043a\\u043e\\u043c\\u043c\\u0435\\u043d\\u0442\\u0430\\u0440\\u0438\\u0435\\u0432 \\xb7 \\u0411\\u0443\\u0434\\u044c \\u043f\\u0435\\u0440\\u0432\\u044b\\u043c!</div>';return;}
   data.forEach(c=>{
-    const div=document.createElement('div');div.className='vfcp-comment';
-    const l=(c.display_name||'?')[0].toUpperCase();
-    const t=new Date(c.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-    const me2=app.myProfile;
-    const isOwn=(me2&&me2.id&&String(me2.id)===String(c.user_id));
-    const ownBtns=isOwn?'<span class="vfcp-own-btns"><button class="vfcp-own-btn" onclick="vfcpEdit('+c.id+',_vfCommentPostId)">✏️</button><button class="vfcp-own-btn" onclick="vfcpDelete('+c.id+',_vfCommentPostId)">🗑️</button></span>':'';
-    div.innerHTML=
-      '<div class="vfcp-avatar">'+l+'</div>'+
-      '<div class="vfcp-body">'+
-      '<div style="display:flex;align-items:center;gap:4px"><div class="vfcp-name">@'+escHtml(c.display_name||'Аноним')+'</div>'+ownBtns+'</div>'+
-      '<div class="vfcp-text" id="vfcp-txt-'+c.id+'">'+escHtml(c.content)+'</div>'+
-      '<div class="vfcp-meta">'+t+'</div>'+
-      '<div class="vfcp-actions">'+
-      '<button class="vfcp-act-btn" id="vfcp-lk-'+c.id+'" onclick="vfcpLike('+c.id+',0)">👍 <span>'+(c.likes||0)+'</span></button>'+
-      '<button class="vfcp-act-btn" id="vfcp-dk-'+c.id+'" onclick="vfcpLike('+c.id+',1)">👎 <span>'+(c.dislikes||0)+'</span></button>'+
-      '<button class="vfcp-act-btn" onclick="vfcpShowReply('+c.id+')">💬 <span>Ответить</span></button>'+
-      '</div>'+
-      '<div id="vfcp-replies-'+c.id+'"></div>'+
-      '</div>';
-    div.addEventListener('click',function(e){if(!e.target.closest('button')&&!e.target.closest('input'))this.classList.toggle('tapped');});
-    list.appendChild(div);
-    if(c.replies&&c.replies.length){const rCont=div.querySelector('[id="vfcp-replies-'+c.id+'"]');if(rCont)c.replies.forEach(r=>rCont.appendChild(_vfcpReplyCard(r,c.id)));}
+    const wrap=document.createElement('div');
+    wrap.className='vfcp-comment-wrap';
+    wrap.appendChild(_vfcpCommentCard(c));
+    const replies=Array.isArray(c.replies)?c.replies:[];
+    if(replies.length){
+      const rw=document.createElement('div');rw.className='vfcp-replies-wrap';
+      replies.forEach(r=>rw.appendChild(_vfcpReplyCard(r,c.id)));
+      wrap.appendChild(rw);
+    }
+    list.appendChild(wrap);
   });
+}
+
+function _vfcpCommentCard(c){
+  const me=(typeof app!=='undefined'&&app.myProfile)||null;
+  const isOwn=me&&me.id&&String(me.id)===String(c.user_id);
+  const l=(c.display_name||'?')[0].toUpperCase();
+  const t=new Date(c.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  const outer=document.createElement('div');
+  outer.style.cssText='display:flex;flex-direction:column;gap:0;padding:6px 0';
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;gap:9px;align-items:flex-start';
+  const av=document.createElement('div');av.className='vfcp-avatar';av.textContent=l;
+  const body=document.createElement('div');body.className='vfcp-body';body.style.flex='1';
+  const nameEl=document.createElement('div');nameEl.className='vfcp-name';nameEl.textContent='@'+(c.display_name||'\\u0410\\u043d\\u043e\\u043d\\u0438\\u043c');
+  const txtEl=document.createElement('div');txtEl.className='vfcp-text';txtEl.textContent=c.content;
+  const metaEl=document.createElement('div');metaEl.className='vfcp-meta';metaEl.textContent=t;
+  const acts=document.createElement('div');acts.className='vfcp-acts';
+  const lkBtn=document.createElement('button');lkBtn.className='vfcp-act-btn'+(c.user_like==='like'?' liked':'');
+  lkBtn.innerHTML='<i class="ti ti-thumb-up" style="font-size:12px"></i> '+(c.likes||0);
+  lkBtn.onclick=async()=>{if(await apiCall('/feed/comment/'+c.id+'/like','POST',{type:'like'}))await openVfComments(_vfCommentPostId);};
+  const dkBtn=document.createElement('button');dkBtn.className='vfcp-act-btn'+(c.user_like==='dislike'?' disliked':'');
+  dkBtn.innerHTML='<i class="ti ti-thumb-down" style="font-size:12px"></i> '+(c.dislikes||0);
+  dkBtn.onclick=async()=>{if(await apiCall('/feed/comment/'+c.id+'/like','POST',{type:'dislike'}))await openVfComments(_vfCommentPostId);};
+  const rpBtn=document.createElement('button');rpBtn.className='vfcp-act-btn';rpBtn.innerHTML='<i class="ti ti-message-reply" style="font-size:12px"></i> \\u041e\\u0442\\u0436\\u0435\\u0442\\u0438\\u0442\\u044c';
+  rpBtn.onclick=()=>{
+    document.querySelectorAll('.vfcp-reply-row').forEach(el=>{if(el.dataset.cid!==String(c.id))el.classList.remove('visible');});
+    const ri=document.getElementById('vfcp-ri-'+c.id);
+    if(ri){ri.classList.toggle('visible');if(ri.classList.contains('visible'))ri.querySelector('.vfcp-reply-inp')?.focus();}
+  };
+  acts.append(lkBtn,dkBtn,rpBtn);
+  if(isOwn){
+    const edBtn=document.createElement('button');edBtn.className='vfcp-act-btn';
+    edBtn.innerHTML='<i class="ti ti-pencil" style="font-size:12px"></i>';
+    edBtn.onclick=async()=>{const n=prompt('\\u0420\\u0435\\u0434\\u0430\\u043a\\u0442\\u0438\\u0440\\u043e\\u0432\\u0430\\u0442\\u044c:',c.content);if(n&&n.trim()!==c.content&&await apiCall('/feed/comment/'+c.id,'PUT',{content:n.trim()}))await openVfComments(_vfCommentPostId);};
+    const dlBtn=document.createElement('button');dlBtn.className='vfcp-act-btn del-btn';
+    dlBtn.innerHTML='<i class="ti ti-trash" style="font-size:12px"></i>';
+    dlBtn.onclick=async()=>{if(confirm('\\u0423\\u0434\\u0430\\u043b\\u0438\\u0442\\u044c?')&&await apiCall('/feed/comment/'+c.id,'DELETE'))await openVfComments(_vfCommentPostId);};
+    acts.append(edBtn,dlBtn);
+  }
+  body.append(nameEl,txtEl,metaEl,acts);
+  row.append(av,body);
+  outer.appendChild(row);
+  const ri=document.createElement('div');ri.id='vfcp-ri-'+c.id;ri.className='vfcp-reply-row';ri.dataset.cid=String(c.id);
+  const rInp=document.createElement('input');rInp.className='vfcp-reply-inp';rInp.placeholder='\\u041e\\u0442\\u0436\\u0435\\u0442\\u0438\\u0442\\u044c...';rInp.style.cssText='flex:1;margin-left:39px';
+  const rSend=document.createElement('button');rSend.className='vfcp-reply-send';rSend.textContent='\\u2192';
+  rSend.onclick=async()=>{const txt=rInp.value.trim();if(!txt)return;await vfcpSubmitReply(c.id,txt);ri.classList.remove('visible');};
+  rInp.addEventListener('keydown',e=>{if(e.key==='Enter')rSend.click();});
+  ri.append(rInp,rSend);
+  outer.appendChild(ri);
+  return outer;
+}
+
+function _vfcpReplyCard(r,cid){
+  const me=(typeof app!=='undefined'&&app.myProfile)||null;
+  const isOwn=me&&me.id&&String(me.id)===String(r.user_id);
+  const l=(r.display_name||'?')[0].toUpperCase();
+  const t=new Date(r.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  const wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-direction:column;gap:2px';
+  const d=document.createElement('div');d.className='vfcp-reply-item';
+  const av=document.createElement('div');av.className='vfcp-avatar';av.style.cssText='width:24px;height:24px;font-size:11px;flex-shrink:0';av.textContent=l;
+  const body=document.createElement('div');body.style.flex='1';
+  const nameEl=document.createElement('div');nameEl.className='vfcp-name';nameEl.textContent='@'+(r.display_name||'\\u0410\\u043d\\u043e\\u043d\\u0438\\u043c');
+  const txtEl=document.createElement('div');txtEl.className='vfcp-text';txtEl.style.fontSize='12px';txtEl.textContent=r.content;
+  const metaEl=document.createElement('div');metaEl.className='vfcp-meta';metaEl.textContent=t;
+  const acts=document.createElement('div');acts.className='vfcp-acts';
+  const lkBtn=document.createElement('button');lkBtn.className='vfcp-act-btn'+(r.user_like==='like'?' liked':'');
+  lkBtn.innerHTML='<i class="ti ti-thumb-up" style="font-size:12px"></i> '+(r.likes||0);
+  lkBtn.onclick=async()=>{if(await apiCall('/feed/reply/'+r.id+'/like','POST',{type:'like'}))await openVfComments(_vfCommentPostId);};
+  const dkBtn=document.createElement('button');dkBtn.className='vfcp-act-btn'+(r.user_like==='dislike'?' disliked':'');
+  dkBtn.innerHTML='<i class="ti ti-thumb-down" style="font-size:12px"></i> '+(r.dislikes||0);
+  dkBtn.onclick=async()=>{if(await apiCall('/feed/reply/'+r.id+'/like','POST',{type:'dislike'}))await openVfComments(_vfCommentPostId);};
+  const rpBtn=document.createElement('button');rpBtn.className='vfcp-act-btn';rpBtn.innerHTML='<i class="ti ti-message-reply" style="font-size:12px"></i> \\u041e\\u0442\\u0436\\u0435\\u0442\\u0438\\u0442\\u044c';
+  rpBtn.onclick=()=>{
+    document.querySelectorAll('.vfcp-nested-reply-row').forEach(el=>{if(el.dataset.rid!==String(r.id))el.classList.remove('visible');});
+    const nrr=document.getElementById('vfcp-nrr-'+r.id);
+    if(nrr){nrr.classList.toggle('visible');if(nrr.classList.contains('visible')){const inp=nrr.querySelector('.vfcp-reply-inp');if(inp){inp.value='@'+(r.display_name||'')+' ';inp.focus();}}}
+  };
+  acts.append(lkBtn,dkBtn,rpBtn);
+  if(isOwn){
+    const edBtn=document.createElement('button');edBtn.className='vfcp-act-btn';
+    edBtn.innerHTML='<i class="ti ti-pencil" style="font-size:12px"></i>';
+    edBtn.onclick=async()=>{const n=prompt('\\u0420\\u0435\\u0434\\u0430\\u043a\\u0442\\u0438\\u0440\\u043e\\u0432\\u0430\\u0442\\u044c:',r.content);if(n&&n.trim()!==r.content&&await apiCall('/feed/reply/'+r.id,'PUT',{content:n.trim()}))await openVfComments(_vfCommentPostId);};
+    const dlBtn=document.createElement('button');dlBtn.className='vfcp-act-btn del-btn';
+    dlBtn.innerHTML='<i class="ti ti-trash" style="font-size:12px"></i>';
+    dlBtn.onclick=async()=>{if(confirm('\\u0423\\u0434\\u0430\\u043b\\u0438\\u0442\\u044c?')&&await apiCall('/feed/reply/'+r.id,'DELETE'))await openVfComments(_vfCommentPostId);};
+    acts.append(edBtn,dlBtn);
+  }
+  body.append(nameEl,txtEl,metaEl,acts);
+  d.append(av,body);
+  wrap.appendChild(d);
+  const nrr=document.createElement('div');nrr.id='vfcp-nrr-'+r.id;nrr.className='vfcp-nested-reply-row';nrr.dataset.rid=String(r.id);
+  const nInp=document.createElement('input');nInp.className='vfcp-reply-inp';nInp.placeholder='\\u041e\\u0442\\u0436\\u0435\\u0442\\u0438\\u0442\\u044c...';nInp.style.flex='1';
+  const nSend=document.createElement('button');nSend.className='vfcp-reply-send';nSend.textContent='\\u2192';
+  nSend.onclick=async()=>{const txt=nInp.value.trim();if(!txt)return;await vfcpSubmitReply(cid,txt);nrr.classList.remove('visible');};
+  nInp.addEventListener('keydown',e=>{if(e.key==='Enter')nSend.click();});
+  nrr.append(nInp,nSend);
+  wrap.appendChild(nrr);
+  return wrap;
+}
+
+async function vfcpSubmitReply(cid,txt){
+  if(!txt){const inp=document.getElementById('vfcp-ri-'+cid);txt=(inp?inp.value:'').trim();}
+  if(!txt)return;
+  const data=await apiCall('/feed/comment/'+cid+'/reply','POST',{content:txt});
+  if(!data){showToast('\\u0412\\u043e\\u0439\\u0434\\u0438\\u0442\\u0435 \\u0447\\u0442\\u043e\\u0431\\u044b \\u043e\\u0442\\u0432\\u0435\\u0442\\u0438\\u0442\\u044c');return;}
+  const ri=document.getElementById('vfcp-ri-'+cid);if(ri){ri.querySelector('.vfcp-reply-inp').value='';ri.classList.remove('visible');}
+  await openVfComments(_vfCommentPostId);
 }
 
 function closeVfComments(){
   document.getElementById('vf-comments-panel')?.classList.remove('open');
-  if(_vfCommentPostId){const _fabEl=document.getElementById('vf-fab-'+_vfCommentPostId);_fabEl?.classList.remove('acts-hidden');_fabEl?.closest('.vf-card')?.querySelector('.vf-info')?.classList.remove('acts-hidden');}
+  if(_vfCommentPostId) document.getElementById('vf-fab-'+_vfCommentPostId)?.classList.remove('acts-hidden');
   _vfCommentPostId=null;
 }
 
 async function submitVfComment(){
-  if(!_vfCommentPostId||window._vfcSending) return;
+  if(!_vfCommentPostId) return;
   const inp=document.getElementById('vfcp-input');
   const txt=(inp?.value||'').trim();
   if(!txt) return;
-  window._vfcSending=true;
-  const body={content:txt};
-  if(window._vfcpExpire) body.expire_seconds=parseInt(window._vfcpExpire);
-  const data=await apiCall('/feed/'+_vfCommentPostId+'/comment','POST',body);
-  window._vfcSending=false;
-  if(!data){showToast('Войдите чтобы комментировать');return;}
+  const data=await apiCall('/feed/'+_vfCommentPostId+'/comment','POST',{content:txt});
+  if(!data){showToast('\\u0412\\u043e\\u0439\\u0434\\u0438\\u0442\\u0435 \\u0447\\u0442\\u043e\\u0431\\u044b \\u043a\\u043e\\u043c\\u043c\\u0435\\u043d\\u0442\\u0438\\u0440\\u043e\\u0432\\u0430\\u0442\\u044c');return;}
   inp.value='';
   await openVfComments(_vfCommentPostId);
 }
-
-async function vfcpLike(cid,typeNum){
-  const type=typeNum?'dislike':'like';
-  const r=await apiCall('/feed/'+_vfCommentPostId+'/comment/'+cid+'/like','POST',{type});
-  if(!r)return;
-  const lk=document.getElementById('vfcp-lk-'+cid);
-  const dk=document.getElementById('vfcp-dk-'+cid);
-  if(lk){const sp=lk.querySelector('span');if(sp&&r.likes!==undefined)sp.textContent=r.likes;lk.classList.toggle('liked',r.user_like==='like');}
-  if(dk){const sp=dk.querySelector('span');if(sp&&r.dislikes!==undefined)sp.textContent=r.dislikes;dk.classList.toggle('disliked',r.user_like==='dislike');}
-}
-async function vfcpDelete(cid,postId){
-  if(!confirm('Удалить комментарий?'))return;
-  const r=await apiCall('/feed/'+postId+'/comment/'+cid,'DELETE');
-  if(r!=null)await openVfComments(postId);
-}
-async function vfcpEdit(cid,postId){
-  const el=document.getElementById('vfcp-txt-'+cid);if(!el)return;
-  const cur=el.textContent;
-  const newTxt=prompt('Редактировать:',cur);
-  if(newTxt==null||!newTxt.trim())return;
-  const r=await apiCall('/feed/'+postId+'/comment/'+cid,'PUT',{content:newTxt.trim()});
-  if(r)el.textContent=newTxt.trim();
-}
-function vfcpShowReply(cid){
-  const cont=document.getElementById('vfcp-replies-'+cid);if(!cont)return;
-  if(cont.querySelector('.vfcp-reply-box')){cont.querySelector('.vfcp-reply-box').remove();return;}
-  const box=document.createElement('div');box.className='vfcp-reply-box';
-  box.style.cssText='display:flex;align-items:center;gap:6px;margin-top:6px;padding:4px 0';
-  const inp=document.createElement('input');inp.className='vfcp-reply-inp';inp.placeholder='Ответить...';inp.id='vfcp-ri-'+cid;inp.style.flex='1';
-  const eBtn=document.createElement('button');eBtn.className='gco-icon-btn';eBtn.style.cssText='width:36px;height:36px;font-size:16px;flex-shrink:0';eBtn.innerHTML='<i class="ti ti-mood-smile" style="font-size:16px"></i>';eBtn.onclick=function(){window._vfEmojiTarget='vfcp-ri-'+cid;toggleVfcpEmoji();};
-  const tBtn=document.createElement('button');tBtn.className='gco-icon-btn vfcp-timer-btn';tBtn.style.cssText='width:36px;height:36px;font-size:16px;flex-shrink:0';tBtn.textContent=window._vfcpExpire?'⏱':'∞';tBtn.onclick=function(e){toggleVfcpExpire(e);};
-  const sBtn=document.createElement('button');sBtn.className='vfcp-send';sBtn.style.flexShrink='0';sBtn.textContent='→';sBtn.onclick=function(){vfcpSubmitReply(cid);};
-  box.append(inp,eBtn,tBtn,sBtn);
-  cont.prepend(box);
-  setTimeout(()=>{const inp=box.querySelector('input');if(inp)inp.focus();},50);
-}
-function _vfcpReplyCard(r,cid){
-  const me=(typeof app!=='undefined'&&app.myProfile)||null;
-  const isOwn=me&&me.id&&String(me.id)===String(r.user_id);
-  const rl=(r.display_name||'?')[0].toUpperCase();
-  const rt=new Date(r.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-  const d=document.createElement('div');
-  d.className='vfcp-card vfcp-reply-item';d.id='vfcp-reply-'+r.id;
-  d.style.cssText='background:rgba(0,0,0,0.13);margin-top:4px;padding:6px 8px;border-radius:10px;display:flex;gap:6px;align-items:flex-start';
-  const av=document.createElement('div');av.className='vfcp-avatar';
-  av.style.cssText='width:22px;height:22px;font-size:10px;flex-shrink:0';av.textContent=rl;
-  const body=document.createElement('div');body.style.flex='1';
-  const nm=document.createElement('div');nm.className='vfcp-name';nm.style.fontSize='11px';nm.textContent='@'+(r.display_name||'');
-  const tx=document.createElement('div');tx.className='vfcp-text';tx.style.fontSize='12px';tx.textContent=r.content||'';
-  const meta=document.createElement('div');meta.className='vfcp-meta';meta.textContent=rt;
-  const acts=document.createElement('div');acts.className='vfcp-actions';acts.style.marginTop='4px';
-  const lkBtn=document.createElement('button');lkBtn.className='vfcp-act-btn'+(r.user_like==='like'?' liked':'');
-  lkBtn.id='vfcp-rlk-'+r.id;lkBtn.innerHTML='👍 <span>'+(r.likes||0)+'</span>';
-  lkBtn.onclick=function(){vfcpReplyLike(cid,r.id,0);};
-  const dkBtn=document.createElement('button');dkBtn.className='vfcp-act-btn'+(r.user_like==='dislike'?' disliked':'');
-  dkBtn.id='vfcp-rdk-'+r.id;dkBtn.innerHTML='👎 <span>'+(r.dislikes||0)+'</span>';
-  dkBtn.onclick=function(){vfcpReplyLike(cid,r.id,1);};
-  const rpBtn=document.createElement('button');rpBtn.className='vfcp-act-btn';
-  rpBtn.innerHTML='💬 <span>Ответить</span>';
-  rpBtn.onclick=function(){document.querySelectorAll('.vfcp-nested-reply-row').forEach(function(el){if(el.dataset.rid!==String(r.id))el.style.display='none';});var row=document.getElementById('vfcp-nrr-'+r.id);if(!row){row=document.createElement('div');row.id='vfcp-nrr-'+r.id;row.className='vfcp-nested-reply-row';row.dataset.rid=String(r.id);row.style.cssText='display:none;gap:6px;align-items:center;margin:4px 0 4px 30px;padding:0 8px;';var eBtn2=document.createElement('button');eBtn2.className='gco-icon-btn';eBtn2.style.cssText='width:32px;height:32px;font-size:15px;flex-shrink:0';eBtn2.innerHTML='<i class="ti ti-mood-smile" style="font-size:15px"></i>';eBtn2.onclick=function(){window._vfcpEmojiTarget=row.querySelector('input');window._vfcpEmojiOpen=!window._vfcpEmojiOpen;if(typeof renderVfcpEmojiPicker==='function')renderVfcpEmojiPicker();};var tBtn2=document.createElement('button');tBtn2.className='gco-icon-btn';tBtn2.style.cssText='width:32px;height:32px;font-size:15px;flex-shrink:0';tBtn2.textContent='∞';tBtn2.onclick=function(e){if(typeof toggleVfcpExpire==='function')toggleVfcpExpire(e);};var inp=document.createElement('input');inp.className='vfcp-reply-inp';inp.placeholder='Reply...';inp.style.flex='1';var sb=document.createElement('button');sb.className='vfcp-send';sb.style.flexShrink='0';sb.textContent='→';sb.onclick=async function(){var txt=row.querySelector('input').value.trim();if(!txt)return;var mi=document.getElementById('vfcp-reply-inp-'+cid);if(mi)mi.value=txt;await vfcpSubmitReply(cid);row.style.display='none';};inp.addEventListener('keydown',function(e){if(e.key==='Enter')sb.click();});row.append(eBtn2,tBtn2,inp,sb);d.after(row);}if(row.style.display==='none'){row.style.display='flex';var rInp=row.querySelector('input');if(rInp){rInp.value='@'+(r.display_name||'')+' ';rInp.focus();}}else{row.style.display='none';}};
-  acts.append(lkBtn,dkBtn,rpBtn);
-  if(isOwn){
-    const editBtn=document.createElement('button');editBtn.className='vfcp-own-btn';editBtn.textContent='✏️';
-    editBtn.onclick=function(){vfcpEditReply(cid,r.id,tx);};
-    const delBtn=document.createElement('button');delBtn.className='vfcp-own-btn';delBtn.textContent='🗑️';
-    delBtn.onclick=function(){vfcpDeleteReply(cid,r.id);};
-    const ownSpan=document.createElement('span');ownSpan.className='vfcp-own-btns';ownSpan.append(editBtn,delBtn);
-    acts.append(ownSpan);
-  }
-  body.append(nm,tx,meta,acts);d.append(av,body);return d;
-}
-async function vfcpReplyLike(cid,rid,typeNum){
-  const type=typeNum?'dislike':'like';
-  const r=await apiCall('/feed/'+_vfCommentPostId+'/comment/'+cid+'/reply/'+rid+'/like','POST',{type});
-  if(!r)return;
-  const lk=document.getElementById('vfcp-rlk-'+rid);const dk=document.getElementById('vfcp-rdk-'+rid);
-  if(lk){const sp=lk.querySelector('span');if(sp)sp.textContent=r.likes||0;lk.classList.toggle('liked',r.user_like==='like');}
-  if(dk){const sp=dk.querySelector('span');if(sp)sp.textContent=r.dislikes||0;dk.classList.toggle('disliked',r.user_like==='dislike');}
-}
-async function vfcpDeleteReply(cid,rid){
-  if(!confirm('Удалить ответ?'))return;
-  const r=await apiCall('/feed/'+_vfCommentPostId+'/comment/'+cid+'/reply/'+rid,'DELETE');
-  if(r&&r.ok){const el=document.getElementById('vfcp-reply-'+rid);if(el)el.remove();}
-}
-function vfcpEditReply(cid,rid,txEl){
-  if(!txEl)return;
-  const oldTxt=txEl.textContent;
-  const inp=document.createElement('input');inp.value=oldTxt;inp.className='vfcp-reply-inp';inp.style.cssText='width:100%;margin-bottom:4px;';
-  const saveBtn=document.createElement('button');saveBtn.className='vfcp-send';saveBtn.style.cssText='padding:2px 8px;font-size:11px;';saveBtn.textContent='✓';
-  const cancelBtn=document.createElement('button');cancelBtn.className='gco-icon-btn';cancelBtn.style.cssText='padding:2px 6px;font-size:11px;';cancelBtn.textContent='✕';
-  saveBtn.onclick=function(){vfcpSaveEditReply(cid,rid,inp,txEl);};
-  cancelBtn.onclick=function(){txEl.textContent=oldTxt;};
-  txEl.innerHTML='';txEl.append(inp,saveBtn,cancelBtn);inp.focus();
-}
-async function vfcpSaveEditReply(cid,rid,inp,txEl){
-  const content=inp.value.trim();if(!content)return;
-  const r=await apiCall('/feed/'+_vfCommentPostId+'/comment/'+cid+'/reply/'+rid,'PUT',{content});
-  if(r&&r.ok){txEl.textContent=r.content||content;}
-}
-function vfcpShowNestedReply(cid,displayName){
-  vfcpShowReply(cid);
-  setTimeout(()=>{
-    const inp=document.getElementById('vfcp-ri-'+cid);
-    if(inp&&displayName){const p='@'+displayName+' ';if(!inp.value.startsWith(p))inp.value=p;inp.setSelectionRange(inp.value.length,inp.value.length);}
-  },60);
-}
-async function vfcpSubmitReply(cid){
-  if(window['_rfSend'+cid])return;
-  const inp=document.getElementById('vfcp-ri-'+cid);
-  const txt=(inp?inp.value:'').trim();if(!txt)return;
-  window['_rfSend'+cid]=true;
-  const body={content:txt};
-  if(window._vfcpExpire)body.expire_seconds=parseInt(window._vfcpExpire);
-  const r=await apiCall('/feed/'+_vfCommentPostId+'/comment/'+cid+'/reply','POST',body);
-  window['_rfSend'+cid]=false;
-  if(!r)return;inp.value='';
-  const cont=document.getElementById('vfcp-replies-'+cid);
-  if(cont){const newCard=_vfcpReplyCard(r,cid);cont.appendChild(newCard);const box=cont.querySelector('.vfcp-reply-box');if(box)box.remove();}
-}
-
 function vfShare(postId){
   const fab=document.getElementById('vf-fab-'+postId);
   const _infoEl=fab?.closest('.vf-card')?.querySelector('.vf-info');
