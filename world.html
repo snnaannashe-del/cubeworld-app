@@ -13344,6 +13344,7 @@ async function openVfComments(postId){
       '</div>';
     div.addEventListener('click',function(e){if(!e.target.closest('button')&&!e.target.closest('input'))this.classList.toggle('tapped');});
     list.appendChild(div);
+    if(c.replies&&c.replies.length){const rCont=div.querySelector('[id="vfcp-replies-'+c.id+'"]');if(rCont)c.replies.forEach(r=>rCont.appendChild(_vfcpReplyCard(r,c.id)));}
   });
 }
 
@@ -13403,7 +13404,77 @@ function vfcpShowReply(cid){
   cont.prepend(box);
   setTimeout(()=>{const inp=box.querySelector('input');if(inp)inp.focus();},50);
 }
-async function vfcpSubmitReply(cid){
+async function _vfcpReplyCard(r,cid){
+  const me=(typeof app!=='undefined'&&app.myProfile)||null;
+  const isOwn=me&&me.id&&String(me.id)===String(r.user_id);
+  const rl=(r.display_name||'?')[0].toUpperCase();
+  const rt=new Date(r.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  const d=document.createElement('div');
+  d.className='vfcp-card vfcp-reply-item';d.id='vfcp-reply-'+r.id;
+  d.style.cssText='background:rgba(0,0,0,0.13);margin-top:4px;padding:6px 8px;border-radius:10px;display:flex;gap:6px;align-items:flex-start';
+  const av=document.createElement('div');av.className='vfcp-avatar';
+  av.style.cssText='width:22px;height:22px;font-size:10px;flex-shrink:0';av.textContent=rl;
+  const body=document.createElement('div');body.style.flex='1';
+  const nm=document.createElement('div');nm.className='vfcp-name';nm.style.fontSize='11px';nm.textContent='@'+(r.display_name||'');
+  const tx=document.createElement('div');tx.className='vfcp-text';tx.style.fontSize='12px';tx.textContent=r.content||'';
+  const meta=document.createElement('div');meta.className='vfcp-meta';meta.textContent=rt;
+  const acts=document.createElement('div');acts.className='vfcp-actions';acts.style.marginTop='4px';
+  const lkBtn=document.createElement('button');lkBtn.className='vfcp-act-btn'+(r.user_like==='like'?' liked':'');
+  lkBtn.id='vfcp-rlk-'+r.id;lkBtn.innerHTML='👍 <span>'+(r.likes||0)+'</span>';
+  lkBtn.onclick=function(){vfcpReplyLike(cid,r.id,0);};
+  const dkBtn=document.createElement('button');dkBtn.className='vfcp-act-btn'+(r.user_like==='dislike'?' disliked':'');
+  dkBtn.id='vfcp-rdk-'+r.id;dkBtn.innerHTML='👎 <span>'+(r.dislikes||0)+'</span>';
+  dkBtn.onclick=function(){vfcpReplyLike(cid,r.id,1);};
+  const rpBtn=document.createElement('button');rpBtn.className='vfcp-act-btn';
+  rpBtn.innerHTML='💬 <span>Ответить</span>';
+  rpBtn.onclick=function(){vfcpShowNestedReply(cid,r.display_name||'');};
+  acts.append(lkBtn,dkBtn,rpBtn);
+  if(isOwn){
+    const editBtn=document.createElement('button');editBtn.className='vfcp-own-btn';editBtn.textContent='✏️';
+    editBtn.onclick=function(){vfcpEditReply(cid,r.id,tx);};
+    const delBtn=document.createElement('button');delBtn.className='vfcp-own-btn';delBtn.textContent='🗑️';
+    delBtn.onclick=function(){vfcpDeleteReply(cid,r.id);};
+    const ownSpan=document.createElement('span');ownSpan.className='vfcp-own-btns';ownSpan.append(editBtn,delBtn);
+    acts.append(ownSpan);
+  }
+  body.append(nm,tx,meta,acts);d.append(av,body);return d;
+}
+async function vfcpReplyLike(cid,rid,typeNum){
+  const type=typeNum?'dislike':'like';
+  const r=await apiCall('/feed/'+_vfCommentPostId+'/comment/'+cid+'/reply/'+rid+'/like','POST',{type});
+  if(!r)return;
+  const lk=document.getElementById('vfcp-rlk-'+rid);const dk=document.getElementById('vfcp-rdk-'+rid);
+  if(lk){const sp=lk.querySelector('span');if(sp)sp.textContent=r.likes||0;lk.classList.toggle('liked',r.user_like==='like');}
+  if(dk){const sp=dk.querySelector('span');if(sp)sp.textContent=r.dislikes||0;dk.classList.toggle('disliked',r.user_like==='dislike');}
+}
+async function vfcpDeleteReply(cid,rid){
+  if(!confirm('Удалить ответ?'))return;
+  const r=await apiCall('/feed/'+_vfCommentPostId+'/comment/'+cid+'/reply/'+rid,'DELETE');
+  if(r&&r.ok){const el=document.getElementById('vfcp-reply-'+rid);if(el)el.remove();}
+}
+function vfcpEditReply(cid,rid,txEl){
+  if(!txEl)return;
+  const oldTxt=txEl.textContent;
+  const inp=document.createElement('input');inp.value=oldTxt;inp.className='vfcp-reply-inp';inp.style.cssText='width:100%;margin-bottom:4px;';
+  const saveBtn=document.createElement('button');saveBtn.className='vfcp-send';saveBtn.style.cssText='padding:2px 8px;font-size:11px;';saveBtn.textContent='✓';
+  const cancelBtn=document.createElement('button');cancelBtn.className='gco-icon-btn';cancelBtn.style.cssText='padding:2px 6px;font-size:11px;';cancelBtn.textContent='✕';
+  saveBtn.onclick=function(){vfcpSaveEditReply(cid,rid,inp,txEl);};
+  cancelBtn.onclick=function(){txEl.textContent=oldTxt;};
+  txEl.innerHTML='';txEl.append(inp,saveBtn,cancelBtn);inp.focus();
+}
+async function vfcpSaveEditReply(cid,rid,inp,txEl){
+  const content=inp.value.trim();if(!content)return;
+  const r=await apiCall('/feed/'+_vfCommentPostId+'/comment/'+cid+'/reply/'+rid,'PUT',{content});
+  if(r&&r.ok){txEl.textContent=r.content||content;}
+}
+function vfcpShowNestedReply(cid,displayName){
+  vfcpShowReply(cid);
+  setTimeout(()=>{
+    const inp=document.getElementById('vfcp-ri-'+cid);
+    if(inp&&displayName){const p='@'+displayName+' ';if(!inp.value.startsWith(p))inp.value=p;inp.setSelectionRange(inp.value.length,inp.value.length);}
+  },60);
+}
+function vfcpSubmitReply(cid){
   if(window['_rfSend'+cid])return;
   const inp=document.getElementById('vfcp-ri-'+cid);
   const txt=(inp?inp.value:'').trim();if(!txt)return;
@@ -13414,14 +13485,7 @@ async function vfcpSubmitReply(cid){
   window['_rfSend'+cid]=false;
   if(!r)return;inp.value='';
   const cont=document.getElementById('vfcp-replies-'+cid);
-  const el=document.createElement('div');el.className='vfcp-reply-item';
-  const rl=(r.display_name||'?')[0].toUpperCase();
-  const rt=new Date(r.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-  el.innerHTML='<div class="vfcp-avatar" style="width:22px;height:22px;font-size:10px">'+rl+'</div>'+
-    '<div><div class="vfcp-name" style="font-size:11px">@'+escHtml(r.display_name||'')+'</div>'+
-    '<div class="vfcp-text" style="font-size:12px">'+escHtml(r.content)+'</div>'+
-    '<div class="vfcp-meta">'+rt+'</div></div>';
-  cont.appendChild(el);
+  if(cont){const newCard=_vfcpReplyCard(r,cid);cont.appendChild(newCard);const box=cont.querySelector('.vfcp-reply-box');if(box)box.remove();}
 }
 
 function vfShare(postId){
