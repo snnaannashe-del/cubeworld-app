@@ -13317,7 +13317,7 @@ async function openVfComments(postId){
   const tok=localStorage.getItem('cw_token');
   const API='https://cubeworld-backend.onrender.com';
   try{
-    const resp=await fetch(API+'/feed/comments/'+postId,{headers:{Authorization:'Bearer '+tok}});
+    const resp=await fetch(API+'/feed/'+postId+'/comments',{headers:{Authorization:'Bearer '+tok}});
     const data=await resp.json();
     const comments=data.comments||data||[];
     if(!comments.length){list.innerHTML='<div style="text-align:center;padding:12px;opacity:.6">Нет комментариев</div>';return;}
@@ -13380,6 +13380,21 @@ async function vfcpSubmitReply(cid,txt){
   const API='https://cubeworld-backend.onrender.com';
   try{await fetch(API+'/feed/comment/'+cid+'/reply',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({content:text})});}catch(e){console.error('reply err',e);}
 }
+async function submitVfComment(){
+  const inp=document.getElementById('vfcp-input');
+  const text=(inp?.value||'').trim();if(!text)return;
+  const tok=localStorage.getItem('cw_token');
+  const API='https://cubeworld-backend.onrender.com';
+  try{
+    const res=await fetch(API+'/feed/'+_vfCommentPostId+'/comment',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({content:text})});
+    if(res.ok){inp.value='';openVfComments(_vfCommentPostId);}
+  }catch(e){console.error('submit comment err',e);}
+}
+function closeVfComments(){
+  const panel=document.getElementById('vf-comments-panel');
+  panel?.classList.remove('open');
+}
+
 
 
 function vfShare(postId){
