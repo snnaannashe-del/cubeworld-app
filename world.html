@@ -13139,6 +13139,7 @@ function renderFeed(){
   window._vfRO.observe(container);
   container.querySelectorAll('.vf-card').forEach(c=>_vfObserver.observe(c));
   if(window._vfSnap){container.scrollTop=0;window._vfSnap.reset();}
+  if(window._vfSnap){container.scrollTop=0;window._vfSnap.reset();}
   // Apply cached avatars instantly, fetch missing ones in bg
   (function(){
     var avEls=container.querySelectorAll('[data-uid]');
