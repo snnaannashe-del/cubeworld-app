@@ -410,7 +410,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vf-tab2{padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;color:rgba(255,255,255,.5);border:none;background:transparent;transition:all .2s;border-bottom:2.5px solid transparent;letter-spacing:.02em}
 .vf-tab2.active{color:#fff;border-bottom-color:#fff}
 .vf-tab2:hover{color:rgba(255,255,255,.8)}
-.vf-tabs-toggle{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.45);font-size:18px;margin-left:auto;padding:6px 8px;transition:all .2s;display:flex;align-items:center}
+.vf-tabs-toggle{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.45);font-size:18px;margin-left:auto;padding:6px 8px;transition:all .2s;display:flex;align-items:center}.vf-srch-btn{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.5);padding:4px 8px;display:flex;align-items:center;transition:color .2s;margin-left:4px}.vf-srch-btn:hover,.vf-srch-btn.active{color:#fff}.vf-srch-bar{display:none;align-items:center;gap:6px;padding:5px 10px;background:rgba(0,0,0,.5);border-top:1px solid rgba(255,255,255,.08)}.vf-srch-inp{flex:1;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;color:#fff;padding:5px 14px;font-size:12px;outline:none}.vf-srch-x{background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:16px;padding:2px 6px;line-height:1}.vf-card.vf-hidden{display:none!important}
 .vf-tabs-toggle:hover{color:#fff}
 /* Persistent bird button — shows when tabs are hidden */
 .vf-tabs-bird{position:absolute;top:8px;right:13px;z-index:31;background:transparent;border:1.5px solid rgba(255,255,255,0.35);border-radius:50%;width:28px;height:28px;color:rgba(255,255,255,.9);-webkit-tap-highlight-color:transparent;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;padding:0;transition:opacity .25s,transform .25s;opacity:0;pointer-events:none}
@@ -3213,8 +3213,11 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
               <button class="vf-tab2" onclick="vfSwitchTab2('rec',this)">Rec</button>
               <button class="vf-tab2" onclick="vfSwitchTab2('top',this)">Top</button>
               <button class="vf-tabs-toggle" onclick="toggleVfTabsDrawer()" title="Скрыть шапку"><i class="ti ti-chevron-up" id="vf-tabs-chevron"></i></button>
+              <button class="vf-srch-btn" id="vf-srch-btn" onclick="toggleVfSearch()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
             </div>
+            <div class="vf-srch-bar" id="vf-srch-bar"><input class="vf-srch-inp" id="vf-srch-inp" type="text" placeholder="Search title / tags..." oninput="_vfSearch(this.value)"><button class="vf-srch-x" onclick="closeVfSearch()">&#x2715;</button></div>
           </div>
+<script>function toggleVfSearch(){var b=document.getElementById("vf-srch-bar"),btn=document.getElementById("vf-srch-btn");if(!b)return;var v=b.style.display==="flex";b.style.display=v?"none":"flex";if(btn)btn.classList.toggle("active",!v);if(!v){setTimeout(function(){var i=document.getElementById("vf-srch-inp");if(i)i.focus();},50);}else{_vfSearch("");}}function closeVfSearch(){var b=document.getElementById("vf-srch-bar");if(b)b.style.display="none";var btn=document.getElementById("vf-srch-btn");if(btn)btn.classList.remove("active");_vfSearch("");}function _vfSearch(q){q=(q||"").toLowerCase().trim();var cards=document.querySelectorAll("#vf-container .vf-card");cards.forEach(function(c){if(!q){c.classList.remove("vf-hidden");return;}var text=(c.textContent||"").toLowerCase();if(text.indexOf(q)!==-1)c.classList.remove("vf-hidden");else c.classList.add("vf-hidden");});}</script>
           <!-- scrollable video cards -->
           <div class="vf-container" id="vf-container"></div>
         </div>
