@@ -16195,6 +16195,7 @@ function openComments(postId){
   _vfcPostId=postId;
   const panel=document.getElementById('vfc-panel');
   if(!panel) return;
+  panel.onclick=function(ev){var sh=panel.querySelector('.vfc-sheet');if(sh&&sh.contains(ev.target))return;closeComments();};
   panel.classList.add('open');
   _renderComments();
 }
