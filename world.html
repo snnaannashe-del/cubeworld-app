@@ -12798,7 +12798,7 @@ function vfSwitchTab(tab, el){
 
 // New 4-tab system: Shorts | Post | Rec | Top
 const _vfTab2Map = { shorts:'short', post:'ball', rec:'rec', top:'top' };
-function vfSwitchTab2(tab, el){
+function vfSwitchTab2(tab, el){if(typeof closeComments==="function")closeComments();
   document.querySelectorAll('.vf-tab2').forEach(t=>t.classList.remove('active'));
   if(el) el.classList.add('active');
   try{localStorage.setItem('cw_feed_tab',tab);}catch(_e){}
