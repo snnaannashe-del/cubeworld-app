@@ -349,6 +349,15 @@ def init_db():
             created_at TIMESTAMP NOT NULL DEFAULT NOW(),
             UNIQUE(comment_id, user_id)
         )""")
+        # Add expire_at columns if missing (migration)
+        try:
+            c.execute("ALTER TABLE post_comments ADD COLUMN expire_at TIMESTAMP")
+            conn.commit()
+        except Exception: pass
+        try:
+            c.execute("ALTER TABLE comment_replies ADD COLUMN expire_at TIMESTAMP")
+            conn.commit()
+        except Exception: pass
         c.execute("""CREATE TABLE IF NOT EXISTS comment_replies (
             id SERIAL PRIMARY KEY,
             comment_id INTEGER NOT NULL REFERENCES post_comments(id) ON DELETE CASCADE,
@@ -2048,10 +2057,16 @@ def toggle_comment_like(comment_id, user_id, like_type):
             c.execute(_q("INSERT INTO comment_likes (comment_id, user_id, type) VALUES (?,?,?)"), (comment_id, user_id, like_type))
             liked = True
         conn.commit()
-        c.execute(_q("SELECT COUNT(*) FROM comment_likes WHERE comment_id=? AND type=?"), (comment_id, like_type))
-        row = c.fetchone()
-        count = row[0] if row else 0
-        return {"liked": liked, "count": count}
+        c.execute(_q("SELECT COUNT(*) FROM comment_likes WHERE comment_id=? AND type='like'"), (comment_id,))
+        lrow = c.fetchone()
+        likes = lrow[0] if lrow else 0
+        c.execute(_q("SELECT COUNT(*) FROM comment_likes WHERE comment_id=? AND type='dislike'"), (comment_id,))
+        drow = c.fetchone()
+        dislikes = drow[0] if drow else 0
+        c.execute(_q("SELECT type FROM comment_likes WHERE comment_id=? AND user_id=?"), (comment_id, user_id))
+        urow = c.fetchone()
+        user_like = (urow[0] if not hasattr(urow, "keys") else urow["type"]) if urow else None
+        return {"likes": likes, "dislikes": dislikes, "user_like": user_like}
     finally:
         conn.close()
 
@@ -2080,13 +2095,28 @@ def edit_post_comment(comment_id, user_id, content):
         conn.close()
 
 
-def add_comment_reply(comment_id, user_id, display_name, content):
+def add_comment_reply(comment_id, user_id, display_name, content, expire_seconds=None):
     conn = get_db()
     try:
-        sql = _q("INSERT INTO comment_replies (comment_id, user_id, display_name, content) VALUES (?,?,?,?)")
-        rid = _execute_returning(conn, sql, (comment_id, user_id, display_name, content))
-        conn.commit()
         c = conn.cursor()
+        expire_at = None
+        if expire_seconds:
+            expire_at = datetime.utcnow() + timedelta(seconds=int(expire_seconds))
+        else:
+            # Inherit parent comment's expire_at
+            c.execute(_q("SELECT expire_at FROM post_comments WHERE id=?"), (comment_id,))
+            prow = c.fetchone()
+            if prow:
+                parent_exp = prow[0] if not hasattr(prow, "keys") else prow.get("expire_at")
+                if parent_exp:
+                    expire_at = parent_exp
+        if expire_at:
+            sql = _q("INSERT INTO comment_replies (comment_id, user_id, display_name, content, expire_at) VALUES (?,?,?,?,?)")
+            rid = _execute_returning(conn, sql, (comment_id, user_id, display_name, content, expire_at))
+        else:
+            sql = _q("INSERT INTO comment_replies (comment_id, user_id, display_name, content) VALUES (?,?,?,?)")
+            rid = _execute_returning(conn, sql, (comment_id, user_id, display_name, content))
+        conn.commit()
         c.execute(_q("SELECT id, comment_id, user_id, display_name, content, created_at FROM comment_replies WHERE id=?"), (rid,))
         return _row(c.fetchone())
     finally:
