@@ -13354,15 +13354,15 @@ function closeVfComments(){
 }
 
 async function submitVfComment(){
-  if(!_vfCommentPostId||window._vfSending) return;
+  if(!_vfCommentPostId||window._vfcSending) return;
   const inp=document.getElementById('vfcp-input');
   const txt=(inp?.value||'').trim();
   if(!txt) return;
-  window._vfSending=true;
+  window._vfcSending=true;
   const body={content:txt};
   if(window._vfcpExpire) body.expire_seconds=parseInt(window._vfcpExpire);
   const data=await apiCall('/feed/'+_vfCommentPostId+'/comment','POST',body);
-  window._vfSending=false;
+  window._vfcSending=false;
   if(!data){showToast('Войдите чтобы комментировать');return;}
   inp.value='';
   await openVfComments(_vfCommentPostId);
@@ -13398,20 +13398,20 @@ function vfcpShowReply(cid){
   const inp=document.createElement('input');inp.className='vfcp-reply-inp';inp.placeholder='Ответить...';inp.id='vfcp-ri-'+cid;inp.style.flex='1';
   const eBtn=document.createElement('button');eBtn.className='gco-icon-btn';eBtn.style.cssText='width:36px;height:36px;font-size:16px;flex-shrink:0';eBtn.innerHTML='<i class="ti ti-mood-smile" style="font-size:16px"></i>';eBtn.onclick=function(){window._vfEmojiTarget='vfcp-ri-'+cid;toggleVfcpEmoji();};
   const tBtn=document.createElement('button');tBtn.className='gco-icon-btn vfcp-timer-btn';tBtn.style.cssText='width:36px;height:36px;font-size:16px;flex-shrink:0';tBtn.textContent=window._vfcpExpire?'⏱':'∞';tBtn.onclick=function(e){toggleVfcpExpire(e);};
-  const sBtn=document.createElement('button');sBtn.className='vfcp-send';sBtn.style.cssText='width:36px;height:36px;flex-shrink:0';sBtn.innerHTML='<i class="ti ti-arrow-right" style="font-size:16px"></i>';sBtn.onclick=function(){vfcpSubmitReply(cid);};
+  const sBtn=document.createElement('button');sBtn.className='vfcp-send';sBtn.style.flexShrink='0';sBtn.textContent='→';sBtn.onclick=function(){vfcpSubmitReply(cid);};
   box.append(inp,eBtn,tBtn,sBtn);
   cont.prepend(box);
   setTimeout(()=>{const inp=box.querySelector('input');if(inp)inp.focus();},50);
 }
 async function vfcpSubmitReply(cid){
-  if(window._vfSending)return;
+  if(window['_rfSend'+cid])return;
   const inp=document.getElementById('vfcp-ri-'+cid);
   const txt=(inp?inp.value:'').trim();if(!txt)return;
-  window._vfSending=true;
+  window['_rfSend'+cid]=true;
   const body={content:txt};
   if(window._vfcpExpire)body.expire_seconds=parseInt(window._vfcpExpire);
   const r=await apiCall('/feed/'+_vfCommentPostId+'/comment/'+cid+'/reply','POST',body);
-  window._vfSending=false;
+  window['_rfSend'+cid]=false;
   if(!r)return;inp.value='';
   const cont=document.getElementById('vfcp-replies-'+cid);
   const el=document.createElement('div');el.className='vfcp-reply-item';
