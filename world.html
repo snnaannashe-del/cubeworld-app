@@ -13312,7 +13312,7 @@ async function openVfComments(postId){
   const panel=document.getElementById('vf-comments-panel');
   const list=document.getElementById('vfcp-list');
   if(!panel||!list) return;
-  panel.classList.remove('hidden');
+  panel.classList.add('open');
   list.innerHTML='<div style="text-align:center;padding:12px;opacity:.6">Загрузка...</div>';
   const tok=localStorage.getItem('cw_token');
   const API='https://cubeworld-backend.onrender.com';
@@ -13361,7 +13361,7 @@ function _vfcpReplyCard(r,cid){
   wrap.className='vfcp-reply-item';
   wrap.setAttribute('data-rid',r.id);
   let likes=r.likes||0,dislikes=r.dislikes||0;
-  wrap.innerHTML<`<div class="vfcp-avatar" style="width:28px;height:28px;font-size:11px;">${rl}</div><div class="vfcp-body"><div class="vfcp-name">@${r.display_name||'?'}</div><div class="vfcp-text">${r.content||''}</div><div class="vfcp-actions"><button class="vfcp-act-btn vfcp-like-btn">👍 <span class="vfcp-lc">${likes}</span></button><button class="vfcp-act-btn vfcp-dislike-btn">👎 <span class="vfcp-dc">${dislikes}</span></button><button class="vfcp-act-btn vfcp-reply-toggle">↩ Ответить</button>${isOwn?'<button class="vfcp-act-btn vfcp-edit-btn">✏️</button><button class="vfcp-act-btn vfcp-del-btn">🗑️</button>':''}</div><div class="vfcp-inline-reply" style="display:none;flex-direction:row;gap:6px;margin-top:6px;"><input class="vfcp-ri" type="text" placeholder="Ответить..." style="flex:1;background:#1a1a2e;border:1px solid #333;border-radius:8px;padding:6px 10px;color:#fff;font-size:13px;"><button class="vfcp-ri-send" style="background:#0095f6;border:none;border-radius:8px;padding:6px 12px;color:#fff;cursor:pointer;">→</button></div></div>`;
+  wrap.innerHTML=`<div class="vfcp-avatar" style="width:28px;height:28px;font-size:11px;">${rl}</div><div class="vfcp-body"><div class="vfcp-name">@${r.display_name||'?'}</div><div class="vfcp-text">${r.content||''}</div><div class="vfcp-actions"><button class="vfcp-act-btn vfcp-like-btn">👍 <span class="vfcp-lc">${likes}</span></button><button class="vfcp-act-btn vfcp-dislike-btn">👎 <span class="vfcp-dc">${dislikes}</span></button><button class="vfcp-act-btn vfcp-reply-toggle">↩ Ответить</button>${isOwn?'<button class="vfcp-act-btn vfcp-edit-btn">✏️</button><button class="vfcp-act-btn vfcp-del-btn">🗑️</button>':''}</div><div class="vfcp-inline-reply" style="display:none;flex-direction:row;gap:6px;margin-top:6px;"><input class="vfcp-ri" type="text" placeholder="Ответить..." style="flex:1;background:#1a1a2e;border:1px solid #333;border-radius:8px;padding:6px 10px;color:#fff;font-size:13px;"><button class="vfcp-ri-send" style="background:#0095f6;border:none;border-radius:8px;padding:6px 12px;color:#fff;cursor:pointer;">→</button></div></div>`;
   wrap.querySelector('.vfcp-like-btn').onclick=async()=>{const res=await fetch(API+'/feed/reply/'+r.id+'/like',{method:'POST',headers:{Authorization:'Bearer '+tok(),'Content-Type':'application/json'},body:'{"type":"like"}'});if(res.ok){likes++;wrap.querySelector('.vfcp-lc').textContent=likes;}};
   wrap.querySelector('.vfcp-dislike-btn').onclick=async()=>{const res=await fetch(API+'/feed/reply/'+r.id+'/like',{method:'POST',headers:{Authorization:'Bearer '+tok(),'Content-Type':'application/json'},body:'{"type":"dislike"}'});if(res.ok){dislikes++;wrap.querySelector('.vfcp-dc').textContent=dislikes;}};
   wrap.querySelector('.vfcp-reply-toggle').onclick=()=>{const ri=wrap.querySelector('.vfcp-inline-reply');const show=ri.style.display==='none'||ri.style.display==='';ri.style.display=show?'flex':'none';if(show)ri.querySelector('.vfcp-ri').focus();};
@@ -13380,6 +13380,7 @@ async function vfcpSubmitReply(cid,txt){
   const API='https://cubeworld-backend.onrender.com';
   try{await fetch(API+'/feed/comment/'+cid+'/reply',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({content:text})});}catch(e){console.error('reply err',e);}
 }
+
 
 function vfShare(postId){
   const fab=document.getElementById('vf-fab-'+postId);
