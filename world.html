@@ -3268,13 +3268,7 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
             <button class="gco-icon-btn" onclick="toggleVfcpEmoji()" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:16px"></i></button>
             <div style="position:relative;flex-shrink:0">
               <button id="vfcp-expire-btn" class="gco-icon-btn" onclick="toggleVfcpExpire(event)" style="width:36px;height:36px;font-size:16px">∞</button>
-              <div id="vfcp-expire-popup" class="dm-expire-popup" style="display:none" onclick="if(event.target===this)this.classList.remove('open')">
-                <div class="dm-exp-opt active" data-val="" onclick="setVfcpExpire(this,'')">∞ Навсегда</div>
-                <div class="dm-exp-opt" data-val="300" onclick="setVfcpExpire(this,'300')">⏱ 5 минут</div>
-                <div class="dm-exp-opt" data-val="3600" onclick="setVfcpExpire(this,'3600')">⏱ 1 час</div>
-                <div class="dm-exp-opt" data-val="86400" onclick="setVfcpExpire(this,'86400')">⏱ 24 часа</div>
-                <div class="dm-exp-opt" data-val="604800" onclick="setVfcpExpire(this,'604800')">⏱ 7 дней</div>
-              </div>
+              
             </div>
             <button class="vfcp-send" onclick="submitVfComment()">→</button>
           </div>
@@ -17017,12 +17011,20 @@ function toggleVfcpEmoji(){
   p.style.display=p.style.display==='none'?'flex':'none';
 }
 function toggleVfcpExpire(e){
-  e.stopPropagation();
-  var pop=document.getElementById('vfcp-expire-popup');
-  if(!pop)return;
-  var vis=pop.style.display!=='none';
-  pop.style.display=vis?'none':'block';
-  if(!vis){document.addEventListener('click',function _h(){pop.style.display='none';document.removeEventListener('click',_h);},{once:true});}
+  if(e)e.stopPropagation();
+  var modal=document.getElementById('vfcp-timer-modal');
+  var bd=document.getElementById('vfcp-timer-bd');
+  if(!modal)return;
+  var open=modal.style.display!=='none';
+  if(open){closeVfcpTimer();return;}
+  modal.style.display='block';bd.style.display='block';
+  modal.style.animation='timerSheet .28s cubic-bezier(.34,1.3,.64,1)';
+}
+function closeVfcpTimer(){
+  var modal=document.getElementById('vfcp-timer-modal');
+  var bd=document.getElementById('vfcp-timer-bd');
+  if(modal)modal.style.display='none';
+  if(bd)bd.style.display='none';
 }
 function setVfcpExpire(el,val){
   window._vfcpExpire=val;
@@ -17030,7 +17032,7 @@ function setVfcpExpire(el,val){
   el.classList.add('active');
   var btn=document.getElementById('vfcp-expire-btn');
   if(btn)btn.innerHTML=val?'⏱':'∞';
-  document.getElementById('vfcp-expire-popup').style.display='none';
+  closeVfcpTimer();
 }
 </script>
 
@@ -17054,3 +17056,16 @@ function setVfcpExpire(el,val){
   </div>
 </div>
 <svg id="_cw_svg_filters" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><defs><filter id="_cw_erode" color-interpolation-filters="sRGB"><feMorphology operator="dilate" in="SourceGraphic" radius="0.5"/></filter></defs></svg>
+<!-- VFCP Timer Modal (body level) -->
+<div id="vfcp-timer-bd" onclick="closeVfcpTimer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)"></div>
+<div id="vfcp-timer-modal" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(10,10,25,0.92);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-radius:22px 22px 0 0;border:1px solid rgba(255,255,255,.1);box-shadow:0 -4px 40px rgba(0,0,0,.7);padding-bottom:env(safe-area-inset-bottom,16px)">
+  <div style="width:36px;height:4px;background:rgba(255,255,255,.22);border-radius:2px;margin:12px auto 4px"></div>
+  <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;padding:8px 0 12px;font-weight:600">⏱ Скрыть комментарий через</div>
+  <div class="dm-exp-opt active" data-val="" onclick="setVfcpExpire(this,'')">∞ &nbsp;Навсегда</div>
+  <div class="dm-exp-opt" data-val="300" onclick="setVfcpExpire(this,'300')">⏱ &nbsp;5 минут</div>
+  <div class="dm-exp-opt" data-val="3600" onclick="setVfcpExpire(this,'3600')">⏱ &nbsp;1 час</div>
+  <div class="dm-exp-opt" data-val="86400" onclick="setVfcpExpire(this,'86400')">⏱ &nbsp;24 часа</div>
+  <div class="dm-exp-opt" data-val="604800" onclick="setVfcpExpire(this,'604800')">⏱ &nbsp;7 дней</div>
+  <div style="height:16px"></div>
+</div>
+
