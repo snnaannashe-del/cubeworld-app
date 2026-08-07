@@ -16201,6 +16201,16 @@ function openComments(postId){
 
 function closeComments(){
   document.getElementById('vfc-panel')?.classList.remove('open');
+}function _vfcBackdropClick(e){
+  var sheet=document.querySelector('.vfc-sheet');
+  if(sheet&&sheet.contains(e.target))return;
+  closeComments();
+  setTimeout(function(){
+    var el=document.elementFromPoint(e.clientX,e.clientY);
+    if(el&&el.closest('.vf-tab2')){el.closest('.vf-tab2').click();}
+    else if(el&&(el.id==='vf-srch-btn'||el.closest('#vf-srch-btn'))){document.getElementById('vf-srch-btn').click();}
+    else if(el&&(el.id==='vf-tabs-chevron'||el.closest('.vf-tabs-toggle'))){var tb=el.closest('.vf-tabs-toggle');if(tb)tb.click();}
+  },50);
 }
 
 function _renderComments(){
