@@ -13390,7 +13390,11 @@ function vfcpShowReply(cid){
   const cont=document.getElementById('vfcp-replies-'+cid);if(!cont)return;
   if(cont.querySelector('.vfcp-reply-box')){cont.querySelector('.vfcp-reply-box').remove();return;}
   const box=document.createElement('div');box.className='vfcp-reply-box';
-  box.innerHTML='<input class="vfcp-reply-inp" placeholder="Ответить..." id="vfcp-ri-'+cid+'"><button class="vfcp-send" style="padding:4px 12px" onclick="vfcpSubmitReply('+cid+')">→</button>';
+  box.style.cssText='display:flex;align-items:center;gap:6px;margin-top:6px;padding:4px 0';
+  box.innerHTML='<input class="vfcp-reply-inp" placeholder="Ответить..." id="vfcp-ri-'+cid+'" style="flex:1">'
+    +'<button style="background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,.85);font-size:18px;cursor:pointer;padding:4px 8px;border-radius:10px" onclick="window._vfEmojiTarget='vfcp-ri-'+cid+'';toggleVfcpEmoji()">😊</button>'
+    +'<button style="background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,.85);font-size:16px;cursor:pointer;padding:4px 8px;border-radius:10px" onclick="toggleVfcpExpire(event)">♾</button>'
+    +'<button style="background:#0095F6;border:none;color:#fff;font-size:18px;font-weight:700;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center" onclick="vfcpSubmitReply('+cid+')">→</button>';
   cont.prepend(box);
   setTimeout(()=>{const inp=box.querySelector('input');if(inp)inp.focus();},50);
 }
@@ -17003,7 +17007,7 @@ function toggleVfcpEmoji(){
     [...emojis].forEach(function(e){
       var b=document.createElement('button');
       b.textContent=e;b.style.cssText='background:none;border:none;cursor:pointer;font-size:20px;padding:3px;border-radius:6px';
-      b.onclick=function(){var inp=document.getElementById('vfcp-input');if(inp){inp.value+=e;inp.focus();}};
+      b.onclick=function(){var inp=document.getElementById(window._vfEmojiTarget||'vfcp-input');if(inp){inp.value+=e;inp.focus();}};
       p.appendChild(b);
     });
     document.body.appendChild(p);
@@ -17040,7 +17044,7 @@ function toggleVfcpExpire(e){
   var open=modal.style.display!=='none';
   if(open){closeVfcpTimer();return;}
   // Position near the trigger button
-  var btn=document.getElementById('vfcp-expire-btn');
+  var btn=document.getElementById('vfcp-expire-btn')||(e&&e.currentTarget);
   modal.style.display='block';
   bd.style.display='block';
   requestAnimationFrame(function(){
