@@ -13404,7 +13404,7 @@ function vfcpShowReply(cid){
   cont.prepend(box);
   setTimeout(()=>{const inp=box.querySelector('input');if(inp)inp.focus();},50);
 }
-async function _vfcpReplyCard(r,cid){
+function _vfcpReplyCard(r,cid){
   const me=(typeof app!=='undefined'&&app.myProfile)||null;
   const isOwn=me&&me.id&&String(me.id)===String(r.user_id);
   const rl=(r.display_name||'?')[0].toUpperCase();
