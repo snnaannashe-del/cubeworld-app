@@ -1089,7 +1089,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vfcp-body{flex:1}
 .vfcp-name{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:2px}
 .vfcp-text{font-size:13px;color:var(--text);line-height:1.5}
-.vfcp-meta{font-size:10px;color:var(--text3);margin-top:3px}.vfcp-actions{display:flex;gap:10px;align-items:center;margin-top:5px}.vfcp-act-btn{display:flex;align-items:center;gap:3px;background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:2px 5px;border-radius:6px;transition:color .2s}.vfcp-act-btn.liked{color:#0095F6}.vfcp-act-btn.disliked{color:#e74c3c}.vfcp-own-btns{display:none;gap:4px;margin-left:auto}.vfcp-comment.tapped .vfcp-own-btns{display:flex}.vfcp-own-btn{background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:2px 5px;border-radius:5px}.vfcp-reply-box{margin-top:6px;display:flex;gap:6px;align-items:center}.vfcp-reply-inp{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--text1);outline:none}.vfcp-reply-item{display:flex;gap:7px;align-items:flex-start;padding:5px 0 5px 12px;border-left:2px solid var(--border);margin-top:5px}
+.vfcp-meta{font-size:10px;color:var(--text3);margin-top:3px}.vfcp-actions{display:flex;gap:10px;align-items:center;margin-top:5px}.vfcp-act-btn{display:flex;align-items:center;gap:3px;background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:2px 5px;border-radius:6px;transition:color .2s}.vfcp-act-btn.liked{color:#0095F6}.vfcp-act-btn.disliked{color:#e74c3c}.vfcp-own-btns{display:none;gap:4px;margin-left:auto}.vfcp-comment.tapped .vfcp-own-btns{display:flex}.vfcp-own-btn{background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:2px 5px;border-radius:5px}.vfcp-reply-box{margin-top:6px;display:flex;gap:6px;align-items:center}.vfcp-reply-inp{flex:1;padding:8px 12px;border-radius:18px;border:1.5px solid rgba(0,149,246,.5);background:rgba(20,80,180,.2);color:#fff;font-size:12px;outline:none}.vfcp-reply-item{display:flex;gap:7px;align-items:flex-start;padding:5px 0 5px 12px;border-left:2px solid var(--border);margin-top:5px}
 .vfcp-input-row{display:flex;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--border);flex-shrink:0}
 .vfcp-input{flex:1;padding:9px 13px;border-radius:20px;border:1.5px solid rgba(0,149,246,.6);background:rgba(20,80,180,.25);color:#fff;font-size:13px;outline:none}
 .vfcp-input:focus{border-color:rgba(0,149,246,.4)}
@@ -16995,20 +16995,42 @@ function stopLiveStream(){
 window._vfcpExpire='';
 function toggleVfcpEmoji(){
   var p=document.getElementById('vfcp-emoji-pop');
+  var btn=document.querySelector('#vfcp-input+button,.gco-icon-btn[onclick*="toggleVfcpEmoji"]')||document.getElementById('vfcp-expire-btn');
   if(!p){
     p=document.createElement('div');p.id='vfcp-emoji-pop';
-    p.style.cssText='position:absolute;bottom:calc(100% + 8px);left:60%;right:0;background:rgba(8,8,20,0.28);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.12);border-radius:16px 16px 6px 16px;padding:10px 8px;display:none;flex-wrap:wrap;gap:5px;z-index:500;max-height:200px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.55);animation:epSlideIn .2s ease';
+    p.style.cssText='position:fixed;background:rgba(8,8,20,0.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.13);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.6);padding:10px 8px;display:none;flex-wrap:wrap;gap:5px;z-index:10001;max-height:200px;width:220px;overflow-y:auto';
     var emojis='😀😂😍🥰😎🤔😢😡🔥❤️👍👎✅🎉💯🙏😊🤣😅😁🤪😏😒😔😭😤😡🤯🥳😇🤩🤗😴🤧🤒🥴🫡💪🏆🌈🦋🌸🍀🚀⭐🌟💫✨🎵💡🔑';
-    [...emojis].forEach(e=>{
+    [...emojis].forEach(function(e){
       var b=document.createElement('button');
-      b.textContent=e;b.style.cssText='background:none;border:none;cursor:pointer;font-size:20px;padding:2px;border-radius:6px';
-      b.onclick=function(){var inp=document.getElementById('vfcp-input');if(inp){inp.value+=e;inp.focus();}p.style.display='none';};
+      b.textContent=e;b.style.cssText='background:none;border:none;cursor:pointer;font-size:20px;padding:3px;border-radius:6px';
+      b.onclick=function(){var inp=document.getElementById('vfcp-input');if(inp){inp.value+=e;inp.focus();}};
       p.appendChild(b);
     });
-    var row=document.querySelector('.vfcp-input-row');
-    if(row){row.style.position='relative';row.appendChild(p);}
+    document.body.appendChild(p);
   }
-  p.style.display=p.style.display==='none'?'flex':'none';
+  var open=p.style.display!=='none';
+  if(open){p.style.display='none';return;}
+  p.style.display='flex';
+  requestAnimationFrame(function(){
+    var ph=p.offsetHeight||180,pw=p.offsetWidth||220;
+    var ref=document.getElementById('vfcp-expire-btn')||document.getElementById('vfcp-input');
+    if(ref){
+      var r=ref.getBoundingClientRect();
+      var top=r.top-ph-10;
+      var left=r.left-pw+36;
+      if(top<8)top=r.bottom+8;
+      if(left<8)left=8;
+      if(left+pw>window.innerWidth-8)left=window.innerWidth-pw-8;
+      p.style.top=top+'px';p.style.left=left+'px';
+    }
+    p.style.animation='timerPop .2s cubic-bezier(.34,1.56,.64,1)';
+  });
+  // close on outside tap
+  setTimeout(function(){
+    function _h(e){if(!p.contains(e.target)){p.style.display='none';document.removeEventListener('mousedown',_h);document.removeEventListener('touchstart',_h);}}
+    document.addEventListener('mousedown',_h,{once:false});
+    document.addEventListener('touchstart',_h,{once:false});
+  },50);
 }
 function toggleVfcpExpire(e){
   if(e)e.stopPropagation();
@@ -17078,7 +17100,7 @@ function setVfcpExpire(el,val){
 <svg id="_cw_svg_filters" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><defs><filter id="_cw_erode" color-interpolation-filters="sRGB"><feMorphology operator="dilate" in="SourceGraphic" radius="0.5"/></filter></defs></svg>
 <!-- VFCP Timer Modal (body level — compact card) -->
 <div id="vfcp-timer-bd" onclick="closeVfcpTimer()" style="display:none;position:fixed;inset:0;z-index:9998"></div>
-<div id="vfcp-timer-modal" style="display:none;position:fixed;z-index:9999;background:rgba(14,14,30,0.78);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:14px;border:1px solid rgba(255,255,255,.12);box-shadow:0 8px 32px rgba(0,0,0,.6);min-width:160px;overflow:hidden">
+<div id="vfcp-timer-modal" style="display:none;position:fixed;z-index:9999;background:rgba(8,8,20,0.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.13);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.6);min-width:160px;overflow:hidden">
   <div style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase;padding:10px 14px 6px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.06)">⏱ Скрыть через</div>
   <div class="dm-exp-opt active" data-val="" onclick="setVfcpExpire(this,'')">∞ Навсегда</div>
   <div class="dm-exp-opt" data-val="300" onclick="setVfcpExpire(this,'300')">⏱ 5 минут</div>
