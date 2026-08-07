@@ -3265,7 +3265,7 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
             <button class="gco-icon-btn" onclick="toggleVfcpEmoji()" style="width:36px;height:36px;flex-shrink:0"><i class="ti ti-mood-smile" style="font-size:16px"></i></button>
             <div style="position:relative;flex-shrink:0">
               <button id="vfcp-expire-btn" class="gco-icon-btn" onclick="toggleVfcpExpire(event)" style="width:36px;height:36px;font-size:16px">∞</button>
-              <div id="vfcp-expire-popup" class="dm-expire-popup" style="display:none;bottom:44px;right:0">
+              <div id="vfcp-expire-popup" class="dm-expire-popup" style="display:none">
                 <div class="dm-exp-opt active" data-val="" onclick="setVfcpExpire(this,'')">∞ Навсегда</div>
                 <div class="dm-exp-opt" data-val="300" onclick="setVfcpExpire(this,'300')">⏱ 5 минут</div>
                 <div class="dm-exp-opt" data-val="3600" onclick="setVfcpExpire(this,'3600')">⏱ 1 час</div>
@@ -17000,7 +17000,7 @@ function toggleVfcpEmoji(){
   var p=document.getElementById('vfcp-emoji-pop');
   if(!p){
     p=document.createElement('div');p.id='vfcp-emoji-pop';
-    p.style.cssText='position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:rgba(10,10,30,0.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:8px;display:none;flex-wrap:wrap;gap:3px;z-index:500;max-height:160px;overflow-y:auto;box-shadow:0 4px 24px rgba(0,0,0,.7)';
+    p.style.cssText='position:absolute;bottom:calc(100% + 8px);left:0;right:0;background:rgba(8,8,20,0.3);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:10px;display:none;flex-wrap:wrap;gap:4px;z-index:500;max-height:180px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.5)';
     var emojis='😀😂😍🥰😎🤔😢😡🔥❤️👍👎✅🎉💯🙏😊🤣😅😁🤪😏😒😔😭😤😡🤯🥳😇🤩🤗😴🤧🤒🥴🫡💪🏆🌈🦋🌸🍀🚀⭐🌟💫✨🎵💡🔑';
     [...emojis].forEach(e=>{
       var b=document.createElement('button');
