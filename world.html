@@ -16998,7 +16998,7 @@ function toggleVfcpEmoji(){
   var btn=document.querySelector('#vfcp-input+button,.gco-icon-btn[onclick*="toggleVfcpEmoji"]')||document.getElementById('vfcp-expire-btn');
   if(!p){
     p=document.createElement('div');p.id='vfcp-emoji-pop';
-    p.style.cssText='position:fixed;background:rgba(8,8,20,0.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.13);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.6);padding:10px 8px;display:none;flex-wrap:wrap;gap:5px;z-index:10001;max-height:200px;width:220px;overflow-y:auto';
+    p.style.cssText='position:fixed;background:rgba(255,255,255,0.06);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.15);border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,.3);padding:10px 8px;display:none;flex-wrap:wrap;gap:5px;z-index:10001;max-height:200px;width:220px;overflow-y:auto';
     var emojis='😀😂😍🥰😎🤔😢😡🔥❤️👍👎✅🎉💯🙏😊🤣😅😁🤪😏😒😔😭😤😡🤯🥳😇🤩🤗😴🤧🤒🥴🫡💪🏆🌈🦋🌸🍀🚀⭐🌟💫✨🎵💡🔑';
     [...emojis].forEach(function(e){
       var b=document.createElement('button');
@@ -17100,7 +17100,7 @@ function setVfcpExpire(el,val){
 <svg id="_cw_svg_filters" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><defs><filter id="_cw_erode" color-interpolation-filters="sRGB"><feMorphology operator="dilate" in="SourceGraphic" radius="0.5"/></filter></defs></svg>
 <!-- VFCP Timer Modal (body level — compact card) -->
 <div id="vfcp-timer-bd" onclick="closeVfcpTimer()" style="display:none;position:fixed;inset:0;z-index:9998"></div>
-<div id="vfcp-timer-modal" style="display:none;position:fixed;z-index:9999;background:rgba(8,8,20,0.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.13);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.6);min-width:160px;overflow:hidden">
+<div id="vfcp-timer-modal" style="display:none;position:fixed;z-index:9999;background:rgba(255,255,255,0.06);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.15);border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,.3);min-width:160px;overflow:hidden">
   <div style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase;padding:10px 14px 6px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.06)">⏱ Скрыть через</div>
   <div class="dm-exp-opt active" data-val="" onclick="setVfcpExpire(this,'')">∞ Навсегда</div>
   <div class="dm-exp-opt" data-val="300" onclick="setVfcpExpire(this,'300')">⏱ 5 минут</div>
