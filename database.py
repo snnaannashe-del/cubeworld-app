@@ -5,7 +5,7 @@ CubeWorld Database Ã¢ÂÂ dual-mode: PostgreSQL (Render) or SQLite (local)
 """
 import os
 import hashlib
-from datetime import datetime
+from datetime import datetime, timedelta
 
 DATABASE_URL = os.getenv("DATABASE_URL")  # set automatically by Render
 
@@ -364,6 +364,7 @@ def init_db():
             user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
             display_name TEXT,
             content TEXT NOT NULL,
+            expire_at TIMESTAMP,
             created_at TIMESTAMP NOT NULL DEFAULT NOW()
         )""")
     else:
