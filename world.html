@@ -991,12 +991,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .swipe-indicator{position:fixed;left:0;top:50%;transform:translateY(-50%);width:4px;height:60px;background:var(--accent);border-radius:0 4px 4px 0;opacity:0;transition:opacity .2s;pointer-events:none;z-index:601}
 .swipe-indicator.show{opacity:1}
 /* ── FEED SNAP SCROLL ── */
-.vf-container{flex:1;overflow-y:scroll;overflow-x:hidden;scroll-snap-type:y mandatory;position:relative;overscroll-behavior-y:contain;will-change:scroll-position;touch-action:pan-y}
+.vf-container{flex:1;overflow-y:scroll;overflow-x:hidden;scroll-behavior:smooth;position:relative;overscroll-behavior-y:contain;touch-action:pan-y}
 .vf-container::-webkit-scrollbar{display:none}
 /* Each card = exactly one viewport page */
 .vf-card{
   width:100%;height:100%;
-  scroll-snap-align:start;scroll-snap-stop:always;
   position:relative;background:#000;
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;flex-shrink:0;
@@ -13139,6 +13138,7 @@ function renderFeed(){
   window._vfRO = new ResizeObserver(()=>requestAnimationFrame(_fixCardHeights));
   window._vfRO.observe(container);
   container.querySelectorAll('.vf-card').forEach(c=>_vfObserver.observe(c));
+  if(window._vfSnap){container.scrollTop=0;window._vfSnap.reset();}
   // Apply cached avatars instantly, fetch missing ones in bg
   (function(){
     var avEls=container.querySelectorAll('[data-uid]');
@@ -16317,44 +16317,94 @@ function _compressImage(file, maxW=1200, quality=0.82){
 /* ═══════════════════════════════════════════════════════════════════════
    SWIPE GESTURES
 ═══════════════════════════════════════════════════════════════════════ */
-(function initSwipeGestures(){
-  let touchStartX=0, touchStartY=0, touchStartT=0;
+(function initSwipeAndFeedSnap(){
+  /* ── shared touch state ── */
+  let _tx0=0, _ty0=0, _t0=0, _inFeed=false;
 
-  function onTouchStart(e){
-    touchStartX=e.touches[0].clientX;
-    touchStartY=e.touches[0].clientY;
-    touchStartT=Date.now();
+  /* ── FEED SNAP STATE ── */
+  let _idx=0, _busy=false;
+  const SNAP_DUR=500;
+
+  function _con(){ return document.getElementById('vf-container'); }
+
+  function _feedVisible(){
+    const c=_con();
+    return !!(c && c.offsetParent !== null && c.getBoundingClientRect().height > 0);
   }
 
-  function onTouchEnd(e){
-    const dx=e.changedTouches[0].clientX-touchStartX;
-    const dy=e.changedTouches[0].clientY-touchStartY;
-    const dt=Date.now()-touchStartT;
-    if(Math.abs(dx)<Math.abs(dy)*0.7||Math.abs(dx)<40||dt>500) return;
-    const isRight=dx>0;
-    // Check if group overlay is open
-    const grpOv=document.getElementById('grp-chat-overlay');
-    if(grpOv && grpOv.classList.contains('open')){
-      if(isRight && touchStartX<60){ _showSwipeIndicator(); closeGroupChat(); return; }
-    }
-    // Swipe on feed tabs (left/right between Home/Search/etc)
-    const feed=document.getElementById('vf-feed');
-    if(feed && feed.style.display!=='none'){
-      const tabs=['home','search','signals','market'];
-      const nav=document.querySelector('.nav-bar');
-      if(!nav) return;
-      // find active tab index
-      const activeBtn=nav.querySelector('.nav-btn.active');
-      if(!activeBtn) return;
-      const allBtns=[...nav.querySelectorAll('.nav-btn')];
-      const idx=allBtns.indexOf(activeBtn);
-      if(isRight && idx>0){ allBtns[idx-1].click(); }
-      else if(!isRight && idx<allBtns.length-1){ allBtns[idx+1].click(); }
-    }
+  function _snapTo(n){
+    const c=_con(); if(!c) return;
+    const cards=[...c.querySelectorAll('.vf-card')]; if(!cards.length) return;
+    n=Math.max(0,Math.min(n,cards.length-1));
+    if(_busy) return;
+    _idx=n; _busy=true;
+    const h=c.clientHeight||window.innerHeight;
+    c.scrollTo({top:n*h, behavior:'smooth'});
+    setTimeout(()=>{ _busy=false; }, SNAP_DUR);
   }
 
-  document.addEventListener('touchstart',onTouchStart,{passive:true});
-  document.addEventListener('touchend',onTouchEnd,{passive:true});
+  window._vfSnap={ goTo:_snapTo, reset(){ _idx=0; _busy=false; } };
+
+  /* ── WHEEL ── desktop one-card-at-a-time */
+  document.addEventListener('wheel', function(e){
+    if(!_feedVisible()) return;
+    const c=_con();
+    if(!c.contains(e.target) && e.target!==c) return;
+    e.preventDefault();
+    if(_busy) return;
+    _snapTo(_idx + (e.deltaY>0 ? 1 : -1));
+  },{passive:false});
+
+  /* ── TOUCH START ── */
+  document.addEventListener('touchstart', function(e){
+    _tx0=e.touches[0].clientX;
+    _ty0=e.touches[0].clientY;
+    _t0=Date.now();
+    const c=_con();
+    _inFeed=_feedVisible() && !!(c && (c===e.target || c.contains(e.target)));
+  },{passive:true});
+
+  /* ── TOUCHMOVE ── block native scroll inside feed */
+  document.addEventListener('touchmove', function(e){
+    if(!_inFeed) return;
+    const dx=Math.abs(e.touches[0].clientX-_tx0);
+    const dy=Math.abs(e.touches[0].clientY-_ty0);
+    if(dy>dx) e.preventDefault();
+  },{passive:false});
+
+  /* ── TOUCH END ── vertical=feed, horizontal=tabs */
+  document.addEventListener('touchend', function(e){
+    const ex=e.changedTouches[0].clientX;
+    const ey=e.changedTouches[0].clientY;
+    const dx=ex-_tx0;
+    const dy=ey-_ty0;
+    const dt=Date.now()-_t0;
+    const adx=Math.abs(dx), ady=Math.abs(dy);
+
+    if(adx>=ady*0.7 && adx>=40 && dt<=500){
+      const isRight=dx>0;
+      const grpOv=document.getElementById('grp-chat-overlay');
+      if(grpOv && grpOv.classList.contains('open')){
+        if(isRight && _tx0<60){ _showSwipeIndicator(); closeGroupChat(); return; }
+      }
+      const feed=document.getElementById('vf-feed');
+      if(feed && feed.style.display!=='none'){
+        const nav=document.querySelector('.nav-bar');
+        if(!nav) return;
+        const activeBtn=nav.querySelector('.nav-btn.active');
+        if(!activeBtn) return;
+        const allBtns=[...nav.querySelectorAll('.nav-btn')];
+        const idx=allBtns.indexOf(activeBtn);
+        if(isRight && idx>0){ allBtns[idx-1].click(); }
+        else if(!isRight && idx<allBtns.length-1){ allBtns[idx+1].click(); }
+      }
+      return;
+    }
+
+    if(_inFeed && ady>=60 && adx<ady*0.6 && !_busy){
+      _snapTo(_idx + (dy<0 ? 1 : -1));
+    }
+  },{passive:true});
 })();
 
 function _showSwipeIndicator(){
