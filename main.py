@@ -153,6 +153,7 @@ class SetGroupKeyRequest(BaseModel):
 
 class AddCommentRequest(BaseModel):
     content: str
+    expire_seconds: int = None
 
 class CreateSignalRequest(BaseModel):
     ticker: str
@@ -1000,7 +1001,8 @@ async def reply_to_comment(post_id: int, cid: int, body: AddCommentRequest, user
     if not content:
         raise HTTPException(400, "Content required")
     display_name = db.get_display_name(user["id"])
-    return db.add_comment_reply(cid, user["id"], display_name, content)
+    expire_seconds = body.expire_seconds if hasattr(body, "expire_seconds") else None
+    return db.add_comment_reply(cid, user["id"], display_name, content, expire_seconds)
 
 @app.get("/follow/{target_id}")
 async def get_follow_status(target_id: int, user=Depends(get_current_user)):
