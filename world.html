@@ -16324,7 +16324,7 @@ function _compressImage(file, maxW=1200, quality=0.82){
 
   /* ── FEED SNAP STATE ── */
   let _idx=0, _busy=false;
-  const SNAP_DUR=500;
+  const SNAP_DUR=750;
 
   function _con(){ return document.getElementById('vf-container'); }
 
@@ -16347,13 +16347,23 @@ function _compressImage(file, maxW=1200, quality=0.82){
   window._vfSnap={ goTo:_snapTo, reset(){ _idx=0; _busy=false; } };
 
   /* ── WHEEL ── desktop one-card-at-a-time */
-  document.addEventListener('wheel', function(e){
+  /* wheel: accumulate delta so one flick = one card, even on trackpads */
+  let _wAcc=0,_wT=null;
+  document.addEventListener('wheel',function(e){
     if(!_feedVisible()) return;
     const c=_con();
-    if(!c.contains(e.target) && e.target!==c) return;
+    if(!c.contains(e.target)&&e.target!==c) return;
     e.preventDefault();
-    if(_busy) return;
-    _snapTo(_idx + (e.deltaY>0 ? 1 : -1));
+    if(_busy){_wAcc=0;clearTimeout(_wT);return;}
+    _wAcc+=e.deltaY;
+    clearTimeout(_wT);
+    _wT=setTimeout(()=>{_wAcc=0;},400);
+    const thr=e.deltaMode===1?2:60;
+    if(Math.abs(_wAcc)>=thr){
+      const dir=_wAcc>0?1:-1;
+      _wAcc=0;clearTimeout(_wT);
+      _snapTo(_idx+dir);
+    }
   },{passive:false});
 
   /* ── TOUCH START ── */
