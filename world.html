@@ -16212,6 +16212,8 @@ function closeComments(){
     else if(el&&(el.id==='vf-tabs-chevron'||el.closest('.vf-tabs-toggle'))){var tb=el.closest('.vf-tabs-toggle');if(tb)tb.click();}
   },50);
 }
+document.addEventListener("click",function(e){var panel=document.getElementById("vfc-panel");if(panel&&panel.classList.contains("open"))_vfcBackdropClick(e);},true);
+document.addEventListener("touchstart",function(e){var panel=document.getElementById("vfc-panel");if(panel&&panel.classList.contains("open")){var te=e.touches[0];if(te)_vfcBackdropClick({target:e.target,clientX:te.clientX,clientY:te.clientY});}},{passive:true,capture:true});
 
 function _renderComments(){
   const list=document.getElementById('vfc-list');
