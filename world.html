@@ -10013,7 +10013,7 @@ async function _openMiniProfile(uid,name,avColor,avUrl){
   var _c=_avGet(uid);if(_c&&_c.av&&av){_avApply(av,_c.av,_c.color);}
   const nm=document.getElementById('_mac_nm');if(nm)nm.textContent=name||'';
   const btn=document.getElementById('_mac_btn');
-  if(btn)btn.onclick=function(){_closeMac();if(String(window._macUid)===String(localStorage.getItem('cw_user_id')||'')){if(typeof openMyProfile==='function')openMyProfile();}else if(typeof openPublicProfile==='function'){openPublicProfile(window._macUid,window._macName,window._macAv);}};
+  if(btn)btn.onclick=function(){_closeMac();if(String(window._macUid)===String(localStorage.getItem('cw_user_id')||'')){if(typeof openPortfolio==='function')openPortfolio();}else if(typeof openPublicProfile==='function'){openPublicProfile(window._macUid,window._macName,window._macAv);}};
   let bd=document.getElementById('_mac_bd');
   if(!bd){bd=document.createElement('div');bd.id='_mac_bd';bd.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0);z-index:8199;pointer-events:auto;backdrop-filter:none';bd.onclick=_closeMac;document.body.appendChild(bd);}
   bd.style.display='block';
