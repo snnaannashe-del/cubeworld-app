@@ -13339,9 +13339,9 @@ async function openVfComments(postId){
       '<div class="vfcp-text" id="vfcp-txt-'+c.id+'">'+escHtml(c.content)+'</div>'+
       '<div class="vfcp-meta">'+t+'</div>'+
       '<div class="vfcp-actions">'+
-      '<button class="vfcp-act-btn" id="vfcp-lk-'+c.id+'" onclick="vfcpLike('+c.id+',0)">👍 <span>'+(c.likes||0)+'</span></button>'+
-      '<button class="vfcp-act-btn" id="vfcp-dk-'+c.id+'" onclick="vfcpLike('+c.id+',1)">👎 <span>'+(c.dislikes||0)+'</span></button>'+
-      '<button class="vfcp-act-btn" onclick="vfcpShowReply('+c.id+')">💬 <span>Ответить</span></button>'+
+      '<button class="vfcp-act-btn" id="vfcp-lk-'+c.id+'" onclick="vfcpLike('+c.id+',0)"><i class="ti ti-thumb-up" style="font-size:14px"></i> <span>'+(c.likes||0)+'</span></button>'+
+      '<button class="vfcp-act-btn" id="vfcp-dk-'+c.id+'" onclick="vfcpLike('+c.id+',1)"><i class="ti ti-thumb-down" style="font-size:14px"></i> <span>'+(c.dislikes||0)+'</span></button>'+
+      '<button class="vfcp-act-btn" onclick="vfcpShowReply('+c.id+')"><i class="ti ti-message-reply" style="font-size:14px"></i> <span>Ответить</span></button>'+
       '</div>'+
       '<div id="vfcp-replies-'+c.id+'"></div>'+
       '</div>';
