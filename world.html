@@ -13330,46 +13330,43 @@ async function openVfComments(postId){
     }
   }catch(e){list.innerHTML='<div style="color:red;padding:8px">Ошибка загрузки</div>';}
 }
+function _vfcpInitial(name){
+  if(!name)return '?';
+  const cp=name.codePointAt(0);
+  if(cp>127)return name.substring(0,2);
+  return name[0].toUpperCase();
+}
 function _vfcpCommentCard(c){
   const me=(typeof app!=='undefined'&&app.myProfile)||null;
   const isOwn=me&&me.id&&String(me.id)===String(c.user_id);
-  const cl=_vfcpInitial(c.display_name);
   const API='https://cubeworld-backend.onrender.com';
   const tok=()=>localStorage.getItem('cw_token');
   const wrap=document.createElement('div');
   wrap.className='vfcp-comment-item';
   wrap.setAttribute('data-cid',c.id);
-  let likes=c.likes||0,dislikes=c.dislikes||0;
-  let myReact=c.my_reaction||null;
-  wrap.innerHTML=`<div class="vfcp-avatar">${cl}</div><div class="vfcp-body"><div class="vfcp-name">@${c.display_name||'?'}</div><div class="vfcp-text">${c.content||''}</div><div class="vfcp-actions"><button class="vfcp-act-btn vfcp-like-btn${myReact==='like'?' vfcp-reacted':''}">👍 <span class="vfcp-lc">${likes}</span></button><button class="vfcp-act-btn vfcp-dislike-btn${myReact==='dislike'?' vfcp-reacted':''}">👎 <span class="vfcp-dc">${dislikes}</span></button><button class="vfcp-act-btn vfcp-reply-toggle">↩ Ответить</button>${isOwn?'<button class="vfcp-act-btn vfcp-edit-btn">✏️</button><button class="vfcp-act-btn vfcp-del-btn">🗑️</button>':''}</div><div class="vfcp-inline-reply" style="display:none;flex-direction:row;gap:6px;margin-top:6px;"><input class="vfcp-ri" type="text" placeholder="Ответить..." style="flex:1;background:#1a1a2e;border:1px solid #333;border-radius:8px;padding:6px 10px;color:#fff;font-size:13px;"><button class="vfcp-ri-send" style="background:#0095f6;border:none;border-radius:8px;padding:6px 12px;color:#fff;cursor:pointer;">→</button></div></div>`;
-  const likeBtn=wrap.querySelector('.vfcp-like-btn');
-  const dislikeBtn=wrap.querySelector('.vfcp-dislike-btn');
-  likeBtn.onclick=async()=>{
+  let likes=c.likes||0,dislikes=c.dislikes||0,myReact=c.my_reaction||null;
+  wrap.innerHTML='<div class="vfcp-avatar">'+_vfcpInitial(c.display_name)+'</div><div class="vfcp-body"><div class="vfcp-name">@'+(c.display_name||'?')+'</div><div class="vfcp-text">'+(c.content||'')+'</div><div class="vfcp-actions"><button class="vfcp-act-btn vfcp-like-btn'+(myReact==='like'?' vfcp-reacted':'')+'">&#128077; <span class="vfcp-lc">'+likes+'</span></button><button class="vfcp-act-btn vfcp-dislike-btn'+(myReact==='dislike'?' vfcp-reacted':'')+'">&#128078; <span class="vfcp-dc">'+dislikes+'</span></button><button class="vfcp-act-btn vfcp-reply-toggle">&#8617; Ответить</button>'+(isOwn?'<button class="vfcp-act-btn vfcp-edit-btn">&#9999;&#65039;</button><button class="vfcp-act-btn vfcp-del-btn">&#128465;&#65039;</button>':'')+'</div><div class="vfcp-inline-reply" style="display:none;flex-direction:row;gap:6px;margin-top:6px;"><input class="vfcp-ri" type="text" placeholder="Ответить..." style="flex:1;background:#1a1a2e;border:1px solid #333;border-radius:8px;padding:6px 10px;color:#fff;font-size:13px;"><button class="vfcp-ri-send" style="background:#0095f6;border:none;border-radius:8px;padding:6px 12px;color:#fff;cursor:pointer;">→</button></div></div>';
+  const lb=wrap.querySelector('.vfcp-like-btn'),db=wrap.querySelector('.vfcp-dislike-btn');
+  lb.onclick=async()=>{
     const res=await fetch(API+'/feed/comment/'+c.id+'/like',{method:'POST',headers:{Authorization:'Bearer '+tok(),'Content-Type':'application/json'},body:'{"type":"like"}'});
-    if(res.ok){
-      const d=await res.json().catch(()=>({}));
-      if(myReact==='like'){myReact=null;likes=d.likes??Math.max(0,likes-1);likeBtn.classList.remove('vfcp-reacted');}
-      else{if(myReact==='dislike'){dislikes=d.dislikes??Math.max(0,dislikes-1);dislikeBtn.classList.remove('vfcp-reacted');}myReact='like';likes=d.likes??likes+1;likeBtn.classList.add('vfcp-reacted');}
-      wrap.querySelector('.vfcp-lc').textContent=likes;
-      wrap.querySelector('.vfcp-dc').textContent=dislikes;
-    }
+    if(res.ok){const d=await res.json().catch(()=>({}));
+      if(myReact==='like'){myReact=null;likes=d.likes??Math.max(0,likes-1);lb.classList.remove('vfcp-reacted');}
+      else{if(myReact==='dislike'){dislikes=d.dislikes??Math.max(0,dislikes-1);db.classList.remove('vfcp-reacted');}myReact='like';likes=d.likes??likes+1;lb.classList.add('vfcp-reacted');}
+      wrap.querySelector('.vfcp-lc').textContent=likes;wrap.querySelector('.vfcp-dc').textContent=dislikes;}
   };
-  dislikeBtn.onclick=async()=>{
+  db.onclick=async()=>{
     const res=await fetch(API+'/feed/comment/'+c.id+'/like',{method:'POST',headers:{Authorization:'Bearer '+tok(),'Content-Type':'application/json'},body:'{"type":"dislike"}'});
-    if(res.ok){
-      const d=await res.json().catch(()=>({}));
-      if(myReact==='dislike'){myReact=null;dislikes=d.dislikes??Math.max(0,dislikes-1);dislikeBtn.classList.remove('vfcp-reacted');}
-      else{if(myReact==='like'){likes=d.likes??Math.max(0,likes-1);likeBtn.classList.remove('vfcp-reacted');}myReact='dislike';dislikes=d.dislikes??dislikes+1;dislikeBtn.classList.add('vfcp-reacted');}
-      wrap.querySelector('.vfcp-lc').textContent=likes;
-      wrap.querySelector('.vfcp-dc').textContent=dislikes;
-    }
+    if(res.ok){const d=await res.json().catch(()=>({}));
+      if(myReact==='dislike'){myReact=null;dislikes=d.dislikes??Math.max(0,dislikes-1);db.classList.remove('vfcp-reacted');}
+      else{if(myReact==='like'){likes=d.likes??Math.max(0,likes-1);lb.classList.remove('vfcp-reacted');}myReact='dislike';dislikes=d.dislikes??dislikes+1;db.classList.add('vfcp-reacted');}
+      wrap.querySelector('.vfcp-lc').textContent=likes;wrap.querySelector('.vfcp-dc').textContent=dislikes;}
   };
-  wrap.querySelector('.vfcp-reply-toggle').onclick=()=>{const ri=wrap.querySelector('.vfcp-inline-reply');const show=ri.style.display==='none'||ri.style.display==='';ri.style.display=show?'flex':'none';if(show)ri.querySelector('.vfcp-ri').focus();};
-  const sendC=async()=>{const inp=wrap.querySelector('.vfcp-ri');const txt=(inp.value||'').trim();if(!txt)return;await vfcpSubmitReply(c.id,txt);inp.value='';wrap.querySelector('.vfcp-inline-reply').style.display='none';openVfComments(_vfCommentPostId);};
-  wrap.querySelector('.vfcp-ri-send').onclick=sendC;
-  wrap.querySelector('.vfcp-ri').onkeydown=e=>{if(e.key==='Enter')sendC();};
+  wrap.querySelector('.vfcp-reply-toggle').onclick=()=>{const ri=wrap.querySelector('.vfcp-inline-reply');const s=ri.style.display==='none'||!ri.style.display;ri.style.display=s?'flex':'none';if(s)ri.querySelector('.vfcp-ri').focus();};
+  const sc=async()=>{const i=wrap.querySelector('.vfcp-ri'),x=(i.value||'').trim();if(!x)return;await vfcpSubmitReply(c.id,x);i.value='';wrap.querySelector('.vfcp-inline-reply').style.display='none';openVfComments(_vfCommentPostId);};
+  wrap.querySelector('.vfcp-ri-send').onclick=sc;
+  wrap.querySelector('.vfcp-ri').onkeydown=e=>{if(e.key==='Enter')sc();};
   if(isOwn){
-    wrap.querySelector('.vfcp-edit-btn').onclick=async()=>{const t=prompt('Редактировать:',c.content);if(!t)return;const res=await fetch(API+'/feed/comment/'+c.id,{method:'PUT',headers:{Authorization:'Bearer '+tok(),'Content-Type':'application/json'},body:JSON.stringify({content:t})});if(res.ok)openVfComments(_vfCommentPostId);};
+    wrap.querySelector('.vfcp-edit-btn').onclick=async()=>{const x=prompt('Редактировать:',c.content);if(!x)return;const res=await fetch(API+'/feed/comment/'+c.id,{method:'PUT',headers:{Authorization:'Bearer '+tok(),'Content-Type':'application/json'},body:JSON.stringify({content:x})});if(res.ok)openVfComments(_vfCommentPostId);};
     wrap.querySelector('.vfcp-del-btn').onclick=async()=>{if(!confirm('Удалить?'))return;const res=await fetch(API+'/feed/comment/'+c.id,{method:'DELETE',headers:{Authorization:'Bearer '+tok()}});if(res.ok)openVfComments(_vfCommentPostId);};
   }
   return wrap;
@@ -13377,58 +13374,43 @@ function _vfcpCommentCard(c){
 function _vfcpReplyCard(r,cid){
   const me=(typeof app!=='undefined'&&app.myProfile)||null;
   const isOwn=me&&me.id&&String(me.id)===String(r.user_id);
-  const rl=_vfcpInitial(r.display_name);
   const API='https://cubeworld-backend.onrender.com';
   const tok=()=>localStorage.getItem('cw_token');
   const wrap=document.createElement('div');
   wrap.className='vfcp-reply-item';
   wrap.setAttribute('data-rid',r.id);
-  let likes=r.likes||0,dislikes=r.dislikes||0;
-  let myReact=r.my_reaction||null;
-  wrap.innerHTML=`<div class="vfcp-avatar" style="width:28px;height:28px;font-size:11px;">${rl}</div><div class="vfcp-body"><div class="vfcp-name">@${r.display_name||'?'}</div><div class="vfcp-text">${r.content||''}</div><div class="vfcp-actions"><button class="vfcp-act-btn vfcp-like-btn${myReact==='like'?' vfcp-reacted':''}">👍 <span class="vfcp-lc">${likes}</span></button><button class="vfcp-act-btn vfcp-dislike-btn${myReact==='dislike'?' vfcp-reacted':''}">👎 <span class="vfcp-dc">${dislikes}</span></button><button class="vfcp-act-btn vfcp-reply-toggle">↩ Ответить</button>${isOwn?'<button class="vfcp-act-btn vfcp-edit-btn">✏️</button><button class="vfcp-act-btn vfcp-del-btn">🗑️</button>':''}</div><div class="vfcp-inline-reply" style="display:none;flex-direction:row;gap:6px;margin-top:6px;"><input class="vfcp-ri" type="text" placeholder="Ответить..." style="flex:1;background:#1a1a2e;border:1px solid #333;border-radius:8px;padding:6px 10px;color:#fff;font-size:13px;"><button class="vfcp-ri-send" style="background:#0095f6;border:none;border-radius:8px;padding:6px 12px;color:#fff;cursor:pointer;">→</button></div></div>`;
-  const likeBtn=wrap.querySelector('.vfcp-like-btn');
-  const dislikeBtn=wrap.querySelector('.vfcp-dislike-btn');
-  likeBtn.onclick=async()=>{
+  let likes=r.likes||0,dislikes=r.dislikes||0,myReact=r.my_reaction||null;
+  wrap.innerHTML='<div class="vfcp-avatar" style="width:28px;height:28px;font-size:11px;">'+_vfcpInitial(r.display_name)+'</div><div class="vfcp-body"><div class="vfcp-name">@'+(r.display_name||'?')+'</div><div class="vfcp-text">'+(r.content||'')+'</div><div class="vfcp-actions"><button class="vfcp-act-btn vfcp-like-btn'+(myReact==='like'?' vfcp-reacted':'')+'">&#128077; <span class="vfcp-lc">'+likes+'</span></button><button class="vfcp-act-btn vfcp-dislike-btn'+(myReact==='dislike'?' vfcp-reacted':'')+'">&#128078; <span class="vfcp-dc">'+dislikes+'</span></button><button class="vfcp-act-btn vfcp-reply-toggle">&#8617; Ответить</button>'+(isOwn?'<button class="vfcp-act-btn vfcp-edit-btn">&#9999;&#65039;</button><button class="vfcp-act-btn vfcp-del-btn">&#128465;&#65039;</button>':'')+'</div><div class="vfcp-inline-reply" style="display:none;flex-direction:row;gap:6px;margin-top:6px;"><input class="vfcp-ri" type="text" placeholder="Ответить..." style="flex:1;background:#1a1a2e;border:1px solid #333;border-radius:8px;padding:6px 10px;color:#fff;font-size:13px;"><button class="vfcp-ri-send" style="background:#0095f6;border:none;border-radius:8px;padding:6px 12px;color:#fff;cursor:pointer;">→</button></div></div>';
+  const lb=wrap.querySelector('.vfcp-like-btn'),db=wrap.querySelector('.vfcp-dislike-btn');
+  lb.onclick=async()=>{
     const res=await fetch(API+'/feed/reply/'+r.id+'/like',{method:'POST',headers:{Authorization:'Bearer '+tok(),'Content-Type':'application/json'},body:'{"type":"like"}'});
-    if(res.ok){
-      const d=await res.json().catch(()=>({}));
-      if(myReact==='like'){myReact=null;likes=d.likes??Math.max(0,likes-1);likeBtn.classList.remove('vfcp-reacted');}
-      else{if(myReact==='dislike'){dislikes=d.dislikes??Math.max(0,dislikes-1);dislikeBtn.classList.remove('vfcp-reacted');}myReact='like';likes=d.likes??likes+1;likeBtn.classList.add('vfcp-reacted');}
-      wrap.querySelector('.vfcp-lc').textContent=likes;
-      wrap.querySelector('.vfcp-dc').textContent=dislikes;
-    }
+    if(res.ok){const d=await res.json().catch(()=>({}));
+      if(myReact==='like'){myReact=null;likes=d.likes??Math.max(0,likes-1);lb.classList.remove('vfcp-reacted');}
+      else{if(myReact==='dislike'){dislikes=d.dislikes??Math.max(0,dislikes-1);db.classList.remove('vfcp-reacted');}myReact='like';likes=d.likes??likes+1;lb.classList.add('vfcp-reacted');}
+      wrap.querySelector('.vfcp-lc').textContent=likes;wrap.querySelector('.vfcp-dc').textContent=dislikes;}
   };
-  dislikeBtn.onclick=async()=>{
+  db.onclick=async()=>{
     const res=await fetch(API+'/feed/reply/'+r.id+'/like',{method:'POST',headers:{Authorization:'Bearer '+tok(),'Content-Type':'application/json'},body:'{"type":"dislike"}'});
-    if(res.ok){
-      const d=await res.json().catch(()=>({}));
-      if(myReact==='dislike'){myReact=null;dislikes=d.dislikes??Math.max(0,dislikes-1);dislikeBtn.classList.remove('vfcp-reacted');}
-      else{if(myReact==='like'){likes=d.likes??Math.max(0,likes-1);likeBtn.classList.remove('vfcp-reacted');}myReact='dislike';dislikes=d.dislikes??dislikes+1;dislikeBtn.classList.add('vfcp-reacted');}
-      wrap.querySelector('.vfcp-lc').textContent=likes;
-      wrap.querySelector('.vfcp-dc').textContent=dislikes;
-    }
+    if(res.ok){const d=await res.json().catch(()=>({}));
+      if(myReact==='dislike'){myReact=null;dislikes=d.dislikes??Math.max(0,dislikes-1);db.classList.remove('vfcp-reacted');}
+      else{if(myReact==='like'){likes=d.likes??Math.max(0,likes-1);lb.classList.remove('vfcp-reacted');}myReact='dislike';dislikes=d.dislikes??dislikes+1;db.classList.add('vfcp-reacted');}
+      wrap.querySelector('.vfcp-lc').textContent=likes;wrap.querySelector('.vfcp-dc').textContent=dislikes;}
   };
-  wrap.querySelector('.vfcp-reply-toggle').onclick=()=>{const ri=wrap.querySelector('.vfcp-inline-reply');const show=ri.style.display==='none'||ri.style.display==='';ri.style.display=show?'flex':'none';if(show)ri.querySelector('.vfcp-ri').focus();};
-  const sendR=async()=>{const inp=wrap.querySelector('.vfcp-ri');const txt=(inp.value||'').trim();if(!txt)return;await vfcpSubmitReply(cid,txt);inp.value='';wrap.querySelector('.vfcp-inline-reply').style.display='none';openVfComments(_vfCommentPostId);};
-  wrap.querySelector('.vfcp-ri-send').onclick=sendR;
-  wrap.querySelector('.vfcp-ri').onkeydown=e=>{if(e.key==='Enter')sendR();};
+  wrap.querySelector('.vfcp-reply-toggle').onclick=()=>{const ri=wrap.querySelector('.vfcp-inline-reply');const s=ri.style.display==='none'||!ri.style.display;ri.style.display=s?'flex':'none';if(s)ri.querySelector('.vfcp-ri').focus();};
+  const sr=async()=>{const i=wrap.querySelector('.vfcp-ri'),x=(i.value||'').trim();if(!x)return;await vfcpSubmitReply(cid,x);i.value='';wrap.querySelector('.vfcp-inline-reply').style.display='none';openVfComments(_vfCommentPostId);};
+  wrap.querySelector('.vfcp-ri-send').onclick=sr;
+  wrap.querySelector('.vfcp-ri').onkeydown=e=>{if(e.key==='Enter')sr();};
   if(isOwn){
-    wrap.querySelector('.vfcp-edit-btn').onclick=async()=>{const t=prompt('Редактировать:',r.content);if(!t)return;const res=await fetch(API+'/feed/reply/'+r.id,{method:'PUT',headers:{Authorization:'Bearer '+tok(),'Content-Type':'application/json'},body:JSON.stringify({content:t})});if(res.ok)openVfComments(_vfCommentPostId);};
+    wrap.querySelector('.vfcp-edit-btn').onclick=async()=>{const x=prompt('Редактировать:',r.content);if(!x)return;const res=await fetch(API+'/feed/reply/'+r.id,{method:'PUT',headers:{Authorization:'Bearer '+tok(),'Content-Type':'application/json'},body:JSON.stringify({content:x})});if(res.ok)openVfComments(_vfCommentPostId);};
     wrap.querySelector('.vfcp-del-btn').onclick=async()=>{if(!confirm('Удалить?'))return;const res=await fetch(API+'/feed/reply/'+r.id,{method:'DELETE',headers:{Authorization:'Bearer '+tok()}});if(res.ok)openVfComments(_vfCommentPostId);};
   }
   return wrap;
-}
-function _vfcpInitial(name){
-  if(!name) return '?';
-  const cp=name.codePointAt(0);
-  if(cp>127) return name.substring(0,2);
-  return name[0].toUpperCase();
 }
 async function vfcpSubmitReply(cid,txt){
   const text=(txt||'').trim();if(!text)return;
   const tok=localStorage.getItem('cw_token');
   const API='https://cubeworld-backend.onrender.com';
-  try{await fetch(API+'/feed/comment/'+cid+'/reply',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({content:text})});}catch(e){console.error('reply err',e);}
+  try{await fetch(API+'/feed/comment/'+cid+'/reply',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({content:text})});}catch(e){}
 }
 async function submitVfComment(){
   const inp=document.getElementById('vfcp-input');
@@ -13438,7 +13420,7 @@ async function submitVfComment(){
   try{
     const res=await fetch(API+'/feed/'+_vfCommentPostId+'/comment',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({content:text})});
     if(res.ok){inp.value='';openVfComments(_vfCommentPostId);}
-  }catch(e){console.error('submit err',e);}
+  }catch(e){}
 }
 function closeVfComments(){
   const panel=document.getElementById('vf-comments-panel');
