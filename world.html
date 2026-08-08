@@ -16316,67 +16316,7 @@ function _compressImage(file, maxW=1200, quality=0.82){
 /* ═══════════════════════════════════════════════════════════════════════
    SWIPE GESTURES
 ══════════════════════════════════════════════════ */
-(function initSwipeAndFeedSnap(){var _idx=0,_busy=false,_tx0=0,_ty0=0,_t0=0,_inFeed=false,_wAccum=0,_wSnapped=false,_wTimer=null;function _con(){return document.getElementById('vf-container');}function _fv(){var c=_con();if(!c)return false;var r=c.getBoundingClientRect();return r.height>0&&r.width>0;}function _snapTo(n){var c=_con();if(!c)return;var cards=c.querySelectorAll('.vf-card');if(!cards.length)return;n=Math.max(0,Math.min(n,cards.length-1));if(_busy)return;_idx=n;_busy=true;var st=c.scrollTop,tg=n*c.clientHeight,dur=380,t0=performance.now();c.style.scrollSnapType='none';function step(now){var p=Math.min((now-t0)/dur,1),e=1-(1-p)*(1-p)*(1-p);c.scrollTop=st+(tg-st)*e;if(p<1){requestAnimationFrame(step);}else{c.scrollTop=tg;c.style.scrollSnapType='';setTimeout(function(){_busy=false;},50);}}requestAnimationFrame(step);setTimeout(function(){_busy=false;},600);}window._vfSnap={goTo:_snapTo,reset:function(){_idx=0;_busy=false;var c=_con();if(c)c.scrollTop=0;}};document.addEventListener('wheel',function(e){if(!_fv())return;var c=_con();if(!c||(!c.contains(e.target)&&e.target!==c))return;e.preventDefault();_wAccum+=e.deltaY;clearTimeout(_wTimer);_wTimer=setTimeout(function(){_wAccum=0;_wSnapped=false;},150);if(!_wSnapped&&!_busy&&Math.abs(_wAccum)>30){_wSnapped=true;_snapTo(_idx+(_wAccum>0?1:-1));}},{passive:false});document.addEventListener('touchstart',function(e){_tx0=e.touches[0].clientX;_ty0=e.touches[0].clientY;_t0=Date.now();_inFeed=false;var c=_con();if(_fv()&&c&&(c.contains(e.target)||e.target===c))_inFeed=true;},{passive:true});document.addEventListener('touchmove',function(e){var dx=Math.abs(e.touches[0].clientX-_tx0),dy=Math.abs(e.touches[0].clientY-_ty0);if(dx>dy&&dx>10)e.preventDefault();},{passive:false});document.addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-_tx0,dy=e.changedTouches[0].clientY-_ty0,adx=Math.abs(dx),ady=Math.abs(dy),dt=Date.now()-_t0;if(_inFeed&&ady>adx){setTimeout(function(){var c=_con();if(c)_idx=Math.round(c.scrollTop/(c.clientHeight||1));},400);}else if(adx>ady&&adx>60&&dt<500){var nav=document.querySelector('.nav-bar');if(nav){var items=[].slice.call(nav.querySelectorAll('[data-sec]'));var cur=items.findIndex(function(b){return b.classList.contains('active');});var ni=cur+(dx<0?1:-1);if(ni>=0&&ni<items.length)items[ni].click();}}},{passive:true});})()
-
-function _showSwipeIndicator(){
-  const el=document.getElementById('swipe-indicator');
-  if(!el) return;
-  el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),400);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   CHAT STORIES DRAWER
-═══════════════════════════════════════════════════════════════════════
-let _chatStoriesOpen = false;
-function toggleChatStories(){
-  _chatStoriesOpen = !_chatStoriesOpen;
-  const drawer = document.getElementById('chat-stories-drawer');
-  const btn = document.getElementById('chat-stories-btn');
-  const icon = document.getElementById('cs-toggle-icon');
-  if(!drawer) return;
-  if(_chatStoriesOpen){
-    drawer.classList.add('open');
-    if(btn) btn.style.color='var(--accent)';
-    if(icon) icon.style.transform='rotate(180deg)';
-    // Populate on first open
-    const inner = document.getElementById('chat-stories-inner');
-    if(inner && !inner.dataset.built){ buildStoriesBar(inner); inner.dataset.built='1'; }
-  } else {
-    drawer.classList.remove('open');
-    if(btn) btn.style.color='';
-    if(icon) icon.style.transform='';
-  }
-}
-// Init: populate stories on section switch to chat
-function initChatStories(){
-  const inner = document.getElementById('chat-stories-inner');
-  if(inner && !inner.dataset.built){ buildStoriesBar(inner); inner.dataset.built='1'; }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   SWIPE GESTURE — correct overlay id
-═══════════════════════════════════════════════════════════════════════ */
-// _grpOvId is the actual group chat overlay element id
-const _grpOvId='grp-chat-overlay';
-
-/* ═══════════════════════════════════════════════════════════════════════
-   PATCH cpmHandleImageFile TO COMPRESS BEFORE UPLOAD
-═══════════════════════════════════════════════════════════════════════ */
-(function patchImageUpload(){
-  const _origCpm=window.cpmHandleImageFile;
-  if(typeof _origCpm==='function'){
-    window.cpmHandleImageFile=async function(input){
-      const file=input?.files?.[0]; if(!file) return;
-      const compressed=await _compressImage(file);
-      // Swap out file in a new DataTransfer
-      const dt=new DataTransfer();
-      dt.items.add(compressed);
-      input.files=dt.files;
-      return _origCpm(input);
-    };
-  }
-})();
+(function initSwipeAndFeedSnap(){var _idx=0,_busy=false,_tx0=0,_ty0=0,_t0=0,_inFeed=false,_st=null;function _con(){return document.getElementById('vf-container');}function _fv(){var c=_con();if(!c)return false;var r=c.getBoundingClientRect();return r.height>0&&r.width>0;}function _snapTo(n){var c=_con();if(!c)return;var cards=c.querySelectorAll('.vf-card');if(!cards.length)return;n=Math.max(0,Math.min(n,cards.length-1));if(_busy)return;_idx=n;_busy=true;var st=c.scrollTop,tg=n*c.clientHeight,dur=380,t0=performance.now();c.style.scrollSnapType='none';function step(now){var p=Math.min((now-t0)/dur,1),e=1-(1-p)*(1-p)*(1-p);c.scrollTop=st+(tg-st)*e;if(p<1){requestAnimationFrame(step);}else{c.scrollTop=tg;c.style.scrollSnapType='';setTimeout(function(){_busy=false;},50);}}requestAnimationFrame(step);setTimeout(function(){_busy=false;},600);}window._vfSnap={goTo:_snapTo,reset:function(){_idx=0;_busy=false;var c=_con();if(c)c.scrollTop=0;}};document.addEventListener('scroll',function(){clearTimeout(_st);_st=setTimeout(function(){var c=_con();if(c)_idx=Math.round(c.scrollTop/(c.clientHeight||1));},150);},true);document.addEventListener('touchstart',function(e){_tx0=e.touches[0].clientX;_ty0=e.touches[0].clientY;_t0=Date.now();_inFeed=false;var c=_con();if(_fv()&&c&&(c.contains(e.target)||e.target===c))_inFeed=true;},{passive:true});document.addEventListener('touchmove',function(e){var dx=Math.abs(e.touches[0].clientX-_tx0),dy=Math.abs(e.touches[0].clientY-_ty0);if(dx>dy&&dx>10)e.preventDefault();},{passive:false});document.addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-_tx0,dy=e.changedTouches[0].clientY-_ty0,adx=Math.abs(dx),ady=Math.abs(dy),dt=Date.now()-_t0;if(_inFeed&&ady>adx){setTimeout(function(){var c=_con();if(c)_idx=Math.round(c.scrollTop/(c.clientHeight||1));},400);}else if(adx>ady&&adx>60&&dt<500){var nav=document.querySelector('.nav-bar');if(nav){var items=[].slice.call(nav.querySelectorAll('[data-sec]'));var cur=items.findIndex(function(b){return b.classList.contains('active');});var ni=cur+(dx<0?1:-1);if(ni>=0&&ni<items.length)items[ni].click();}}},{passive:true});})();
 
 /* ═══════════════════════════════════════════════════════════════════════
    PATCH unlockAchievement TO SHOW FANCY TOAST
