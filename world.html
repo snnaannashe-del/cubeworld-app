@@ -991,15 +991,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .swipe-indicator{position:fixed;left:0;top:50%;transform:translateY(-50%);width:4px;height:60px;background:var(--accent);border-radius:0 4px 4px 0;opacity:0;transition:opacity .2s;pointer-events:none;z-index:601}
 .swipe-indicator.show{opacity:1}
 /* ── FEED SNAP SCROLL ── */
-.vf-container{flex:1;overflow-y:scroll;overflow-x:hidden;scroll-behavior:smooth;position:relative;overscroll-behavior-y:contain;touch-action:pan-y}
+.vf-container{flex:1;overflow-y:scroll;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;position:relative;overscroll-behavior-y:contain;touch-action:pan-y}
 .vf-container::-webkit-scrollbar{display:none}
 /* Each card = exactly one viewport page */
 .vf-card{
   width:100%;height:100%;
+  scroll-snap-align:start;scroll-snap-stop:always;
   position:relative;background:#000;
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;flex-shrink:0;
-  /* force exact height equal to the container visible height */
   min-height:0
 }
 /* ── SHORTS: 9:16 centred, cropped ── */
@@ -16317,97 +16317,62 @@ function _compressImage(file, maxW=1200, quality=0.82){
 
 /* ═══════════════════════════════════════════════════════════════════════
    SWIPE GESTURES
-═══════════════════════════════════════════════════════════════════════ */
-(function initSwipeAndFeedSnap(){
-  /* ── shared touch state ── */
-  let _tx0=0, _ty0=0, _t0=0, _inFeed=false;
-
-  /* ── FEED SNAP STATE ── */
-  let _idx=0, _busy=false;
-  const SNAP_DUR=1300;
-
-  function _con(){ return document.getElementById('vf-container'); }
-
-  function _feedVisible(){
-    const c=_con();
-    return !!(c && c.offsetParent !== null && c.getBoundingClientRect().height > 0);
-  }
-
+══════════════════════════════════════════════════(function initSwipeAndFeedSnap(){
+  let _tx0=0,_ty0=0,_t0=0,_inFeed=false;
+  let _idx=0,_busy=false;
+  const LOCK_MS=2000;
+  function _con(){return document.getElementById('vf-container');}
+  function _feedVisible(){const c=_con();return !!(c&&c.offsetParent!==null&&c.getBoundingClientRect().height>0);}
   function _snapTo(n){
-    const c=_con(); if(!c) return;
-    const cards=[...c.querySelectorAll('.vf-card')]; if(!cards.length) return;
+    const c=_con();if(!c)return;
+    const cards=[...c.querySelectorAll('.vf-card')];if(!cards.length)return;
     n=Math.max(0,Math.min(n,cards.length-1));
-    if(_busy) return;
-    _idx=n; _busy=true;
-    const h=c.clientHeight||window.innerHeight;
-    c.scrollTo({top:n*h, behavior:'smooth'});
-    setTimeout(()=>{ _busy=false; }, SNAP_DUR);
+    if(_busy)return;
+    _idx=n;_busy=true;
+    c.scrollTo({top:n*(c.clientHeight||window.innerHeight),behavior:'smooth'});
+    setTimeout(()=>{_busy=false;},LOCK_MS);
   }
-
-  window._vfSnap={ goTo:_snapTo, reset(){ _idx=0; _busy=false; } };
-
-  /* ── WHEEL ── desktop one-card-at-a-time */
-  /* wheel: accumulate delta so one flick = one card, even on trackpads */
+  window._vfSnap={goTo:_snapTo,reset(){_idx=0;_busy=false;const c=_con();if(c)c.scrollTop=0;}};
   document.addEventListener('wheel',function(e){
-    if(!_feedVisible()) return;
+    if(!_feedVisible())return;
     const c=_con();
-    if(!c.contains(e.target)&&e.target!==c) return;
+    if(!c.contains(e.target)&&e.target!==c)return;
     e.preventDefault();
-    if(_busy) return;
-    if(Math.abs(e.deltaY)<1) return;
+    if(_busy)return;
+    if(Math.abs(e.deltaY)<3)return;
     _snapTo(_idx+(e.deltaY>0?1:-1));
-  },{passive:false});;
-
-  /* ── TOUCH START ── */
-  document.addEventListener('touchstart', function(e){
-    _tx0=e.touches[0].clientX;
-    _ty0=e.touches[0].clientY;
-    _t0=Date.now();
+  },{passive:false});
+  document.addEventListener('touchstart',function(e){
+    _tx0=e.touches[0].clientX;_ty0=e.touches[0].clientY;_t0=Date.now();_inFeed=false;
     const c=_con();
-    _inFeed=_feedVisible() && !!(c && (c===e.target || c.contains(e.target)));
+    if(_feedVisible()&&c&&(c.contains(e.target)||e.target===c))_inFeed=true;
   },{passive:true});
-
-  /* ── TOUCHMOVE ── block native scroll inside feed */
-  document.addEventListener('touchmove', function(e){
-    if(!_inFeed) return;
+  document.addEventListener('touchmove',function(e){
     const dx=Math.abs(e.touches[0].clientX-_tx0);
     const dy=Math.abs(e.touches[0].clientY-_ty0);
-    if(dy>dx) e.preventDefault();
+    if(dx>dy&&dx>10)e.preventDefault();
   },{passive:false});
-
-  /* ── TOUCH END ── vertical=feed, horizontal=tabs */
-  document.addEventListener('touchend', function(e){
-    const ex=e.changedTouches[0].clientX;
-    const ey=e.changedTouches[0].clientY;
-    const dx=ex-_tx0;
-    const dy=ey-_ty0;
-    const dt=Date.now()-_t0;
-    const adx=Math.abs(dx), ady=Math.abs(dy);
-
-    if(adx>=ady*0.7 && adx>=40 && dt<=500){
-      const isRight=dx>0;
-      const grpOv=document.getElementById('grp-chat-overlay');
-      if(grpOv && grpOv.classList.contains('open')){
-        if(isRight && _tx0<60){ _showSwipeIndicator(); closeGroupChat(); return; }
-      }
-      const feed=document.getElementById('vf-feed');
-      if(feed && feed.style.display!=='none'){
+  document.addEventListener('touchend',function(e){
+    const dx=e.changedTouches[0].clientX-_tx0;
+    const dy=e.changedTouches[0].clientY-_ty0;
+    const adx=Math.abs(dx),ady=Math.abs(dy),dt=Date.now()-_t0;
+    if(adx>ady&&adx>60&&dt<500){
+      const feed=document.getElementById('vf-container');
+      if(feed&&feed.style.display!=='none'){
         const nav=document.querySelector('.nav-bar');
-        if(!nav) return;
-        const activeBtn=nav.querySelector('.nav-btn.active');
-        if(!activeBtn) return;
-        const allBtns=[...nav.querySelectorAll('.nav-btn')];
-        const idx=allBtns.indexOf(activeBtn);
-        if(isRight && idx>0){ allBtns[idx-1].click(); }
-        else if(!isRight && idx<allBtns.length-1){ allBtns[idx+1].click(); }
+        if(nav){
+          const items=[...nav.querySelectorAll('[data-sec]')];
+          const cur=items.findIndex(b=>b.classList.contains('active'));
+          const ni=cur+(dx<0?1:-1);
+          if(ni>=0&&ni<items.length)items[ni].click();
+        }
       }
-      return;
     }
-
-    if(_inFeed && ady>=60 && adx<ady*0.6 && !_busy){
-      _snapTo(_idx + (dy<0 ? 1 : -1));
+    if(_inFeed&&ady>adx){
+      setTimeout(()=>{const c=_con();if(!c)return;_idx=Math.round(c.scrollTop/(c.clientHeight||1));},500);
     }
   },{passive:true});
+})(); },{passive:true});
 })();
 
 function _showSwipeIndicator(){
