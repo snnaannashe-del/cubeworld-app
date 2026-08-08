@@ -13128,7 +13128,6 @@ function renderFeed(){
   // Pin each card height to the container's client height for exact snap-scroll
   function _fixCardHeights(){
     container.querySelectorAll('.vf-card').forEach(c=>{c.style.height='';c.style.minHeight='';});
-    if(window._vfSnap) window._vfSnap.reset();
   }
   // Double-RAF ensures layout is fully settled before measuring
   requestAnimationFrame(()=>requestAnimationFrame(_fixCardHeights));
@@ -16333,7 +16332,7 @@ function _compressImage(file, maxW=1200, quality=0.82){
     n=Math.max(0,Math.min(n,cards.length-1));
     if(_busy)return;
     _idx=n;_busy=true;
-    c.scrollTo({top:n*c.clientHeight,behavior:'smooth'});
+    (function _anim(){const _st=c.scrollTop,_tg=n*c.clientHeight,_dur=350,_t0=performance.now();function step(now){const p=Math.min((now-_t0)/_dur,1),e=p<.5?2*p*p:-1+(4-2*p)*p;c.scrollTop=_st+(_tg-_st)*e;if(p<1)requestAnimationFrame(step);else{c.scrollTop=_tg;setTimeout(()=>{_busy=false;},100);}}requestAnimationFrame(step);})();
     setTimeout(()=>{_busy=false;},LOCK);
   }
   window._vfSnap={
