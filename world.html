@@ -13127,9 +13127,8 @@ function renderFeed(){
   },{root:container,threshold:0.65});
   // Pin each card height to the container's client height for exact snap-scroll
   function _fixCardHeights(){
-    const h = container.clientHeight||container.getBoundingClientRect().height;
-    if(!h) return;
-    container.querySelectorAll('.vf-card').forEach(c=>{ c.style.height = h+'px'; c.style.minHeight = h+'px'; });
+    container.querySelectorAll('.vf-card').forEach(c=>{c.style.height='';c.style.minHeight='';});
+    if(window._vfSnap) window._vfSnap.reset();
   }
   // Double-RAF ensures layout is fully settled before measuring
   requestAnimationFrame(()=>requestAnimationFrame(_fixCardHeights));
@@ -16322,7 +16321,7 @@ function _compressImage(file, maxW=1200, quality=0.82){
   let _idx=0,_busy=false;
   let _tx0=0,_ty0=0,_t0=0,_inFeed=false;
   let _lastW=0,_gSnap=false;
-  const GAP=350,LOCK=700;
+  const GAP=350,LOCK=1200;
   function _con(){return document.getElementById('vf-container');}
   function _feedVisible(){
     const c=_con();if(!c)return false;
