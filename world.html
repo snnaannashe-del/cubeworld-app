@@ -16316,68 +16316,7 @@ function _compressImage(file, maxW=1200, quality=0.82){
 /* ═══════════════════════════════════════════════════════════════════════
    SWIPE GESTURES
 ══════════════════════════════════════════════════ */
-(function initSwipeAndFeedSnap(){var _idx=0,_busy=false,_tx0=0,_ty0=0,_t0=0,_inFeed=false,_st=null;function _con(){return document.getElementById('vf-container');}function _fv(){var c=_con();if(!c)return false;var r=c.getBoundingClientRect();return r.height>0&&r.width>0;}function _snapTo(n){var c=_con();if(!c)return;var cards=c.querySelectorAll('.vf-card');if(!cards.length)return;n=Math.max(0,Math.min(n,cards.length-1));if(_busy)return;_idx=n;_busy=true;var st=c.scrollTop,tg=n*c.clientHeight,dur=380,t0=performance.now();c.style.scrollSnapType='none';function step(now){var p=Math.min((now-t0)/dur,1),e=1-(1-p)*(1-p)*(1-p);c.scrollTop=st+(tg-st)*e;if(p<1){requestAnimationFrame(step);}else{c.scrollTop=tg;c.style.scrollSnapType='';setTimeout(function(){_busy=false;},50);}}requestAnimationFrame(step);setTimeout(function(){_busy=false;},600);}window._vfSnap={goTo:_snapTo,reset:function(){_idx=0;_busy=false;var c=_con();if(c)c.scrollTop=0;}};document.addEventListener('scroll',function(){clearTimeout(_st);_st=setTimeout(function(){var c=_con();if(c)_idx=Math.round(c.scrollTop/(c.clientHeight||1));},150);},true);document.addEventListener('touchstart',function(e){_tx0=e.touches[0].clientX;_ty0=e.touches[0].clientY;_t0=Date.now();_inFeed=false;var c=_con();if(_fv()&&c&&(c.contains(e.target)||e.target===c))_inFeed=true;},{passive:true});document.addEventListener('touchmove',function(e){var dx=Math.abs(e.touches[0].clientX-_tx0),dy=Math.abs(e.touches[0].clientY-_ty0);if(dx>dy&&dx>10)e.preventDefault();},{passive:false});document.addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-_tx0,dy=e.changedTouches[0].clientY-_ty0,adx=Math.abs(dx),ady=Math.abs(dy),dt=Date.now()-_t0;if(_inFeed&&ady>adx){setTimeout(function(){var c=_con();if(c)_idx=Math.round(c.scrollTop/(c.clientHeight||1));},400);}else if(adx>ady&&adx>60&&dt<500){var nav=document.querySelector('.nav-bar');if(nav){var items=[].slice.call(nav.querySelectorAll('[data-sec]'));var cur=items.findIndex(function(b){return b.classList.contains('active');});var ni=cur+(dx<0?1:-1);if(ni>=0&&ni<items.length)items[ni].click();}}},{passive:true});})();
-
-/* ═══════════════════════════════════════════════════════════════════════
-   PATCH unlockAchievement TO SHOW FANCY TOAST
-═══════════════════════════════════════════════════════════════════════ */
-(function patchAchievements(){
-  const _orig=window.unlockAchievement;
-  if(typeof _orig!=='function') return;
-  window.unlockAchievement=function(id){
-    _orig(id);
-    // achievement popup disabled
-  };
-})();
-
-// Fix-162: Public profile logo-dropdown + action buttons + instant reload
-(function(){
-  const _oPP=window.openPublicProfile;
-  window.openPublicProfile=function(uid,name,avColor){
-    if(typeof _oPP==='function')_oPP(uid,name,avColor);{const _fb=document.getElementById('po-follow-btn');if(_fb)_fb.style.setProperty('display','none','important');}
-    // Show action row + logo dropdown for other users
-    const fw=document.getElementById('po-follow-wrap');
-    if(fw)fw.style.display='block';
-    // Sync follow dd text with hidden follow btn
-    setTimeout(function(){
-      const hb=document.getElementById('po-follow-btn');
-      const dt=document.getElementById('po-dd-follow-txt');
-      const ic=document.getElementById('po-dd-follow-icon');
-      if(hb&&dt){const txt=hb.textContent.trim();dt.textContent=txt;if(ic)ic.className=txt.indexOf('Отп')>=0?'ti ti-user-minus':'ti ti-user-plus';}
-    },300);
-    
-    const acts=document.getElementById('po-actions');
-    if(acts)acts.style.display='flex';
-    const dd=document.getElementById('po-dropdown');
-    if(dd)dd.style.display='none';
-    // Save display data after API loads (4s delay)
-    setTimeout(function(){
-      try{
-        const ov=document.getElementById('portfolio-overlay');
-        if(!ov||ov.dataset.viewUid!==String(uid))return;
-        sessionStorage.setItem('cw_pp_data',JSON.stringify({
-          uid:String(uid),name:name||'',avColor:avColor||'',
-          displayName:(document.getElementById('po-header-name')||{}).textContent||'',
-          uname:(document.getElementById('po-uname')||{}).textContent||'',
-          badge:(document.getElementById('po-type-badge')||{}).textContent||'',
-          badgeCls:(document.getElementById('po-type-badge')||{}).className||'',
-          follows:(document.getElementById('po-follows')||{}).textContent||'0',
-          followers:(document.getElementById('po-followers')||{}).textContent||'0',
-          likes:(document.getElementById('po-likes')||{}).textContent||'0',
-          avHtml:(document.getElementById('po-avatar')||{}).innerHTML||''
-        }));
-      }catch(_){}
-    },4000);
-  };
-  const _oCPF=window.closePortfolio;
-  window.closePortfolio=function(){
-    if(typeof _oCPF==='function')_oCPF();
-    const fw=document.getElementById('po-follow-wrap');if(fw)fw.style.display='none';
-    const acts=document.getElementById('po-actions');if(acts)acts.style.display='none';
-    const dd=document.getElementById('po-dropdown');if(dd)dd.style.display='none';
-    try{sessionStorage.removeItem('cw_pp_data');}catch(_){}
-  };
-})();
+(function initSwipeAndFeedSnap(){var _idx=0,_busy=false,_tx0=0,_ty0=0,_t0=0,_inFeed=false,_wAcc=0,_wDone=false,_wTmr=null;function _con(){return document.getElementById('vf-container');}function _fv(){var c=_con();if(!c)return false;var r=c.getBoundingClientRect();return r.height>50&&r.width>50;}function _snapTo(n){var c=_con();if(!c)return;var cards=c.querySelectorAll('.vf-card');if(!cards.length)return;n=Math.max(0,Math.min(n,cards.length-1));if(_busy)return;_idx=n;_busy=true;var st=c.scrollTop,tg=n*c.clientHeight,dur=380,t0=performance.now();c.style.scrollSnapType='none';function step(now){var p=Math.min((now-t0)/dur,1),e=1-(1-p)*(1-p)*(1-p);c.scrollTop=st+(tg-st)*e;if(p<1){requestAnimationFrame(step);}else{c.scrollTop=tg;c.style.scrollSnapType='';setTimeout(function(){_busy=false;},50);}}requestAnimationFrame(step);setTimeout(function(){_busy=false;},600);}window._vfSnap={goTo:_snapTo,reset:function(){_idx=0;_busy=false;var c=_con();if(c)c.scrollTop=0;}};document.addEventListener('wheel',function(e){if(!_fv())return;e.preventDefault();_wAcc+=e.deltaY;clearTimeout(_wTmr);_wTmr=setTimeout(function(){_wAcc=0;_wDone=false;},150);if(!_wDone&&!_busy&&Math.abs(_wAcc)>20){_wDone=true;_snapTo(_idx+(_wAcc>0?1:-1));}},{passive:false});document.addEventListener('touchstart',function(e){_tx0=e.touches[0].clientX;_ty0=e.touches[0].clientY;_t0=Date.now();_inFeed=false;var c=_con();if(_fv()&&c&&(c.contains(e.target)||e.target===c))_inFeed=true;},{passive:true});document.addEventListener('touchmove',function(e){var dx=Math.abs(e.touches[0].clientX-_tx0),dy=Math.abs(e.touches[0].clientY-_ty0);if(dx>dy&&dx>10)e.preventDefault();},{passive:false});document.addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-_tx0,dy=e.changedTouches[0].clientY-_ty0,adx=Math.abs(dx),ady=Math.abs(dy),dt=Date.now()-_t0;if(_inFeed&&ady>adx){setTimeout(function(){var c=_con();if(c)_idx=Math.round(c.scrollTop/(c.clientHeight||1));},400);}else if(adx>ady&&adx>60&&dt<500){var nav=document.querySelector('.nav-bar');if(nav){var items=[].slice.call(nav.querySelectorAll('[data-sec]'));var cur=items.findIndex(function(b){return b.classList.contains('active');});var ni=cur+(dx<0?1:-1);if(ni>=0&&ni<items.length)items[ni].click();}}},{passive:true});})();
 function togglePoDropdown(e){
   e.stopPropagation();
   const dd=document.getElementById('po-dropdown');
