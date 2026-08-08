@@ -147,7 +147,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .wb-acct-menu.open{display:flex;pointer-events:auto}
 @media (hover:hover){.wb-av-btn:hover .wb-acct-menu{display:flex;pointer-events:auto}}
 .wb-count-badge{font-size:11px;color:var(--text2);flex-shrink:0}
-.wb-acct-head{font-size:10px;font-weight:700;color:var(--text3);padding:5px 8px 8px;border-bottom:1px solid var(--border);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.04em}
+.wb-acct-head{font-size:10px;font-weight:700;color:var(--text3);padding:5px 8px 8px;border-bottom:1px solid var(--border);margin-bottom:4px;overflow-y:scroll;overflow-x:hidden;scroll-snap-type:y mandatory;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.04em}
 .wb-acct-row{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;transition:background .15s}
 .wb-acct-row:hover{background:rgba(255,255,255,.07)}
 .wb-acct-row.red{color:#f87171}
@@ -16319,46 +16319,32 @@ function _compressImage(file, maxW=1200, quality=0.82){
    SWIPE GESTURES
 ══════════════════════════════════════════════════ */
 (function initSwipeAndFeedSnap(){
-  let _idx=0,_busy=false,_tx0=0,_ty0=0,_t0=0,_inFeed=false;
+  let _idx=0,_busy=false;
+  let _tx0=0,_ty0=0,_t0=0,_inFeed=false;
   let _lastW=0,_gSnap=false;
-  const GAP=350,DUR=380;
+  const GAP=350,LOCK=700;
   function _con(){return document.getElementById('vf-container');}
   function _feedVisible(){
     const c=_con();if(!c)return false;
     const r=c.getBoundingClientRect();return r.height>0&&r.width>0;
   }
-  function _buildInner(){
-    const c=_con();if(!c)return null;
-    const old=document.getElementById('vf-inner');if(old)old.remove();
-    const cards=[...c.querySelectorAll('.vf-card')];if(!cards.length)return null;
-    const h=c.clientHeight||window.innerHeight;
-    const t=document.createElement('div');
-    t.id='vf-inner';
-    t.style.cssText='width:100%;will-change:transform;transform:translateY(0);transition:none;';
-    cards.forEach(card=>{
-      card.style.height=h+'px';
-      card.style.minHeight=h+'px';
-      t.appendChild(card);
-    });
-    c.appendChild(t);
-    return t;
-  }
   function _snapTo(n){
-    const c=_con();let t=document.getElementById('vf-inner');
-    if(!c||!t)return;
+    const c=_con();if(!c)return;
     const cards=[...c.querySelectorAll('.vf-card')];if(!cards.length)return;
     n=Math.max(0,Math.min(n,cards.length-1));
     if(_busy)return;
     _idx=n;_busy=true;
-    const h=c.clientHeight||window.innerHeight;
-    t.style.transition='transform '+DUR+'ms cubic-bezier(0.25,0.46,0.45,0.94)';
-    t.style.transform='translateY('+(-n*h)+'px)';
-    setTimeout(()=>{_busy=false;},DUR+80);
+    c.scrollTo({top:n*c.clientHeight,behavior:'smooth'});
+    setTimeout(()=>{_busy=false;},LOCK);
   }
   window._vfSnap={
     goTo:_snapTo,
-    reset(){_idx=0;_busy=false;_gSnap=false;_buildInner();}
+    reset(){
+      _idx=0;_busy=false;_gSnap=false;
+      const c=_con();if(c)c.scrollTop=0;
+    }
   };
+  // DESKTOP: wheel — one gesture = one snap
   document.addEventListener('wheel',function(e){
     if(!_feedVisible())return;
     const c=_con();if(!c||(!c.contains(e.target)&&e.target!==c))return;
@@ -16370,21 +16356,24 @@ function _compressImage(file, maxW=1200, quality=0.82){
     _gSnap=true;
     _snapTo(_idx+(e.deltaY>0?1:-1));
   },{passive:false});
+  // MOBILE: CSS scroll-snap handles it — JS only syncs _idx
   document.addEventListener('touchstart',function(e){
     _tx0=e.touches[0].clientX;_ty0=e.touches[0].clientY;_t0=Date.now();_inFeed=false;
     const c=_con();
     if(_feedVisible()&&c&&(c.contains(e.target)||e.target===c))_inFeed=true;
   },{passive:true});
   document.addEventListener('touchmove',function(e){
-    if(!_inFeed)return;
-    const dy=Math.abs(e.touches[0].clientY-_ty0),dx=Math.abs(e.touches[0].clientX-_tx0);
-    if(dy>5||dx>10)e.preventDefault();
+    const dx=Math.abs(e.touches[0].clientX-_tx0),dy=Math.abs(e.touches[0].clientY-_ty0);
+    if(dx>dy&&dx>10)e.preventDefault();
   },{passive:false});
   document.addEventListener('touchend',function(e){
     const dx=e.changedTouches[0].clientX-_tx0,dy=e.changedTouches[0].clientY-_ty0;
     const adx=Math.abs(dx),ady=Math.abs(dy),dt=Date.now()-_t0;
-    if(_inFeed&&ady>adx&&ady>40&&!_busy){_snapTo(_idx+(dy<0?1:-1));return;}
-    if(adx>ady&&adx>60&&dt<500){
+    if(_inFeed&&ady>adx){
+      setTimeout(()=>{
+        const c=_con();if(c)_idx=Math.round(c.scrollTop/(c.clientHeight||1));
+      },400);
+    } else if(adx>ady&&adx>60&&dt<500){
       const nav=document.querySelector('.nav-bar');
       if(nav){
         const items=[...nav.querySelectorAll('[data-sec]')];
