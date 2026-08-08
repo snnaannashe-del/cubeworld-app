@@ -16877,6 +16877,7 @@ function setVfcpExpire(el,val){
   closeVfcpTimer();
 }
 </script>
+<script id="vf-mac-wheel">(function(){if(navigator.maxTouchPoints>0)return;var _busy=false,_last=0;function _con(){return document.getElementById('vf-container');}function _trk(){return document.getElementById('vf-track');}function _fv(){var c=_con();if(!c)return false;var r=c.getBoundingClientRect();return r.height>50&&r.width>50;}document.addEventListener('wheel',function(e){if(!_fv())return;e.preventDefault();var now=Date.now();var gap=now-_last;_last=now;if(_busy)return;if(gap>200&&Math.abs(e.deltaY)>2){var c=_con();if(!c)return;var t=_trk();if(!t)return;var max=t.querySelectorAll('.vf-card').length-1;var idx=Math.round(c.scrollTop/c.clientHeight);var n=Math.max(0,Math.min(idx+(e.deltaY>0?1:-1),max));if(n===idx)return;_busy=true;c.scrollTo({top:n*c.clientHeight,behavior:'smooth'});setTimeout(function(){_busy=false;},700);}},{passive:false});})();</script>
 
 <div class="modal-backdrop" id="modal-universe" style="display:none"><div class="modal" style="max-width:min(560px,calc(100vw - 24px));width:100%;max-height:90svh;box-sizing:border-box;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:0">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
