@@ -16317,7 +16317,8 @@ function _compressImage(file, maxW=1200, quality=0.82){
 
 /* ═══════════════════════════════════════════════════════════════════════
    SWIPE GESTURES
-══════════════════════════════════════════════════(function initSwipeAndFeedSnap(){
+══════════════════════════════════════════════════ */
+(function initSwipeAndFeedSnap(){
   let _tx0=0,_ty0=0,_t0=0,_inFeed=false;
   let _idx=0,_busy=false;
   const LOCK_MS=2000;
@@ -16383,7 +16384,7 @@ function _showSwipeIndicator(){
 
 /* ═══════════════════════════════════════════════════════════════════════
    CHAT STORIES DRAWER
-═══════════════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════════════
 let _chatStoriesOpen = false;
 function toggleChatStories(){
   _chatStoriesOpen = !_chatStoriesOpen;
