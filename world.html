@@ -16319,9 +16319,8 @@ function _compressImage(file, maxW=1200, quality=0.82){
 (function initSwipeAndFeedSnap(){
   let _idx=0,_busy=false;
   let _tx0=0,_ty0=0,_t0=0,_inFeed=false;
-  let _lastW=0,_gSnap=false;
-  const GAP=350,LOCK=800;
-  function _con(){return document.getElementById('vf-container');}
+  let _wAccum=0,_wSnapped=false,_wTimer=null;
+  function _con(){ return document.getElementById('vf-container'); }
   function _feedVisible(){
     const c=_con();if(!c)return false;
     const r=c.getBoundingClientRect();return r.height>0&&r.width>0;
@@ -16332,31 +16331,37 @@ function _compressImage(file, maxW=1200, quality=0.82){
     n=Math.max(0,Math.min(n,cards.length-1));
     if(_busy)return;
     _idx=n;_busy=true;
-    c.style.scrollSnapType='none';(function _anim(){const _st=c.scrollTop,_tg=n*c.clientHeight,_dur=350,_t0=performance.now();function step(now){const p=Math.min((now-_t0)/_dur,1),e=p<.5?2*p*p:-1+(4-2*p)*p;c.scrollTop=_st+(_tg-_st)*e;if(p<1)requestAnimationFrame(step);else{c.scrollTop=_tg;c.style.scrollSnapType='';setTimeout(()=>{_busy=false;},100);}}requestAnimationFrame(step);})();
-    setTimeout(()=>{_busy=false;},LOCK);
+    const _st=c.scrollTop,_tg=n*c.clientHeight,_dur=380,_t0=performance.now();
+    c.style.scrollSnapType='none';
+    function step(now){
+      const p=Math.min((now-_t0)/_dur,1);
+      const e=1-(1-p)*(1-p)*(1-p);
+      c.scrollTop=_st+(_tg-_st)*e;
+      if(p<1){requestAnimationFrame(step);}
+      else{c.scrollTop=_tg;c.style.scrollSnapType='';setTimeout(()=>{_busy=false;},50);}
+    }
+    requestAnimationFrame(step);
+    setTimeout(()=>{_busy=false;},600);
   }
   window._vfSnap={
     goTo:_snapTo,
-    reset(){
-      _idx=0;_busy=false;_gSnap=false;
-      const c=_con();if(c)c.scrollTop=0;
-    }
+    reset(){_idx=0;_busy=false;const c=_con();if(c)c.scrollTop=0;}
   };
-  // DESKTOP: wheel — one gesture = one snap
   document.addEventListener('wheel',function(e){
     if(!_feedVisible())return;
     const c=_con();if(!c||(!c.contains(e.target)&&e.target!==c))return;
     e.preventDefault();
-    const now=Date.now();
-    if(now-_lastW>GAP)_gSnap=false;
-    _lastW=now;
-    if(_gSnap||_busy||Math.abs(e.deltaY)<5)return;
-    _gSnap=true;
-    _snapTo(_idx+(e.deltaY>0?1:-1));
+    _wAccum+=e.deltaY;
+    clearTimeout(_wTimer);
+    _wTimer=setTimeout(()=>{_wAccum=0;_wSnapped=false;},150);
+    if(!_wSnapped&&!_busy&&Math.abs(_wAccum)>30){
+      _wSnapped=true;
+      _snapTo(_idx+(_wAccum>0?1:-1));
+    }
   },{passive:false});
-  // MOBILE: CSS scroll-snap handles it — JS only syncs _idx
   document.addEventListener('touchstart',function(e){
-    _tx0=e.touches[0].clientX;_ty0=e.touches[0].clientY;_t0=Date.now();_inFeed=false;
+    _tx0=e.touches[0].clientX;_ty0=e.touches[0].clientY;
+    _t0=Date.now();_inFeed=false;
     const c=_con();
     if(_feedVisible()&&c&&(c.contains(e.target)||e.target===c))_inFeed=true;
   },{passive:true});
@@ -16381,7 +16386,7 @@ function _compressImage(file, maxW=1200, quality=0.82){
       }
     }
   },{passive:true});
-})()
+})())()
 
 function _showSwipeIndicator(){
   const el=document.getElementById('swipe-indicator');
