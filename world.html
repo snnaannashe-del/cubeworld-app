@@ -17156,3 +17156,25 @@ function _tryWrapPubGrid(){
 _tryWrapPubGrid();
 })();
 </script>
+
+<script id="vf-pub-likes-fix182">
+(function(){
+  var _prev=window.openPublicProfile;
+  if(typeof _prev!=="function")return;
+  window.openPublicProfile=function(uid,name,avColor){
+    var _orig=window.apiCall;
+    if(typeof _orig==="function"){
+      var _done=false;
+      window.apiCall=function(url){
+        if(!_done&&typeof url==="string"&&url.indexOf("/feed?user_id=")!==-1){
+          _done=true;
+          return Promise.resolve(null);
+        }
+        return _orig.apply(this,arguments);
+      };
+      setTimeout(function(){window.apiCall=_orig;},100);
+    }
+    return _prev.apply(this,arguments);
+  };
+})();
+</script>
