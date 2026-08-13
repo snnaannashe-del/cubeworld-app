@@ -12015,7 +12015,7 @@ function openPortfolio(){
     const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
     set('po-follows', stats.following||0);
     set('po-followers', stats.followers||0);
-    set('po-likes', stats.reactions_received||0);
+    set('po-likes', stats.reactions_received||0);(function(){var _mid=String(localStorage.getItem('cw_user_id')||'0');if(!_mid||_mid==='0')return;apiCall('/feed?user_id='+_mid+'&limit=100').then(function(ps){if(!Array.isArray(ps))return;var t=ps.reduce(function(s,p){return s+(p.likes||0);},0);var el=document.getElementById('po-likes');if(el)el.textContent=String(t);});})();
     // Fetch real follow counts from /follow endpoint
     const _mrid=String(localStorage.getItem('cw_user_id')||'0');
     if(_mrid&&_mrid!=='0') apiCall('/follow/'+_mrid).then(fd=>{
@@ -17095,6 +17095,14 @@ if(typeof _origOPP==="function"&&!_origOPP.__poFixed){
     if(ownUid&&String(uid)===String(ownUid)){
       if(fw)fw.style.display="none";
       if(eb)eb.style.display="";
+    }
+    // Load real post likes for any profile
+    if(typeof window.apiCall==="function"){
+      window.apiCall("/feed?user_id="+uid+"&limit=100").then(function(ps){
+        if(!Array.isArray(ps))return;
+        var t=ps.reduce(function(s,p){return s+(p.likes||0);},0);
+        var el=document.getElementById("po-likes");if(el)el.textContent=String(t);
+      });
     }
   };
   window.openPublicProfile.__poFixed=true;
