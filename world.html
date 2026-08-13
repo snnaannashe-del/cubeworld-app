@@ -12255,7 +12255,9 @@ function _renderPublicProfileGrid(uid, posts){
   const _poGridPosts=filtered;grid.innerHTML=filtered.slice(0,30).map(p=>{
     const isVideo=isVideoPost(p);
     const thumb=p.thumbnail||(!isVideo&&(p.media_url||p.image_url))||'';const _vidSrc=isVideo?(p.file_url||p.media_url||p.video_url||''):'';
-    const bg=thumb?`background:url('${escHtml(thumb)}') center/cover no-repeat #111`:`${_vidSrc?'<video class="po-cell-thumb" src="'+escHtml(_vidSrc)+'#t=0.001" muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0"></video>':'<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:24px">▶</div>'}`;
+    const bg=thumb?`background:url('${escHtml(thumb)}') center/cover no-repeat #111`:'background:#111';
+    const inner=thumb?'':(isVideo&&_vidSrc?'<video class="po-cell-thumb" src="'+escHtml(_vidSrc)+'#t=0.001" muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0"></video>':'<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:24px">&#9654;</div>');
+    
     const typeChip=isVideo
       ? `<div class="po-type-chip short"><svg width="7" height="7" viewBox="0 0 8 8" fill="none" style="display:inline;vertical-align:middle;margin-right:2px"><polygon points="2,1 7,4 2,7" fill="white"/></svg>SHORT</div>`
       : `<div class="po-type-chip post">POST</div>`;
@@ -16950,3 +16952,56 @@ setInterval(function(){
   <div class="dm-exp-opt" data-val="604800" onclick="setVfcpExpire(this,'604800')">⏱ 7 дней</div>
 </div>
 
+<style id="vf-like-anim">
+@keyframes vfHeartPop{0%{transform:scale(1)}30%{transform:scale(1.55)}60%{transform:scale(0.9)}100%{transform:scale(1)}}
+@keyframes vfHeartShine{0%{box-shadow:0 0 0 0 rgba(255,48,64,.5)}70%{box-shadow:0 0 0 12px rgba(255,48,64,0)}100%{box-shadow:0 0 0 0 rgba(255,48,64,0)}}
+.vf-fab-wrap .ti-heart{transition:color .25s ease,transform .25s ease;display:inline-block}
+.vf-fab-wrap .liked .ti-heart,.vf-fab-wrap .liked .ti-heart-filled{color:#ff3040!important}
+.vf-heart-pop .ti-heart,.vf-heart-pop .ti-heart-filled{animation:vfHeartPop .4s cubic-bezier(.17,.89,.32,1.49) forwards!important}
+.vf-fab-trigger{transition:transform .15s ease}
+.vf-fab-trigger:active{transform:scale(.92)}
+#_pop2 .heart{transition:transform .25s cubic-bezier(.17,.89,.32,1.49)}
+#_pop2 .heart.filled{color:#ff3040}
+#_pop2 .heart:active{transform:scale(.8)}
+</style>
+<script id="vf-like-patch">(function(){
+  // Patch vfLike: add animation + realtime portfolio update
+  var _orig=window.vfLike;
+  if(typeof _orig!=='function')return;
+  window.vfLike=function(postId,btn){
+    var heartEl=document.getElementById('vfa-heart-'+postId);
+    var wasLiked=heartEl&&heartEl.classList.contains('liked');
+    // Call original
+    _orig(postId,btn);
+    // Animate
+    if(heartEl){
+      heartEl.classList.remove('vf-heart-pop');
+      void heartEl.offsetWidth;
+      heartEl.classList.add('vf-heart-pop');
+      setTimeout(function(){heartEl.classList.remove('vf-heart-pop');},450);
+    }
+    // Haptic (mobile)
+    if(navigator.vibrate){try{navigator.vibrate(wasLiked?[10]:[15,10,15]);}catch(_){}}
+    // Update portfolio likes counter in real-time
+    var poLk=document.getElementById('po-likes');
+    if(poLk){
+      var cur=parseInt(poLk.textContent)||0;
+      poLk.textContent=String(Math.max(0,wasLiked?cur-1:cur+1));
+    }
+  };
+  // Patch _pop2Like similarly
+  var _origP=window._pop2Like;
+  if(typeof _origP==='function'){
+    window._pop2Like=function(){
+      var hrt=document.querySelector('#_pop2 .heart');
+      var wasFilled=hrt&&hrt.classList.contains('filled');
+      _origP.apply(this,arguments);
+      if(hrt){void hrt.offsetWidth;}
+      var poLk=document.getElementById('po-likes');
+      if(poLk){
+        var cur=parseInt(poLk.textContent)||0;
+        poLk.textContent=String(Math.max(0,wasFilled?cur-1:cur+1));
+      }
+    };
+  }
+})();</script>
