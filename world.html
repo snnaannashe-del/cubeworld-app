@@ -17136,3 +17136,23 @@ function _tryWrapRF(){
 _tryWrapRF();
 })();
 </script>
+
+<script id="vf-pub-likes-fix">
+(function(){
+function _tryWrapPubGrid(){
+  var _o=window._renderPublicProfileGrid;
+  if(typeof _o!=="function"||_o.__pgFixed)return;
+  window._renderPublicProfileGrid=function(uid,posts){
+    var r=_o.apply(this,arguments);
+    if(Array.isArray(posts)&&posts.length>0){
+      var t=posts.reduce(function(s,p){return s+(p.likes||0);},0);
+      var el=document.getElementById("po-likes");
+      if(el)el.textContent=String(t);
+    }
+    return r;
+  };
+  window._renderPublicProfileGrid.__pgFixed=true;
+}
+_tryWrapPubGrid();
+})();
+</script>
