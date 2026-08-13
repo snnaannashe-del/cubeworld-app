@@ -11605,23 +11605,6 @@ function _syncTopbarAvatar(){
   // Also update the account head
   _syncWbAcctHead();
 }
-function _syncAllMyAvatars(){
-  try{
-    var uid=app&&app.myProfile&&(app.myProfile.id||app.myProfile.uid);
-    if(!uid)return;
-    var photo=app.myProfile.photoUrl||app.myProfile.avatar||'';
-    var isImg=photo&&(photo.startsWith('http')||photo.startsWith('data:'));
-    var avHtml=isImg?'<img src="'+photo+'" style="width:18px;height:18px;border-radius:50%;object-fit:cover;">':photo||'👤';
-    // Feed cards
-    document.querySelectorAll('.vfi-av[data-uid="'+uid+'"]').forEach(function(el){
-      el.innerHTML=avHtml;el.setAttribute('data-av-loaded','1');
-    });
-    // Update av cache
-    var cache=JSON.parse(localStorage.getItem('cw_av_cache')||'{}');
-    cache[uid]={av:photo,color:''};
-    localStorage.setItem('cw_av_cache',JSON.stringify(cache));
-  }catch(e){}
-}
 let _peUidVisible=false;
 let _peStatusDropOpen=false;
 let _peEmojiOpen=false;
@@ -11829,7 +11812,7 @@ async function saveMyProfile(){
   const dn=document.getElementById('wb-key-badge');
   if(dn&&newName) dn.textContent=getDisplayName();
   // Sync topbar avatar
-  _syncTopbarAvatar();_syncAllMyAvatars();
+  _syncTopbarAvatar();
   // Persist to localStorage so avatar/bio survive refresh
   try{ localStorage.setItem('cw_my_profile', JSON.stringify(app.myProfile)); }catch(e){}
   applyPrivacyMode();
@@ -16894,7 +16877,6 @@ function setVfcpExpire(el,val){
   closeVfcpTimer();
 }
 </script>
-<script id="vf-mac-wheel">(function(){if(navigator.maxTouchPoints>0)return;var _idx=0,_busy=false;function _con(){return document.getElementById("vf-container");}function _trk(){return document.getElementById("vf-track");}function _feed(){return document.getElementById("sec-feed");}function _go(n){  var c=_con(),t=_trk();if(!c||!t)return;  var cards=t.querySelectorAll(".vf-card");if(!cards.length)return;  n=Math.max(0,Math.min(n,cards.length-1));if(n===_idx)return;  _idx=n;  c.style.setProperty("overflow-y","hidden","important");  c.style.setProperty("scroll-snap-type","none","important");  t.style.transition="transform 0.3s ease";  t.style.transform="translateY(-"+(n*c.clientHeight)+"px)";}document.addEventListener("wheel",function(e){  var f=_feed();if(!f||!f.contains(e.target))return;  e.preventDefault();  e.stopPropagation();  if(_busy)return;  if(Math.abs(e.deltaY)<2)return;  _busy=true;  _go(_idx+(e.deltaY>0?1:-1));  setTimeout(function(){_busy=false;},2000);},{passive:false,capture:true});setInterval(function(){  var c=_con();if(!c)return;  c.style.setProperty("overflow-y","hidden","important");  c.style.setProperty("scroll-snap-type","none","important");},400);})();</script>
 
 <div class="modal-backdrop" id="modal-universe" style="display:none"><div class="modal" style="max-width:min(560px,calc(100vw - 24px));width:100%;max-height:90svh;box-sizing:border-box;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:0">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
