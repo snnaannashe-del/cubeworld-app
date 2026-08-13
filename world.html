@@ -17282,3 +17282,79 @@ _refreshAllAv();
 setTimeout(_refreshAllAv,600);
 setTimeout(_refreshAllAv,2000);
 })();</script>
+<script id="vf-av-fix190">(function(){
+if(window.__avFix190)return;
+window.__avFix190=true;
+var _DAT='data:',_HTT='http',_CAC='cw_av_cache',_UID='cw_user_id';
+
+function _safeAvRender(el,av,color){
+  if(!el||!av)return;
+  if(av.indexOf(_DAT)===0||av.indexOf(_HTT)===0){
+    el.innerHTML='<img src="'+av+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">';
+    el.style.background='none';el.style.overflow='hidden';
+  } else {
+    el.innerHTML='';el.textContent=av.length<15?av:(av||'?')[0];
+    if(color)el.style.background=color;
+  }
+}
+
+function _refreshAllAv(){
+  var myId=localStorage.getItem(_UID);
+  var cache={};try{cache=JSON.parse(localStorage.getItem(_CAC)||'{}')}catch(e){}
+  Object.keys(cache).forEach(function(uid){
+    var d=cache[uid];if(!d||!d.av)return;
+    document.querySelectorAll('[data-uid="'+uid+'"]').forEach(function(el){
+      window._avApply(el,d.av,d.color||'');
+    });
+  });
+  if(myId&&cache[myId]){
+    var av=cache[myId].av,col=cache[myId].color||'';
+    ['wb-av-inner-world','itb-av-inner','mob-av-inner','tb-av-inner'].forEach(function(id){
+      var el=document.getElementById(id);if(el)window._avApply(el,av,col);
+    });
+    var profEl=document.getElementById('prof-avatar');
+    if(profEl)window._avApply(profEl,av,col);
+  }
+}
+
+// Patch _openMiniProfile: fix _mac_av after it renders
+var _oMini=window._openMiniProfile;
+if(typeof _oMini==='function'&&!_oMini.__avFixed){
+  window._openMiniProfile=function(uid,name,avColor,avUrl){
+    var r=_oMini.apply(this,arguments);
+    setTimeout(function(){
+      var av=document.getElementById('_mac_av');
+      if(!av)return;
+      av.style.overflow='hidden';
+      var txt=(av.textContent||'').trim();
+      if(txt.length>15){
+        var cache={};try{cache=JSON.parse(localStorage.getItem(_CAC)||'{}')}catch(e){}
+        var d=cache[String(uid)];
+        if(d&&d.av){_safeAvRender(av,d.av,d.color||'');}
+        else if(avUrl&&avUrl.length<15){av.innerHTML='';av.textContent=avUrl;}
+        else{av.innerHTML='';av.textContent=(name||'?')[0].toUpperCase();}
+      }
+    },0);
+    return r;
+  };
+  window._openMiniProfile.__avFixed=true;
+}
+
+// Hook _avSet to refresh on avatar change
+var _oAS=window._avSet;
+if(typeof _oAS==='function'&&!_oAS.__avFixed){
+  window._avSet=function(uid,av,color){
+    var r=_oAS.apply(this,arguments);
+    setTimeout(_refreshAllAv,50);setTimeout(_refreshAllAv,600);
+    return r;
+  };
+  window._avSet.__avFixed=true;
+}
+
+// CSS safety: clip _mac_av overflow
+var s=document.createElement('style');
+s.textContent='#_mac_av{overflow:hidden!important;text-overflow:clip}';
+document.head.appendChild(s);
+
+_refreshAllAv();
+})();</script>
