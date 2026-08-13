@@ -12090,6 +12090,8 @@ function openPublicProfile(uid, name, avColor) {
   // Swap buttons: hide "Изменить", show "Подписаться / Отписаться"
   const editBtn = document.getElementById('po-edit-btn');
   if(editBtn) editBtn.style.display='none';
+  const followWrap=document.getElementById('po-follow-wrap');
+  if(followWrap)followWrap.style.display='flex';
   const followBtn = document.getElementById('po-follow-btn');
   if(followBtn) {
     followBtn.style.display='';
