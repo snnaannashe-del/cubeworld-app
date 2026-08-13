@@ -17044,3 +17044,60 @@ setInterval(function(){
   }
   setTimeout(function(){_vfRefreshCounts();setInterval(_vfRefreshCounts,30000);},5000);
 })();</script>
+
+<script id="po-fix-178">
+(function(){
+window.togglePoDropdown=function(e){
+  if(e){e.stopPropagation();e.preventDefault();}
+  var dd=document.getElementById("po-dropdown");
+  if(!dd)return;
+  var open=dd.style.display==="block";
+  dd.style.display=open?"none":"block";
+  if(!open){
+    function _cdd(ev){if(!dd.contains(ev.target)&&ev.target.className.indexOf("po-logo-btn")===-1){dd.style.display="none";document.removeEventListener("click",_cdd);}}
+    setTimeout(function(){document.addEventListener("click",_cdd);},50);
+  }
+};
+window.poFollowDd=function(){
+  var dd=document.getElementById("po-dropdown");if(dd)dd.style.display="none";
+  if(typeof poFollowBtnClick==="function")poFollowBtnClick();
+};
+window.poActMsg=function(){
+  var dd=document.getElementById("po-dropdown");if(dd)dd.style.display="none";
+  var ov=document.getElementById("portfolio-overlay");
+  var uid=ov&&ov.dataset&&ov.dataset.viewUid;
+  if(!uid)return;
+  if(typeof closePortfolio==="function")closePortfolio();
+  if(typeof switchTab==="function")switchTab("messages");
+  setTimeout(function(){var el=document.querySelector("[data-uid=\""+uid+"\"]");if(el)el.click();},300);
+};
+window.poActCall=function(){
+  var dd=document.getElementById("po-dropdown");if(dd)dd.style.display="none";
+  var n=document.createElement("div");
+  n.style.cssText="position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(6,16,50,.92);color:#fff;padding:12px 22px;border-radius:12px;font:14px system-ui;z-index:9999;";
+  n.textContent="Звонки скоро появятся";
+  document.body.appendChild(n);setTimeout(function(){n.remove();},2000);
+};
+window.poActNotify=function(){
+  var dd=document.getElementById("po-dropdown");if(dd)dd.style.display="none";
+  var n=document.createElement("div");
+  n.style.cssText="position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(6,16,50,.92);color:#fff;padding:12px 22px;border-radius:12px;font:14px system-ui;z-index:9999;";
+  n.textContent="Уведомления скоро появятся";
+  document.body.appendChild(n);setTimeout(function(){n.remove();},2000);
+};
+var _origOPP=window.openPublicProfile;
+if(typeof _origOPP==="function"&&!_origOPP.__poFixed){
+  window.openPublicProfile=function(uid,name,avColor){
+    _origOPP.apply(this,arguments);
+    var ownUid=window.app&&window.app.myProfile&&window.app.myProfile.uid;
+    var fw=document.getElementById("po-follow-wrap");
+    var eb=document.getElementById("po-edit-btn");
+    if(ownUid&&String(uid)===String(ownUid)){
+      if(fw)fw.style.display="none";
+      if(eb)eb.style.display="";
+    }
+  };
+  window.openPublicProfile.__poFixed=true;
+}
+})();
+</script>
