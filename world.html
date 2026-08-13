@@ -1032,6 +1032,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 .vfa:hover .vfa-icon,.vfa:active .vfa-icon{background:rgba(255,255,255,.22);transform:scale(1.1);border-color:rgba(255,255,255,.3)}
 .vfa-icon.liked{background:rgba(255,40,80,.4);border-color:rgba(255,40,80,.6)}
 .vfa-count{font-size:11px;color:rgba(255,255,255,.9);font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.vf-more-btn{position:absolute;top:12px;right:12px;z-index:12;background:rgba(0,0,0,.45);border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;backdrop-filter:blur(4px);padding:0}
+.po-cell-more{position:absolute;top:5px;right:5px;z-index:5;background:rgba(0,0,0,.55);border:none;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;font-size:12px;padding:0}
 /* author avatar */
 .vfa-author-wrap{display:flex;flex-direction:column;align-items:center;gap:0}
 .vfa-author-av{width:46px;height:46px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;background:linear-gradient(135deg,#1a1a3e,#2a2a5a);color:#fff;cursor:pointer;position:relative;overflow:visible;transition:transform .18s;box-shadow:0 2px 12px rgba(0,0,0,.5)}
@@ -12271,7 +12273,13 @@ function _renderPublicProfileGrid(uid, posts){
       ? `<div class="po-type-chip short"><svg width="7" height="7" viewBox="0 0 8 8" fill="none" style="display:inline;vertical-align:middle;margin-right:2px"><polygon points="2,1 7,4 2,7" fill="white"/></svg>SHORT</div>`
       : `<div class="po-type-chip post">POST</div>`;
     const views=p.views||p.view_count||0;
-    return `<div class="po-cell" style="${bg}" onclick="openShortsPlayer(_poGridPosts,${_poGridPosts.indexOf(p)},'${escHtml(uid||'')}')">${inner}${typeChip}<div class="po-cell-views">${views>0?_fmtNum(views):''}</div></div>`;
+    return `<div class="po-cell" style="${bg}" onclick="openPostActions('${p.id}')">
+      ${inner}
+      ${typeChip}
+      <div class="po-cell-views">${views>0?_fmtNum(views):''}</div>
+      <button class="po-cell-more" onclick="event.stopPropagation();openPostActions('${p.id}')"><i class="ti ti-dots-vertical"></i></button>
+    </div>`;
+
   }).join('');
 }
 
@@ -13064,6 +13072,7 @@ function renderFeed(){
     const isDisliked = !!_vfDislikes[post.id];
     const isFired = !!_vfFires[post.id];
     card.innerHTML=`${mediaHtml}
+      <button class="vf-more-btn" onclick="event.stopPropagation();openPostActions('${post.id}')"><i class="ti ti-dots-vertical"></i></button>
       <div class="vf-card-gradient"></div>
       ${hasVideo?`<div class="vf-progress"><div class="vf-progress-fill" id="vf-prog-${post.id}"></div></div>`:''}
       <div class="vf-fab-wrap" id="vf-fab-${post.id}">
@@ -13550,6 +13559,60 @@ function vfShare(postId){
   else{navigator.clipboard.writeText(url).then(()=>{showToast('\u0421\u0441\u044b\u043b\u043a\u0430 \u0441\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u0430! \uD83D\uDD17');restore();}).catch(()=>{showToast('\u0421\u043a\u043e\u043f\u0438\u0440\u0443\u0439 URL: '+url);restore();});}
 }
 
+// POST ACTIONS SHEET
+let _postActionsId=null;
+function openPostActions(postId){
+  _postActionsId=postId;
+  const post=_vfPosts.find(p=>String(p.id)===String(postId));
+  if(!post) return;
+  const isMine=String(post.user_id)===String(app.userId||'');
+  const name=escHtml(post.display_name||'Аноним');
+  document.getElementById('vf-pa-title').textContent=isMine?'Моё видео':'@'+name;
+  const rows=[
+    {icon:'ti-share-3',label:'Поделиться',fn:`vfShare('${postId}');closePostActions()`},
+    {icon:'ti-bookmark',label:'Сохранить',fn:`showToast('Скоро!');closePostActions()`},
+    {icon:'ti-download',label:'Скачать',fn:`_dlPost('${postId}');closePostActions()`},
+    ...(!isMine?[{icon:'ti-coin',label:'Чаевые автору',fn:`openTip('${name}','${postId}');closePostActions()`}]:[]),
+    ...(isMine?[{icon:'ti-edit',label:'Редактировать',fn:`showToast('Скоро!');closePostActions()`}]:[]),
+    ...(isMine?[{icon:'ti-trash',label:'Удалить',fn:`deletePost('${postId}')`,danger:true}]:[]),
+    ...(!isMine?[{icon:'ti-flag',label:'Пожаловаться',fn:`showToast('Жалоба отправлена');closePostActions()`,danger:true}]:[]),
+  ];
+  document.getElementById('vf-pa-items').innerHTML=rows.map(r=>`
+    <div onclick="${r.fn}" style="display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:12px;cursor:pointer;color:${r.danger?'#ff453a':'#fff'}" onmouseenter="this.style.background='rgba(255,255,255,.07)'" onmouseleave="this.style.background=''">
+      <i class="ti ${r.icon}" style="font-size:20px;width:24px;text-align:center;opacity:.85;flex-shrink:0"></i>
+      <span style="font-size:15px;font-weight:500">${r.label}</span>
+    </div>`).join('');
+  const bd=document.getElementById('vf-pa-backdrop');
+  const sh=document.getElementById('vf-pa-sheet');
+  bd.style.display='block'; sh.style.display='block';
+  requestAnimationFrame(()=>sh.style.transform='translateY(0)');
+}
+function closePostActions(){
+  const sh=document.getElementById('vf-pa-sheet');
+  const bd=document.getElementById('vf-pa-backdrop');
+  if(sh) sh.style.transform='translateY(100%)';
+  setTimeout(()=>{ if(sh) sh.style.display='none'; if(bd) bd.style.display='none'; },300);
+}
+async function deletePost(postId){
+  closePostActions();
+  if(!confirm('Удалить это видео? Действие нельзя отменить.')) return;
+  const res=await apiCall('/feed/posts/'+postId,'DELETE');
+  if(res&&res.ok!==false){
+    _vfPosts=_vfPosts.filter(p=>String(p.id)!==String(postId));
+    const card=document.querySelector('.vf-card[data-post-id="'+postId+'"]');
+    if(card) card.remove();
+    const grid=document.getElementById('po-grid');
+    if(grid) _renderPortfolioGrid();
+    showToast('Видео удалено');
+  } else { showToast('Ошибка удаления'); }
+}
+function _dlPost(postId){
+  const post=_vfPosts.find(p=>String(p.id)===String(postId));
+  if(!post){showToast('Нет файла');return;}
+  const url=post.media_url||post.video_url||post.image_url||'';
+  if(!url){showToast('Нет файла для скачивания');return;}
+  const a=document.createElement('a');a.href=url;a.download='';a.target='_blank';a.click();
+}
 function openVideoUpload(){ openCreatePost(); }  // legacy → new modal
 function closeVideoUpload(){ closeModal('modal-create-post'); }
 
