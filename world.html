@@ -6602,7 +6602,7 @@ function switchSection(name,el){
   if(mobMap[name]) document.getElementById(mobMap[name])?.classList.add('active');
 
   // Load data
-  if(name==='feed')     { _vfUnlockAudio(); loadVideoFeed(); setTimeout(()=>{ const c=document.getElementById('vf-container'); if(c){ const h=c.clientHeight||c.getBoundingClientRect().height; if(h) c.querySelectorAll('.vf-card').forEach(x=>{x.style.height=h+'px';x.style.minHeight=h+'px';}); }}, 100); }
+  if(name==='feed')     { _vfUnlockAudio(); if(!window._vfG){window._vfG=1;loadVideoFeed();} setTimeout(()=>{ const c=document.getElementById('vf-container'); if(c){ const h=c.clientHeight||c.getBoundingClientRect().height; if(h) c.querySelectorAll('.vf-card').forEach(x=>{x.style.height=h+'px';x.style.minHeight=h+'px';}); }}, 100); }
   if(name==='signals')  { renderSignals(); loadRealSignals(); }
   if(name==='chat'){
     document.getElementById('sn-badge-chat')?.style.setProperty('display','none');
@@ -12946,7 +12946,7 @@ function showTopBars(){
       btn.addEventListener('click', ()=>showTopBars());
     });
   // Load feed on page load (loading spinner prevents empty flash)
-  try{loadVideoFeed();}catch(_e2){}
+  try{if(!window._vfG){window._vfG=1;loadVideoFeed();}}catch(_e2){}
   requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('no-anim')));
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', setup);
@@ -17099,5 +17099,32 @@ if(typeof _origOPP==="function"&&!_origOPP.__poFixed){
   };
   window.openPublicProfile.__poFixed=true;
 }
+})();
+</script>
+
+<script id="vf-rf-wrap">
+(function(){
+function _reapplyLiked179(){
+  var liked=(window.app&&window.app.vfLiked)||{};
+  Object.keys(liked).forEach(function(pid){
+    if(!liked[pid])return;
+    var h=document.getElementById("vfa-heart-"+pid);
+    if(!h)return;
+    if(!h.classList.contains("liked"))h.classList.add("liked");
+    var ico=h.querySelector("i.ti");
+    if(ico&&ico.className.indexOf("filled")===-1)ico.className="ti ti-heart-filled";
+  });
+}
+function _tryWrapRF(){
+  if(typeof window.renderFeed!=="function"||window.renderFeed.__rfw){return;}
+  var _o=window.renderFeed;
+  window.renderFeed=function(){
+    var r=_o.apply(this,arguments);
+    if(!window._vfLoading)setTimeout(_reapplyLiked179,30);
+    return r;
+  };
+  window.renderFeed.__rfw=true;
+}
+_tryWrapRF();
 })();
 </script>
