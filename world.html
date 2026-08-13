@@ -1079,6 +1079,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-
 /* comment panel */
 .vf-comments-panel{position:absolute;bottom:0;left:0;right:0;max-height:72%;background:var(--card,#1a1a2e);border-top:1px solid var(--border,#2a2a4a);border-radius:20px 20px 0 0;z-index:25;display:flex;flex-direction:column;transition:transform .32s cubic-bezier(.4,0,.2,1);transform:translateY(100%)}
 .vf-comments-panel.open{transform:translateY(0);box-shadow:0 -8px 40px rgba(0,0,0,.7)}
+#vf-cmt-bd{position:fixed;inset:0;z-index:24;display:none;pointer-events:none}
+#vf-cmt-bd.active{display:block;pointer-events:all}
 .vfcp-header{padding:12px 16px 10px;display:flex;align-items:center;justify-content:center;gap:8px;border-bottom:1px solid var(--border);flex-shrink:0}
 .vfcp-title{font-size:14px;font-weight:700;color:#e0e0f8}
 .vfcp-close{background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:0;line-height:1}
@@ -3265,6 +3267,7 @@ i.ti-share-3{color:#0095f6!important;font-size:12px!important}
             </div>
           </div>
         </div>
+        <div id="vf-cmt-bd" onclick="closeVfComments()"></div>
         <!-- comment panel slides from bottom -->
         <div class="vf-comments-panel" id="vf-comments-panel">
           <div class="vfcp-header">
@@ -13109,7 +13112,7 @@ function renderFeed(){
     entries.forEach(entry=>{
       const postId=entry.target.dataset.postId;
       if(entry.isIntersecting){
-        document.getElementById('vf-comments-panel')?.classList.remove('open');
+        document.getElementById('vf-comments-panel')?.classList.remove('open');document.getElementById('vf-cmt-bd')?.classList.remove('active');
         const vid=entry.target.querySelector('video.vf-video');
         if(vid){
           if(vid.readyState===0){ vid.preload='auto'; vid.load(); }
@@ -13366,7 +13369,7 @@ async function openVfComments(postId){
   const cnt=document.getElementById('vfcp-count');
   if(!panel) return;
   list.innerHTML='<div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">Загружаем...</div>';
-  panel.classList.add('open');
+  panel.classList.add('open');document.getElementById('vf-cmt-bd')?.classList.add('active');
   const data=await apiCall('/feed/'+postId+'/comments');
   if(!data){list.innerHTML='<div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">Ошибка загрузки</div>';return;}
   if(cnt) cnt.textContent=data.length?`(${data.length})`:'';
@@ -13401,7 +13404,7 @@ async function openVfComments(postId){
 }
 
 function closeVfComments(){
-  document.getElementById('vf-comments-panel')?.classList.remove('open');
+  document.getElementById('vf-comments-panel')?.classList.remove('open');document.getElementById('vf-cmt-bd')?.classList.remove('active');
   if(_vfCommentPostId){const _fabEl=document.getElementById('vf-fab-'+_vfCommentPostId);_fabEl?.classList.remove('acts-hidden');_fabEl?.closest('.vf-card')?.querySelector('.vf-info')?.classList.remove('acts-hidden');}
   _vfCommentPostId=null;
 }
