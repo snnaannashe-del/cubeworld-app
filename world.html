@@ -17178,3 +17178,29 @@ _tryWrapPubGrid();
   };
 })();
 </script>
+
+<script id="vf-pub-likes-fix183">
+(function(){
+  var _prev=window._renderPublicProfileGrid;
+  if(typeof _prev!=="function")return;
+  var _guardObs=null;
+  window._renderPublicProfileGrid=function(uid,posts){
+    var r=_prev.apply(this,arguments);
+    if(Array.isArray(posts)&&posts.length>0){
+      var t=posts.reduce(function(s,p){return s+(p.likes||0);},0);
+      var el=document.getElementById("po-likes");
+      if(!el)return r;
+      el.textContent=String(t);
+      if(_guardObs)_guardObs.disconnect();
+      var _correct=String(t);
+      _guardObs=new MutationObserver(function(){
+        if(el.textContent!==_correct)el.textContent=_correct;
+      });
+      _guardObs.observe(el,{childList:true,characterData:true,subtree:true});
+      setTimeout(function(){if(_guardObs){_guardObs.disconnect();_guardObs=null;}},3000);
+    }
+    return r;
+  };
+  window._renderPublicProfileGrid.__pgFixed=true;
+})();
+</script>
