@@ -13310,6 +13310,45 @@ async function vfFollow(userId){
 // Load persisted liked state
 (function(){ try{ const l=localStorage.getItem('cw_vf_liked'); if(l) app.vfLiked=JSON.parse(l); }catch(e){} })();
 
+// Fix 176: MutationObserver re-applies liked state on every feed re-render
+(function(){
+  function _reapplyLiked(){
+    var liked=(window.app&&window.app.vfLiked)||{};
+    var keys=Object.keys(liked);
+    if(!keys.length)return;
+    keys.forEach(function(pid){
+      if(!liked[pid])return;
+      var h=document.getElementById('vfa-heart-'+pid);
+      if(!h)return;
+      if(!h.classList.contains('liked'))h.classList.add('liked');
+      var ico=h.querySelector('i.ti');
+      if(ico&&ico.className.indexOf('filled')===-1)ico.className='ti ti-heart-filled';
+    });
+  }
+  var _mo=new MutationObserver(function(){
+    if(!window._vfLoading)_reapplyLiked();
+  });
+  function _attachMO(){
+    var c=document.getElementById('vf-container');
+    if(c){_mo.observe(c,{childList:true,subtree:false});}
+    else{setTimeout(_attachMO,300);}
+  }
+  _attachMO();
+  // Also guard loadVideoFeed against concurrent calls
+  function _tryGuard(){
+    var _orig=window.loadVideoFeed;
+    if(typeof _orig!=='function'){setTimeout(_tryGuard,100);return;}
+    if(_orig.__guarded)return;
+    var _inFlight=false;
+    window.loadVideoFeed=async function(){
+      if(_inFlight)return;
+      _inFlight=true;
+      try{await _orig.apply(this,arguments);}finally{_inFlight=false;}
+    };
+    window.loadVideoFeed.__guarded=true;
+  }
+  _tryGuard();
+})();
 async function openVfComments(postId){
   _vfCommentPostId=postId;
   const _fabEl=document.getElementById('vf-fab-'+postId);_fabEl?.classList.add('acts-hidden');_fabEl?.closest('.vf-card')?.querySelector('.vf-info')?.classList.add('acts-hidden');
@@ -16989,34 +17028,7 @@ setInterval(function(){
       if(poLk){var cur=parseInt(poLk.textContent)||0;poLk.textContent=String(Math.max(0,wasFilled?cur-1:cur+1));}
     };
   }
-  // 3. Guard loadVideoFeed: prevent concurrent calls (liked state flicker fix)
-  var _origLVF=window.loadVideoFeed;
-  if(typeof _origLVF==='function'){
-    var _lvfInFlight=false;
-    window.loadVideoFeed=async function(){
-      if(_lvfInFlight)return;
-      _lvfInFlight=true;
-      try{await _origLVF.apply(this,arguments);}finally{_lvfInFlight=false;}
-    };
-  }
-  // 4. Wrap renderFeed: re-apply liked state after every render
-  var _origRF=window.renderFeed;
-  if(typeof _origRF==='function'){
-    window.renderFeed=function(){
-      _origRF.apply(this,arguments);
-      var liked=(window.app&&window.app.vfLiked)||{};
-      Object.keys(liked).forEach(function(pid){
-        if(!liked[pid])return;
-        var h=document.getElementById('vfa-heart-'+pid);
-        if(h&&!h.classList.contains('liked')){
-          h.classList.add('liked');
-          var ico=h.querySelector('i.ti');
-          if(ico)ico.className='ti ti-heart-filled';
-        }
-      });
-    };
-  }
-  // 5. Periodic like-count refresh every 30s (shows others' likes)
+  // 3. Periodic like-count refresh every 30s (shows others' likes)
   function _vfRefreshCounts(){
     if(window._vfLoading)return;
     var url=window._vfTab==='following'?'/feed/following':'/feed';
