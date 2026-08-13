@@ -17212,3 +17212,73 @@ _tryWrapPubGrid();
   window._renderPublicProfileGrid.__pgFixed=true;
 })();
 </script>
+
+<script id="vf-av-fix189">(function(){
+if(window.__avFix189)return;
+window.__avFix189=true;
+var _DAT='data:',_HTT='http',_CAC='cw_av_cache',_UID='cw_user_id';
+
+// Patch _avApply to handle data: and http URLs properly
+var _origAP=window._avApply;
+window._avApply=function(el,av,color){
+  if(!el)return;
+  if(av&&(av.indexOf(_DAT)===0||av.indexOf(_HTT)===0)){
+    el.innerHTML='<img src="'+av+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">';
+    el.style.background='none';
+  } else if(_origAP){
+    _origAP.call(this,el,av,color);
+  } else if(av){
+    el.innerHTML='';el.textContent=av;
+    if(color)el.style.background=color;
+  }
+};
+
+// Re-apply ALL cached avatars to feed + topbar
+function _refreshAllAv(){
+  var myId=localStorage.getItem(_UID);
+  var raw=localStorage.getItem(_CAC);
+  var cache={};
+  try{cache=JSON.parse(raw)||{};}catch(e){}
+  Object.keys(cache).forEach(function(uid){
+    var d=cache[uid];if(!d||!d.av)return;
+    document.querySelectorAll('[data-uid="'+uid+'"]').forEach(function(el){
+      window._avApply(el,d.av,d.color||'');
+    });
+  });
+  // Topbar + profile for own user
+  if(myId&&cache[myId]){
+    var av=cache[myId].av,col=cache[myId].color||'';
+    ['wb-av-inner-world','itb-av-inner'].forEach(function(id){
+      var el=document.getElementById(id);if(el)window._avApply(el,av,col);
+    });
+    var profEl=document.getElementById('prof-avatar');
+    if(profEl)window._avApply(profEl,av,col);
+  }
+}
+
+// Wrap renderFeed
+var _oRF=window.renderFeed;
+if(typeof _oRF==='function'&&!_oRF.__avFixed){
+  window.renderFeed=function(){
+    var r=_oRF.apply(this,arguments);
+    setTimeout(_refreshAllAv,80);return r;
+  };
+  window.renderFeed.__avFixed=true;
+}
+
+// Wrap saveMyProfile
+var _oSave=window.saveMyProfile;
+if(typeof _oSave==='function'){
+  window.saveMyProfile=function(){
+    var r=_oSave.apply(this,arguments);
+    setTimeout(_refreshAllAv,400);
+    setTimeout(_refreshAllAv,1500);
+    return r;
+  };
+}
+
+// Run on load
+_refreshAllAv();
+setTimeout(_refreshAllAv,600);
+setTimeout(_refreshAllAv,2000);
+})();</script>
