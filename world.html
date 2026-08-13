@@ -17282,3 +17282,37 @@ _refreshAllAv();
 setTimeout(_refreshAllAv,600);
 setTimeout(_refreshAllAv,2000);
 })();</script>
+<script id="vf-av-fix194">
+(function(){
+if(window.__avFix194)return;
+window.__avFix194=true;
+var _CAC='cw_av_cache',_UID='cw_user_id';
+
+function _cacheMyPhoto(){
+  var myId=localStorage.getItem(_UID);
+  var p=window.app&&window.app.myProfile;
+  if(!myId||!p||!p.photoUrl||p.photoUrl.length<100)return;
+  var cache={};
+  try{cache=JSON.parse(localStorage.getItem(_CAC)||'{}')}catch(e){}
+  var existing=cache[myId]||{};
+  cache[myId]={av:p.photoUrl,color:existing.color||''};
+  localStorage.setItem(_CAC,JSON.stringify(cache));
+  if(window._avApply){
+    var av=p.photoUrl,col=existing.color||''; 
+    ['wb-av-inner-world','itb-av-inner'].forEach(function(id){var el=document.getElementById(id);if(el)window._avApply(el,av,col);});
+    document.querySelectorAll('[data-uid="'+myId+'"]').forEach(function(el){window._avApply(el,av,col);});
+  }
+}
+
+var _oSave194=window.saveMyProfile;
+if(typeof _oSave194==='function'){
+  window.saveMyProfile=function(){var r=_oSave194.apply(this,arguments);Promise.resolve(r).then(_cacheMyPhoto).catch(function(){});return r;};
+}
+
+var _oPeUpload=window.pePhotoUpload;
+if(typeof _oPeUpload==='function'){
+  window.pePhotoUpload=function(inp){var r=_oPeUpload.apply(this,arguments);setTimeout(_cacheMyPhoto,600);return r;};
+}
+
+})();
+</script>
