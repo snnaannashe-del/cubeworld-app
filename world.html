@@ -16883,6 +16883,13 @@ var _idx=0,_busy=false;
 function _con(){return document.getElementById("vf-container");}
 function _trk(){return document.getElementById("vf-track");}
 function _feed(){return document.getElementById("sec-feed");}
+function _overlayOpen(){
+  var cp=document.getElementById("vf-comments-panel");
+  if(cp&&cp.classList.contains("open"))return true;
+  var ms=document.getElementById("mob-more-sheet");
+  if(ms&&ms.style.display!=="none"&&ms.offsetParent!==null)return true;
+  return false;
+}
 function _go(n){
   var c=_con(),t=_trk();if(!c||!t)return;
   var cards=t.querySelectorAll(".vf-card");if(!cards.length)return;
@@ -16895,6 +16902,7 @@ function _go(n){
 }
 document.addEventListener("wheel",function(e){
   var f=_feed();if(!f||!f.contains(e.target))return;
+  if(_overlayOpen())return;
   e.preventDefault();
   e.stopPropagation();
   if(_busy)return;
@@ -16904,6 +16912,7 @@ document.addEventListener("wheel",function(e){
   setTimeout(function(){_busy=false;},2000);
 },{passive:false,capture:true});
 setInterval(function(){
+  if(_overlayOpen())return;
   var c=_con();if(!c)return;
   c.style.setProperty("overflow-y","hidden","important");
   c.style.setProperty("scroll-snap-type","none","important");
