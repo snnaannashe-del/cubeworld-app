@@ -16886,8 +16886,8 @@ function _feed(){return document.getElementById("sec-feed");}
 function _overlayOpen(){
   var cp=document.getElementById("vf-comments-panel");
   if(cp&&cp.classList.contains("open"))return true;
-  var ms=document.getElementById("mob-more-sheet");
-  if(ms&&ms.style.display!=="none"&&ms.offsetParent!==null)return true;
+  var ss=document.getElementById("_vf-share-sheet");
+  if(ss&&ss.classList.contains("open"))return true;
   return false;
 }
 function _go(n){
