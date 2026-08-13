@@ -13595,6 +13595,7 @@ function closePostActions(){
 }
 async function deletePost(postId){
   closePostActions();
+  await new Promise(r=>setTimeout(r,400));
   if(!confirm('Удалить это видео? Действие нельзя отменить.')) return;
   const res=await apiCall('/feed/posts/'+postId,'DELETE');
   if(res&&res.ok!==false){
