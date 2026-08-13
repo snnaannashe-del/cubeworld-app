@@ -16965,43 +16965,68 @@ setInterval(function(){
 #_pop2 .heart:active{transform:scale(.8)}
 </style>
 <script id="vf-like-patch">(function(){
-  // Patch vfLike: add animation + realtime portfolio update
+  // 1. Patch vfLike: animation + po-likes realtime
   var _orig=window.vfLike;
-  if(typeof _orig!=='function')return;
-  window.vfLike=function(postId,btn){
-    var heartEl=document.getElementById('vfa-heart-'+postId);
-    var wasLiked=heartEl&&heartEl.classList.contains('liked');
-    // Call original
-    _orig(postId,btn);
-    // Animate
-    if(heartEl){
-      heartEl.classList.remove('vf-heart-pop');
-      void heartEl.offsetWidth;
-      heartEl.classList.add('vf-heart-pop');
-      setTimeout(function(){heartEl.classList.remove('vf-heart-pop');},450);
-    }
-    // Haptic (mobile)
-    if(navigator.vibrate){try{navigator.vibrate(wasLiked?[10]:[15,10,15]);}catch(_){}}
-    // Update portfolio likes counter in real-time
-    var poLk=document.getElementById('po-likes');
-    if(poLk){
-      var cur=parseInt(poLk.textContent)||0;
-      poLk.textContent=String(Math.max(0,wasLiked?cur-1:cur+1));
-    }
-  };
-  // Patch _pop2Like similarly
+  if(typeof _orig==='function'){
+    window.vfLike=function(postId,btn){
+      var heartEl=document.getElementById('vfa-heart-'+postId);
+      var wasLiked=heartEl&&heartEl.classList.contains('liked');
+      _orig(postId,btn);
+      if(heartEl){heartEl.classList.remove('vf-heart-pop');void heartEl.offsetWidth;heartEl.classList.add('vf-heart-pop');setTimeout(function(){heartEl.classList.remove('vf-heart-pop');},450);}
+      if(navigator.vibrate){try{navigator.vibrate(wasLiked?[10]:[15,10,15]);}catch(_){}}
+      var poLk=document.getElementById('po-likes');
+      if(poLk){var cur=parseInt(poLk.textContent)||0;poLk.textContent=String(Math.max(0,wasLiked?cur-1:cur+1));}
+    };
+  }
+  // 2. Patch _pop2Like: po-likes update
   var _origP=window._pop2Like;
   if(typeof _origP==='function'){
     window._pop2Like=function(){
       var hrt=document.querySelector('#_pop2 .heart');
       var wasFilled=hrt&&hrt.classList.contains('filled');
       _origP.apply(this,arguments);
-      if(hrt){void hrt.offsetWidth;}
       var poLk=document.getElementById('po-likes');
-      if(poLk){
-        var cur=parseInt(poLk.textContent)||0;
-        poLk.textContent=String(Math.max(0,wasFilled?cur-1:cur+1));
-      }
+      if(poLk){var cur=parseInt(poLk.textContent)||0;poLk.textContent=String(Math.max(0,wasFilled?cur-1:cur+1));}
     };
   }
+  // 3. Guard loadVideoFeed: prevent concurrent calls (liked state flicker fix)
+  var _origLVF=window.loadVideoFeed;
+  if(typeof _origLVF==='function'){
+    var _lvfInFlight=false;
+    window.loadVideoFeed=async function(){
+      if(_lvfInFlight)return;
+      _lvfInFlight=true;
+      try{await _origLVF.apply(this,arguments);}finally{_lvfInFlight=false;}
+    };
+  }
+  // 4. Wrap renderFeed: re-apply liked state after every render
+  var _origRF=window.renderFeed;
+  if(typeof _origRF==='function'){
+    window.renderFeed=function(){
+      _origRF.apply(this,arguments);
+      var liked=(window.app&&window.app.vfLiked)||{};
+      Object.keys(liked).forEach(function(pid){
+        if(!liked[pid])return;
+        var h=document.getElementById('vfa-heart-'+pid);
+        if(h&&!h.classList.contains('liked')){
+          h.classList.add('liked');
+          var ico=h.querySelector('i.ti');
+          if(ico)ico.className='ti ti-heart-filled';
+        }
+      });
+    };
+  }
+  // 5. Periodic like-count refresh every 30s (shows others' likes)
+  function _vfRefreshCounts(){
+    if(window._vfLoading)return;
+    var url=window._vfTab==='following'?'/feed/following':'/feed';
+    fetch(url+'?limit=50').then(function(r){return r.json();}).then(function(data){
+      if(!data||!data.length)return;
+      data.forEach(function(post){
+        var lcEl=document.getElementById('vfa-lc-'+post.id);
+        if(lcEl)lcEl.textContent=String(post.likes||0);
+      });
+    }).catch(function(){});
+  }
+  setTimeout(function(){_vfRefreshCounts();setInterval(_vfRefreshCounts,30000);},5000);
 })();</script>
