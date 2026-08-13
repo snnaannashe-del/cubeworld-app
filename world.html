@@ -11611,14 +11611,11 @@ function _syncAllMyAvatars(){
     if(!uid)return;
     var photo=app.myProfile.photoUrl||app.myProfile.avatar||'';
     var isImg=photo&&(photo.startsWith('http')||photo.startsWith('data:'));
-    var html=isImg?'<img src="'+photo+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">':photo||'👤';
+    var avHtml=isImg?'<img src="'+photo+'" style="width:18px;height:18px;border-radius:50%;object-fit:cover;">':photo||'👤';
     // Feed cards
     document.querySelectorAll('.vfi-av[data-uid="'+uid+'"]').forEach(function(el){
-      el.innerHTML=html;el.setAttribute('data-av-loaded','1');
+      el.innerHTML=avHtml;el.setAttribute('data-av-loaded','1');
     });
-    // Profile page large avatar
-    var pa=document.getElementById('prof-avatar');
-    if(pa)pa.innerHTML=html;
     // Update av cache
     var cache=JSON.parse(localStorage.getItem('cw_av_cache')||'{}');
     cache[uid]={av:photo,color:''};
