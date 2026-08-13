@@ -10020,7 +10020,7 @@ async function _openMiniProfile(uid,name,avColor,avUrl){
   const av=document.getElementById('_mac_av');
   if(av){if(avUrl&&avUrl.startsWith('http')){av.innerHTML='<img src="'+avUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';}else{av.textContent=avUrl||(name||'?')[0].toUpperCase();av.style.background=avColor||'linear-gradient(135deg,#0095f6,#0060d0)';};
   // Load real avatar from API
-  if(uid){try{fetch('https://cubeworld-backend.onrender.com/users/'+uid,{headers:window._authHeaders||{}}).then(function(r){return r.ok?r.json():null;}).then(function(u){if(!u)return;const avNow=document.getElementById('_mac_av');if(!avNow)return;if(u.avatar_url&&u.avatar_url.indexOf('http')===0){avNow.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';avNow.style.background='none';}else if(u.avatar_emoji||u.avatar_url){(function(){var _ck=window._avGet&&window._avGet(uid);if(_ck&&_ck.av&&_ck.av.length>10){avNow.innerHTML='<img src="'+_ck.av+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';avNow.style.background='none';}else if(u.avatar_emoji&&u.avatar_emoji.length<10){avNow.textContent=u.avatar_emoji;avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}else{avNow.textContent=(u.display_name||name||'?')[0].toUpperCase();avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}})();}else if(u.avatar_color){avNow.style.background=u.avatar_color;;_avSet(uid,u.avatar_url,u.avatar_color);document.querySelectorAll('[data-uid="'+uid+'"]').forEach(function(e){_avApply(e,u.avatar_url,u.avatar_color);})}}).catch(function(){});}catch(_){}}}
+  if(uid){try{fetch('https://cubeworld-backend.onrender.com/users/'+uid,{headers:window._authHeaders||{}}).then(function(r){return r.ok?r.json():null;}).then(function(u){if(!u)return;const avNow=document.getElementById('_mac_av');if(!avNow)return;if(u.avatar_url&&u.avatar_url.indexOf('http')===0){avNow.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';avNow.style.background='none';}else if(u.avatar_emoji||u.avatar_url){(function(){var _ck=window._avGet&&window._avGet(uid);if(_ck&&_ck.av&&(_ck.av.length>10||/[^\x20-\x7E]/.test(_ck.av))){if(_ck.av.length>5){avNow.innerHTML='<img src="'+_ck.av+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';avNow.style.background='none';}else{avNow.textContent=_ck.av;avNow.style.background=_ck.color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}}else if(u.avatar_emoji&&u.avatar_emoji.length<10){avNow.textContent=u.avatar_emoji;avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}else{avNow.textContent=(u.display_name||name||'?')[0].toUpperCase();avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}})();}else if(u.avatar_color){avNow.style.background=u.avatar_color;;_avSet(uid,u.avatar_url,u.avatar_color);document.querySelectorAll('[data-uid="'+uid+'"]').forEach(function(e){_avApply(e,u.avatar_url,u.avatar_color);})}}).catch(function(){});}catch(_){}}}
   var _c=_avGet(uid);if(_c&&_c.av&&av){_avApply(av,_c.av,_c.color);}
   const nm=document.getElementById('_mac_nm');if(nm)nm.textContent=name||'';
   const btn=document.getElementById('_mac_btn');
@@ -17291,14 +17291,16 @@ var _CAC='cw_av_cache',_UID='cw_user_id';
 function _cacheMyPhoto(){
   var myId=localStorage.getItem(_UID);
   var p=window.app&&window.app.myProfile;
-  if(!myId||!p||!p.photoUrl||p.photoUrl.length<100)return;
+  if(!myId||!p)return;
+  var av194=p.photoUrl&&p.photoUrl.length>=100?p.photoUrl:((!p.photoUrl&&p.avatar&&p.avatar.length>0)?p.avatar:null);
+  if(!av194)return;
   var cache={};
   try{cache=JSON.parse(localStorage.getItem(_CAC)||'{}')}catch(e){}
   var existing=cache[myId]||{};
-  cache[myId]={av:p.photoUrl,color:existing.color||''};
+  cache[myId]={av:av194,color:existing.color||''};
   localStorage.setItem(_CAC,JSON.stringify(cache));
   if(window._avApply){
-    var av=p.photoUrl,col=existing.color||''; 
+    var av=av194,col=existing.color||''; 
     ['wb-av-inner-world','itb-av-inner'].forEach(function(id){var el=document.getElementById(id);if(el)window._avApply(el,av,col);});
     document.querySelectorAll('[data-uid="'+myId+'"]').forEach(function(el){window._avApply(el,av,col);});
   }
