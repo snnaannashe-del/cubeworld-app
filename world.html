@@ -13361,6 +13361,78 @@ async function vfFollow(userId){
   }
   _tryGuard();
 })();
+/* ── Comment panel: time formatting ───────────────────────────────────────
+   The API sends naive timestamps ("2026-08-07T09:28:22") that are UTC — the
+   backend writes them with datetime.utcnow() / NOW(). JS parses an ISO
+   string without a timezone as LOCAL time, so every timestamp was shifted
+   by the viewer's offset. Appending Z fixes that.
+   Today -> time only ("19:55"). Anything older -> date without time.      */
+function _vfcpDate(iso){
+  if(!iso) return new Date(NaN);
+  var s=String(iso);
+  if(!/[zZ]$|[+-]\d{2}:?\d{2}$/.test(s)) s+='Z';
+  return new Date(s);
+}
+function _vfcpTime(iso){
+  var d=_vfcpDate(iso);
+  if(isNaN(d.getTime())) return '';
+  var now=new Date();
+  function same(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
+  if(same(d,now)) return d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  var y=new Date(now.getFullYear(),now.getMonth(),now.getDate()-1);
+  if(same(d,y)) return 'вчера';
+  if(d.getFullYear()===now.getFullYear()) return d.toLocaleDateString('ru',{day:'numeric',month:'short'}).replace(/\./g,'');
+  return d.toLocaleDateString('ru',{day:'numeric',month:'short',year:'numeric'}).replace(/\s*г\.?$/,'').replace(/\./g,'');
+}
+
+/* ── Comment panel: translucent confirm / prompt ──────────────────────────
+   Replaces the browser's native confirm() and prompt(), which render as an
+   opaque system dialog and look nothing like the rest of the app.         */
+function _vfcpSheet(opts){
+  return new Promise(function(resolve){
+    var bd=document.createElement('div');bd.className='vfcp-ask-bd';
+    var box=document.createElement('div');box.className='vfcp-ask';
+    var ttl=document.createElement('div');ttl.className='vfcp-ask-title';
+    ttl.textContent=opts.title||'';box.appendChild(ttl);
+    var inp=null;
+    if(opts.input!==undefined){
+      inp=document.createElement('input');inp.className='vfcp-ask-inp';
+      inp.value=opts.input||'';inp.setAttribute('maxlength','500');
+      box.appendChild(inp);
+    }
+    var row=document.createElement('div');row.className='vfcp-ask-row';
+    var no=document.createElement('button');no.className='vfcp-ask-btn';
+    no.textContent=opts.cancelText||'Отмена';
+    var yes=document.createElement('button');
+    yes.className='vfcp-ask-btn primary'+(opts.danger?' danger':'');
+    yes.textContent=opts.okText||'ОК';
+    row.append(no,yes);box.appendChild(row);
+    bd.appendChild(box);document.body.appendChild(bd);
+    requestAnimationFrame(function(){bd.classList.add('open');});
+    function close(val){
+      bd.classList.remove('open');
+      setTimeout(function(){bd.remove();},180);
+      document.removeEventListener('keydown',key);
+      resolve(val);
+    }
+    function key(e){
+      if(e.key==='Escape')close(null);
+      else if(e.key==='Enter'&&inp)close(inp.value);
+    }
+    no.onclick=function(){close(null);};
+    yes.onclick=function(){close(inp?inp.value:true);};
+    bd.onclick=function(e){if(e.target===bd)close(null);};
+    document.addEventListener('keydown',key);
+    if(inp)setTimeout(function(){inp.focus();inp.select();},60);
+  });
+}
+function vfcpConfirm(title,okText){
+  return _vfcpSheet({title:title,okText:okText||'Удалить',danger:true});
+}
+function vfcpPrompt(title,value){
+  return _vfcpSheet({title:title,input:value||'',okText:'Сохранить'});
+}
+
 async function openVfComments(postId){
   _vfCommentPostId=postId;
   const _fabEl=document.getElementById('vf-fab-'+postId);_fabEl?.classList.add('acts-hidden');_fabEl?.closest('.vf-card')?.querySelector('.vf-info')?.classList.add('acts-hidden');
@@ -13380,16 +13452,15 @@ async function openVfComments(postId){
   data.forEach(c=>{
     const div=document.createElement('div');div.className='vfcp-comment';
     const l=(c.display_name||'?')[0].toUpperCase();
-    const t=new Date(c.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+    const t=_vfcpTime(c.created_at);
     const me2=app.myProfile;
     const isOwn=(me2&&me2.id&&String(me2.id)===String(c.user_id));
     const ownBtns=isOwn?'<span class="vfcp-own-btns"><button class="vfcp-own-btn" onclick="vfcpEdit('+c.id+',_vfCommentPostId)">✏️</button><button class="vfcp-own-btn" onclick="vfcpDelete('+c.id+',_vfCommentPostId)">🗑️</button></span>':'';
     div.innerHTML=
       '<div class="vfcp-avatar">'+l+'</div>'+
       '<div class="vfcp-body">'+
-      '<div style="display:flex;align-items:center;gap:4px"><div class="vfcp-name">'+escHtml(c.display_name||'Аноним')+'</div>'+ownBtns+'</div>'+
+      '<div style="display:flex;align-items:center;gap:6px"><div class="vfcp-name">'+escHtml(c.display_name||'Аноним')+'</div><span class="vfcp-meta">'+t+'</span>'+ownBtns+'</div>'+
       '<div class="vfcp-text" id="vfcp-txt-'+c.id+'">'+escHtml(c.content)+'</div>'+
-      '<div class="vfcp-meta">'+t+'</div>'+
       '<div class="vfcp-actions">'+
       '<button class="vfcp-act-btn" id="vfcp-lk-'+c.id+'" onclick="vfcpLike('+c.id+',0)"><i class="ti ti-thumb-up" style="font-size:14px"></i> <span>'+(c.likes||0)+'</span></button>'+
       '<button class="vfcp-act-btn" id="vfcp-dk-'+c.id+'" onclick="vfcpLike('+c.id+',1)"><i class="ti ti-thumb-down" style="font-size:14px"></i> <span>'+(c.dislikes||0)+'</span></button>'+
@@ -13434,14 +13505,14 @@ async function vfcpLike(cid,typeNum){
   if(dk){const sp=dk.querySelector('span');if(sp&&r.dislikes!==undefined)sp.textContent=r.dislikes;dk.classList.toggle('disliked',r.user_like==='dislike');}
 }
 async function vfcpDelete(cid,postId){
-  if(!confirm('Удалить комментарий?'))return;
+  if(!await vfcpConfirm('Удалить комментарий?'))return;
   const r=await apiCall('/feed/'+postId+'/comment/'+cid,'DELETE');
   if(r!=null)await openVfComments(postId);
 }
 async function vfcpEdit(cid,postId){
   const el=document.getElementById('vfcp-txt-'+cid);if(!el)return;
   const cur=el.textContent;
-  const newTxt=prompt('Редактировать:',cur);
+  const newTxt=await vfcpPrompt('Редактировать комментарий',cur);
   if(newTxt==null||!newTxt.trim())return;
   const r=await apiCall('/feed/'+postId+'/comment/'+cid,'PUT',{content:newTxt.trim()});
   if(r)el.textContent=newTxt.trim();
@@ -13453,7 +13524,7 @@ function vfcpShowReply(cid){
   box.style.cssText='display:flex;align-items:center;gap:6px;margin-top:6px;padding:4px 0';
   const inp=document.createElement('input');inp.className='vfcp-reply-inp';inp.placeholder='Ответить...';inp.id='vfcp-ri-'+cid;inp.style.flex='1';
   const eBtn=document.createElement('button');eBtn.className='gco-icon-btn';eBtn.style.cssText='width:36px;height:36px;font-size:16px;flex-shrink:0';eBtn.innerHTML='<i class="ti ti-mood-smile" style="font-size:16px"></i>';eBtn.onclick=function(){window._vfEmojiTarget='vfcp-ri-'+cid;toggleVfcpEmoji();};
-  const tBtn=document.createElement('button');tBtn.className='gco-icon-btn vfcp-timer-btn';tBtn.style.cssText='width:36px;height:36px;font-size:16px;flex-shrink:0';tBtn.textContent=window._vfcpExpire?'⏱':'∞';tBtn.onclick=function(e){toggleVfcpExpire(e);};
+  const tBtn=document.createElement('button');tBtn.className='gco-icon-btn vfcp-timer-btn';tBtn.style.cssText='width:36px;height:36px;font-size:16px;flex-shrink:0';tBtn.textContent=_vfcpExpireLabel();if(window._vfcpExpire)tBtn.classList.add('vfcp-timer-on');tBtn.onclick=function(e){toggleVfcpExpire(e);};
   const sBtn=document.createElement('button');sBtn.className='vfcp-send';sBtn.style.flexShrink='0';sBtn.textContent='→';sBtn.onclick=function(){vfcpSubmitReply(cid);};
   box.append(inp,eBtn,tBtn,sBtn);
   cont.prepend(box);
@@ -13463,16 +13534,20 @@ function _vfcpReplyCard(r,cid){
   const me=(typeof app!=='undefined'&&app.myProfile)||null;
   const isOwn=me&&me.id&&String(me.id)===String(r.user_id);
   const rl=(r.display_name||'?')[0].toUpperCase();
-  const rt=new Date(r.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  const rt=_vfcpTime(r.created_at);
   const d=document.createElement('div');
   d.className='vfcp-card vfcp-reply-item';d.id='vfcp-reply-'+r.id;
   d.style.cssText='background:transparent;border-left:2px solid rgba(255,255,255,.15);border-radius:0;margin-top:4px;padding:6px 8px 6px 14px;display:flex;gap:6px;align-items:flex-start';
   const av=document.createElement('div');av.className='vfcp-avatar';
   av.style.cssText='width:22px;height:22px;font-size:10px;flex-shrink:0';av.textContent=rl;
   const body=document.createElement('div');body.style.flex='1';
+  // Name and time share one row; the separate meta line below is gone.
+  const nmRow=document.createElement('div');
+  nmRow.style.cssText='display:flex;align-items:center;gap:6px';
   const nm=document.createElement('div');nm.className='vfcp-name';nm.style.fontSize='11px';nm.textContent=(r.display_name||'');
+  const meta=document.createElement('span');meta.className='vfcp-meta';meta.textContent=rt;
+  nmRow.append(nm,meta);
   const tx=document.createElement('div');tx.className='vfcp-text';tx.style.fontSize='12px';tx.textContent=r.content||'';
-  const meta=document.createElement('div');meta.className='vfcp-meta';meta.textContent=rt;
   const acts=document.createElement('div');acts.className='vfcp-actions';acts.style.marginTop='4px';
   const lkBtn=document.createElement('button');lkBtn.className='vfcp-act-btn'+(r.user_like==='like'?' liked':'');
   lkBtn.id='vfcp-rlk-'+r.id;lkBtn.innerHTML='<i class="ti ti-thumb-up" style="font-size:14px"></i> <span>'+(r.likes||0)+'</span>';
@@ -13492,7 +13567,7 @@ function _vfcpReplyCard(r,cid){
     const ownSpan=document.createElement('span');ownSpan.className='vfcp-own-btns';ownSpan.append(editBtn,delBtn);
     acts.append(ownSpan);
   }
-  body.append(nm,tx,meta,acts);d.append(av,body);return d;
+  body.append(nmRow,tx,acts);d.append(av,body);return d;
 }
 async function vfcpReplyLike(cid,rid,typeNum){
   const type=typeNum?'dislike':'like';
@@ -13503,7 +13578,7 @@ async function vfcpReplyLike(cid,rid,typeNum){
   if(dk){const sp=dk.querySelector('span');if(sp)sp.textContent=r.dislikes||0;dk.classList.toggle('disliked',r.user_like==='dislike');}
 }
 async function vfcpDeleteReply(cid,rid){
-  if(!confirm('Удалить ответ?'))return;
+  if(!await vfcpConfirm('Удалить ответ?'))return;
   const r=await apiCall('/feed/'+_vfCommentPostId+'/comment/'+cid+'/reply/'+rid,'DELETE');
   if(r&&r.ok){const el=document.getElementById('vfcp-reply-'+rid);if(el)el.remove();}
 }
@@ -16861,7 +16936,7 @@ function toggleVfcpEmoji(){
     document.body.appendChild(p);
   }
   var open=p.style.display!=='none';
-  if(open){p.style.display='none';return;}
+  if(open){_vfcpCloseEmoji();return;}
   p.style.display='flex';
   requestAnimationFrame(function(){
     var ph=p.offsetHeight||180,pw=p.offsetWidth||220;
@@ -16877,20 +16952,60 @@ function toggleVfcpEmoji(){
     }
     p.style.animation='timerPop .2s cubic-bezier(.34,1.56,.64,1)';
   });
-  // close on outside tap
+  // Close on outside tap.
+  // The old handler closed the picker on ANY tap outside it — including the
+  // emoji button itself. So a second press ran the handler (close) and then
+  // toggleVfcpEmoji (which saw it closed and reopened it), and the picker
+  // never went away. Taps on the trigger are now ignored here and handled by
+  // the toggle above. Listeners are also always removed, they used to pile up
+  // on every open.
   setTimeout(function(){
-    function _h(e){if(!p.contains(e.target)){p.style.display='none';document.removeEventListener('mousedown',_h);document.removeEventListener('touchstart',_h);}}
-    document.addEventListener('mousedown',_h,{once:false});
-    document.addEventListener('touchstart',_h,{once:false});
+    window._vfcpEmojiOutside=function(e){
+      if(p.contains(e.target)) return;
+      if(e.target.closest&&e.target.closest('[onclick*="toggleVfcpEmoji"]')) return;
+      _vfcpCloseEmoji();
+    };
+    document.addEventListener('mousedown',window._vfcpEmojiOutside);
+    document.addEventListener('touchstart',window._vfcpEmojiOutside);
   },50);
+}
+function _vfcpCloseEmoji(){
+  var p=document.getElementById('vfcp-emoji-pop');
+  if(p)p.style.display='none';
+  if(window._vfcpEmojiOutside){
+    document.removeEventListener('mousedown',window._vfcpEmojiOutside);
+    document.removeEventListener('touchstart',window._vfcpEmojiOutside);
+    window._vfcpEmojiOutside=null;
+  }
+}
+// Short label for the timer button, so the chosen lifetime is visible
+// without opening the menu. Empty value = comment never expires.
+var VFCP_EXPIRE_LABELS={'':'∞','300':'5м','3600':'1ч','86400':'24ч','604800':'7д'};
+function _vfcpExpireLabel(){
+  var v=String(window._vfcpExpire||'');
+  return VFCP_EXPIRE_LABELS[v]||'⏱';
+}
+function _vfcpSyncTimerBtns(){
+  var lbl=_vfcpExpireLabel();
+  var on=!!window._vfcpExpire;
+  document.querySelectorAll('.vfcp-timer-btn').forEach(function(b){
+    b.textContent=lbl;
+    b.classList.toggle('vfcp-timer-on',on);
+    b.title=on?('Комментарий исчезнет через '+lbl):'Комментарий останется навсегда';
+  });
+  document.querySelectorAll('#vfcp-timer-modal .dm-exp-opt').forEach(function(o){
+    o.classList.toggle('active',(o.dataset.val||'')===String(window._vfcpExpire||''));
+  });
 }
 function toggleVfcpExpire(e){
   if(e)e.stopPropagation();
+  _vfcpCloseEmoji();
   var modal=document.getElementById('vfcp-timer-modal');
   var bd=document.getElementById('vfcp-timer-bd');
   if(!modal)return;
   var open=modal.style.display!=='none';
   if(open){closeVfcpTimer();return;}
+  _vfcpSyncTimerBtns();
   // Position near the trigger button
   var btn=document.getElementById('vfcp-expire-btn')||(e&&e.currentTarget);
   modal.style.display='block';
@@ -16922,11 +17037,11 @@ function closeVfcpTimer(){
 }
 function setVfcpExpire(el,val){
   window._vfcpExpire=val;
-  document.querySelectorAll('#vfcp-timer-modal .dm-exp-opt').forEach(o=>o.classList.remove('active'));
-  el.classList.add('active');
-  var lbl=val?'⏱':'∞';
-  document.querySelectorAll('.vfcp-timer-btn').forEach(function(b){b.innerHTML=lbl;});
+  _vfcpSyncTimerBtns();
   closeVfcpTimer();
+  if(typeof showToast==='function'){
+    showToast(val?('Комментарий исчезнет через '+_vfcpExpireLabel()):'Комментарий останется навсегда');
+  }
 }
 </script>
 <script id="vf-mac-wheel">(function(){
@@ -17320,3 +17435,79 @@ if(typeof _oPeUpload==='function'){
 })();
 </script>
 <style>.vf-comments-panel:not(.open){box-shadow:none!important}#_vf-share-sheet:not(.open){box-shadow:none!important}#mob-nav{box-shadow:none!important}#mob-more-sheet{box-shadow:none!important}#dm-del-sheet{box-shadow:none!important}#del-chat-sheet{box-shadow:none!important}</style>
+
+<style id="vfcp-ui-fixes">
+/* ── Translucent confirm / prompt for the comment panel ───────────────── */
+.vfcp-ask-bd{
+  position:fixed;inset:0;z-index:10200;display:flex;align-items:center;justify-content:center;
+  padding:24px;background:rgba(4,4,16,.42);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  opacity:0;transition:opacity .18s ease;
+}
+.vfcp-ask-bd.open{opacity:1}
+.vfcp-ask{
+  width:100%;max-width:300px;
+  background:rgba(255,255,255,.07);
+  backdrop-filter:blur(28px) saturate(1.4);-webkit-backdrop-filter:blur(28px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.16);border-radius:18px;
+  padding:18px 16px 14px;
+  transform:scale(.92);transition:transform .2s cubic-bezier(.34,1.4,.64,1);
+}
+.vfcp-ask-bd.open .vfcp-ask{transform:scale(1)}
+.vfcp-ask-title{
+  font-size:14px;font-weight:600;color:#fff;text-align:center;
+  margin-bottom:14px;line-height:1.35;
+}
+.vfcp-ask-inp{
+  width:100%;box-sizing:border-box;margin-bottom:14px;
+  padding:10px 13px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.07);color:#fff;font-size:13px;outline:none;
+}
+.vfcp-ask-inp:focus{border-color:rgba(0,149,246,.75);background:rgba(0,149,246,.1)}
+.vfcp-ask-row{display:flex;gap:8px}
+.vfcp-ask-btn{
+  flex:1;padding:10px 12px;border-radius:12px;cursor:pointer;
+  font-size:13px;font-weight:600;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.06);color:rgba(255,255,255,.82);
+  transition:background .15s,color .15s;
+}
+.vfcp-ask-btn:active{background:rgba(255,255,255,.14)}
+.vfcp-ask-btn.primary{background:rgba(0,149,246,.85);border-color:transparent;color:#fff}
+.vfcp-ask-btn.primary.danger{background:rgba(231,76,60,.88)}
+
+/* ── Timer button reflects the selected lifetime ──────────────────────── */
+.vfcp-timer-btn{font-weight:700;transition:color .15s,background .15s}
+.vfcp-timer-btn.vfcp-timer-on{
+  color:#0095F6;background:rgba(0,149,246,.16);
+}
+
+/* ── Time now sits next to the nickname ───────────────────────────────── */
+.vfcp-name+.vfcp-meta{margin-top:0;font-weight:500;white-space:nowrap}
+
+/* ── Mobile: no shadows anywhere in the feed overlay ──────────────────────
+   On a light video frame every drop-shadow and text-shadow read as a grey
+   smear along the bottom of the screen. Desktop keeps them.             */
+@media (max-width:768px){
+  #mob-nav,
+  .vf-comments-panel,.vf-comments-panel.open,
+  #_vf-share-sheet,#_vf-share-sheet.open,
+  #_vf-menu-sheet,#mob-more-sheet,
+  .vf-card,.vf-info,.vf-fab-wrap,.vf-fab-item,
+  .vfa-author-av,.vf-fab-trigger,.vf-pill,.vf-pill.active,
+  .vfcp-comment,.vfcp-card,.vfcp-reply-item{
+    box-shadow:none!important;
+  }
+  .vfa-icon,.vf-info,.vf-fab-wrap,.vf-fab-item{
+    filter:none!important;
+    -webkit-filter:none!important;
+  }
+  .vfi-name,.vfi-title,.vfi-desc,.vfi-music,.vfi-tag,
+  .vfa-count,.vf-srch-x,.vf-srch-sug-title,.vf-srch-sug-sub,
+  .vfcp-name,.vfcp-text,.vfcp-meta,.vfcp-act-btn{
+    text-shadow:none!important;
+  }
+  .vf-card-gradient{background:transparent!important;display:none!important}
+}
+</style>
