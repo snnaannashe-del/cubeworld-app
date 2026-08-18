@@ -17503,6 +17503,26 @@ if(typeof _oPeUpload==='function'){
   }
   .vf-card-gradient{background:transparent!important;display:none!important}
 
+  /* A backdrop-filter paints a tinted, blurred copy of whatever sits behind
+     it — which reads as a coloured haze, not as a shadow, and survives any
+     box-shadow removal. Nothing in the feed or the nav needs one. Bottom
+     sheets are hidden outright while closed so a stray transform cannot
+     leave a blurred strip above the nav. */
+  #sec-feed,#sec-feed *,
+  .vf-feed-col,.vf-feed-col *,
+  .vf-container,.vf-container *,
+  #mob-nav,#mob-nav *{
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  #_vf-menu-sheet:not(.open),
+  #_vf-share-sheet:not(.open),
+  #dm-expire-popup:not(.open),
+  #mob-more-sheet:not(.open){
+    display:none!important;
+  }
+  #mob-nav{background:#06060f!important}
+
   /* Like / comment / share stay visible on a light video frame. This is a
      filter, not a box-shadow, so the sweep above does not erase it — and
      unlike a box-shadow it hugs the glyph instead of painting a grey
