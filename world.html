@@ -17501,7 +17501,19 @@ window._avApply=function(el,av,color){ paint(el,av,color); };
 var MY_TARGETS=['wb-av-inner-world','itb-av-inner','prof-avatar','po-avatar',
                 'pe-av-circle','dm-co-av','gco-call-av','gip-av-big'];
 
+/* Мой аватар хранится отдельно и считается главнее всего остального.
+   Иначе любой ответ сервера (/me, /feed) затирает только что выбранное
+   фото прежним — приложение перезаписывает app.myProfile из ответа, и на
+   экран возвращается старая картинка. Флаг pending снимается только после
+   успешного сохранения: до этого сервер для МЕНЯ не авторитет.          */
+var MINE='cw_my_avatar', PENDING='cw_my_avatar_pending';
+function readMine(){ try{ return JSON.parse(localStorage.getItem(MINE)||'null'); }catch(e){ return null; } }
+function writeMine(a){ try{ localStorage.setItem(MINE,JSON.stringify(a)); }catch(e){} }
+function isPending(){ return localStorage.getItem(PENDING)==='1'; }
+
 function currentAvatar(){
+  var m=readMine();
+  if(m&&m.av) return m;
   var p=(window.app&&window.app.myProfile)||{};
   if(isImage(p.photoUrl)) return {av:p.photoUrl,color:''};
   if(p.avatar) return {av:p.avatar,color:p.avatarColor||''};
@@ -17511,8 +17523,13 @@ function currentAvatar(){
 
 window.cwApplyMyAvatar=function(av,color){
   var id=myId();
-  var a=(av!==undefined&&av!==null&&av!=='') ? {av:av,color:color||''} : currentAvatar();
+  var explicit=(av!==undefined&&av!==null&&av!=='');
+  var a=explicit ? {av:av,color:color||''} : currentAvatar();
   if(!a||!a.av) return;
+  if(explicit){
+    writeMine(a);
+    try{ localStorage.setItem(PENDING,'1'); }catch(e){}
+  }
   var c=readCache(); c[id]={av:a.av,color:a.color||''}; writeCache(c);
   if(window.app&&window.app.myProfile){
     if(isImage(a.av)){ window.app.myProfile.photoUrl=a.av; window.app.myProfile.avatar='📷'; }
@@ -17556,7 +17573,11 @@ if(typeof _oSave==='function'){
   window.saveMyProfile=function(){
     window.cwApplyMyAvatar();                       // до запроса — мгновенно
     var r=_oSave.apply(this,arguments);
-    Promise.resolve(r).then(function(){ window.cwApplyMyAvatar(); }).catch(function(){});
+    Promise.resolve(r).then(function(){
+      // сохранились — теперь серверу снова можно верить
+      try{ localStorage.removeItem(PENDING); }catch(e){}
+      window.cwApplyMyAvatar();
+    }).catch(function(){});
     return r;
   };
 }
@@ -17576,12 +17597,17 @@ function harvest(data){
   if(!data) return false;
   var list = Array.isArray(data) ? data : [data];
   var c = readCache(), touched = false;
+  var me = myId();
   function take(o){
     if(!o || typeof o!=='object') return;
     var uid = o.user_id!==undefined ? o.user_id : o.id;
     var av  = o.avatar_url;
     if(uid===undefined || uid===null || !av) return;
     var k = String(uid);
+    // свой аватар с сервера не принимаем, пока не сохранились —
+    // иначе он затирает только что выбранное фото
+    if(k===me && isPending()) return;
+    if(k===me) writeMine({av:av,color:''});
     if(!c[k] || c[k].av!==av){ c[k]={av:av,color:(c[k]&&c[k].color)||''}; touched=true; }
   }
   list.forEach(function(o){
