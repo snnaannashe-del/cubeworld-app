@@ -17486,28 +17486,37 @@ if(typeof _oPeUpload==='function'){
 /* ── Time now sits next to the nickname ───────────────────────────────── */
 .vfcp-name+.vfcp-meta{margin-top:0;font-weight:500;white-space:nowrap}
 
-/* ── Mobile: no shadows anywhere in the feed overlay ──────────────────────
-   On a light video frame every drop-shadow and text-shadow read as a grey
-   smear along the bottom of the screen. Desktop keeps them.             */
+/* ── Mobile: strip shadows in the feed, keep the action icons readable ────
+   Listing selectors one by one missed whatever paints the grey band above
+   the bottom nav, so this sweeps every box-shadow and text-shadow inside
+   the feed section and the nav itself. Chats, modals and the desktop
+   layout are untouched.                                                  */
 @media (max-width:768px){
-  #mob-nav,
-  .vf-comments-panel,.vf-comments-panel.open,
-  #_vf-share-sheet,#_vf-share-sheet.open,
-  #_vf-menu-sheet,#mob-more-sheet,
-  .vf-card,.vf-info,.vf-fab-wrap,.vf-fab-item,
-  .vfa-author-av,.vf-fab-trigger,.vf-pill,.vf-pill.active,
-  .vfcp-comment,.vfcp-card,.vfcp-reply-item{
+  #sec-feed,#sec-feed *,
+  .vf-feed-col,.vf-feed-col *,
+  .vf-container,.vf-container *,
+  #mob-nav,#mob-nav *,
+  .vf-comments-panel,.vf-comments-panel *,
+  #_vf-share-sheet,#_vf-menu-sheet,#mob-more-sheet{
     box-shadow:none!important;
-  }
-  .vfa-icon,.vf-info,.vf-fab-wrap,.vf-fab-item{
-    filter:none!important;
-    -webkit-filter:none!important;
-  }
-  .vfi-name,.vfi-title,.vfi-desc,.vfi-music,.vfi-tag,
-  .vfa-count,.vf-srch-x,.vf-srch-sug-title,.vf-srch-sug-sub,
-  .vfcp-name,.vfcp-text,.vfcp-meta,.vfcp-act-btn{
     text-shadow:none!important;
   }
   .vf-card-gradient{background:transparent!important;display:none!important}
+
+  /* Like / comment / share stay visible on a light video frame. This is a
+     filter, not a box-shadow, so the sweep above does not erase it — and
+     unlike a box-shadow it hugs the glyph instead of painting a grey
+     rectangle. Two tight layers: dark for white frames, soft for dark. */
+  #sec-feed .vfa-icon,.vf-feed-col .vfa-icon{
+    filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.85)) drop-shadow(0 0 3px rgba(0,0,0,.45))!important;
+    -webkit-filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.85)) drop-shadow(0 0 3px rgba(0,0,0,.45))!important;
+  }
+  #sec-feed .vfa-count,.vf-feed-col .vfa-count,
+  #sec-feed .vfi-name,.vf-feed-col .vfi-name,
+  #sec-feed .vfi-title,.vf-feed-col .vfi-title,
+  #sec-feed .vfi-desc,.vf-feed-col .vfi-desc{
+    filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.9))!important;
+    -webkit-filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.9))!important;
+  }
 }
 </style>
