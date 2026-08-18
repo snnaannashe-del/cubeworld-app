@@ -12202,12 +12202,23 @@ function openPublicProfile(uid, name, avColor) {
 }
 
 function _poUpdateFollowBtn(uid) {
-  const followBtn = document.getElementById('po-follow-btn');
-  if(!followBtn) return;
   const isFollowing = !!(app.vfFollowing||{})[uid];
-  followBtn.textContent = isFollowing ? '✓ Отписаться' : '➕ Подписаться';
-  followBtn.style.background = isFollowing ? 'rgba(74,222,128,.1)' : '';
-  followBtn.style.color = isFollowing ? 'var(--text2)' : '';
+  const followBtn = document.getElementById('po-follow-btn');
+  if(followBtn){
+    followBtn.textContent = isFollowing ? '✓ Отписаться' : '➕ Подписаться';
+    followBtn.style.background = isFollowing ? 'rgba(74,222,128,.1)' : '';
+    followBtn.style.color = isFollowing ? 'var(--text2)' : '';
+  }
+  // The visible control is the item inside the CW dropdown — po-follow-btn is
+  // display:none. It was never updated, so the menu said "Подписаться" even
+  // after subscribing.
+  const ddTxt = document.getElementById('po-dd-follow-txt');
+  if(ddTxt) ddTxt.textContent = isFollowing ? 'Отписаться' : 'Подписаться';
+  const ddIcon = document.getElementById('po-dd-follow-icon');
+  if(ddIcon){
+    ddIcon.className = isFollowing ? 'ti ti-user-minus' : 'ti ti-user-plus';
+    ddIcon.style.color = isFollowing ? '#4ade80' : '';
+  }
 }
 
 function poFollowBtnClick() {
@@ -17178,7 +17189,14 @@ window.togglePoDropdown=function(e){
   var open=dd.style.display==="block";
   dd.style.display=open?"none":"block";
   if(!open){
-    function _cdd(ev){if(!dd.contains(ev.target)&&ev.target.className.indexOf("po-logo-btn")===-1){dd.style.display="none";document.removeEventListener("click",_cdd);}}
+    // Пересинхронизируем подпись перед показом — состояние подписки могло
+    // поменяться в ленте, пока меню было закрыто
+    try{
+      var ov=document.getElementById("portfolio-overlay");
+      var uid=ov&&ov.dataset&&ov.dataset.viewUid;
+      if(uid&&typeof _poUpdateFollowBtn==="function")_poUpdateFollowBtn(uid);
+    }catch(_){}
+    function _cdd(ev){if(!dd.contains(ev.target)&&String(ev.target.className||"").indexOf("po-logo-btn")===-1){dd.style.display="none";document.removeEventListener("click",_cdd);}}
     setTimeout(function(){document.addEventListener("click",_cdd);},50);
   }
 };
@@ -17625,6 +17643,26 @@ window.addEventListener('load',function(){ window.cwApplyAllAvatars(); });
 .vfcp-ask-btn:active{background:rgba(255,255,255,.14)}
 .vfcp-ask-btn.primary{background:rgba(0,149,246,.85);border-color:transparent;color:#fff}
 .vfcp-ask-btn.primary.danger{background:rgba(231,76,60,.88)}
+
+/* ── Profile header: "Изменить" and the CW menu go to the right edge ─────
+   .po-header is a flex row and .pe-header-title between them is
+   display:none, so both controls were stuck next to the back arrow.     */
+.po-header .po-edit-btn,
+.po-header #po-follow-wrap{margin-left:auto}
+.po-header #po-follow-wrap+.po-edit-btn{margin-left:8px}
+
+/* ── App frame: round the top corners too ────────────────────────────────
+   #int-layout and #world-wrap had border-radius:0 0 16px 16px, and the bar
+   above them had border-radius:0 — so the card was rounded at the bottom
+   and cut square at the top. The bar is the top of the same card, so it
+   takes the top corners.                                                */
+@media(min-width:900px){
+  #int-topbar{border-radius:16px 16px 0 0!important;overflow:hidden}
+  #world-bar{border-radius:16px 16px 0 0!important;overflow:hidden}
+  #int-topbar.tb-hidden{border-radius:0!important}
+  #int-topbar.tb-hidden+#int-layout,
+  #int-topbar.tb-hidden~#int-layout{border-radius:16px!important}
+}
 
 /* ── Timer button reflects the selected lifetime ──────────────────────── */
 .vfcp-timer-btn{font-weight:700;transition:color .15s,background .15s}
