@@ -17483,13 +17483,25 @@ function isImage(v){ return typeof v==='string' && (v.slice(0,5)==='data:' || v.
 
 function paint(el, av, color){
   if(!el || !av) return;
+  if(el.dataset.cwAv===av) return;             // уже нарисовано — не трогаем
   if(isImage(av)){
-    if(el.dataset.cwAv===av) return;           // уже нарисовано — не трогаем
+    // Ничего не стираем, пока картинка не загрузилась. Иначе при медленном
+    // ответе (спящий бесплатный инстанс просыпается до 50 секунд) или при
+    // любой ошибке на месте аватара остаётся пустой кружок.
     el.dataset.cwAv=av;
-    el.innerHTML='<img src="'+av+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">';
-    el.style.background='none';
+    var img=new Image();
+    img.onload=function(){
+      if(el.dataset.cwAv!==av) return;         // за это время поставили другой
+      img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:50%;display:block';
+      el.innerHTML='';
+      el.appendChild(img);
+      el.style.background='none';
+    };
+    img.onerror=function(){
+      if(el.dataset.cwAv===av) el.dataset.cwAv='';   // оставляем букву, дадим шанс позже
+    };
+    img.src=av;
   }else{
-    if(el.dataset.cwAv===av) return;
     el.dataset.cwAv=av;
     el.innerHTML='';
     el.textContent=av;
