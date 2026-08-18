@@ -13107,7 +13107,7 @@ function renderFeed(){
       </div>
       <div class="vf-info" onclick="_vfiToggle(event,this)">
         <div class="vfi-author-row">
-          <span class="vfi-av" data-uid="${post.user_id}" onclick="event.stopPropagation();clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">${post.avatar_url&&post.avatar_url.startsWith('http')?`<img src="${post.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:(post.avatar_url&&post.avatar_url.length<10?post.avatar_url:null)||(post.display_name||'?')[0].toUpperCase()}</span><span class="vfi-name">${escHtml(post.display_name||'Аноним')}</span>${typeBadge}
+          <span class="vfi-av" data-uid="${post.user_id}" onclick="event.stopPropagation();clickAuthor('${post.user_id}','${escHtml(post.display_name||'')}')">${(post.avatar_url&&(post.avatar_url.startsWith('http')||post.avatar_url.startsWith('data:')))?`<img src="${post.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:(post.avatar_url&&post.avatar_url.length<10?post.avatar_url:null)||(post.display_name||'?')[0].toUpperCase()}</span><span class="vfi-name">${escHtml(post.display_name||'Аноним')}</span>${typeBadge}
         </div>
         ${post.title?`<div class="vfi-title">${escHtml(post.title)}</div>`:''}
         <div class="vfi-desc">${escHtml(post.description||post.content||'')}</div>
@@ -17568,6 +17568,46 @@ window._syncTopbarAvatar=function(){
   window.cwApplyMyAvatar();
 };
 
+/* Чужие аватары. Раньше их негде было взять: лента и комментарии не
+   присылали avatar_url, поэтому у всех, кроме себя, показывалась первая
+   буква имени. Теперь сервер их отдаёт — складываем в тот же кэш, из
+   которого рисуются все кружки. */
+function harvest(data){
+  if(!data) return false;
+  var list = Array.isArray(data) ? data : [data];
+  var c = readCache(), touched = false;
+  function take(o){
+    if(!o || typeof o!=='object') return;
+    var uid = o.user_id!==undefined ? o.user_id : o.id;
+    var av  = o.avatar_url;
+    if(uid===undefined || uid===null || !av) return;
+    var k = String(uid);
+    if(!c[k] || c[k].av!==av){ c[k]={av:av,color:(c[k]&&c[k].color)||''}; touched=true; }
+  }
+  list.forEach(function(o){
+    take(o);
+    if(o && o.replies && o.replies.length) o.replies.forEach(take);
+  });
+  if(touched) writeCache(c);
+  return touched;
+}
+
+var _oApiCall = window.apiCall;
+if(typeof _oApiCall === 'function'){
+  window.apiCall = function(path){
+    var r = _oApiCall.apply(this, arguments);
+    try{
+      var p = String(path||'');
+      if(p.indexOf('/feed')===0 || p.indexOf('/users/')===0 || p.indexOf('/me')===0){
+        Promise.resolve(r).then(function(data){
+          if(harvest(data)) window.cwApplyAllAvatars();
+        }).catch(function(){});
+      }
+    }catch(_){}
+    return r;
+  };
+}
+
 // Всё, что отрисуется потом (лента, комментарии, мини-карточка), красим сразу
 function watch(){
   if(!document.body) return;
@@ -17651,11 +17691,20 @@ window.addEventListener('load',function(){ window.cwApplyAllAvatars(); });
 .po-header #po-follow-wrap{margin-left:auto}
 .po-header #po-follow-wrap+.po-edit-btn{margin-left:8px}
 
-/* ── App frame: round the top corners too ────────────────────────────────
-   #int-layout and #world-wrap had border-radius:0 0 16px 16px, and the bar
-   above them had border-radius:0 — so the card was rounded at the bottom
-   and cut square at the top. The bar is the top of the same card, so it
-   takes the top corners.                                                */
+/* ── Floating cards: top corners were being painted over ─────────────────
+   #pe-overlay and #portfolio-overlay already carry border-radius:18px, but
+   #pe-overlay has no overflow:hidden — and its header has an opaque
+   background with square corners, so the header covered the rounded top
+   while the bottom stayed round. Clipping the card fixes it; rounding the
+   header itself covers browsers that ignore the clip during transforms.  */
+@media(min-width:769px){
+  #pe-overlay,#portfolio-overlay{overflow:hidden!important}
+  #pe-overlay .pe-header,#portfolio-overlay .po-header{
+    border-top-left-radius:18px;border-top-right-radius:18px;
+  }
+}
+
+/* ── App frame: round the top corners too ─────────────────────────────── */
 @media(min-width:900px){
   #int-topbar{border-radius:16px 16px 0 0!important;overflow:hidden}
   #world-bar{border-radius:16px 16px 0 0!important;overflow:hidden}
