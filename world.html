@@ -17474,6 +17474,7 @@ if(typeof _oPeUpload==='function'){
 if(window.__cwAvSync)return;
 window.__cwAvSync=true;
 var CACHE='cw_av_cache', UIDK='cw_user_id';
+var API_BASE='https://cubeworld-backend.onrender.com';
 
 function myId(){ return localStorage.getItem(UIDK)||''; }
 function readCache(){ try{ return JSON.parse(localStorage.getItem(CACHE)||'{}')||{}; }catch(e){ return {}; } }
@@ -17601,9 +17602,14 @@ function harvest(data){
   function take(o){
     if(!o || typeof o!=='object') return;
     var uid = o.user_id!==undefined ? o.user_id : o.id;
-    var av  = o.avatar_url;
-    if(uid===undefined || uid===null || !av) return;
+    if(uid===undefined || uid===null) return;
     var k = String(uid);
+    // Сервер больше не присылает фото целиком — только короткий avatar_ver.
+    // Собираем из него обычную ссылку на картинку: браузер скачает её один
+    // раз и закэширует на сутки, вместо мегабайтов base64 в каждом ответе.
+    var av = o.avatar_url;
+    if(!av && o.avatar_ver) av = API_BASE + '/users/' + k + '/avatar?v=' + o.avatar_ver;
+    if(!av) return;
     // свой аватар с сервера не принимаем, пока не сохранились —
     // иначе он затирает только что выбранное фото
     if(k===me && isPending()) return;
@@ -17634,22 +17640,37 @@ if(typeof _oApiCall === 'function'){
   };
 }
 
-// Всё, что отрисуется потом (лента, комментарии, мини-карточка), красим сразу
+// Всё, что отрисуется потом (лента, комментарии, мини-карточка), красим сразу.
+// Наблюдатель собирает только НОВЫЕ кружки и красит их одной пачкой в
+// следующем кадре: без этого перерисовка запускалась на каждое изменение
+// DOM, а при отрисовке ленты их сотни.
 function watch(){
   if(!document.body) return;
+  var queue=[], scheduled=false;
+  function flush(){
+    scheduled=false;
+    var c=readCache(), nodes=queue; queue=[];
+    nodes.forEach(function(el){
+      if(!el.isConnected) return;
+      var d=c[el.getAttribute('data-uid')];
+      if(d&&d.av) paint(el,d.av,d.color||'');
+    });
+    window.cwApplyMyAvatar();
+  }
   new MutationObserver(function(muts){
-    var need=false;
     for(var i=0;i<muts.length;i++){
       var n=muts[i].addedNodes;
       for(var j=0;j<n.length;j++){
-        if(n[j].nodeType!==1) continue;
-        if(n[j].hasAttribute&&n[j].hasAttribute('data-uid')){ need=true; break; }
-        if(n[j].querySelector&&n[j].querySelector('[data-uid]')){ need=true; break; }
-        if(n[j].id&&MY_TARGETS.indexOf(n[j].id)>=0){ need=true; break; }
+        var el=n[j];
+        if(el.nodeType!==1) continue;
+        if(el.hasAttribute&&el.hasAttribute('data-uid')) queue.push(el);
+        if(el.querySelectorAll){
+          var inner=el.querySelectorAll('[data-uid]');
+          for(var k=0;k<inner.length;k++) queue.push(inner[k]);
+        }
       }
-      if(need) break;
     }
-    if(need) window.cwApplyAllAvatars();
+    if(queue.length&&!scheduled){ scheduled=true; requestAnimationFrame(flush); }
   }).observe(document.body,{childList:true,subtree:true});
 }
 
