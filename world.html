@@ -17434,6 +17434,155 @@ if(typeof _oPeUpload==='function'){
 
 })();
 </script>
+
+<script id="cw-avatar-sync">
+/* ── Avatar: one source of truth, painted everywhere at once ──────────────
+   Before this, three things went wrong.
+
+   1. _avApply only recognised avatars starting with "http". A photo picked
+      from the device is read by FileReader into a "data:" URL, so it fell
+      through to el.textContent = <giant base64 string>. That is why an
+      uploaded photo appeared in the profile editor and nowhere else.
+   2. Every other place was refreshed by timers (400ms / 600ms / 1500ms /
+      2000ms) after saving. Feed cards rendered later than the last timer
+      kept the old avatar until a reload.
+   3. Nothing repainted avatars for DOM built afterwards, so scrolling the
+      feed or opening comments brought back the first letter of the name.
+
+   Now: one paint() that understands data:, http and emoji; one function
+   that writes the cache and repaints every target synchronously; and a
+   MutationObserver so anything rendered later is painted on arrival.     */
+(function(){
+if(window.__cwAvSync)return;
+window.__cwAvSync=true;
+var CACHE='cw_av_cache', UIDK='cw_user_id';
+
+function myId(){ return localStorage.getItem(UIDK)||''; }
+function readCache(){ try{ return JSON.parse(localStorage.getItem(CACHE)||'{}')||{}; }catch(e){ return {}; } }
+function writeCache(c){ try{ localStorage.setItem(CACHE,JSON.stringify(c)); }catch(e){} }
+function isImage(v){ return typeof v==='string' && (v.slice(0,5)==='data:' || v.slice(0,4)==='http'); }
+
+function paint(el, av, color){
+  if(!el || !av) return;
+  if(isImage(av)){
+    if(el.dataset.cwAv===av) return;           // уже нарисовано — не трогаем
+    el.dataset.cwAv=av;
+    el.innerHTML='<img src="'+av+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">';
+    el.style.background='none';
+  }else{
+    if(el.dataset.cwAv===av) return;
+    el.dataset.cwAv=av;
+    el.innerHTML='';
+    el.textContent=av;
+    if(color) el.style.background=color;
+  }
+}
+window._avApply=function(el,av,color){ paint(el,av,color); };
+
+// Каждое место, где показан аватар текущего пользователя
+var MY_TARGETS=['wb-av-inner-world','itb-av-inner','prof-avatar','po-avatar',
+                'pe-av-circle','dm-co-av','gco-call-av','gip-av-big'];
+
+function currentAvatar(){
+  var p=(window.app&&window.app.myProfile)||{};
+  if(isImage(p.photoUrl)) return {av:p.photoUrl,color:''};
+  if(p.avatar) return {av:p.avatar,color:p.avatarColor||''};
+  var c=readCache()[myId()];
+  return (c&&c.av)?{av:c.av,color:c.color||''}:null;
+}
+
+window.cwApplyMyAvatar=function(av,color){
+  var id=myId();
+  var a=(av!==undefined&&av!==null&&av!=='') ? {av:av,color:color||''} : currentAvatar();
+  if(!a||!a.av) return;
+  var c=readCache(); c[id]={av:a.av,color:a.color||''}; writeCache(c);
+  if(window.app&&window.app.myProfile){
+    if(isImage(a.av)){ window.app.myProfile.photoUrl=a.av; window.app.myProfile.avatar='📷'; }
+    else { window.app.myProfile.avatar=a.av; window.app.myProfile.photoUrl=null; }
+    try{ localStorage.setItem('cw_my_profile', JSON.stringify(window.app.myProfile)); }catch(e){}
+  }
+  MY_TARGETS.forEach(function(t){ paint(document.getElementById(t), a.av, a.color); });
+  if(id) document.querySelectorAll('[data-uid="'+id+'"]').forEach(function(e){ paint(e,a.av,a.color); });
+};
+
+window.cwApplyAllAvatars=function(){
+  var c=readCache();
+  Object.keys(c).forEach(function(uid){
+    var d=c[uid]; if(!d||!d.av) return;
+    document.querySelectorAll('[data-uid="'+uid+'"]').forEach(function(e){ paint(e,d.av,d.color||''); });
+  });
+  window.cwApplyMyAvatar();
+};
+
+// Выбор фото: применяем сразу, как только файл прочитан, без ожидания сохранения
+window.pePhotoUpload=function(inp){
+  var file=inp&&inp.files&&inp.files[0];
+  if(!file) return;
+  var r=new FileReader();
+  r.onload=function(e){
+    var url=e.target.result;
+    if(typeof _peRenderAvatar==='function') _peRenderAvatar('📷', url);
+    window.cwApplyMyAvatar(url,'');
+  };
+  r.readAsDataURL(file);
+};
+
+var _oSelect=window.peSelectEmoji;
+window.peSelectEmoji=function(a,el){
+  if(typeof _oSelect==='function') _oSelect.apply(this,arguments);
+  window.cwApplyMyAvatar(a,'');
+};
+
+var _oSave=window.saveMyProfile;
+if(typeof _oSave==='function'){
+  window.saveMyProfile=function(){
+    window.cwApplyMyAvatar();                       // до запроса — мгновенно
+    var r=_oSave.apply(this,arguments);
+    Promise.resolve(r).then(function(){ window.cwApplyMyAvatar(); }).catch(function(){});
+    return r;
+  };
+}
+
+// Профиль подгружается с сервера позже — ловим этот момент
+var _oSyncTb=window._syncTopbarAvatar;
+window._syncTopbarAvatar=function(){
+  if(typeof _oSyncTb==='function') _oSyncTb.apply(this,arguments);
+  window.cwApplyMyAvatar();
+};
+
+// Всё, что отрисуется потом (лента, комментарии, мини-карточка), красим сразу
+function watch(){
+  if(!document.body) return;
+  new MutationObserver(function(muts){
+    var need=false;
+    for(var i=0;i<muts.length;i++){
+      var n=muts[i].addedNodes;
+      for(var j=0;j<n.length;j++){
+        if(n[j].nodeType!==1) continue;
+        if(n[j].hasAttribute&&n[j].hasAttribute('data-uid')){ need=true; break; }
+        if(n[j].querySelector&&n[j].querySelector('[data-uid]')){ need=true; break; }
+        if(n[j].id&&MY_TARGETS.indexOf(n[j].id)>=0){ need=true; break; }
+      }
+      if(need) break;
+    }
+    if(need) window.cwApplyAllAvatars();
+  }).observe(document.body,{childList:true,subtree:true});
+}
+
+function boot(){
+  // восстанавливаем профиль из localStorage до первого кадра
+  try{
+    var saved=localStorage.getItem('cw_my_profile');
+    if(saved&&window.app&&!window.app.myProfile) window.app.myProfile=JSON.parse(saved);
+  }catch(e){}
+  window.cwApplyAllAvatars();
+  watch();
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
+else boot();
+window.addEventListener('load',function(){ window.cwApplyAllAvatars(); });
+})();
+</script>
 <style>.vf-comments-panel:not(.open){box-shadow:none!important}#_vf-share-sheet:not(.open){box-shadow:none!important}#mob-nav{box-shadow:none!important}#mob-more-sheet{box-shadow:none!important}#dm-del-sheet{box-shadow:none!important}#del-chat-sheet{box-shadow:none!important}</style>
 
 <style id="vfcp-ui-fixes">
