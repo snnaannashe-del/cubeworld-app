@@ -17543,9 +17543,14 @@ function isPending(){ return localStorage.getItem(PENDING)==='1'; }
 
 function currentAvatar(){
   var m=readMine();
-  if(m&&m.av) return m;
+  // Отдельно сохранённое значение главнее только пока оно НЕ сохранено на
+  // сервере. Иначе застрявший там старый эмодзи побеждал настоящее фото из
+  // профиля: сверху рисовалось фото (своим кодом приложения), а в ленте —
+  // эмодзи из этого хранилища. Одно лицо, две разные картинки на экране.
+  if(m&&m.av&&isPending()) return m;
   var p=(window.app&&window.app.myProfile)||{};
   if(isImage(p.photoUrl)) return {av:p.photoUrl,color:''};
+  if(m&&m.av) return m;
   if(p.avatar) return {av:p.avatar,color:p.avatarColor||''};
   var c=readCache()[myId()];
   return (c&&c.av)?{av:c.av,color:c.color||''}:null;
