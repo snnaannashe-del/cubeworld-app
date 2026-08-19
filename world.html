@@ -9966,7 +9966,7 @@ function renderUserSearchCard(u){
   const sub = [u.username ? '@'+u.username : null, uid].filter(Boolean).join(' · ');
   return `<div class="sui-card" id="sui-${u.id}" onclick="toggleUserCard(${u.id},this)">
     <div class="sui-head">
-      <div class="sui-ava">${u.avatar_url&&(u.avatar_url.startsWith('/')||u.avatar_url.startsWith('http'))?`<img src="${escHtml(u.avatar_url)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover" onerror="this.parentElement.textContent='👤'">`:escHtml(u.avatar_url||'👤')}</div>
+      <div class="sui-ava">${u.avatar_url&&(u.avatar_url.startsWith('/')||u.avatar_url.startsWith('http')||u.avatar_url.startsWith('data:'))?`<img src="${escHtml(u.avatar_url)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover" onerror="this.parentElement.textContent='👤'">`:escHtml(u.avatar_url||'👤')}</div>
       <div class="sui-info">
         <div class="sui-name">${escHtml(u.display_name||u.username||'Пользователь')}</div>
         <div class="sui-sub">${escHtml(sub)}</div>
@@ -10021,7 +10021,7 @@ async function _openMiniProfile(uid,name,avColor,avUrl){
   const av=document.getElementById('_mac_av');
   if(av){if(avUrl&&avUrl.startsWith('http')){av.innerHTML='<img src="'+avUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';}else{av.textContent=avUrl||(name||'?')[0].toUpperCase();av.style.background=avColor||'linear-gradient(135deg,#0095f6,#0060d0)';};
   // Load real avatar from API
-  if(uid){try{fetch('https://cubeworld-backend.onrender.com/users/'+uid,{headers:window._authHeaders||{}}).then(function(r){return r.ok?r.json():null;}).then(function(u){if(!u)return;const avNow=document.getElementById('_mac_av');if(!avNow)return;if(u.avatar_url&&u.avatar_url.indexOf('http')===0){avNow.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';avNow.style.background='none';}else if(u.avatar_emoji||u.avatar_url){(function(){var _ck=window._avGet&&window._avGet(uid);if(_ck&&_ck.av&&(_ck.av.length>10||/[^\x20-\x7E]/.test(_ck.av))){if(_ck.av.length>5){avNow.innerHTML='<img src="'+_ck.av+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';avNow.style.background='none';}else{avNow.textContent=_ck.av;avNow.style.background=_ck.color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}}else if(u.avatar_emoji&&u.avatar_emoji.length<10){avNow.textContent=u.avatar_emoji;avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}else{avNow.textContent=(u.display_name||name||'?')[0].toUpperCase();avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}})();}else if(u.avatar_color){avNow.style.background=u.avatar_color;;_avSet(uid,u.avatar_url,u.avatar_color);document.querySelectorAll('[data-uid="'+uid+'"]').forEach(function(e){_avApply(e,u.avatar_url,u.avatar_color);})}}).catch(function(){});}catch(_){}}}
+  if(uid){try{fetch('https://cubeworld-backend.onrender.com/users/'+uid,{headers:window._authHeaders||{}}).then(function(r){return r.ok?r.json():null;}).then(function(u){if(!u)return;const avNow=document.getElementById('_mac_av');if(!avNow)return;if(u.avatar_url&&(u.avatar_url.indexOf('http')===0||u.avatar_url.indexOf('data:')===0)){avNow.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';avNow.style.background='none';}else if(u.avatar_emoji||u.avatar_url){(function(){var _ck=window._avGet&&window._avGet(uid);if(_ck&&_ck.av&&(_ck.av.length>10||/[^\x20-\x7E]/.test(_ck.av))){if(_ck.av.length>5){avNow.innerHTML='<img src="'+_ck.av+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';avNow.style.background='none';}else{avNow.textContent=_ck.av;avNow.style.background=_ck.color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}}else if(u.avatar_emoji&&u.avatar_emoji.length<10){avNow.textContent=u.avatar_emoji;avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}else{avNow.textContent=(u.display_name||name||'?')[0].toUpperCase();avNow.style.background=u.avatar_color||avColor||'linear-gradient(135deg,#0095f6,#0060d0)';}})();}else if(u.avatar_color){avNow.style.background=u.avatar_color;;_avSet(uid,u.avatar_url,u.avatar_color);document.querySelectorAll('[data-uid="'+uid+'"]').forEach(function(e){_avApply(e,u.avatar_url,u.avatar_color);})}}).catch(function(){});}catch(_){}}}
   var _c=_avGet(uid);if(_c&&_c.av&&av){_avApply(av,_c.av,_c.color);}
   const nm=document.getElementById('_mac_nm');if(nm)nm.textContent=name||'';
   const btn=document.getElementById('_mac_btn');
@@ -16896,7 +16896,7 @@ function _vfLoadAvatars(){
       .then(function(r){return r.json();}).then(function(u){
         if(!u||!u.avatar_url)return;
         (seen[uid]||[]).forEach(function(av){
-          if(u.avatar_url.startsWith('http')){
+          if(u.avatar_url.startsWith('http')||u.avatar_url.startsWith('data:')){
             av.innerHTML='<img src="'+u.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
           }else{
             av.textContent=u.avatar_url;
