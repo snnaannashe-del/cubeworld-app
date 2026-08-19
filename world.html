@@ -17476,22 +17476,16 @@ window.__cwAvSync=true;
 var CACHE='cw_av_cache', UIDK='cw_user_id';
 
 function myId(){ return localStorage.getItem(UIDK)||''; }
-// Разовая уборка: в кэше могли остаться ссылки /users/N/avatar от неудачного
-// эксперимента. Они не грузились и оставляли пустые кружки — выкидываем их,
-// значения-фото (data:) не трогаем.
+// Разовая чистка хранилища аватаров. За время правок в нём могли осесть
+// битые ссылки и старые эмодзи, и приложение показывало их вместо фото —
+// в разных местах разное. Сбрасываем один раз, дальше всё берётся из
+// профиля и с сервера. Само фото при этом не теряется: оно лежит в базе.
 try{
-  var _raw=localStorage.getItem('cw_av_cache');
-  if(_raw && _raw.indexOf('/avatar?v=')>=0){
-    var _c=JSON.parse(_raw)||{}, _ch=false;
-    Object.keys(_c).forEach(function(k){
-      if(_c[k] && typeof _c[k].av==='string' && _c[k].av.indexOf('/avatar?v=')>=0){ delete _c[k]; _ch=true; }
-    });
-    if(_ch) localStorage.setItem('cw_av_cache', JSON.stringify(_c));
-  }
-  var _m=localStorage.getItem('cw_my_avatar');
-  if(_m && _m.indexOf('/avatar?v=')>=0){
+  if(localStorage.getItem('cw_av_schema')!=='3'){
     localStorage.removeItem('cw_my_avatar');
     localStorage.removeItem('cw_my_avatar_pending');
+    localStorage.removeItem('cw_av_cache');
+    localStorage.setItem('cw_av_schema','3');
   }
 }catch(e){}
 function readCache(){ try{ return JSON.parse(localStorage.getItem(CACHE)||'{}')||{}; }catch(e){ return {}; } }
