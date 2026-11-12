@@ -4,6 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CubeWorld</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-96.png" sizes="96x96" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#030310">
+<meta name="description" content="CubeWorld — анонимная соцсеть в кубах: чаты, группы, эфиры, свои файлы и CUBE.">
+<link rel="canonical" href="https://cube-world.space/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CubeWorld">
+<meta property="og:title" content="CubeWorld — анонимная соцсеть в кубах">
+<meta property="og:description" content="Чаты, группы, эфиры, свои файлы и CUBE. Вход по ключу, без почты и телефона.">
+<meta property="og:url" content="https://cube-world.space/">
+<meta property="og:image" content="https://cube-world.space/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cube-world.space/og.png">
+
 <style>
 :root{--bg:#020211;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#0099ff;--gold:#f5c842;--premium:#40c4ff;--text:#e8e8f0;--muted:rgba(232,232,240,0.45);--radius:16px;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -18,7 +36,7 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
 .lfi{font-size:18px;line-height:1;}
 .ldarr{font-size:10px;color:var(--muted);margin-left:2px;transition:transform .2s;}
 .ldd.open .ldarr{transform:rotate(180deg);}
-.ldm{display:none;flex-direction:column;gap:2px;background:rgba(16,20,40,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:6px;margin-top:6px;backdrop-filter:blur(12px);position:absolute;right:0;top:100%;z-index:200;min-width:120px;}
+.ldm{max-height:min(70vh,520px);overflow-y:auto;display:none;flex-direction:column;gap:2px;background:rgba(16,20,40,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:6px;margin-top:6px;backdrop-filter:blur(12px);position:absolute;right:0;top:100%;z-index:200;min-width:120px;}
 .ldd.open .ldm{display:flex;}
 .ldm button{background:none;border:none;color:var(--text);font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;transition:background .2s;}
 .ldm button:hover,.ldm button.cur{background:rgba(124,106,255,0.2);}
@@ -63,10 +81,25 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
 .card.pr{border-color:rgba(122,212,255,.15);}
 .card:hover{border-color:rgba(255,255,255,.18);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3);}
 .card.pr:hover{border-color:rgba(122,212,255,.4);}
-.ci{font-size:26px;margin-bottom:10px;display:block;}
+/* v=544 · Смайлы заменены нашими значками: та же линия и те же цвета,
+   что во всём приложении. Смайл рисует система, и на каждой он свой —
+   на маке один, на андроиде другой, в Windows третий. Значок рисуем мы. */
+.ci{width:30px;height:30px;margin-bottom:10px;display:block;stroke-width:1.7}
 .cbadge{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
 .cbadge.f{color:var(--gold);}
 .cbadge.p{color:var(--premium);}
+.cbadge.s{color:#cfd6e4;}
+.cbadge.g{color:var(--gold);}
+/* Три карточки вместо двух: на телефоне они встают столбиком, иначе каждая
+   выходит шириной в палец и ничего не прочесть. */
+.kc3{max-width:860px;}
+.card.gd{border-color:rgba(251,191,36,.18);}
+.card.gd:hover{border-color:rgba(251,191,36,.45);}
+.cprice{font-size:12px;color:var(--muted);margin-bottom:8px;}
+.cprice b{font-size:19px;color:#fff;font-weight:800;}
+.card-more{display:inline-block;margin-left:14px;color:var(--muted);font-size:12px;font-weight:600;text-decoration:none;}
+.card-more:hover{color:#fff;}
+@media(max-width:720px){.kc3{flex-direction:column;max-width:420px;}}
 .card h3{font-size:17px;font-weight:700;margin-bottom:6px;}
 .card p{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:14px;}
 .card-link{display:inline-block;color:#4af0a0;font-size:13px;font-weight:700;text-decoration:none;transition:opacity .2s;}
@@ -149,11 +182,26 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
     <span class="ldarr">&#9660;</span>
   </button>
   <div class="ldm" id="ldm">
-    <button onclick="pickL('en')" id="lo-en" class="cur"><span class="lfi">&#127468;&#127463;</span> EN</button>
-    <button onclick="pickL('ru')" id="lo-ru"><span class="lfi">&#127479;&#127482;</span> RU</button>
-    <button onclick="pickL('es')" id="lo-es"><span class="lfi">&#127466;&#127480;</span> ES</button>
-    <button onclick="pickL('zh')" id="lo-zh"><span class="lfi">&#127464;&#127475;</span> ZH</button>
-    <button onclick="pickL('fr')" id="lo-fr"><span class="lfi">&#127467;&#127479;</span> FR</button>
+    <button onclick="pickL('ru')" id="lo-ru"><span class="lfi">🇷🇺</span> Русский</button>
+    <button onclick="pickL('en')" id="lo-en" class="cur"><span class="lfi">🇬🇧</span> English</button>
+    <button onclick="pickL('en-IN')" id="lo-en-IN"><span class="lfi">🇮🇳</span> English (India)</button>
+    <button onclick="pickL('uk')" id="lo-uk"><span class="lfi">🇺🇦</span> Українська</button>
+    <button onclick="pickL('de')" id="lo-de"><span class="lfi">🇩🇪</span> Deutsch</button>
+    <button onclick="pickL('fr')" id="lo-fr"><span class="lfi">🇫🇷</span> Français</button>
+    <button onclick="pickL('fr-CA')" id="lo-fr-CA"><span class="lfi">🇨🇦</span> Français (Canada)</button>
+    <button onclick="pickL('es')" id="lo-es"><span class="lfi">🇪🇸</span> Español</button>
+    <button onclick="pickL('es-419')" id="lo-es-419"><span class="lfi">🇲🇽</span> Español (Latinoamérica)</button>
+    <button onclick="pickL('it')" id="lo-it"><span class="lfi">🇮🇹</span> Italiano</button>
+    <button onclick="pickL('pt')" id="lo-pt"><span class="lfi">🇵🇹</span> Português</button>
+    <button onclick="pickL('pl')" id="lo-pl"><span class="lfi">🇵🇱</span> Polski</button>
+    <button onclick="pickL('tr')" id="lo-tr"><span class="lfi">🇹🇷</span> Türkçe</button>
+    <button onclick="pickL('ar')" id="lo-ar"><span class="lfi">🇸🇦</span> العربية</button>
+    <button onclick="pickL('ar-AE')" id="lo-ar-AE"><span class="lfi">🇦🇪</span> العربية (الخليج)</button>
+    <button onclick="pickL('vi')" id="lo-vi"><span class="lfi">🇻🇳</span> Tiếng Việt</button>
+    <button onclick="pickL('zh')" id="lo-zh"><span class="lfi">🇨🇳</span> 中文</button>
+    <button onclick="pickL('ja')" id="lo-ja"><span class="lfi">🇯🇵</span> 日本語</button>
+    <button onclick="pickL('ko')" id="lo-ko"><span class="lfi">🇰🇷</span> 한국어</button>
+    <button onclick="pickL('hi')" id="lo-hi"><span class="lfi">🇮🇳</span> हिन्दी</button>
   </div>
 </div>
 </div>
@@ -169,8 +217,12 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
     <div class="hero-label" id="el-lbl">CubeWorld &middot; Land Protocol</div>
     <h1 id="el-h1">Digital Universe<br>Social Network</h1>
     <p class="hero-sub" id="el-tag">Temporary encrypted spaces in a three-dimensional world. Each cube is a land, use it wisely.</p>
-    <p class="hero-mini" id="el-s1" style="font-size:13px;opacity:0.45;margin-top:4px">No email. No phone. No IP. Only a key = Anonymity online.</p>
-    <button class="btn-cta" id="el-ab" onclick="openAuth()">&#128274; Key Authorization &rsaquo;</button>
+    <!-- Было «No IP». Это неправда: IP-адрес соединения видит любой сайт,
+         и наш тоже — без него сервер не знает, куда слать ответ. Политика
+         конфиденциальности говорит об этом прямо, и титульная страница не
+         должна обещать обратное. -->
+    <p class="hero-mini" id="el-s1" style="font-size:13px;opacity:0.45;margin-top:4px">No email. No phone. Just a key.</p>
+    <button class="btn-cta" id="el-ab" onclick="openAuth()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;vertical-align:-3px;margin-right:7px"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z"/><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"/><path d="M8 11v-4a4 4 0 1 1 8 0v4"/></svg><span id="el-ab-t">Key Authorization</span> &rsaquo;</button>
   </section>
 
   <!-- Inline login -->
@@ -188,21 +240,35 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
     </div>
   </section>
 
-  <!-- Key cards -->
-  <div class="kc">
-    <div class="card" onclick="startKeygen('free')">
-      <span class="ci">&#128273;</span>
-      <div class="cbadge f">FREE KEY</div>
-      <h3 id="el-ft">Basic Access</h3>
-      <p id="el-fd">Chats &middot; Feed &middot; Public cubes &middot; 3 groups</p>
+  <!-- Key cards: три тарифа. Цены берём с сервера (/plans), чтобы они жили
+       в одном месте и не расходились с тем, что считает сервер. -->
+  <div class="kc kc3">
+    <div class="card" onclick="открытьТариф('free')">
+      <svg class="ci" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:var(--gold)"><path d="M16.555 3.843l3.602 3.602a2.877 2.877 0 0 1 0 4.069l-2.643 2.643a2.877 2.877 0 0 1 -4.069 0l-.301 -.301l-6.558 6.558a2 2 0 0 1 -1.239 .578l-.175 .008h-1.172a1 1 0 0 1 -.993 -.883l-.007 -.117v-1.172a2 2 0 0 1 .467 -1.284l.119 -.13l.414 -.414h2v-2h2v-2l2.144 -2.144l-.301 -.301a2.877 2.877 0 0 1 0 -4.069l2.643 -2.643a2.877 2.877 0 0 1 4.069 0z"/><path d="M15 9h.01"/></svg>
+      <div class="cbadge f" id="el-t1b">FREE</div>
+      <h3 id="el-t1t">Free</h3>
+      <div class="cprice"><b id="pr-free">—</b> <span id="el-t1u"></span></div>
+      <p id="el-t1d">3 cubes · Games · Map · Feed · Chats · Groups</p>
       <span class="card-link" onclick="event.stopPropagation();startKeygen('free')" id="el-gk">Get key &rarr;</span>
+      <span class="card-more" onclick="event.stopPropagation();открытьТариф('free')" id="el-t1m">Details &rarr;</span>
     </div>
-    <div class="card pr" onclick="startKeygen('premium')">
-      <span class="ci">&#128142;</span>
-      <div class="cbadge p">PREMIUM KEY</div>
-      <h3 id="el-pt">Full Access</h3>
-      <p id="el-pd">E2E encryption &middot; Unlimited &middot; Signals &middot; Files &middot; Video</p>
-      <span class="card-link" onclick="event.stopPropagation();startKeygen('premium')" id="el-pk">Get key &rarr;</span>
+    <div class="card pr" onclick="открытьТариф('silver')">
+      <svg class="ci" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:#cfd6e4"><path d="M6 5h12l3 5l-8.5 9.5a.7 .7 0 0 1 -1 0l-8.5 -9.5l3 -5"/><path d="M10 12l-2 -2.2l.6 -1"/></svg>
+      <div class="cbadge s" id="el-t2b">SILVER</div>
+      <h3 id="el-t2t">Silver</h3>
+      <div class="cprice"><b id="pr-silver">—</b> <span id="el-t2u"></span></div>
+      <p id="el-t2d">10 cubes · Live · Signals · Analytics</p>
+      <span class="card-link" onclick="event.stopPropagation();startKeygen('free')" id="el-t2k">Get key &rarr;</span>
+      <span class="card-more" onclick="event.stopPropagation();открытьТариф('silver')" id="el-t2m">Details &rarr;</span>
+    </div>
+    <div class="card gd" onclick="открытьТариф('gold')">
+      <svg class="ci" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:var(--gold)"><path d="M8 21l8 0"/><path d="M12 17l0 4"/><path d="M7 4l10 0"/><path d="M17 4v8a5 5 0 0 1 -10 0v-8"/><path d="M5 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M19 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/></svg>
+      <div class="cbadge g" id="el-t3b">GOLD</div>
+      <h3 id="el-t3t">Gold</h3>
+      <div class="cprice"><b id="pr-gold">—</b> <span id="el-t3u"></span></div>
+      <p id="el-t3d">33 cubes · All of Silver · Fund share · API</p>
+      <span class="card-link" onclick="event.stopPropagation();startKeygen('free')" id="el-t3k">Get key &rarr;</span>
+      <span class="card-more" onclick="event.stopPropagation();открытьТариф('gold')" id="el-t3m">Details &rarr;</span>
     </div>
   </div>
 
@@ -259,90 +325,43 @@ body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSyst
 
 </div><!-- /s-keygen -->
 
-<script id="tr" type="application/json">
-{
-  "en":{
-    "lbl":"CUBEWORLD · LAND PROTOCOL",
-    "h1":"Digital Universe<br>Social Network",
-    "tag":"Temporary encrypted spaces in a three-dimensional world. Each cube is a land, use it wisely.",
-    "s1":"No email. No phone. No IP. Only a key = Anonymity online.",
-    "s2":"",
-    "ab":"Key Authorization",
-    "sc":"active cubes","so":"online","sm":"users",
-    "ft":"Basic","pt":"Full Access",
-    "fk":"Free Key","pk":"Get Premium Key",
-    "fa":"Basic Access","pa":"Full Access",
-    "fd":"Chats · Feed · Public cubes · 3 groups","pd":"E2E encryption · Unlimited · Signals · Files · Video",
-    "fg":"Get key →","gk":"Get free key →","pg":"Get key →",
-    "s_users":"Users","s_cubes":"Cubes","s_keys":"Keys","ff1":"Anonymous chats","ff2":"Feed & public cubes","ff3":"E2E encryption","ff4":"Unlimited groups","ff5":"Signals & Files","ff6":"Video calls","pf1":"Anonymous chats","pf2":"Feed & public cubes","pf3":"E2E encryption","pf4":"Unlimited groups","pf5":"Signals & Files","pf6":"Video calls","ab":"🔒 Key Authorization ›","sl":"CUBE Key","eb":"Enter","bk":"← Back","kgt":"Key Generated","kgs":"This key is your anonymous identity in CubeWorld.","kak":"YOUR ACCESS KEY · SAVE IT","kw":"⚠ Nobody knows who you are. The key is not tied to your identity, email or phone. Loss of key = loss of access.","kcp":"Copy","wc":"Enter CubeWorld →"
-  },
-  "ru":{
-    "lbl":"CUBEWORLD · ПРОТОКОЛ ЗЕМЛИ",
-    "h1":"Цифровая Вселенная<br>Социальная Сеть",
-    "tag":"Временные зашифрованные пространства в трёхмерном мире. Каждый куб — земля, используй мудро.",
-    "s1":"Без почты. Без телефона. Без IP. Только ключ = Анонимность онлайн.",
-    "s2":"",
-    "ab":"Авторизация ключом",
-    "sc":"активных кубов","so":"онлайн","sm":"пользователей",
-    "ft":"Базовый","pt":"Полный доступ",
-    "fk":"Бесплатный ключ","pk":"Получить Премиум",
-    "fa":"Базовый доступ","pa":"Полный доступ",
-    "fd":"Чаты · Лента · Публичные кубы · 3 группы","pd":"E2E шифрование · Безлимит · Сигналы · Файлы · Видео",
-    "fg":"Получить ключ →","gk":"Получить бесплатно →","pg":"Получить ключ →",
-    "s_users":"Пользователи","s_cubes":"Кубы","s_keys":"Ключи","ff1":"Анонимные чаты","ff2":"Лента и кубы","ff3":"E2E шифрование","ff4":"Безлимит групп","ff5":"Сигналы и файлы","ff6":"Видеозвонки","pf1":"Анонимные чаты","pf2":"Лента и кубы","pf3":"E2E шифрование","pf4":"Безлимит групп","pf5":"Сигналы и файлы","pf6":"Видеозвонки","ab":"🔒 Авторизация ключом ›","sl":"CUBE Ключ","eb":"Войти","bk":"← Назад","kgt":"Ключ Создан","kgs":"Этот ключ — ваша анонимная личность в CubeWorld.","kak":"ВАШ КЛЮЧ ДОСТУПА · СОХРАНИ","kw":"⚠ Никто не знает кто ты. Ключ не привязан к личности, почте или телефону. Потеря ключа = потеря доступа.","kcp":"Копировать","wc":"Войти в CubeWorld →"
-  },
-  "es":{
-    "lbl":"CUBEWORLD · PROTOCOLO TIERRA",
-    "h1":"Universo Digital<br>Red Social",
-    "tag":"Espacios cifrados temporales en un mundo 3D. Cada cubo es tierra, úsala con sabiduría.",
-    "s1":"Sin email. Sin teléfono. Sin IP. Solo una clave = Anonimato online.",
-    "s2":"",
-    "ab":"Autorización de clave",
-    "sc":"cubos activos","so":"en línea","sm":"usuarios",
-    "ft":"Básico","pt":"Acceso completo",
-    "fk":"Clave gratuita","pk":"Obtener Premium",
-    "fa":"Acceso básico","pa":"Acceso completo",
-    "fd":"Chats · Feed · Cubos públicos · 3 grupos","pd":"Cifrado E2E · Ilimitado · Señales · Archivos · Vídeo",
-    "fg":"Obtener clave →","gk":"Obtener gratis →","pg":"Obtener clave →",
-    "s_users":"Usuarios","s_cubes":"Cubos","s_keys":"Claves","ff1":"Chats anónimos","ff2":"Feed y cubos","ff3":"Cifrado E2E","ff4":"Grupos ilimitados","ff5":"Señales y archivos","ff6":"Videollamadas","pf1":"Chats anónimos","pf2":"Feed y cubos","pf3":"Cifrado E2E","pf4":"Grupos ilimitados","pf5":"Señales y archivos","pf6":"Videollamadas","ab":"🔒 Autorización de clave ›","sl":"Clave CUBE","eb":"Entrar","bk":"← Atrás","kgt":"Clave Generada","kgs":"Esta clave es tu identidad anónima en CubeWorld.","kak":"TU CLAVE DE ACCESO · GUÁRDALA","kw":"⚠ Nadie sabe quién eres. La clave no está vinculada a tu identidad, email o teléfono. Pérdida de clave = pérdida de acceso.","kcp":"Copiar","wc":"Entrar a CubeWorld →"
-  },
-  "zh":{
-    "lbl":"CUBEWORLD · 土地协议",
-    "h1":"数字宇宙<br>社交网络",
-    "tag":"三维世界中的临时加密空间。每个方块都是地块，请善用。",
-    "s1":"无邮箱。无电话。无IP。只有密钥 = 在线匿名。",
-    "s2":"",
-    "ab":"密钥授权",
-    "sc":"活跃方块","so":"在线","sm":"用户",
-    "ft":"基础","pt":"完整访问",
-    "fk":"免费密钥","pk":"获取高级版",
-    "fa":"基础访问","pa":"完整访问",
-    "fd":"聊天 · 动态 · 公共方块 · 3个群组","pd":"E2E加密 · 无限制 · 信号 · 文件 · 视频",
-    "fg":"获取密钥 →","gk":"免费获取 →","pg":"获取密钥 →",
-    "s_users":"用户","s_cubes":"方块","s_keys":"密钥","ff1":"匿名聊天","ff2":"动态和方块","ff3":"E2E加密","ff4":"无限群组","ff5":"信号和文件","ff6":"视频通话","pf1":"匿名聊天","pf2":"动态和方块","pf3":"E2E加密","pf4":"无限群组","pf5":"信号和文件","pf6":"视频通话","ab":"🔒 密鑰授权 ›","sl":"CUBE 密鑰","eb":"进入","bk":"← 返回","kgt":"密鑰已生成","kgs":"此密鑰是您在CubeWorld中的匿名身份。","kak":"您的访问密鑰 · 请保存","kw":"⚠ 没有人知道你是谁。密鑰与身份、邮箱或电话无关。失去密鑰 = 失去访问权限。","kcp":"复制","wc":"进入CubeWorld →"
-  },
-  "fr":{
-    "lbl":"CUBEWORLD · PROTOCOLE TERRE",
-    "h1":"Univers Numérique<br>Réseau Social",
-    "tag":"Espaces chiffrés temporaires dans un monde 3D. Chaque cube est une terre, utilise-la avec sagesse.",
-    "s1":"Sans email. Sans téléphone. Sans IP. Seule une clé = Anonymat en ligne.",
-    "s2":"",
-    "ab":"Autorisation par clé",
-    "sc":"cubes actifs","so":"en ligne","sm":"utilisateurs",
-    "ft":"Basique","pt":"Accès complet",
-    "fk":"Clé gratuite","pk":"Obtenir Premium",
-    "fa":"Accès basique","pa":"Accès complet",
-    "fd":"Chats · Fil · Cubes publics · 3 groupes","pd":"Chiffrement E2E · Illimité · Signaux · Fichiers · Vidéo",
-    "fg":"Obtenir la clé →","gk":"Obtenir gratuitement →","pg":"Obtenir la clé →",
-    "s_users":"Utilisateurs","s_cubes":"Cubes","s_keys":"Clés","ff1":"Chats anonymes","ff2":"Fil et cubes","ff3":"Chiffrement E2E","ff4":"Groupes illimités","ff5":"Signaux et fichiers","ff6":"Appels vidéo","pf1":"Chats anonymes","pf2":"Fil et cubes","pf3":"Chiffrement E2E","pf4":"Groupes illimités","pf5":"Signaux et fichiers","pf6":"Appels vidéo","ab":"🔒 Autorisation par clé ›","sl":"Clé CUBE","eb":"Entrer","bk":"← Retour","kgt":"Clé Générée","kgs":"Cette clé est votre identité anonyme dans CubeWorld.","kak":"VOTRE CLÉ D'ACCÈS · SAUVEGARDEZ","kw":"⚠ Personne ne sait qui vous êtes. La clé n'est pas liée à votre identité, email ou téléphone. Perte de clé = perte d'accès.","kcp":"Copier","wc":"Entrer dans CubeWorld →"
-  }
-}</script>
+<script id="tr" type="application/json">{"en":{"lbl":"CUBEWORLD · LAND PROTOCOL","h1":"Digital Universe<br>Social Network","tag":"Temporary encrypted spaces in a three-dimensional world. Each cube is a land, use it wisely.","s1":"No email. No phone. Just a key.","s2":"","ab":"🔒 Key Authorization ›","sc":"active cubes","so":"online","sm":"users","ft":"Basic","pt":"Full Access","fk":"Free Key","pk":"Get Premium Key →","fa":"Basic Access","pa":"Full Access","fd":"Chats · Feed · Public cubes · 3 groups","pd":"E2E encryption · Unlimited · Signals · Files · Video","fg":"Get key →","gk":"Get free key →","pg":"Get key →","s_users":"Users","s_cubes":"Cubes","s_keys":"Keys","ff1":"Anonymous chats","ff2":"Feed & public cubes","ff3":"E2E encryption","ff4":"Unlimited groups","ff5":"Signals & Files","ff6":"Video calls","pf1":"Anonymous chats","pf2":"Feed & public cubes","pf3":"E2E encryption","pf4":"Unlimited groups","pf5":"Signals & Files","pf6":"Video calls","sl":"CUBE Key","eb":"Enter","bk":"← Back","kgt":"Key Generated","kgs":"This key is your anonymous identity in CubeWorld.","kak":"YOUR ACCESS KEY · SAVE IT","kw":"⚠ Nobody knows who you are. The key is not tied to your identity, email or phone. Loss of key = loss of access.","kcp":"Copy","wc":"Enter CubeWorld →","fkb":"FREE KEY","pkb":"PREMIUM KEY","mFull":"Enter the full key: CUBE-XXXX-XXXX-XXXX","mConn":"Connecting…","mWake":"Server is waking up (~30 s)…","mOk":"Done!","mSoon":"Premium is coming. The free key works now.","mNoKey":"Key not found or invalid","mNet":"No connection to the server. Try again.","t1b":"FREE","t1t":"Free","t1d":"3 cubes · Games · Map · Feed · Chats · Groups · Stories · Market · Wallet · Tips","t2b":"SILVER","t2t":"Silver","t2d":"10 cubes · Live streams · Signals · Analytics","t3b":"GOLD","t3t":"Gold","t3d":"33 cubes · All of Silver · Reward fund and API — coming soon","tmo":"/mo","tyr":"/yr","tfr":"free","tmore":"Details →","tpg":"Plans","tin":"Included","tout":"Not included","tget":"Get key →","fanalytics":"Cube analytics","fapi":"API access","fbadge":"Profile badge","fclosed":"Closed cubes","ffeed":"Feed, chats, groups, stories","ffund":"Reward fund share","fgames":"Spin cubes and play","fmap":"Live map and street run","fmarket":"Marketplace","fprio":"Feed priority","fsignal":"Your own signals","fstream":"Live streams","fwallet":"Wallet, tips and gifts","tall":"All plans","tcubes":"Your own cubes","tnote":"The platform is free. We charge for what earns money.","tpay":"Payment goes through a payment provider. You can cancel any time — your key, cubes and chats stay.","tpm":"Monthly","tpy":"Yearly","tsave":"save","tsub":"Subscription","tsoon":"Coming soon","tsoond":"Part of the plan. It will be switched on in the app in upcoming updates."},"ru":{"lbl":"CUBEWORLD · ПРОТОКОЛ ЗЕМЛИ","h1":"Цифровая Вселенная<br>Социальная Сеть","tag":"Временные зашифрованные пространства в трёхмерном мире. Каждый куб — земля, используй мудро.","s1":"Без почты. Без телефона. Только ключ.","s2":"","ab":"🔒 Авторизация ключом ›","sc":"активных кубов","so":"онлайн","sm":"пользователей","ft":"Базовый","pt":"Полный доступ","fk":"Бесплатный ключ","pk":"Получить Премиум →","fa":"Базовый доступ","pa":"Полный доступ","fd":"Чаты · Лента · Публичные кубы · 3 группы","pd":"E2E шифрование · Безлимит · Сигналы · Файлы · Видео","fg":"Получить ключ →","gk":"Получить бесплатно →","pg":"Получить ключ →","s_users":"Пользователи","s_cubes":"Кубы","s_keys":"Ключи","ff1":"Анонимные чаты","ff2":"Лента и кубы","ff3":"E2E шифрование","ff4":"Безлимит групп","ff5":"Сигналы и файлы","ff6":"Видеозвонки","pf1":"Анонимные чаты","pf2":"Лента и кубы","pf3":"E2E шифрование","pf4":"Безлимит групп","pf5":"Сигналы и файлы","pf6":"Видеозвонки","sl":"CUBE Ключ","eb":"Войти","bk":"← Назад","kgt":"Ключ Создан","kgs":"Этот ключ — ваша анонимная личность в CubeWorld.","kak":"ВАШ КЛЮЧ ДОСТУПА · СОХРАНИ","kw":"⚠ Никто не знает кто ты. Ключ не привязан к личности, почте или телефону. Потеря ключа = потеря доступа.","kcp":"Копировать","wc":"Войти в CubeWorld →","fkb":"БЕСПЛАТНЫЙ КЛЮЧ","pkb":"ПРЕМИУМ-КЛЮЧ","mFull":"Введи ключ целиком: CUBE-XXXX-XXXX-XXXX","mConn":"Соединяюсь…","mWake":"Сервер просыпается (~30 с)…","mOk":"Готово!","mSoon":"Премиум скоро. Бесплатный ключ работает уже сейчас.","mNoKey":"Ключ не найден или не подходит","mNet":"Нет связи с сервером. Попробуй ещё раз.","t1b":"БЕСПЛАТНЫЙ","t1t":"Бесплатный","t1d":"3 куба · Игры · Карта · Лента · Чаты · Группы · Истории · Маркетплейс · Кошелёк · Чаевые","t2b":"СИЛВЕР","t2t":"Силвер","t2d":"10 кубов · Эфиры · Сигналы · Аналитика","t3b":"ГОЛД","t3t":"Голд","t3d":"33 куба · Всё из Силвера · Фонд наград и API — скоро","tmo":"в месяц","tyr":"в год","tfr":"бесплатно","tmore":"Подробнее →","tpg":"Тарифы","tin":"Входит","tout":"Не входит","tget":"Получить ключ →","fanalytics":"Аналитика куба","fapi":"Доступ к API","fbadge":"Значок в профиле","fclosed":"Закрытые кубы","ffeed":"Лента, чаты, группы, истории","ffund":"Доля в фонде наград","fgames":"Крутить кубы и играть","fmap":"Живая карта и забег по улице","fmarket":"Маркетплейс","fprio":"Приоритет в ленте","fsignal":"Свои сигналы","fstream":"Эфиры","fwallet":"Кошелёк, чаевые и подарки","tall":"Все тарифы","tcubes":"Свои кубы","tnote":"Площадка бесплатна. Деньги берём за то, что приносит деньги.","tpay":"Оплата идёт через платёжного провайдера. Отказаться можно в любой момент — ключ, кубы и переписки останутся.","tpm":"Ежемесячно","tpy":"На год","tsave":"экономия","tsub":"Подписка","tsoon":"Скоро","tsoond":"Входит в тариф. В приложении включим в ближайших обновлениях."},"es":{"lbl":"CUBEWORLD · PROTOCOLO TIERRA","h1":"Universo Digital<br>Red Social","tag":"Espacios cifrados temporales en un mundo 3D. Cada cubo es tierra, úsala con sabiduría.","s1":"Sin email. Sin teléfono. Solo una clave.","s2":"","ab":"🔒 Autorización de clave ›","sc":"cubos activos","so":"en línea","sm":"usuarios","ft":"Básico","pt":"Acceso completo","fk":"Clave gratuita","pk":"Obtener Premium →","fa":"Acceso básico","pa":"Acceso completo","fd":"Chats · Feed · Cubos públicos · 3 grupos","pd":"Cifrado E2E · Ilimitado · Señales · Archivos · Vídeo","fg":"Obtener clave →","gk":"Obtener gratis →","pg":"Obtener clave →","s_users":"Usuarios","s_cubes":"Cubos","s_keys":"Claves","ff1":"Chats anónimos","ff2":"Feed y cubos","ff3":"Cifrado E2E","ff4":"Grupos ilimitados","ff5":"Señales y archivos","ff6":"Videollamadas","pf1":"Chats anónimos","pf2":"Feed y cubos","pf3":"Cifrado E2E","pf4":"Grupos ilimitados","pf5":"Señales y archivos","pf6":"Videollamadas","sl":"Clave CUBE","eb":"Entrar","bk":"← Atrás","kgt":"Clave Generada","kgs":"Esta clave es tu identidad anónima en CubeWorld.","kak":"TU CLAVE DE ACCESO · GUÁRDALA","kw":"⚠ Nadie sabe quién eres. La clave no está vinculada a tu identidad, email o teléfono. Pérdida de clave = pérdida de acceso.","kcp":"Copiar","wc":"Entrar a CubeWorld →","fkb":"CLAVE GRATIS","pkb":"CLAVE PREMIUM","mFull":"Escribe la clave completa: CUBE-XXXX-XXXX-XXXX","mConn":"Conectando…","mWake":"El servidor está despertando (~30 s)…","mOk":"¡Listo!","mSoon":"Premium llegará pronto. La clave gratis ya funciona.","mNoKey":"Clave no encontrada o inválida","mNet":"Sin conexión con el servidor. Inténtalo de nuevo.","t1b":"GRATIS","t1t":"Gratis","t1d":"3 cubos · Juegos · Mapa · Feed · Chats · Grupos · Historias · Mercado · Billetera · Propinas","t2b":"SILVER","t2t":"Silver","t2d":"10 cubos · Directos · Señales · Analítica","t3b":"GOLD","t3t":"Gold","t3d":"33 cubos · Todo de Silver · Fondo de recompensas y API — pronto","tmo":"/mes","tyr":"/año","tfr":"gratis","tmore":"Detalles →","tpg":"Planes","tin":"Incluido","tout":"No incluido","tget":"Obtener clave →","fanalytics":"Analítica del cubo","fapi":"Acceso a la API","fbadge":"Insignia de perfil","fclosed":"Cubos cerrados","ffeed":"Feed, chats, grupos, historias","ffund":"Parte del fondo de recompensas","fgames":"Girar cubos y jugar","fmap":"Mapa en vivo y carrera por la calle","fmarket":"Mercado","fprio":"Prioridad en el feed","fsignal":"Tus propias señales","fstream":"Directos","fwallet":"Cartera, propinas y regalos","tall":"Todos los planes","tcubes":"Tus propios cubos","tnote":"La plataforma es gratis. Cobramos por lo que da dinero.","tpay":"El pago va por un proveedor de pagos. Puedes cancelar cuando quieras: la clave, los cubos y los chats se quedan.","tpm":"Mensual","tpy":"Anual","tsave":"ahorro","tsub":"Suscripción","tsoon":"Pronto","tsoond":"Incluido en el plan. Lo activaremos en la app en las próximas actualizaciones."},"zh":{"lbl":"CUBEWORLD · 土地协议","h1":"数字宇宙<br>社交网络","tag":"三维世界中的临时加密空间。每个方块都是地块，请善用。","s1":"无邮箱。无电话。只有密钥。","s2":"","ab":"🔒 密鑰授权 ›","sc":"活跃方块","so":"在线","sm":"用户","ft":"基础","pt":"完整访问","fk":"免费密钥","pk":"获取高级版 →","fa":"基础访问","pa":"完整访问","fd":"聊天 · 动态 · 公共方块 · 3个群组","pd":"E2E加密 · 无限制 · 信号 · 文件 · 视频","fg":"获取密钥 →","gk":"免费获取 →","pg":"获取密钥 →","s_users":"用户","s_cubes":"方块","s_keys":"密钥","ff1":"匿名聊天","ff2":"动态和方块","ff3":"E2E加密","ff4":"无限群组","ff5":"信号和文件","ff6":"视频通话","pf1":"匿名聊天","pf2":"动态和方块","pf3":"E2E加密","pf4":"无限群组","pf5":"信号和文件","pf6":"视频通话","sl":"CUBE 密鑰","eb":"进入","bk":"← 返回","kgt":"密鑰已生成","kgs":"此密鑰是您在CubeWorld中的匿名身份。","kak":"您的访问密鑰 · 请保存","kw":"⚠ 没有人知道你是谁。密鑰与身份、邮箱或电话无关。失去密鑰 = 失去访问权限。","kcp":"复制","wc":"进入CubeWorld →","fkb":"免费密钥","pkb":"高级密钥","mFull":"请输入完整密钥：CUBE-XXXX-XXXX-XXXX","mConn":"连接中…","mWake":"服务器正在唤醒（约 30 秒）…","mOk":"完成！","mSoon":"高级版即将推出，免费密钥现在就能用。","mNoKey":"未找到密钥或密钥无效","mNet":"无法连接服务器，请重试。","t1b":"免费","t1t":"免费版","t1d":"3 个立方 · 游戏 · 地图 · 动态 · 聊天 · 群组 · 故事 · 市场 · 钱包 · 打赏","t2b":"白银","t2t":"白银版","t2d":"10 个方块 · 直播 · 信号 · 分析","t3b":"黄金","t3t":"黄金版","t3d":"33 个方块 · 包含 Silver 全部 · 奖励基金与 API 即将推出","tmo":"/月","tyr":"/年","tfr":"免费","tmore":"详情 →","tpg":"套餐","tin":"包含","tout":"不包含","tget":"获取密钥 →","fanalytics":"方块分析","fapi":"API 访问","fbadge":"资料徽章","fclosed":"封闭方块","ffeed":"动态、聊天、群组、故事","ffund":"奖励基金份额","fgames":"转动方块与游戏","fmap":"实时地图与街头跑","fmarket":"市场","fprio":"动态优先","fsignal":"自己的信号","fstream":"直播","fwallet":"钱包、打赏与礼物","tall":"全部方案","tcubes":"自己的方块","tnote":"平台免费。我们只对能赚钱的功能收费。","tpay":"通过支付服务商付款。随时可以取消——密钥、方块和聊天都会保留。","tpm":"按月","tpy":"按年","tsave":"节省","tsub":"订阅","tsoon":"即将推出","tsoond":"已包含在方案中，将在后续更新中于应用内开启。"},"fr":{"lbl":"CUBEWORLD · PROTOCOLE TERRE","h1":"Univers Numérique<br>Réseau Social","tag":"Espaces chiffrés temporaires dans un monde 3D. Chaque cube est une terre, utilise-la avec sagesse.","s1":"Sans email. Sans téléphone. Juste une clé.","s2":"","ab":"🔒 Autorisation par clé ›","sc":"cubes actifs","so":"en ligne","sm":"utilisateurs","ft":"Basique","pt":"Accès complet","fk":"Clé gratuite","pk":"Obtenir Premium →","fa":"Accès basique","pa":"Accès complet","fd":"Chats · Fil · Cubes publics · 3 groupes","pd":"Chiffrement E2E · Illimité · Signaux · Fichiers · Vidéo","fg":"Obtenir la clé →","gk":"Obtenir gratuitement →","pg":"Obtenir la clé →","s_users":"Utilisateurs","s_cubes":"Cubes","s_keys":"Clés","ff1":"Chats anonymes","ff2":"Fil et cubes","ff3":"Chiffrement E2E","ff4":"Groupes illimités","ff5":"Signaux et fichiers","ff6":"Appels vidéo","pf1":"Chats anonymes","pf2":"Fil et cubes","pf3":"Chiffrement E2E","pf4":"Groupes illimités","pf5":"Signaux et fichiers","pf6":"Appels vidéo","sl":"Clé CUBE","eb":"Entrer","bk":"← Retour","kgt":"Clé Générée","kgs":"Cette clé est votre identité anonyme dans CubeWorld.","kak":"VOTRE CLÉ D'ACCÈS · SAUVEGARDEZ","kw":"⚠ Personne ne sait qui vous êtes. La clé n'est pas liée à votre identité, email ou téléphone. Perte de clé = perte d'accès.","kcp":"Copier","wc":"Entrer dans CubeWorld →","fkb":"CLÉ GRATUITE","pkb":"CLÉ PREMIUM","mFull":"Saisis la clé complète : CUBE-XXXX-XXXX-XXXX","mConn":"Connexion…","mWake":"Le serveur se réveille (~30 s)…","mOk":"Terminé !","mSoon":"Le premium arrive. La clé gratuite fonctionne déjà.","mNoKey":"Clé introuvable ou invalide","mNet":"Pas de connexion au serveur. Réessaie.","t1b":"GRATUIT","t1t":"Gratuit","t1d":"3 cubes · Jeux · Carte · Fil · Chats · Groupes · Stories · Marché · Portefeuille · Pourboires","t2b":"SILVER","t2t":"Silver","t2d":"10 cubes · Directs · Signaux · Analytique","t3b":"GOLD","t3t":"Gold","t3d":"33 cubes · Tout Silver · Fonds de récompenses et API — bientôt","tmo":"/mois","tyr":"/an","tfr":"gratuit","tmore":"Détails →","tpg":"Offres","tin":"Inclus","tout":"Non inclus","tget":"Obtenir la clé →","fanalytics":"Analytique du cube","fapi":"Accès API","fbadge":"Badge de profil","fclosed":"Cubes fermés","ffeed":"Fil, discussions, groupes, stories","ffund":"Part du fonds de récompenses","fgames":"Faire tourner les cubes et jouer","fmap":"Carte vivante et course de rue","fmarket":"Place de marché","fprio":"Priorité dans le fil","fsignal":"Vos propres signaux","fstream":"Directs","fwallet":"Portefeuille, pourboires et cadeaux","tall":"Tous les forfaits","tcubes":"Vos propres cubes","tnote":"La plateforme est gratuite. On paie ce qui rapporte.","tpay":"Le paiement passe par un prestataire. Résiliable à tout moment — clé, cubes et messages restent.","tpm":"Mensuel","tpy":"Annuel","tsave":"économie","tsub":"Abonnement","tsoon":"Bientôt","tsoond":"Compris dans le forfait. Activé dans l’application lors des prochaines mises à jour."},"uk":{"lbl":"CUBEWORLD · ПРОТОКОЛ ЗЕМЛІ","h1":"Цифровий Всесвіт<br>Соціальна Мережа","tag":"Тимчасові зашифровані простори у тривимірному світі. Кожен куб — земля, користуйся мудро.","s1":"Без пошти. Без телефону. Лише ключ.","s2":"","ab":"🔒 Вхід за ключем ›","sc":"активних кубів","so":"онлайн","sm":"користувачів","ft":"Базовий","pt":"Повний доступ","fk":"Безкоштовний ключ","pk":"Отримати Преміум →","fa":"Базовий доступ","pa":"Повний доступ","fd":"Чати · Стрічка · Публічні куби · 3 групи","pd":"E2E шифрування · Безліміт · Сигнали · Файли · Відео","fg":"Отримати ключ →","gk":"Отримати безкоштовно →","pg":"Отримати ключ →","s_users":"Користувачі","s_cubes":"Куби","s_keys":"Ключі","ff1":"Анонімні чати","ff2":"Стрічка і куби","ff3":"E2E шифрування","ff4":"Безліміт груп","ff5":"Сигнали і файли","ff6":"Відеодзвінки","pf1":"Анонімні чати","pf2":"Стрічка і куби","pf3":"E2E шифрування","pf4":"Безліміт груп","pf5":"Сигнали і файли","pf6":"Відеодзвінки","sl":"CUBE Ключ","eb":"Увійти","bk":"← Назад","kgt":"Ключ створено","kgs":"Цей ключ — твоя анонімна особистість у CubeWorld.","kak":"ТВІЙ КЛЮЧ ДОСТУПУ · ЗБЕРЕЖИ","kw":"⚠ Ніхто не знає, хто ти. Ключ не прив'язаний до особи, пошти чи телефону. Втрата ключа = втрата доступу.","kcp":"Копіювати","wc":"Увійти в CubeWorld →","fkb":"БЕЗКОШТОВНИЙ КЛЮЧ","pkb":"ПРЕМІУМ-КЛЮЧ","mFull":"Введи ключ повністю: CUBE-XXXX-XXXX-XXXX","mConn":"З’єднуюся…","mWake":"Сервер прокидається (~30 с)…","mOk":"Готово!","mSoon":"Преміум скоро. Безкоштовний ключ працює вже зараз.","mNoKey":"Ключ не знайдено або він не підходить","mNet":"Немає зв’язку з сервером. Спробуй ще раз.","t1b":"БЕЗКОШТОВНИЙ","t1t":"Безкоштовний","t1d":"3 куби · Ігри · Карта · Стрічка · Чати · Групи · Історії · Маркетплейс · Гаманець · Чайові","t2b":"СІЛВЕР","t2t":"Сілвер","t2d":"10 кубів · Ефіри · Сигнали · Аналітика","t3b":"ГОЛД","t3t":"Голд","t3d":"33 куби · Усе зі Силвера · Фонд нагород і API — скоро","tmo":"на місяць","tyr":"на рік","tfr":"безкоштовно","tmore":"Докладніше →","tpg":"Тарифи","tin":"Входить","tout":"Не входить","tget":"Отримати ключ →","fanalytics":"Аналітика куба","fapi":"Доступ до API","fbadge":"Значок у профілі","fclosed":"Закриті куби","ffeed":"Лента, чати, групи, історії","ffund":"Частка у фонді нагород","fgames":"Крутити куби та грати","fmap":"Жива карта і забіг вулицею","fmarket":"Маркетплейс","fprio":"Пріоритет у ленті","fsignal":"Власні сигнали","fstream":"Ефіри","fwallet":"Гаманець, чайові та подарунки","tall":"Усі тарифи","tcubes":"Власні куби","tnote":"Майданчик безкоштовний. Гроші беремо за те, що приносить гроші.","tpay":"Оплата через платіжного провайдера. Відмовитися можна будь-коли — ключ, куби й переписки залишаться.","tpm":"Щомісяця","tpy":"На рік","tsave":"економія","tsub":"Підписка","tsoon":"Скоро","tsoond":"Входить у тариф. У застосунку увімкнемо в найближчих оновленнях."},"de":{"lbl":"CUBEWORLD · LAND-PROTOKOLL","h1":"Digitales Universum<br>Soziales Netzwerk","tag":"Zeitlich begrenzte verschlüsselte Räume in einer dreidimensionalen Welt. Jeder Würfel ist Land — nutze es klug.","s1":"Keine E-Mail. Kein Telefon. Nur ein Schlüssel.","s2":"","ab":"🔒 Anmeldung mit Schlüssel ›","sc":"aktive Würfel","so":"online","sm":"Nutzer","ft":"Basis","pt":"Voller Zugang","fk":"Kostenloser Schlüssel","pk":"Premium holen →","fa":"Basiszugang","pa":"Voller Zugang","fd":"Chats · Feed · Öffentliche Würfel · 3 Gruppen","pd":"E2E-Verschlüsselung · Unbegrenzt · Signale · Dateien · Video","fg":"Schlüssel holen →","gk":"Kostenlos holen →","pg":"Schlüssel holen →","s_users":"Nutzer","s_cubes":"Würfel","s_keys":"Schlüssel","ff1":"Anonyme Chats","ff2":"Feed und Würfel","ff3":"E2E-Verschlüsselung","ff4":"Unbegrenzte Gruppen","ff5":"Signale und Dateien","ff6":"Videoanrufe","pf1":"Anonyme Chats","pf2":"Feed und Würfel","pf3":"E2E-Verschlüsselung","pf4":"Unbegrenzte Gruppen","pf5":"Signale und Dateien","pf6":"Videoanrufe","sl":"CUBE-Schlüssel","eb":"Eintreten","bk":"← Zurück","kgt":"Schlüssel erstellt","kgs":"Dieser Schlüssel ist deine anonyme Identität in CubeWorld.","kak":"DEIN ZUGANGSSCHLÜSSEL · SICHERN","kw":"⚠ Niemand weiß, wer du bist. Der Schlüssel ist nicht mit Identität, E-Mail oder Telefon verknüpft. Schlüssel verloren = Zugang verloren.","kcp":"Kopieren","wc":"CubeWorld betreten →","fkb":"KOSTENLOSER SCHLÜSSEL","pkb":"PREMIUM-SCHLÜSSEL","mFull":"Gib den vollständigen Schlüssel ein: CUBE-XXXX-XXXX-XXXX","mConn":"Verbinde…","mWake":"Server wacht auf (~30 s)…","mOk":"Fertig!","mSoon":"Premium kommt bald. Der kostenlose Schlüssel funktioniert jetzt.","mNoKey":"Schlüssel nicht gefunden oder ungültig","mNet":"Keine Verbindung zum Server. Versuch es erneut.","t1b":"KOSTENLOS","t1t":"Kostenlos","t1d":"3 Würfel · Spiele · Karte · Feed · Chats · Gruppen · Stories · Marktplatz · Wallet · Trinkgeld","t2b":"SILVER","t2t":"Silver","t2d":"10 Würfel · Livestreams · Signale · Analytik","t3b":"GOLD","t3t":"Gold","t3d":"33 Würfel · Alles aus Silver · Belohnungsfonds und API — demnächst","tmo":"/Mon.","tyr":"/Jahr","tfr":"kostenlos","tmore":"Details →","tpg":"Tarife","tin":"Enthalten","tout":"Nicht enthalten","tget":"Schlüssel holen →","fanalytics":"Würfel-Analytik","fapi":"API-Zugang","fbadge":"Profil-Abzeichen","fclosed":"Geschlossene Würfel","ffeed":"Feed, Chats, Gruppen, Storys","ffund":"Anteil am Belohnungsfonds","fgames":"Würfel drehen und spielen","fmap":"Live-Karte und Straßenlauf","fmarket":"Marktplatz","fprio":"Priorität im Feed","fsignal":"Eigene Signale","fstream":"Livestreams","fwallet":"Wallet, Trinkgeld und Geschenke","tall":"Alle Tarife","tcubes":"Eigene Würfel","tnote":"Die Plattform ist kostenlos. Bezahlt wird, was Geld einbringt.","tpay":"Die Zahlung läuft über einen Zahlungsanbieter. Jederzeit kündbar — Schlüssel, Würfel und Chats bleiben.","tpm":"Monatlich","tpy":"Jährlich","tsave":"Ersparnis","tsub":"Abo","tsoon":"Demnächst","tsoond":"Im Tarif enthalten. Wird in den nächsten Updates in der App aktiviert."},"it":{"lbl":"CUBEWORLD · PROTOCOLLO TERRA","h1":"Universo Digitale<br>Rete Sociale","tag":"Spazi crittografati temporanei in un mondo tridimensionale. Ogni cubo è una terra, usala con saggezza.","s1":"Niente email. Niente telefono. Solo una chiave.","s2":"","ab":"🔒 Accesso con chiave ›","sc":"cubi attivi","so":"online","sm":"utenti","ft":"Base","pt":"Accesso completo","fk":"Chiave gratuita","pk":"Ottieni Premium →","fa":"Accesso base","pa":"Accesso completo","fd":"Chat · Feed · Cubi pubblici · 3 gruppi","pd":"Crittografia E2E · Illimitato · Segnali · File · Video","fg":"Ottieni chiave →","gk":"Ottieni gratis →","pg":"Ottieni chiave →","s_users":"Utenti","s_cubes":"Cubi","s_keys":"Chiavi","ff1":"Chat anonime","ff2":"Feed e cubi","ff3":"Crittografia E2E","ff4":"Gruppi illimitati","ff5":"Segnali e file","ff6":"Videochiamate","pf1":"Chat anonime","pf2":"Feed e cubi","pf3":"Crittografia E2E","pf4":"Gruppi illimitati","pf5":"Segnali e file","pf6":"Videochiamate","sl":"Chiave CUBE","eb":"Entra","bk":"← Indietro","kgt":"Chiave creata","kgs":"Questa chiave è la tua identità anonima in CubeWorld.","kak":"LA TUA CHIAVE · SALVALA","kw":"⚠ Nessuno sa chi sei. La chiave non è legata a identità, email o telefono. Chiave persa = accesso perso.","kcp":"Copia","wc":"Entra in CubeWorld →","fkb":"CHIAVE GRATUITA","pkb":"CHIAVE PREMIUM","mFull":"Inserisci la chiave completa: CUBE-XXXX-XXXX-XXXX","mConn":"Connessione…","mWake":"Il server si sta svegliando (~30 s)…","mOk":"Fatto!","mSoon":"Il premium arriverà presto. La chiave gratuita funziona già.","mNoKey":"Chiave non trovata o non valida","mNet":"Nessuna connessione al server. Riprova.","t1b":"GRATIS","t1t":"Gratis","t1d":"3 cubi · Giochi · Mappa · Feed · Chat · Gruppi · Storie · Mercato · Portafoglio · Mance","t2b":"SILVER","t2t":"Silver","t2d":"10 cubi · Diretta · Segnali · Analisi","t3b":"GOLD","t3t":"Gold","t3d":"33 cubi · Tutto di Silver · Fondo premi e API — prossimamente","tmo":"/mese","tyr":"/anno","tfr":"gratis","tmore":"Dettagli →","tpg":"Piani","tin":"Incluso","tout":"Non incluso","tget":"Ottieni la chiave →","fanalytics":"Analisi del cubo","fapi":"Accesso API","fbadge":"Distintivo nel profilo","fclosed":"Cubi chiusi","ffeed":"Feed, chat, gruppi, storie","ffund":"Quota del fondo premi","fgames":"Girare i cubi e giocare","fmap":"Mappa dal vivo e corsa in strada","fmarket":"Mercato","fprio":"Priorità nel feed","fsignal":"I tuoi segnali","fstream":"Diretta","fwallet":"Portafoglio, mance e regali","tall":"Tutti i piani","tcubes":"I tuoi cubi","tnote":"La piattaforma è gratuita. Si paga per ciò che fa guadagnare.","tpay":"Il pagamento passa da un fornitore di pagamenti. Puoi annullare quando vuoi: chiave, cubi e chat restano.","tpm":"Mensile","tpy":"Annuale","tsave":"risparmio","tsub":"Abbonamento","tsoon":"Prossimamente","tsoond":"Compreso nel piano. Lo attiveremo nell’app nei prossimi aggiornamenti."},"pt":{"lbl":"CUBEWORLD · PROTOCOLO TERRA","h1":"Universo Digital<br>Rede Social","tag":"Espaços criptografados temporários num mundo tridimensional. Cada cubo é uma terra, use com sabedoria.","s1":"Sem email. Sem telefone. Apenas uma chave.","s2":"","ab":"🔒 Entrar com chave ›","sc":"cubos ativos","so":"online","sm":"utilizadores","ft":"Básico","pt":"Acesso total","fk":"Chave gratuita","pk":"Obter Premium →","fa":"Acesso básico","pa":"Acesso total","fd":"Chats · Feed · Cubos públicos · 3 grupos","pd":"Criptografia E2E · Ilimitado · Sinais · Ficheiros · Vídeo","fg":"Obter chave →","gk":"Obter grátis →","pg":"Obter chave →","s_users":"Utilizadores","s_cubes":"Cubos","s_keys":"Chaves","ff1":"Chats anónimos","ff2":"Feed e cubos","ff3":"Criptografia E2E","ff4":"Grupos ilimitados","ff5":"Sinais e ficheiros","ff6":"Videochamadas","pf1":"Chats anónimos","pf2":"Feed e cubos","pf3":"Criptografia E2E","pf4":"Grupos ilimitados","pf5":"Sinais e ficheiros","pf6":"Videochamadas","sl":"Chave CUBE","eb":"Entrar","bk":"← Voltar","kgt":"Chave criada","kgs":"Esta chave é a tua identidade anónima no CubeWorld.","kak":"A TUA CHAVE · GUARDA-A","kw":"⚠ Ninguém sabe quem tu és. A chave não está ligada a identidade, email ou telefone. Perder a chave = perder o acesso.","kcp":"Copiar","wc":"Entrar no CubeWorld →","fkb":"CHAVE GRÁTIS","pkb":"CHAVE PREMIUM","mFull":"Escreve a chave completa: CUBE-XXXX-XXXX-XXXX","mConn":"A ligar…","mWake":"O servidor está a acordar (~30 s)…","mOk":"Pronto!","mSoon":"O premium está a chegar. A chave grátis já funciona.","mNoKey":"Chave não encontrada ou inválida","mNet":"Sem ligação ao servidor. Tenta outra vez.","t1b":"GRÁTIS","t1t":"Grátis","t1d":"3 cubos · Jogos · Mapa · Feed · Chats · Grupos · Stories · Mercado · Carteira · Gorjetas","t2b":"SILVER","t2t":"Silver","t2d":"10 cubos · Transmissões · Sinais · Analítica","t3b":"GOLD","t3t":"Gold","t3d":"33 cubos · Tudo do Silver · Fundo de recompensas e API — em breve","tmo":"/mês","tyr":"/ano","tfr":"grátis","tmore":"Detalhes →","tpg":"Planos","tin":"Incluído","tout":"Não incluído","tget":"Obter chave →","fanalytics":"Analítica do cubo","fapi":"Acesso à API","fbadge":"Selo no perfil","fclosed":"Cubos fechados","ffeed":"Feed, conversas, grupos, stories","ffund":"Parte do fundo de recompensas","fgames":"Girar cubos e jogar","fmap":"Mapa ao vivo e corrida na rua","fmarket":"Mercado","fprio":"Prioridade no feed","fsignal":"Os seus sinais","fstream":"Transmissões ao vivo","fwallet":"Carteira, gorjetas e presentes","tall":"Todos os planos","tcubes":"Os seus cubos","tnote":"A plataforma é gratuita. Cobramos pelo que dá dinheiro.","tpay":"O pagamento passa por um provedor de pagamentos. Pode cancelar a qualquer momento — chave, cubos e conversas ficam.","tpm":"Mensal","tpy":"Anual","tsave":"economia","tsub":"Assinatura","tsoon":"Em breve","tsoond":"Incluído no plano. Vamos ativar no app nas próximas atualizações."},"pl":{"lbl":"CUBEWORLD · PROTOKÓŁ ZIEMI","h1":"Cyfrowy Wszechświat<br>Sieć Społecznościowa","tag":"Tymczasowe zaszyfrowane przestrzenie w trójwymiarowym świecie. Każda kostka to ziemia — korzystaj mądrze.","s1":"Bez e-maila. Bez telefonu. Tylko klucz.","s2":"","ab":"🔒 Logowanie kluczem ›","sc":"aktywnych kostek","so":"online","sm":"użytkowników","ft":"Podstawowy","pt":"Pełny dostęp","fk":"Darmowy klucz","pk":"Weź Premium →","fa":"Dostęp podstawowy","pa":"Pełny dostęp","fd":"Czaty · Kanał · Publiczne kostki · 3 grupy","pd":"Szyfrowanie E2E · Bez limitu · Sygnały · Pliki · Wideo","fg":"Weź klucz →","gk":"Weź za darmo →","pg":"Weź klucz →","s_users":"Użytkownicy","s_cubes":"Kostki","s_keys":"Klucze","ff1":"Anonimowe czaty","ff2":"Kanał i kostki","ff3":"Szyfrowanie E2E","ff4":"Grupy bez limitu","ff5":"Sygnały i pliki","ff6":"Rozmowy wideo","pf1":"Anonimowe czaty","pf2":"Kanał i kostki","pf3":"Szyfrowanie E2E","pf4":"Grupy bez limitu","pf5":"Sygnały i pliki","pf6":"Rozmowy wideo","sl":"Klucz CUBE","eb":"Wejdź","bk":"← Wstecz","kgt":"Klucz utworzony","kgs":"Ten klucz to twoja anonimowa tożsamość w CubeWorld.","kak":"TWÓJ KLUCZ · ZAPISZ GO","kw":"⚠ Nikt nie wie, kim jesteś. Klucz nie jest powiązany z tożsamością, e-mailem ani telefonem. Utrata klucza = utrata dostępu.","kcp":"Kopiuj","wc":"Wejdź do CubeWorld →","fkb":"DARMOWY KLUCZ","pkb":"KLUCZ PREMIUM","mFull":"Wpisz cały klucz: CUBE-XXXX-XXXX-XXXX","mConn":"Łączę…","mWake":"Serwer się budzi (~30 s)…","mOk":"Gotowe!","mSoon":"Premium wkrótce. Darmowy klucz działa już teraz.","mNoKey":"Nie znaleziono klucza lub jest nieprawidłowy","mNet":"Brak połączenia z serwerem. Spróbuj ponownie.","t1b":"DARMOWY","t1t":"Darmowy","t1d":"3 kostki · Gry · Mapa · Feed · Czaty · Grupy · Stories · Marketplace · Portfel · Napiwki","t2b":"SILVER","t2t":"Silver","t2d":"10 kostek · Transmisje · Sygnały · Analityka","t3b":"GOLD","t3t":"Gold","t3d":"33 kostki · Wszystko z Silvera · Fundusz nagród i API — wkrótce","tmo":"/mies.","tyr":"/rok","tfr":"za darmo","tmore":"Szczegóły →","tpg":"Plany","tin":"W pakiecie","tout":"Poza pakietem","tget":"Odbierz klucz →","fanalytics":"Analityka kostki","fapi":"Dostęp do API","fbadge":"Odznaka w profilu","fclosed":"Zamknięte kostki","ffeed":"Tablica, czaty, grupy, relacje","ffund":"Udział w funduszu nagród","fgames":"Kręcenie kostkami i gry","fmap":"Żywa mapa i bieg ulicą","fmarket":"Marketplace","fprio":"Priorytet na tablicy","fsignal":"Własne sygnały","fstream":"Transmisje","fwallet":"Portfel, napiwki i prezenty","tall":"Wszystkie plany","tcubes":"Własne kostki","tnote":"Platforma jest darmowa. Płaci się za to, co przynosi pieniądze.","tpay":"Płatność idzie przez dostawcę płatności. Można zrezygnować w każdej chwili — klucz, kostki i rozmowy zostają.","tpm":"Miesięcznie","tpy":"Rocznie","tsave":"oszczędność","tsub":"Subskrypcja","tsoon":"Wkrótce","tsoond":"Wchodzi w plan. Włączymy to w aplikacji w najbliższych aktualizacjach."},"tr":{"lbl":"CUBEWORLD · TOPRAK PROTOKOLÜ","h1":"Dijital Evren<br>Sosyal Ağ","tag":"Üç boyutlu bir dünyada geçici şifreli alanlar. Her küp bir topraktır, akıllıca kullan.","s1":"E-posta yok. Telefon yok. Sadece bir anahtar.","s2":"","ab":"🔒 Anahtarla giriş ›","sc":"aktif küp","so":"çevrimiçi","sm":"kullanıcı","ft":"Temel","pt":"Tam erişim","fk":"Ücretsiz anahtar","pk":"Premium al →","fa":"Temel erişim","pa":"Tam erişim","fd":"Sohbetler · Akış · Herkese açık küpler · 3 grup","pd":"E2E şifreleme · Sınırsız · Sinyaller · Dosyalar · Video","fg":"Anahtar al →","gk":"Ücretsiz al →","pg":"Anahtar al →","s_users":"Kullanıcılar","s_cubes":"Küpler","s_keys":"Anahtarlar","ff1":"Anonim sohbetler","ff2":"Akış ve küpler","ff3":"E2E şifreleme","ff4":"Sınırsız grup","ff5":"Sinyaller ve dosyalar","ff6":"Görüntülü arama","pf1":"Anonim sohbetler","pf2":"Akış ve küpler","pf3":"E2E şifreleme","pf4":"Sınırsız grup","pf5":"Sinyaller ve dosyalar","pf6":"Görüntülü arama","sl":"CUBE Anahtarı","eb":"Gir","bk":"← Geri","kgt":"Anahtar oluşturuldu","kgs":"Bu anahtar CubeWorld'deki anonim kimliğindir.","kak":"ERİŞİM ANAHTARIN · SAKLA","kw":"⚠ Kimse kim olduğunu bilmiyor. Anahtar kimliğe, e-postaya veya telefona bağlı değildir. Anahtarı kaybetmek = erişimi kaybetmek.","kcp":"Kopyala","wc":"CubeWorld'e gir →","fkb":"ÜCRETSİZ ANAHTAR","pkb":"PREMIUM ANAHTAR","mFull":"Anahtarın tamamını gir: CUBE-XXXX-XXXX-XXXX","mConn":"Bağlanıyor…","mWake":"Sunucu uyanıyor (~30 sn)…","mOk":"Tamam!","mSoon":"Premium yakında. Ücretsiz anahtar şimdiden çalışıyor.","mNoKey":"Anahtar bulunamadı veya geçersiz","mNet":"Sunucuya bağlanılamadı. Tekrar dene.","t1b":"ÜCRETSİZ","t1t":"Ücretsiz","t1d":"3 küp · Oyunlar · Harita · Akış · Sohbetler · Gruplar · Hikâyeler · Pazar · Cüzdan · Bahşiş","t2b":"SILVER","t2t":"Silver","t2d":"10 küp · Canlı yayın · Sinyaller · Analitik","t3b":"GOLD","t3t":"Gold","t3d":"33 küp · Silver’daki her şey · Ödül fonu ve API — yakında","tmo":"/ay","tyr":"/yıl","tfr":"ücretsiz","tmore":"Ayrıntılar →","tpg":"Planlar","tin":"Dahil","tout":"Dahil değil","tget":"Anahtar al →","fanalytics":"Küp analitiği","fapi":"API erişimi","fbadge":"Profil rozeti","fclosed":"Kapalı küpler","ffeed":"Akış, sohbetler, gruplar, hikâyeler","ffund":"Ödül fonundan pay","fgames":"Küpleri çevirme ve oyunlar","fmap":"Canlı harita ve sokak koşusu","fmarket":"Pazar yeri","fprio":"Akışta öncelik","fsignal":"Kendi sinyalleriniz","fstream":"Canlı yayın","fwallet":"Cüzdan, bahşiş ve hediyeler","tall":"Tüm planlar","tcubes":"Kendi küpleriniz","tnote":"Platform ücretsiz. Para kazandıran şeyler için ödeme alıyoruz.","tpay":"Ödeme bir ödeme sağlayıcısı üzerinden gider. Dilediğiniz an vazgeçebilirsiniz — anahtar, küpler ve sohbetler kalır.","tpm":"Aylık","tpy":"Yıllık","tsave":"tasarruf","tsub":"Abonelik","tsoon":"Yakında","tsoond":"Plana dahil. Uygulamada yakındaki güncellemelerde açılacak."},"ar":{"lbl":"CUBEWORLD · بروتوكول الأرض","h1":"كون رقمي<br>شبكة اجتماعية","tag":"مساحات مشفّرة مؤقتة في عالم ثلاثي الأبعاد. كل مكعب أرض، فاستخدمه بحكمة.","s1":"بلا بريد. بلا هاتف. مفتاح فقط.","s2":"","ab":"🔒 الدخول بالمفتاح ›","sc":"مكعبات نشطة","so":"متصل","sm":"مستخدمون","ft":"أساسي","pt":"وصول كامل","fk":"مفتاح مجاني","pk":"احصل على بريميوم ←","fa":"وصول أساسي","pa":"وصول كامل","fd":"محادثات · التغذية · مكعبات عامة · ٣ مجموعات","pd":"تشفير E2E · بلا حدود · إشارات · ملفات · فيديو","fg":"احصل على المفتاح →","gk":"احصل عليه مجاناً ←","pg":"احصل على المفتاح →","s_users":"المستخدمون","s_cubes":"المكعبات","s_keys":"المفاتيح","ff1":"محادثات مجهولة","ff2":"التغذية والمكعبات","ff3":"تشفير E2E","ff4":"مجموعات بلا حدود","ff5":"إشارات وملفات","ff6":"مكالمات فيديو","pf1":"محادثات مجهولة","pf2":"التغذية والمكعبات","pf3":"تشفير E2E","pf4":"مجموعات بلا حدود","pf5":"إشارات وملفات","pf6":"مكالمات فيديو","sl":"مفتاح CUBE","eb":"دخول","bk":"← رجوع","kgt":"تم إنشاء المفتاح","kgs":"هذا المفتاح هو هويتك المجهولة في CubeWorld.","kak":"مفتاح الدخول · احفظه","kw":"⚠ لا أحد يعرف من أنت. المفتاح غير مرتبط بالهوية أو البريد أو الهاتف. فقدان المفتاح = فقدان الوصول.","kcp":"نسخ","wc":"ادخل إلى CubeWorld →","fkb":"مفتاح مجاني","pkb":"مفتاح مميّز","mFull":"أدخل المفتاح كاملاً: CUBE-XXXX-XXXX-XXXX","mConn":"جارٍ الاتصال…","mWake":"الخادم يستيقظ (~٣٠ ثانية)…","mOk":"تم!","mSoon":"المميّز قادم قريباً. المفتاح المجاني يعمل الآن.","mNoKey":"المفتاح غير موجود أو غير صالح","mNet":"لا يوجد اتصال بالخادم. حاول مرة أخرى.","t1b":"مجاني","t1t":"مجاني","t1d":"٣ مكعبات · ألعاب · خريطة · الموجز · دردشات · مجموعات · قصص · السوق · محفظة · إكراميات","t2b":"سيلفر","t2t":"سيلفر","t2d":"10 مكعبات · بث مباشر · إشارات · تحليلات","t3b":"جولد","t3t":"جولد","t3d":"33 مكعبًا · كل ما في سيلفر · صندوق المكافآت وAPI — قريبًا","tmo":"/شهر","tyr":"/سنة","tfr":"مجانًا","tmore":"التفاصيل →","tpg":"الباقات","tin":"مشمول","tout":"غير مشمول","tget":"احصل على مفتاح →","fanalytics":"تحليلات المكعب","fapi":"الوصول إلى API","fbadge":"شارة الملف الشخصي","fclosed":"مكعبات مغلقة","ffeed":"التغذية والمحادثات والمجموعات والقصص","ffund":"حصة في صندوق المكافآت","fgames":"تدوير المكعبات واللعب","fmap":"خريطة حية وجري في الشارع","fmarket":"السوق","fprio":"أولوية في التغذية","fsignal":"إشاراتك الخاصة","fstream":"البث المباشر","fwallet":"المحفظة والإكراميات والهدايا","tall":"جميع الخطط","tcubes":"مكعباتك الخاصة","tnote":"المنصة مجانية. نتقاضى المال مقابل ما يجلب المال.","tpay":"الدفع يتم عبر مزود دفع. يمكنك الإلغاء في أي وقت — يبقى المفتاح والمكعبات والمحادثات.","tpm":"شهريًا","tpy":"سنويًا","tsave":"توفير","tsub":"الاشتراك","tsoon":"قريبًا","tsoond":"مشمول في الخطة. سنفعّله في التطبيق في التحديثات القريبة."},"vi":{"lbl":"CUBEWORLD · GIAO THỨC ĐẤT","h1":"Vũ Trụ Số<br>Mạng Xã Hội","tag":"Không gian mã hoá tạm thời trong thế giới ba chiều. Mỗi khối là một vùng đất, hãy dùng khôn ngoan.","s1":"Không email. Không điện thoại. Chỉ một chiếc khoá.","s2":"","ab":"🔒 Đăng nhập bằng khoá ›","sc":"khối đang hoạt động","so":"trực tuyến","sm":"người dùng","ft":"Cơ bản","pt":"Toàn quyền","fk":"Khoá miễn phí","pk":"Lấy Premium →","fa":"Truy cập cơ bản","pa":"Toàn quyền","fd":"Trò chuyện · Bảng tin · Khối công khai · 3 nhóm","pd":"Mã hoá E2E · Không giới hạn · Tín hiệu · Tệp · Video","fg":"Lấy khoá →","gk":"Lấy miễn phí →","pg":"Lấy khoá →","s_users":"Người dùng","s_cubes":"Khối","s_keys":"Khoá","ff1":"Trò chuyện ẩn danh","ff2":"Bảng tin và khối","ff3":"Mã hoá E2E","ff4":"Nhóm không giới hạn","ff5":"Tín hiệu và tệp","ff6":"Gọi video","pf1":"Trò chuyện ẩn danh","pf2":"Bảng tin và khối","pf3":"Mã hoá E2E","pf4":"Nhóm không giới hạn","pf5":"Tín hiệu và tệp","pf6":"Gọi video","sl":"Khoá CUBE","eb":"Vào","bk":"← Quay lại","kgt":"Đã tạo khoá","kgs":"Chiếc khoá này là danh tính ẩn danh của bạn trong CubeWorld.","kak":"KHOÁ TRUY CẬP · HÃY LƯU LẠI","kw":"⚠ Không ai biết bạn là ai. Khoá không gắn với danh tính, email hay điện thoại. Mất khoá = mất quyền truy cập.","kcp":"Sao chép","wc":"Vào CubeWorld →","fkb":"KHÓA MIỄN PHÍ","pkb":"KHÓA PREMIUM","mFull":"Nhập đầy đủ khóa: CUBE-XXXX-XXXX-XXXX","mConn":"Đang kết nối…","mWake":"Máy chủ đang thức dậy (~30 giây)…","mOk":"Xong!","mSoon":"Premium sắp có. Khóa miễn phí đã dùng được.","mNoKey":"Không tìm thấy khóa hoặc khóa không hợp lệ","mNet":"Không kết nối được tới máy chủ. Thử lại nhé.","t1b":"MIỄN PHÍ","t1t":"Miễn phí","t1d":"3 khối · Trò chơi · Bản đồ · Bảng tin · Trò chuyện · Nhóm · Tin · Chợ · Ví · Tiền thưởng","t2b":"SILVER","t2t":"Silver","t2d":"10 khối · Phát trực tiếp · Tín hiệu · Phân tích","t3b":"GOLD","t3t":"Gold","t3d":"33 khối · Tất cả của Silver · Quỹ thưởng và API — sắp có","tmo":"/tháng","tyr":"/năm","tfr":"miễn phí","tmore":"Chi tiết →","tpg":"Gói","tin":"Có","tout":"Không có","tget":"Nhận khóa →","fanalytics":"Phân tích khối","fapi":"Truy cập API","fbadge":"Huy hiệu hồ sơ","fclosed":"Khối kín","ffeed":"Bảng tin, trò chuyện, nhóm, tin","ffund":"Phần trong quỹ thưởng","fgames":"Quay khối và chơi","fmap":"Bản đồ trực tiếp và chạy phố","fmarket":"Chợ","fprio":"Ưu tiên trên bảng tin","fsignal":"Tín hiệu của bạn","fstream":"Phát trực tiếp","fwallet":"Ví, tiền tip và quà","tall":"Tất cả các gói","tcubes":"Khối của bạn","tnote":"Nền tảng miễn phí. Chúng tôi thu phí cho những gì mang lại tiền.","tpay":"Thanh toán qua nhà cung cấp thanh toán. Bạn có thể hủy bất cứ lúc nào — khóa, khối và tin nhắn vẫn còn.","tpm":"Hằng tháng","tpy":"Hằng năm","tsave":"tiết kiệm","tsub":"Gói đăng ký","tsoon":"Sắp có","tsoond":"Thuộc gói này. Sẽ được bật trong ứng dụng ở các bản cập nhật tới."},"ja":{"lbl":"CUBEWORLD · ランド・プロトコル","h1":"デジタル・ユニバース<br>ソーシャル・ネットワーク","tag":"三次元世界の一時的な暗号化スペース。キューブはひとつの土地です。賢く使ってください。","s1":"メールも電話番号も不要。鍵だけ。","s2":"","ab":"🔒 キーでログイン ›","sc":"アクティブなキューブ","so":"オンライン","sm":"ユーザー","ft":"ベーシック","pt":"フルアクセス","fk":"無料キー","pk":"プレミアムを取得 →","fa":"ベーシックアクセス","pa":"フルアクセス","fd":"チャット · フィード · 公開キューブ · 3グループ","pd":"E2E暗号化 · 無制限 · シグナル · ファイル · 動画","fg":"キーを取得 →","gk":"無料で取得 →","pg":"キーを取得 →","s_users":"ユーザー","s_cubes":"キューブ","s_keys":"キー","ff1":"匿名チャット","ff2":"フィードとキューブ","ff3":"E2E暗号化","ff4":"無制限のグループ","ff5":"シグナルとファイル","ff6":"ビデオ通話","pf1":"匿名チャット","pf2":"フィードとキューブ","pf3":"E2E暗号化","pf4":"無制限のグループ","pf5":"シグナルとファイル","pf6":"ビデオ通話","sl":"CUBEキー","eb":"入る","bk":"← 戻る","kgt":"キーを作成しました","kgs":"このキーはCubeWorldにおけるあなたの匿名の身元です。","kak":"あなたのアクセスキー · 保管してください","kw":"⚠ あなたが誰かは誰も知りません。キーは身元・メール・電話番号と結びついていません。キーを失う＝アクセスを失う。","kcp":"コピー","wc":"CubeWorldに入る →","fkb":"無料キー","pkb":"プレミアムキー","mFull":"キーを全部入力してください：CUBE-XXXX-XXXX-XXXX","mConn":"接続中…","mWake":"サーバーを起動中（約30秒）…","mOk":"完了！","mSoon":"プレミアムは準備中です。無料キーは今すぐ使えます。","mNoKey":"キーが見つからないか無効です","mNet":"サーバーにつながりません。もう一度どうぞ。","t1b":"無料","t1t":"無料","t1d":"キューブ3個 · ゲーム · マップ · フィード · チャット · グループ · ストーリー · マーケット · ウォレット · チップ","t2b":"シルバー","t2t":"シルバー","t2d":"キューブ10個 · ライブ配信 · シグナル · 分析","t3b":"ゴールド","t3t":"ゴールド","t3d":"キューブ33個 · Silver のすべて · 報酬ファンドと API は近日公開","tmo":"/月","tyr":"/年","tfr":"無料","tmore":"詳細 →","tpg":"プラン","tin":"含まれる","tout":"含まれない","tget":"キーを取得 →","fanalytics":"キューブ分析","fapi":"API アクセス","fbadge":"プロフィールバッジ","fclosed":"クローズドキューブ","ffeed":"フィード・チャット・グループ・ストーリー","ffund":"報酬ファンドの分配","fgames":"キューブを回す・遊ぶ","fmap":"ライブマップと街のラン","fmarket":"マーケット","fprio":"フィードで優先表示","fsignal":"自分のシグナル","fstream":"ライブ配信","fwallet":"ウォレット・チップ・ギフト","tall":"すべてのプラン","tcubes":"自分のキューブ","tnote":"プラットフォームは無料です。お金になるものだけ有料にしています。","tpay":"支払いは決済事業者を通して行います。いつでも解約できます — キー・キューブ・チャットは残ります。","tpm":"月額","tpy":"年額","tsave":"お得","tsub":"サブスクリプション","tsoon":"近日公開","tsoond":"プランに含まれます。今後のアップデートでアプリに追加します。"},"ko":{"lbl":"CUBEWORLD · 랜드 프로토콜","h1":"디지털 유니버스<br>소셜 네트워크","tag":"3차원 세계의 일시적인 암호화 공간. 각 큐브는 하나의 땅입니다. 현명하게 쓰세요.","s1":"이메일도 전화번호도 없습니다. 키 하나뿐.","s2":"","ab":"🔒 키로 로그인 ›","sc":"활성 큐브","so":"접속 중","sm":"사용자","ft":"기본","pt":"전체 이용","fk":"무료 키","pk":"프리미엄 받기 →","fa":"기본 이용","pa":"전체 이용","fd":"채팅 · 피드 · 공개 큐브 · 3개 그룹","pd":"E2E 암호화 · 무제한 · 시그널 · 파일 · 영상","fg":"키 받기 →","gk":"무료로 받기 →","pg":"키 받기 →","s_users":"사용자","s_cubes":"큐브","s_keys":"키","ff1":"익명 채팅","ff2":"피드와 큐브","ff3":"E2E 암호화","ff4":"무제한 그룹","ff5":"시그널과 파일","ff6":"영상 통화","pf1":"익명 채팅","pf2":"피드와 큐브","pf3":"E2E 암호화","pf4":"무제한 그룹","pf5":"시그널과 파일","pf6":"영상 통화","sl":"CUBE 키","eb":"들어가기","bk":"← 뒤로","kgt":"키가 만들어졌습니다","kgs":"이 키가 CubeWorld에서의 익명 신원입니다.","kak":"내 접속 키 · 보관하세요","kw":"⚠ 당신이 누구인지 아무도 모릅니다. 키는 신원·이메일·전화번호와 연결되지 않습니다. 키 분실 = 접속 불가.","kcp":"복사","wc":"CubeWorld 입장 →","fkb":"무료 키","pkb":"프리미엄 키","mFull":"키를 전부 입력하세요: CUBE-XXXX-XXXX-XXXX","mConn":"연결 중…","mWake":"서버가 깨어나는 중 (~30초)…","mOk":"완료!","mSoon":"프리미엄은 곧 나옵니다. 무료 키는 지금도 됩니다.","mNoKey":"키를 찾을 수 없거나 올바르지 않습니다","mNet":"서버에 연결할 수 없습니다. 다시 시도하세요.","t1b":"무료","t1t":"무료","t1d":"큐브 3개 · 게임 · 지도 · 피드 · 채팅 · 그룹 · 스토리 · 마켓 · 지갑 · 팁","t2b":"실버","t2t":"실버","t2d":"큐브 10개 · 라이브 방송 · 시그널 · 분석","t3b":"골드","t3t":"골드","t3d":"큐브 33개 · Silver 전체 · 보상 기금과 API 곧 제공","tmo":"/월","tyr":"/년","tfr":"무료","tmore":"자세히 →","tpg":"요금제","tin":"포함","tout":"미포함","tget":"키 받기 →","fanalytics":"큐브 분석","fapi":"API 접근","fbadge":"프로필 배지","fclosed":"비공개 큐브","ffeed":"피드, 채팅, 그룹, 스토리","ffund":"보상 기금 지분","fgames":"큐브 돌리기와 게임","fmap":"실시간 지도와 거리 달리기","fmarket":"마켓플레이스","fprio":"피드 우선 노출","fsignal":"내 시그널","fstream":"라이브 방송","fwallet":"지갑, 팁, 선물","tall":"모든 플랜","tcubes":"내 큐브","tnote":"플랫폼은 무료입니다. 돈이 되는 기능에만 요금을 받습니다.","tpay":"결제는 결제 대행사를 통해 진행됩니다. 언제든 해지할 수 있고 키, 큐브, 대화는 남습니다.","tpm":"월간","tpy":"연간","tsave":"절약","tsub":"구독","tsoon":"곧 제공","tsoond":"플랜에 포함됩니다. 다음 업데이트에서 앱에 켜집니다."},"hi":{"lbl":"CUBEWORLD · लैंड प्रोटोकॉल","h1":"डिजिटल ब्रह्मांड<br>सोशल नेटवर्क","tag":"त्रि-आयामी दुनिया में अस्थायी एन्क्रिप्टेड जगहें। हर क्यूब एक ज़मीन है, समझदारी से इस्तेमाल करें।","s1":"कोई ईमेल नहीं। कोई फ़ोन नहीं। सिर्फ़ एक चाबी।","s2":"","ab":"🔒 चाबी से प्रवेश ›","sc":"सक्रिय क्यूब","so":"ऑनलाइन","sm":"उपयोगकर्ता","ft":"बेसिक","pt":"पूरा एक्सेस","fk":"मुफ़्त चाबी","pk":"प्रीमियम लें →","fa":"बेसिक एक्सेस","pa":"पूरा एक्सेस","fd":"चैट · फ़ीड · सार्वजनिक क्यूब · 3 समूह","pd":"E2E एन्क्रिप्शन · असीमित · सिग्नल · फ़ाइलें · वीडियो","fg":"चाबी लें →","gk":"मुफ़्त में लें →","pg":"चाबी लें →","s_users":"उपयोगकर्ता","s_cubes":"क्यूब","s_keys":"चाबियाँ","ff1":"गुमनाम चैट","ff2":"फ़ीड और क्यूब","ff3":"E2E एन्क्रिप्शन","ff4":"असीमित समूह","ff5":"सिग्नल और फ़ाइलें","ff6":"वीडियो कॉल","pf1":"गुमनाम चैट","pf2":"फ़ीड और क्यूब","pf3":"E2E एन्क्रिप्शन","pf4":"असीमित समूह","pf5":"सिग्नल और फ़ाइलें","pf6":"वीडियो कॉल","sl":"CUBE चाबी","eb":"प्रवेश","bk":"← वापस","kgt":"चाबी बन गई","kgs":"यह चाबी CubeWorld में आपकी गुमनाम पहचान है।","kak":"आपकी एक्सेस चाबी · सहेज लें","kw":"⚠ कोई नहीं जानता आप कौन हैं। चाबी पहचान, ईमेल या फ़ोन से जुड़ी नहीं है। चाबी खोई = पहुँच खोई।","kcp":"कॉपी करें","wc":"CubeWorld में प्रवेश →","fkb":"मुफ़्त कुंजी","pkb":"प्रीमियम कुंजी","mFull":"पूरी कुंजी डालें: CUBE-XXXX-XXXX-XXXX","mConn":"जोड़ रहे हैं…","mWake":"सर्वर जाग रहा है (~30 सेकंड)…","mOk":"हो गया!","mSoon":"प्रीमियम जल्द आ रहा है। मुफ़्त कुंजी अभी काम करती है।","mNoKey":"कुंजी नहीं मिली या सही नहीं है","mNet":"सर्वर से कनेक्शन नहीं है। फिर कोशिश करें।","t1b":"मुफ़्त","t1t":"मुफ़्त","t1d":"3 क्यूब · गेम · नक्शा · फ़ीड · चैट · ग्रुप · स्टोरी · मार्केट · वॉलेट · टिप","t2b":"सिल्वर","t2t":"सिल्वर","t2d":"10 क्यूब · लाइव स्ट्रीम · सिग्नल · विश्लेषण","t3b":"गोल्ड","t3t":"गोल्ड","t3d":"33 क्यूब · Silver का सब कुछ · इनाम फंड और API जल्द","tmo":"/माह","tyr":"/वर्ष","tfr":"मुफ़्त","tmore":"विवरण →","tpg":"प्लान","tin":"शामिल","tout":"शामिल नहीं","tget":"कुंजी लें →","fanalytics":"क्यूब विश्लेषण","fapi":"API पहुँच","fbadge":"प्रोफ़ाइल बैज","fclosed":"बंद क्यूब","ffeed":"फ़ीड, चैट, समूह, स्टोरी","ffund":"इनाम फंड में हिस्सा","fgames":"क्यूब घुमाना और खेल","fmap":"लाइव नक्शा और स्ट्रीट रन","fmarket":"मार्केटप्लेस","fprio":"फ़ीड में प्राथमिकता","fsignal":"अपने सिग्नल","fstream":"लाइव स्ट्रीम","fwallet":"वॉलेट, टिप और उपहार","tall":"सभी प्लान","tcubes":"अपने क्यूब","tnote":"मंच मुफ़्त है। पैसा उसी के लिए लेते हैं जो पैसा देता है।","tpay":"भुगतान एक भुगतान प्रदाता के ज़रिये होता है। आप कभी भी रद्द कर सकते हैं — कुंजी, क्यूब और चैट बने रहते हैं।","tpm":"मासिक","tpy":"वार्षिक","tsave":"बचत","tsub":"सदस्यता","tsoon":"जल्द आ रहा है","tsoond":"प्लान में शामिल है। अगले अपडेट में ऐप में चालू करेंगे।"}}</script>
+
+<script id="cw-ref-catch">
+/* Пришли по чужой ссылке приглашения: запоминаем код до того, как человек
+   получит ключ. Дальше world.html передаст его серверу один раз.
+   Сам код из адреса убираем, чтобы человек случайно не поделился чужим. */
+(function(){
+  try{
+    var m = /[?&]ref=([A-Za-z0-9\-]{4,20})/.exec(location.search || '');
+    if(!m) return;
+    localStorage.setItem('cw_ref_code', m[1].toUpperCase().replace(/-/g, ''));
+    var q = (location.search || '').replace(/([?&])ref=[^&]*/, '$1')
+                                   .replace(/[?&]$/, '').replace(/\?&/, '?');
+    history.replaceState(null, '', location.pathname + q + location.hash);
+  }catch(e){}
+})();
+</script>
 
 <script>
-var API = 'https://cubeworld-backend.onrender.com';
+var API = (function(){
+  // Local test setup (localhost / LAN) -> local uvicorn on :8000.
+  var h = location.hostname || '';
+  var local = h === 'localhost' || h === '127.0.0.1' || h === '[::1]'
+    || /^192\.168\./.test(h) || /^10\./.test(h)
+    || /^172\.(1[6-9]|2[0-9]|3[01])\./.test(h);
+  return local ? location.protocol + '//' + h + ':8000'
+               : 'https://cubeworld-backend.onrender.com';
+})();
 var LANGS = JSON.parse(document.getElementById('tr').textContent);
-var FLAGS = {en:'&#127468;&#127463;',ru:'&#127479;&#127482;',es:'&#127466;&#127480;',zh:'&#127464;&#127475;',fr:'&#127467;&#127479;'};
-var CODES = {en:'EN',ru:'RU',es:'ES',zh:'ZH',fr:'FR'};
+var FLAGS = {'ru':'🇷🇺','en':'🇬🇧','en-IN':'🇮🇳','uk':'🇺🇦','de':'🇩🇪','fr':'🇫🇷','fr-CA':'🇨🇦','es':'🇪🇸','es-419':'🇲🇽','it':'🇮🇹','pt':'🇵🇹','pl':'🇵🇱','tr':'🇹🇷','ar':'🇸🇦','ar-AE':'🇦🇪','vi':'🇻🇳','zh':'🇨🇳','ja':'🇯🇵','ko':'🇰🇷','hi':'🇮🇳'};
+var CODES = {'ru':'RU','en':'EN','en-IN':'EN-IN','uk':'UK','de':'DE','fr':'FR','fr-CA':'FR-CA','es':'ES','es-419':'ES-LA','it':'IT','pt':'PT','pl':'PL','tr':'TR','ar':'AR','ar-AE':'AR-AE','vi':'VI','zh':'ZH','ja':'JA','ko':'KO','hi':'HI'};
+var NAMES = {'ru':'Русский','en':'English','en-IN':'English (India)','uk':'Українська','de':'Deutsch','fr':'Français','fr-CA':'Français (Canada)','es':'Español','es-419':'Español (Latinoamérica)','it':'Italiano','pt':'Português','pl':'Polski','tr':'Türkçe','ar':'العربية','ar-AE':'العربية (الخليج)','vi':'Tiếng Việt','zh':'中文','ja':'日本語','ko':'한국어','hi':'हिन्दी'};
+/* Местные выговоры берут текст своего основного языка:
+   English (India) — английский, Français (Canada) — французский,
+   Español (Latinoamérica) — испанский, العربية (الخليج) — арабский. */
+var BASE = {'ru':'ru','en':'en','en-IN':'en','uk':'uk','de':'de','fr':'fr','fr-CA':'fr','es':'es','es-419':'es','it':'it','pt':'pt','pl':'pl','tr':'tr','ar':'ar','ar-AE':'ar','vi':'vi','zh':'zh','ja':'ja','ko':'ko','hi':'hi'};
+var LANG_LIST = ["ru", "en", "en-IN", "uk", "de", "fr", "fr-CA", "es", "es-419", "it", "pt", "pl", "tr", "ar", "ar-AE", "vi", "zh", "ja", "ko", "hi"];
 var lang = 'en';
 var ddOpen = false;
 var gKey = null;
@@ -352,25 +371,151 @@ var ELMAP = {
   'el-lbl':'lbl','el-h1':'h1','el-s1':'s1','el-s2':'s2','el-tag':'tag','el-ab':'ab',
   'el-ft':'ft','el-fd':'fd','el-pt':'pt','el-pd':'pd',
   'el-gk':'gk','el-pk':'pk',
+  /* Три карточки тарифов. Значок, название и строка «что внутри» —
+     из того же словаря, что и всё остальное на титульной, чтобы
+     тарифы переводились вместе со страницей, а не только по-русски. */
+  'el-t1b':'t1b','el-t1t':'t1t','el-t1d':'t1d','el-t1m':'tmore',
+  'el-t2b':'t2b','el-t2t':'t2t','el-t2d':'t2d','el-t2m':'tmore','el-t2k':'tget',
+  'el-t3b':'t3b','el-t3t':'t3t','el-t3d':'t3d','el-t3m':'tmore','el-t3k':'tget',
   'el-sc':'sc','el-so':'so','el-sm':'sm',
   'el-sl':'sl','el-eb':'eb',
   'el-bk':'bk',
-  'el-kgt':'kgt','el-kgs':'kgs','el-kak':'kak','el-kw':'kw','el-kcp':'kcp','el-wc':'wc'
+  'el-kgt':'kgt','el-kgs':'kgs','el-kak':'kak','el-kw':'kw','el-kcp':'kcp','el-wc':'wc',
+  'el-fkb':'fkb','el-pkb':'pkb'
 };
+
+/* Один вход за переводом: варианты вроде en-IN и es-419 живут
+   в BASE, без него таблица отдаёт undefined и текст остаётся английским. */
+function TR(){ return LANGS[BASE[lang] || lang] || LANGS[lang] || LANGS.en || {}; }
 
 function setLang(l) {
   lang = l;
-  var t = LANGS[l]; if (!t) return;
+  var t = LANGS[BASE[l] || l] || LANGS[l]; if (!t) return;
+  /* Арабский пишется справа налево — иначе строки на титульной
+     разъезжаются и читать их невозможно. */
+  document.documentElement.setAttribute('dir', (BASE[l] || l) === 'ar' ? 'rtl' : 'ltr');
   var ids = Object.keys(ELMAP);
   for (var i = 0; i < ids.length; i++) {
     var el = document.getElementById(ids[i]);
-    if (el) { var _v=t[ELMAP[ids[i]]]; if(_v!==undefined)el.innerHTML=_v; }
+    if (el) {
+      var _v=t[ELMAP[ids[i]]];
+      if(_v!==undefined){
+        /* v=544 · У кнопки входа теперь свой значок — его рисуем мы, а не
+           система. Из словаря берём только слова: замок и стрелку
+           отрезаем, иначе перевод затёр бы значок своим смайлом.
+           Остальные строки ставим как раньше, целиком. */
+        if(ids[i]==='el-ab'){
+          var _т=document.getElementById('el-ab-t');
+          if(_т){
+            var _с=String(_v).replace(/^[^\p{L}\p{N}]+/u,'').replace(/[\s›»→]+$/u,'').trim();
+            _т.textContent=_с;
+          } else el.innerHTML=_v;
+        } else el.innerHTML=_v;
+      }
+    }
   }
   // Re-render features if keygen screen active
   if (document.getElementById('kg-features').children.length>0) {
     renderFeatures(curKeyType);
   }
+  /* Шапка тоже часть содержимого: раньше её правил только pickL,
+     и при любом другом входе в setLang флаг оставался английским. */
+  var фл = document.getElementById('lflag');
+  var кд = document.getElementById('lcode');
+  if (фл && FLAGS[l]) фл.innerHTML = FLAGS[l];
+  if (кд && CODES[l]) кд.textContent = CODES[l];
+  for (var j = 0; j < LANG_LIST.length; j++) {
+    var э2 = document.getElementById('lo-' + LANG_LIST[j]);
+    if (э2) э2.classList.toggle('cur', LANG_LIST[j] === l);
+  }
+  /* Цены подписаны не словарём, а числами с сервера: подпись «в месяц»
+     берётся из словаря, поэтому её надо переставить вместе с языком. */
+  подписатьЦены();
   localStorage.setItem('cw_lang', l);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   ТАРИФЫ НА ТИТУЛЬНОЙ
+
+   Цены не вписаны в страницу. Сервер считает их по database.ТАРИФЫ, и
+   если там поменять цифру, титульная подхватит её сама — иначе цена на
+   витрине и цена в счёте однажды разойдутся.
+
+   Сервер не ответил (нет сети, поднимается Render) — показываем цифры
+   из ТАРИФЫ_ЗАПАС. Это те же числа, но подписанные честно: лучше
+   прошлая цена, чем прочерк на месте цены.
+   ───────────────────────────────────────────────────────────────────── */
+var ТАРИФЫ_ЗАПАС = {
+  free:   {month: 0.0,   year: 0.0},
+  silver: {month: 6.99,  year: 59.99},
+  gold:   {month: 14.99, year: 129.99}
+};
+var ТАРИФЫ_ЦЕНЫ = null;
+var тарифПериод = 'month';   // «в месяц» по умолчанию: так дешевле на вид
+
+function _деньги(ч) {
+  var н = Number(ч) || 0;
+  /* Целое показываем без копеек: «$60», а не «$60.00». */
+  return '$' + (Math.abs(н - Math.round(н)) < 0.005
+                ? String(Math.round(н)) : н.toFixed(2));
+}
+
+function подписатьЦены() {
+  var т = TR();
+  var ц = ТАРИФЫ_ЦЕНЫ || ТАРИФЫ_ЗАПАС;
+  var пары = [['free', 'pr-free', 'el-t1u'],
+              ['silver', 'pr-silver', 'el-t2u'],
+              ['gold', 'pr-gold', 'el-t3u']];
+  for (var i = 0; i < пары.length; i++) {
+    var имя = пары[i][0];
+    var цена = (ц[имя] || {})[тарифПериод];
+    if (цена === undefined) цена = (ТАРИФЫ_ЗАПАС[имя] || {})[тарифПериод];
+    var э = document.getElementById(пары[i][1]);
+    var п = document.getElementById(пары[i][2]);
+    if (э) э.textContent = (Number(цена) > 0) ? _деньги(цена) : (т.tfr || 'free');
+    if (п) п.textContent = (Number(цена) > 0)
+             ? (тарифПериод === 'year' ? (т.tyr || '/yr') : (т.tmo || '/mo')) : '';
+  }
+}
+
+function загрузитьТарифы() {
+  try {
+    fetch(API + '/plans').then(function(r){ return r.json(); }).then(function(д){
+      if (!д || !д.plans) return;
+      var ц = {};
+      for (var к in д.plans) {
+        ц[к] = {month: д.plans[к].month, year: д.plans[к].year};
+      }
+      ТАРИФЫ_ЦЕНЫ = ц;
+      подписатьЦены();
+    }).catch(function(){});
+  } catch (e) {}
+}
+
+/* Карточка ведёт на свою страницу тарифа. Язык передаём с собой:
+   человек выбрал его здесь, и переспрашивать на второй странице глупо. */
+function открытьТариф(plan) {
+  var p = ['free', 'silver', 'gold'].indexOf(String(plan)) >= 0 ? plan : 'free';
+  location.href = 'tariff.html?p=' + p + '&lang=' + encodeURIComponent(lang);
+}
+
+/* Язык браузера → наш список. Сначала ищем точное «fr-CA»,
+   потом общий «fr»; не нашли — английский. */
+function угадатьЯзык() {
+  var сп = (navigator.languages && navigator.languages.length)
+           ? navigator.languages : [navigator.language || 'en'];
+  for (var i = 0; i < сп.length; i++) {
+    var м = String(сп[i]);
+    for (var j = 0; j < LANG_LIST.length; j++) {
+      if (LANG_LIST[j].toLowerCase() === м.toLowerCase()) return LANG_LIST[j];
+    }
+    var баз = м.split('-')[0].toLowerCase();
+    if (LANG_LIST.indexOf(баз) >= 0) return баз;
+    if (баз === 'be' || баз === 'kk') return 'ru';
+    if (баз === 'id' || баз === 'ms') return 'en';
+    if (баз === 'zh') return 'zh';
+  }
+  return 'en';
 }
 
 function togDD(e) {
@@ -380,15 +525,25 @@ function togDD(e) {
 }
 
 function pickL(l) {
-  document.getElementById('lflag').innerHTML = FLAGS[l];
-  document.getElementById('lcode').textContent = CODES[l];
   ddOpen = false;
   document.getElementById('ldd').classList.remove('open');
-  var ls = ['en','ru','es','zh','fr'];
-  for (var i = 0; i < ls.length; i++) {
-    document.getElementById('lo-' + ls[i]).classList.toggle('cur', ls[i] === l);
-  }
   setLang(l);
+  /* v=549 · Человек выбрал язык здесь руками — значит, и приложение
+     должно открыться на нём.
+
+     У приложения два ключа памяти: cw_ui_lang — выбор, сделанный внутри
+     приложения, и cw_lang — выбор, сделанный тут, на титульной. Читает
+     оно их именно в таком порядке: свой выбор важнее.
+
+     Из-за этого был такой случай: вышли с испанского, тут переключили на
+     русский, вошли тем же ключом — и попали обратно на испанский. Потому
+     что переключение писало только cw_lang, а в cw_ui_lang так и лежал
+     испанский с прошлого раза.
+
+     Пишем оба ключа — но только здесь, при нажатии на язык. В setLang
+     этого делать нельзя: он зовётся и при открытии страницы, и тогда
+     вчерашний cw_lang затирал бы язык, выбранный внутри приложения. */
+  try { localStorage.setItem('cw_ui_lang', l); } catch (e) {}
 }
 
 document.addEventListener('click', function() {
@@ -488,7 +643,7 @@ function startKeygen(type) {
   // Setup badge
   var badge = document.getElementById('kg-badge');
   badge.className = 'kg-badge ' + (type === 'free' ? 'f' : 'p');
-  badge.textContent = type === 'free' ? 'FREE KEY' : 'PREMIUM KEY';
+  badge.textContent = type === 'free' ? (TR().fkb || 'FREE KEY') : (TR().pkb || 'PREMIUM KEY');
 
   // Switch screen
   sm.classList.remove('active');
@@ -507,7 +662,7 @@ function startKeygen(type) {
     document.getElementById('kg-loading').style.display = 'none';
     var err = document.getElementById('kg-error');
     err.style.display = 'block';
-    err.textContent = 'Premium access coming soon. Join waitlist.';
+    err.textContent = TR().mSoon || 'Premium access coming soon. Join waitlist.';
   }
 }
 
@@ -518,7 +673,7 @@ function showMain() {
 }
 
 function renderFeatures(type) {
-  var t = LANGS[lang];
+  var t = TR();
   var feats;
   if (type === 'free') {
     feats = [
@@ -571,14 +726,54 @@ async function generateKeyKeygen() {
   }
 }
 
+/* Копирование без https.
+   navigator.clipboard браузер даёт только на защищённом соединении и на
+   localhost. Страница, открытая с телефона по адресу вида 192.168.x.x,
+   защищённой не считается: clipboard там нет вовсе, и кнопка Copy молча
+   падала. Запасной путь — скрытое поле и старая команда копирования. */
+function cwCopyFallback(text) {
+  return new Promise(function(ok, no) {
+    try {
+      var t = document.createElement('textarea');
+      t.value = String(text == null ? '' : text);
+      t.setAttribute('readonly', '');
+      t.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;border:none;padding:0';
+      document.body.appendChild(t);
+      t.select();
+      t.setSelectionRange(0, t.value.length);
+      var done = document.execCommand('copy');
+      document.body.removeChild(t);
+      done ? ok() : no(new Error('copy failed'));
+    } catch (e) { no(e); }
+  });
+}
+
 function copyKeyNew() {
   if (!gKey) return;
-  navigator.clipboard.writeText(gKey).then(function() {
-    var btn = document.getElementById('el-kcp');
-    var prev = btn.textContent;
+  var btn = document.getElementById('el-kcp');
+  var prev = btn ? btn.textContent : 'Copy';
+  function good() {
+    if (!btn) return;
     btn.textContent = '✓';
     setTimeout(function() { btn.innerHTML = prev; }, 1500);
-  });
+  }
+  function bad() {
+    /* Совсем не вышло — выделяем ключ, чтобы его можно было скопировать рукой. */
+    if (btn) { btn.textContent = '✕'; setTimeout(function(){ btn.innerHTML = prev; }, 1800); }
+    try {
+      var k = document.getElementById('kg-keyval');
+      if (k) {
+        var r = document.createRange();
+        r.selectNodeContents(k);
+        var sel = window.getSelection();
+        sel.removeAllRanges(); sel.addRange(r);
+      }
+    } catch (e) {}
+  }
+  var p = (navigator.clipboard && navigator.clipboard.writeText)
+    ? navigator.clipboard.writeText(gKey).catch(function(){ return cwCopyFallback(gKey); })
+    : cwCopyFallback(gKey);
+  Promise.resolve(p).then(good).catch(bad);
 }
 
 async function enterWorld() {
@@ -606,15 +801,15 @@ async function loginKey() {
   var btn = document.getElementById('btn-login');
   var st  = document.getElementById('login-status');
   if (key.length < 19) {
-    st.className = 'smsg err'; st.textContent = 'Enter full key: CUBE-XXXX-XXXX-XXXX'; return;
+    st.className = 'smsg err'; st.textContent = TR().mFull || 'Enter full key: CUBE-XXXX-XXXX-XXXX'; return;
   }
   btn.disabled = true;
   btn.innerHTML = '<span class="sp"></span>';
-  st.className = 'smsg ld'; st.textContent = 'Connecting...';
+  st.className = 'smsg ld'; st.textContent = TR().mConn || 'Connecting…';
   // Add timeout for Render cold start
   var loginCtrl = new AbortController();
   var loginTid = setTimeout(function(){
-    st.textContent = 'Backend waking up (~30s)...';
+    st.textContent = TR().mWake || 'Backend waking up (~30s)…';
   }, 5000);
   try {
     var res  = await fetch(API + '/auth/login', {
@@ -624,16 +819,20 @@ async function loginKey() {
     });
     clearTimeout(loginTid);
     var data = await res.json();
-    if (!res.ok) throw new Error(data.detail || 'Key not found');
+    if (!res.ok) throw new Error(TR().mNoKey || data.detail || 'Key not found');
     localStorage.setItem('cw_key', key);
     localStorage.setItem('cw_access_token', data.access_token);
     localStorage.setItem('cw_refresh_token', data.refresh_token);
     localStorage.setItem('cw_key_type', data.key_type);
-    st.className = 'smsg ok'; st.textContent = 'OK!';
+    st.className = 'smsg ok'; st.textContent = TR().mOk || 'OK!';
     setTimeout(function() { window.location.href = 'world.html'; }, 600);
   } catch(e) {
-    st.className = 'smsg err'; st.textContent = e.message;
-    var t = LANGS[lang];
+    var t = TR();
+    /* Сетевой сбой и отказ сервера читаются по-разному,
+       иначе человек видит английское «Failed to fetch». */
+    var сеть = (e && (e.name === 'TypeError' || e.name === 'AbortError'));
+    st.className = 'smsg err';
+    st.textContent = сеть ? (t.mNet || 'No connection to the server') : e.message;
     btn.innerHTML = (t.eb || 'Enter') + ' &#8250;'; btn.disabled = false;
   }
 }
@@ -658,15 +857,52 @@ async function loadStats() {
 
 /* ── Init ── */
 (function init() {
-  var saved = localStorage.getItem('cw_lang') || 'en';
-  // Wipe session data on landing, but keep cross-session caches and user-scoped cube data
-  var _keep = {'cw_lang':1,'cw_my_cubes':1,'cw_ticker_cache':1,'cw_device_id':1};
-  Object.keys(localStorage).forEach(function(k){
-    // Always preserve user-scoped cube cache + universe keys (survive logout/login)
-    if(k.startsWith('cw_my_cubes_') || k.startsWith('cw_universe_')) return;
-    if(!_keep[k]) localStorage.removeItem(k);
-  });
-  if (saved !== 'en') pickL(saved);
+  /* На первом заходе человек видит свой язык сразу, а не английский.
+     Неизвестное значение в памяти откатываем на английский,
+     иначе setLang выходил ни с чем и страница застывала наполовину. */
+  /* v=545 · Выход из приложения приводит сюда и приносит язык прямо в
+     ссылке: «index.html?lang=es». Своя память (cw_lang) у титульной
+     отдельная, и у человека, который только что вышел, она могла быть
+     пустой или вчерашней — метка в ссылке надёжнее. Запоминаем её тут
+     же, чтобы следующий заход был на том же языке и без метки. */
+  var изСсылки = '';
+  try{
+    var м = /[?&]lang=([^&]+)/.exec(location.search || '');
+    if (м) изСсылки = decodeURIComponent(м[1]);
+  }catch(e){}
+  var saved = (LANG_LIST.indexOf(изСсылки) >= 0) ? изСсылки : localStorage.getItem('cw_lang');
+  if (LANG_LIST.indexOf(saved) < 0) saved = угадатьЯзык();
+  if (изСсылки){
+    try{ localStorage.setItem('cw_lang', saved); }catch(e){}
+    try{
+      var чисто2 = (location.search || '').replace(/([?&])lang=[^&]*/, '$1')
+                                          .replace(/[?&]$/, '').replace(/\?&/, '?');
+      history.replaceState(null, '', location.pathname + чисто2 + location.hash);
+    }catch(e){}
+  }
+  // Раньше здесь стиралась вся память браузера при каждом открытии главной.
+  // Вместе с ключом и токеном пропадали избранное, история личных переписок,
+  // настройки и список посещённых кубов: достаточно было вернуться на главную,
+  // чтобы потерять всё. Выход из учётной записи и так чистит нужное
+  // (world.html, _goLogin и выход), поэтому здесь ничего не трогаем.
+  /* v=549 · Здесь именно setLang, а не pickL. Разница одна, но важная:
+     pickL пишет ещё и cw_ui_lang — язык приложения, — и делать это при
+     открытии страницы нельзя. Иначе человек, вошедший в приложение на
+     японском, открыл бы титульную в соседней вкладке, и вчерашний
+     cw_lang молча переставил бы ему язык внутри. Язык приложения меняет
+     только живое нажатие на язык. */
+  setLang(saved);
+  загрузитьТарифы();
+  /* Со страницы тарифа человек приходит с «?get=free» — он уже нажал
+     «Получить ключ» там, и заставлять нажимать второй раз здесь незачем. */
+  try {
+    if (/[?&]get=free\b/.test(location.search || '')) {
+      var чисто = (location.search || '').replace(/([?&])get=[^&]*/, '$1')
+                                         .replace(/[?&]$/, '').replace(/\?&/, '?');
+      history.replaceState(null, '', location.pathname + чисто + location.hash);
+      setTimeout(function(){ startKeygen('free'); }, 0);
+    }
+  } catch (e) {}
   loadStats();
   setInterval(loadStats, 30000);
 })();
@@ -725,10 +961,5 @@ async function loadStats() {
 </div>
 </div>
 
-<div style="text-align:center;padding:20px 0 28px;font-size:12px;color:#475569">
-  <a href="./privacy.html" style="color:#4f9cf9;text-decoration:none">Privacy Policy</a>
-  <span style="color:#334155;margin:0 8px">&middot;</span>
-  <a href="./terms.html" style="color:#4f9cf9;text-decoration:none">Terms of Service</a>
-</div>
 </body>
 </html>

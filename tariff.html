@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CubeWorld · Plans</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-96.png" sizes="96x96" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#030310">
+<meta name="description" content="CubeWorld — анонимная соцсеть в кубах: чаты, группы, эфиры, свои файлы и CUBE.">
+<link rel="canonical" href="https://cube-world.space/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CubeWorld">
+<meta property="og:title" content="CubeWorld — анонимная соцсеть в кубах">
+<meta property="og:description" content="Чаты, группы, эфиры, свои файлы и CUBE. Вход по ключу, без почты и телефона.">
+<meta property="og:url" content="https://cube-world.space/">
+<meta property="og:image" content="https://cube-world.space/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cube-world.space/og.png">
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     СТРАНИЦА ТАРИФА: ?p=free | silver | gold
+
+     Одна страница на три тарифа: что входит, что скоро, чего нет, и
+     сколько это стоит в месяц и за год.
+
+     Цены и права берём с сервера (GET /plans): там они живут в
+     database.ТАРИФЫ, в одном месте. Нет сети — показываем те же числа из
+     ЗАПАС, честно подписанные, а не прочерк вместо цены.
+
+     Словарь ниже — выжимка из словаря титульной (index.html, блок с
+     переводами), те же языки и те же строки. Пересобрать:
+     python3 tarif_page.py — он берёт ключи из index.html и кладёт их
+     сюда, чтобы перевод не разъехался между двумя страницами.
+
+     «Скоро» — не хитрость, а честность: эти права тариф уже даёт, но в
+     приложении они пока не включены, и обещать их как готовые нельзя.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style>
+:root{--bg:#020211;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--accent:#0099ff;--gold:#f5c842;--silver:#cfd6e4;--text:#e8e8f0;--muted:rgba(232,232,240,0.45);--radius:16px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#020211;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden;}
+.amb{position:fixed;top:24%;left:50%;transform:translate(-50%,-50%);width:620px;height:620px;background:radial-gradient(ellipse at center,rgba(124,106,255,0.07) 0%,transparent 70%);z-index:0;pointer-events:none;}
+.wrap{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:18px 20px 64px;}
+
+/* Шапка: слева домой, справа язык — как на титульной */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px;}
+.home{color:var(--muted);font-size:13px;font-weight:600;text-decoration:none;}
+.home:hover{color:#fff;}
+.ldd{position:relative;z-index:100;}
+.ldb{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px 12px;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.ldb:hover{background:rgba(255,255,255,0.1);}
+.lfi{font-size:18px;line-height:1;}
+.ldarr{font-size:10px;color:var(--muted);margin-left:2px;transition:transform .2s;}
+.ldd.open .ldarr{transform:rotate(180deg);}
+.ldm{max-height:min(70vh,520px);overflow-y:auto;display:none;flex-direction:column;gap:2px;background:rgba(16,20,40,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:6px;margin-top:6px;backdrop-filter:blur(12px);position:absolute;right:0;top:100%;z-index:200;min-width:150px;}
+.ldd.open .ldm{display:flex;}
+.ldm button{background:none;border:none;color:var(--text);font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;width:100%;}
+.ldm button:hover,.ldm button.cur{background:rgba(124,106,255,0.2);}
+
+/* Три закладки: можно ходить между тарифами, не возвращаясь назад */
+.tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.tab{flex:1;min-width:92px;text-align:center;padding:10px 8px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;}
+.tab:hover{color:#fff;border-color:rgba(255,255,255,.18);}
+.tab.cur{color:#fff;border-color:rgba(0,149,246,.55);background:rgba(0,149,246,.12);}
+
+.badge{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
+.badge.free{color:var(--gold);}
+.badge.silver{color:var(--silver);}
+.badge.gold{color:var(--gold);}
+h1{font-size:clamp(28px,6vw,42px);font-weight:800;line-height:1.1;margin-bottom:14px;}
+.kick{color:var(--muted);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+.note{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:24px;}
+
+.pricebox{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:24px;}
+.price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+.price b{font-size:40px;font-weight:800;line-height:1;}
+.price span{color:var(--muted);font-size:14px;}
+.save{color:#4af0a0;font-size:12px;font-weight:700;margin-top:8px;min-height:16px;}
+.per{display:flex;gap:8px;margin-top:16px;}
+.per button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;}
+.per button.cur{color:#fff;border-color:rgba(0,149,246,.55);background:rgba(0,149,246,.12);}
+
+.grp{margin-bottom:22px;}
+.grp h2{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:15px;line-height:1.45;}
+.row:last-child{border-bottom:none;}
+.row .mk{flex:none;width:18px;text-align:center;font-size:14px;font-weight:800;}
+.row.in .mk{color:#4af0a0;}
+.row.soon .mk{color:var(--gold);}
+.row.out{color:var(--muted);}
+.row.out .mk{color:rgba(255,255,255,.22);}
+.soonnote{color:var(--muted);font-size:12px;line-height:1.6;margin-top:8px;}
+
+.cta{background:rgba(0,149,246,0.15);color:#fff;border:1px solid rgba(0,149,246,0.65);border-radius:24px;padding:14px 30px;font-size:15px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none;}
+.cta:hover{background:rgba(0,149,246,0.32);border-color:rgba(0,149,246,0.95);}
+.pay{color:var(--muted);font-size:12px;line-height:1.7;margin-top:14px;}
+.back{display:inline-block;margin-top:26px;color:var(--muted);font-size:13px;font-weight:600;text-decoration:none;}
+.back:hover{color:#fff;}
+@media(max-width:520px){.wrap{padding:14px 16px 56px;}.price b{font-size:34px;}}
+</style>
+</head>
+<body>
+<div class="amb"></div>
+<div class="wrap">
+
+  <div class="top">
+    <a class="home" href="index.html">&#8592; CUBEWORLD</a>
+    <div class="ldd" id="ldd">
+      <button class="ldb" onclick="event.stopPropagation();крутить()">
+        <span class="lfi" id="lflag">&#127760;</span><span id="lcode">EN</span>
+        <span class="ldarr">&#9660;</span>
+      </button>
+      <div class="ldm" id="ldm"></div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="kick" id="kick">Subscription</div>
+  <div class="badge" id="badge">FREE</div>
+  <h1 id="title">Free</h1>
+  <p class="note" id="note"></p>
+
+  <div class="pricebox">
+    <div class="price"><b id="price">&mdash;</b> <span id="unit"></span></div>
+    <div class="save" id="save"></div>
+    <div class="per" id="per">
+      <button id="b-month" onclick="период('month')">Monthly</button>
+      <button id="b-year" onclick="период('year')">Yearly</button>
+    </div>
+  </div>
+
+  <div class="grp" id="g-in"></div>
+  <div class="grp" id="g-soon"></div>
+  <div class="grp" id="g-out"></div>
+
+  <a class="cta" id="cta" href="index.html?get=free">Get key &rsaquo;</a>
+  <p class="pay" id="pay"></p>
+  <a class="back" id="back" href="index.html">&#8592; All plans</a>
+
+</div>
+
+<script id="tr" type="application/json">{"en":{"bk":"← Back","tall":"All plans","tpg":"Plans","tsub":"Subscription","t1b":"FREE","t1t":"Free","t1d":"3 cubes · Games · Map · Feed · Chats · Groups · Stories · Market · Wallet · Tips","t2b":"SILVER","t2t":"Silver","t2d":"10 cubes · Live streams · Signals · Analytics","t3b":"GOLD","t3t":"Gold","t3d":"33 cubes · All of Silver · Reward fund and API — coming soon","tmo":"/mo","tyr":"/yr","tfr":"free","tpm":"Monthly","tpy":"Yearly","tsave":"save","tin":"Included","tout":"Not included","tsoon":"Coming soon","tsoond":"Part of the plan. It will be switched on in the app in upcoming updates.","tget":"Get key →","tnote":"The platform is free. We charge for what earns money.","tpay":"Payment goes through a payment provider. You can cancel any time — your key, cubes and chats stay.","tcubes":"Your own cubes","fgames":"Spin cubes and play","fmap":"Live map and street run","ffeed":"Feed, chats, groups, stories","fmarket":"Marketplace","fwallet":"Wallet, tips and gifts","fstream":"Live streams","fsignal":"Your own signals","fanalytics":"Cube analytics","fbadge":"Profile badge","fprio":"Feed priority","ffund":"Reward fund share","fclosed":"Closed cubes","fapi":"API access"},"ru":{"bk":"← Назад","tall":"Все тарифы","tpg":"Тарифы","tsub":"Подписка","t1b":"БЕСПЛАТНЫЙ","t1t":"Бесплатный","t1d":"3 куба · Игры · Карта · Лента · Чаты · Группы · Истории · Маркетплейс · Кошелёк · Чаевые","t2b":"СИЛВЕР","t2t":"Силвер","t2d":"10 кубов · Эфиры · Сигналы · Аналитика","t3b":"ГОЛД","t3t":"Голд","t3d":"33 куба · Всё из Силвера · Фонд наград и API — скоро","tmo":"в месяц","tyr":"в год","tfr":"бесплатно","tpm":"Ежемесячно","tpy":"На год","tsave":"экономия","tin":"Входит","tout":"Не входит","tsoon":"Скоро","tsoond":"Входит в тариф. В приложении включим в ближайших обновлениях.","tget":"Получить ключ →","tnote":"Площадка бесплатна. Деньги берём за то, что приносит деньги.","tpay":"Оплата идёт через платёжного провайдера. Отказаться можно в любой момент — ключ, кубы и переписки останутся.","tcubes":"Свои кубы","fgames":"Крутить кубы и играть","fmap":"Живая карта и забег по улице","ffeed":"Лента, чаты, группы, истории","fmarket":"Маркетплейс","fwallet":"Кошелёк, чаевые и подарки","fstream":"Эфиры","fsignal":"Свои сигналы","fanalytics":"Аналитика куба","fbadge":"Значок в профиле","fprio":"Приоритет в ленте","ffund":"Доля в фонде наград","fclosed":"Закрытые кубы","fapi":"Доступ к API"},"es":{"bk":"← Atrás","tall":"Todos los planes","tpg":"Planes","tsub":"Suscripción","t1b":"GRATIS","t1t":"Gratis","t1d":"3 cubos · Juegos · Mapa · Feed · Chats · Grupos · Historias · Mercado · Billetera · Propinas","t2b":"SILVER","t2t":"Silver","t2d":"10 cubos · Directos · Señales · Analítica","t3b":"GOLD","t3t":"Gold","t3d":"33 cubos · Todo de Silver · Fondo de recompensas y API — pronto","tmo":"/mes","tyr":"/año","tfr":"gratis","tpm":"Mensual","tpy":"Anual","tsave":"ahorro","tin":"Incluido","tout":"No incluido","tsoon":"Pronto","tsoond":"Incluido en el plan. Lo activaremos en la app en las próximas actualizaciones.","tget":"Obtener clave →","tnote":"La plataforma es gratis. Cobramos por lo que da dinero.","tpay":"El pago va por un proveedor de pagos. Puedes cancelar cuando quieras: la clave, los cubos y los chats se quedan.","tcubes":"Tus propios cubos","fgames":"Girar cubos y jugar","fmap":"Mapa en vivo y carrera por la calle","ffeed":"Feed, chats, grupos, historias","fmarket":"Mercado","fwallet":"Cartera, propinas y regalos","fstream":"Directos","fsignal":"Tus propias señales","fanalytics":"Analítica del cubo","fbadge":"Insignia de perfil","fprio":"Prioridad en el feed","ffund":"Parte del fondo de recompensas","fclosed":"Cubos cerrados","fapi":"Acceso a la API"},"zh":{"bk":"← 返回","tall":"全部方案","tpg":"套餐","tsub":"订阅","t1b":"免费","t1t":"免费版","t1d":"3 个立方 · 游戏 · 地图 · 动态 · 聊天 · 群组 · 故事 · 市场 · 钱包 · 打赏","t2b":"白银","t2t":"白银版","t2d":"10 个方块 · 直播 · 信号 · 分析","t3b":"黄金","t3t":"黄金版","t3d":"33 个方块 · 包含 Silver 全部 · 奖励基金与 API 即将推出","tmo":"/月","tyr":"/年","tfr":"免费","tpm":"按月","tpy":"按年","tsave":"节省","tin":"包含","tout":"不包含","tsoon":"即将推出","tsoond":"已包含在方案中，将在后续更新中于应用内开启。","tget":"获取密钥 →","tnote":"平台免费。我们只对能赚钱的功能收费。","tpay":"通过支付服务商付款。随时可以取消——密钥、方块和聊天都会保留。","tcubes":"自己的方块","fgames":"转动方块与游戏","fmap":"实时地图与街头跑","ffeed":"动态、聊天、群组、故事","fmarket":"市场","fwallet":"钱包、打赏与礼物","fstream":"直播","fsignal":"自己的信号","fanalytics":"方块分析","fbadge":"资料徽章","fprio":"动态优先","ffund":"奖励基金份额","fclosed":"封闭方块","fapi":"API 访问"},"fr":{"bk":"← Retour","tall":"Tous les forfaits","tpg":"Offres","tsub":"Abonnement","t1b":"GRATUIT","t1t":"Gratuit","t1d":"3 cubes · Jeux · Carte · Fil · Chats · Groupes · Stories · Marché · Portefeuille · Pourboires","t2b":"SILVER","t2t":"Silver","t2d":"10 cubes · Directs · Signaux · Analytique","t3b":"GOLD","t3t":"Gold","t3d":"33 cubes · Tout Silver · Fonds de récompenses et API — bientôt","tmo":"/mois","tyr":"/an","tfr":"gratuit","tpm":"Mensuel","tpy":"Annuel","tsave":"économie","tin":"Inclus","tout":"Non inclus","tsoon":"Bientôt","tsoond":"Compris dans le forfait. Activé dans l’application lors des prochaines mises à jour.","tget":"Obtenir la clé →","tnote":"La plateforme est gratuite. On paie ce qui rapporte.","tpay":"Le paiement passe par un prestataire. Résiliable à tout moment — clé, cubes et messages restent.","tcubes":"Vos propres cubes","fgames":"Faire tourner les cubes et jouer","fmap":"Carte vivante et course de rue","ffeed":"Fil, discussions, groupes, stories","fmarket":"Place de marché","fwallet":"Portefeuille, pourboires et cadeaux","fstream":"Directs","fsignal":"Vos propres signaux","fanalytics":"Analytique du cube","fbadge":"Badge de profil","fprio":"Priorité dans le fil","ffund":"Part du fonds de récompenses","fclosed":"Cubes fermés","fapi":"Accès API"},"uk":{"bk":"← Назад","tall":"Усі тарифи","tpg":"Тарифи","tsub":"Підписка","t1b":"БЕЗКОШТОВНИЙ","t1t":"Безкоштовний","t1d":"3 куби · Ігри · Карта · Стрічка · Чати · Групи · Історії · Маркетплейс · Гаманець · Чайові","t2b":"СІЛВЕР","t2t":"Сілвер","t2d":"10 кубів · Ефіри · Сигнали · Аналітика","t3b":"ГОЛД","t3t":"Голд","t3d":"33 куби · Усе зі Силвера · Фонд нагород і API — скоро","tmo":"на місяць","tyr":"на рік","tfr":"безкоштовно","tpm":"Щомісяця","tpy":"На рік","tsave":"економія","tin":"Входить","tout":"Не входить","tsoon":"Скоро","tsoond":"Входить у тариф. У застосунку увімкнемо в найближчих оновленнях.","tget":"Отримати ключ →","tnote":"Майданчик безкоштовний. Гроші беремо за те, що приносить гроші.","tpay":"Оплата через платіжного провайдера. Відмовитися можна будь-коли — ключ, куби й переписки залишаться.","tcubes":"Власні куби","fgames":"Крутити куби та грати","fmap":"Жива карта і забіг вулицею","ffeed":"Лента, чати, групи, історії","fmarket":"Маркетплейс","fwallet":"Гаманець, чайові та подарунки","fstream":"Ефіри","fsignal":"Власні сигнали","fanalytics":"Аналітика куба","fbadge":"Значок у профілі","fprio":"Пріоритет у ленті","ffund":"Частка у фонді нагород","fclosed":"Закриті куби","fapi":"Доступ до API"},"de":{"bk":"← Zurück","tall":"Alle Tarife","tpg":"Tarife","tsub":"Abo","t1b":"KOSTENLOS","t1t":"Kostenlos","t1d":"3 Würfel · Spiele · Karte · Feed · Chats · Gruppen · Stories · Marktplatz · Wallet · Trinkgeld","t2b":"SILVER","t2t":"Silver","t2d":"10 Würfel · Livestreams · Signale · Analytik","t3b":"GOLD","t3t":"Gold","t3d":"33 Würfel · Alles aus Silver · Belohnungsfonds und API — demnächst","tmo":"/Mon.","tyr":"/Jahr","tfr":"kostenlos","tpm":"Monatlich","tpy":"Jährlich","tsave":"Ersparnis","tin":"Enthalten","tout":"Nicht enthalten","tsoon":"Demnächst","tsoond":"Im Tarif enthalten. Wird in den nächsten Updates in der App aktiviert.","tget":"Schlüssel holen →","tnote":"Die Plattform ist kostenlos. Bezahlt wird, was Geld einbringt.","tpay":"Die Zahlung läuft über einen Zahlungsanbieter. Jederzeit kündbar — Schlüssel, Würfel und Chats bleiben.","tcubes":"Eigene Würfel","fgames":"Würfel drehen und spielen","fmap":"Live-Karte und Straßenlauf","ffeed":"Feed, Chats, Gruppen, Storys","fmarket":"Marktplatz","fwallet":"Wallet, Trinkgeld und Geschenke","fstream":"Livestreams","fsignal":"Eigene Signale","fanalytics":"Würfel-Analytik","fbadge":"Profil-Abzeichen","fprio":"Priorität im Feed","ffund":"Anteil am Belohnungsfonds","fclosed":"Geschlossene Würfel","fapi":"API-Zugang"},"it":{"bk":"← Indietro","tall":"Tutti i piani","tpg":"Piani","tsub":"Abbonamento","t1b":"GRATIS","t1t":"Gratis","t1d":"3 cubi · Giochi · Mappa · Feed · Chat · Gruppi · Storie · Mercato · Portafoglio · Mance","t2b":"SILVER","t2t":"Silver","t2d":"10 cubi · Diretta · Segnali · Analisi","t3b":"GOLD","t3t":"Gold","t3d":"33 cubi · Tutto di Silver · Fondo premi e API — prossimamente","tmo":"/mese","tyr":"/anno","tfr":"gratis","tpm":"Mensile","tpy":"Annuale","tsave":"risparmio","tin":"Incluso","tout":"Non incluso","tsoon":"Prossimamente","tsoond":"Compreso nel piano. Lo attiveremo nell’app nei prossimi aggiornamenti.","tget":"Ottieni la chiave →","tnote":"La piattaforma è gratuita. Si paga per ciò che fa guadagnare.","tpay":"Il pagamento passa da un fornitore di pagamenti. Puoi annullare quando vuoi: chiave, cubi e chat restano.","tcubes":"I tuoi cubi","fgames":"Girare i cubi e giocare","fmap":"Mappa dal vivo e corsa in strada","ffeed":"Feed, chat, gruppi, storie","fmarket":"Mercato","fwallet":"Portafoglio, mance e regali","fstream":"Diretta","fsignal":"I tuoi segnali","fanalytics":"Analisi del cubo","fbadge":"Distintivo nel profilo","fprio":"Priorità nel feed","ffund":"Quota del fondo premi","fclosed":"Cubi chiusi","fapi":"Accesso API"},"pt":{"bk":"← Voltar","tall":"Todos os planos","tpg":"Planos","tsub":"Assinatura","t1b":"GRÁTIS","t1t":"Grátis","t1d":"3 cubos · Jogos · Mapa · Feed · Chats · Grupos · Stories · Mercado · Carteira · Gorjetas","t2b":"SILVER","t2t":"Silver","t2d":"10 cubos · Transmissões · Sinais · Analítica","t3b":"GOLD","t3t":"Gold","t3d":"33 cubos · Tudo do Silver · Fundo de recompensas e API — em breve","tmo":"/mês","tyr":"/ano","tfr":"grátis","tpm":"Mensal","tpy":"Anual","tsave":"economia","tin":"Incluído","tout":"Não incluído","tsoon":"Em breve","tsoond":"Incluído no plano. Vamos ativar no app nas próximas atualizações.","tget":"Obter chave →","tnote":"A plataforma é gratuita. Cobramos pelo que dá dinheiro.","tpay":"O pagamento passa por um provedor de pagamentos. Pode cancelar a qualquer momento — chave, cubos e conversas ficam.","tcubes":"Os seus cubos","fgames":"Girar cubos e jogar","fmap":"Mapa ao vivo e corrida na rua","ffeed":"Feed, conversas, grupos, stories","fmarket":"Mercado","fwallet":"Carteira, gorjetas e presentes","fstream":"Transmissões ao vivo","fsignal":"Os seus sinais","fanalytics":"Analítica do cubo","fbadge":"Selo no perfil","fprio":"Prioridade no feed","ffund":"Parte do fundo de recompensas","fclosed":"Cubos fechados","fapi":"Acesso à API"},"pl":{"bk":"← Wstecz","tall":"Wszystkie plany","tpg":"Plany","tsub":"Subskrypcja","t1b":"DARMOWY","t1t":"Darmowy","t1d":"3 kostki · Gry · Mapa · Feed · Czaty · Grupy · Stories · Marketplace · Portfel · Napiwki","t2b":"SILVER","t2t":"Silver","t2d":"10 kostek · Transmisje · Sygnały · Analityka","t3b":"GOLD","t3t":"Gold","t3d":"33 kostki · Wszystko z Silvera · Fundusz nagród i API — wkrótce","tmo":"/mies.","tyr":"/rok","tfr":"za darmo","tpm":"Miesięcznie","tpy":"Rocznie","tsave":"oszczędność","tin":"W pakiecie","tout":"Poza pakietem","tsoon":"Wkrótce","tsoond":"Wchodzi w plan. Włączymy to w aplikacji w najbliższych aktualizacjach.","tget":"Odbierz klucz →","tnote":"Platforma jest darmowa. Płaci się za to, co przynosi pieniądze.","tpay":"Płatność idzie przez dostawcę płatności. Można zrezygnować w każdej chwili — klucz, kostki i rozmowy zostają.","tcubes":"Własne kostki","fgames":"Kręcenie kostkami i gry","fmap":"Żywa mapa i bieg ulicą","ffeed":"Tablica, czaty, grupy, relacje","fmarket":"Marketplace","fwallet":"Portfel, napiwki i prezenty","fstream":"Transmisje","fsignal":"Własne sygnały","fanalytics":"Analityka kostki","fbadge":"Odznaka w profilu","fprio":"Priorytet na tablicy","ffund":"Udział w funduszu nagród","fclosed":"Zamknięte kostki","fapi":"Dostęp do API"},"tr":{"bk":"← Geri","tall":"Tüm planlar","tpg":"Planlar","tsub":"Abonelik","t1b":"ÜCRETSİZ","t1t":"Ücretsiz","t1d":"3 küp · Oyunlar · Harita · Akış · Sohbetler · Gruplar · Hikâyeler · Pazar · Cüzdan · Bahşiş","t2b":"SILVER","t2t":"Silver","t2d":"10 küp · Canlı yayın · Sinyaller · Analitik","t3b":"GOLD","t3t":"Gold","t3d":"33 küp · Silver’daki her şey · Ödül fonu ve API — yakında","tmo":"/ay","tyr":"/yıl","tfr":"ücretsiz","tpm":"Aylık","tpy":"Yıllık","tsave":"tasarruf","tin":"Dahil","tout":"Dahil değil","tsoon":"Yakında","tsoond":"Plana dahil. Uygulamada yakındaki güncellemelerde açılacak.","tget":"Anahtar al →","tnote":"Platform ücretsiz. Para kazandıran şeyler için ödeme alıyoruz.","tpay":"Ödeme bir ödeme sağlayıcısı üzerinden gider. Dilediğiniz an vazgeçebilirsiniz — anahtar, küpler ve sohbetler kalır.","tcubes":"Kendi küpleriniz","fgames":"Küpleri çevirme ve oyunlar","fmap":"Canlı harita ve sokak koşusu","ffeed":"Akış, sohbetler, gruplar, hikâyeler","fmarket":"Pazar yeri","fwallet":"Cüzdan, bahşiş ve hediyeler","fstream":"Canlı yayın","fsignal":"Kendi sinyalleriniz","fanalytics":"Küp analitiği","fbadge":"Profil rozeti","fprio":"Akışta öncelik","ffund":"Ödül fonundan pay","fclosed":"Kapalı küpler","fapi":"API erişimi"},"ar":{"bk":"← رجوع","tall":"جميع الخطط","tpg":"الباقات","tsub":"الاشتراك","t1b":"مجاني","t1t":"مجاني","t1d":"٣ مكعبات · ألعاب · خريطة · الموجز · دردشات · مجموعات · قصص · السوق · محفظة · إكراميات","t2b":"سيلفر","t2t":"سيلفر","t2d":"10 مكعبات · بث مباشر · إشارات · تحليلات","t3b":"جولد","t3t":"جولد","t3d":"33 مكعبًا · كل ما في سيلفر · صندوق المكافآت وAPI — قريبًا","tmo":"/شهر","tyr":"/سنة","tfr":"مجانًا","tpm":"شهريًا","tpy":"سنويًا","tsave":"توفير","tin":"مشمول","tout":"غير مشمول","tsoon":"قريبًا","tsoond":"مشمول في الخطة. سنفعّله في التطبيق في التحديثات القريبة.","tget":"احصل على مفتاح →","tnote":"المنصة مجانية. نتقاضى المال مقابل ما يجلب المال.","tpay":"الدفع يتم عبر مزود دفع. يمكنك الإلغاء في أي وقت — يبقى المفتاح والمكعبات والمحادثات.","tcubes":"مكعباتك الخاصة","fgames":"تدوير المكعبات واللعب","fmap":"خريطة حية وجري في الشارع","ffeed":"التغذية والمحادثات والمجموعات والقصص","fmarket":"السوق","fwallet":"المحفظة والإكراميات والهدايا","fstream":"البث المباشر","fsignal":"إشاراتك الخاصة","fanalytics":"تحليلات المكعب","fbadge":"شارة الملف الشخصي","fprio":"أولوية في التغذية","ffund":"حصة في صندوق المكافآت","fclosed":"مكعبات مغلقة","fapi":"الوصول إلى API"},"vi":{"bk":"← Quay lại","tall":"Tất cả các gói","tpg":"Gói","tsub":"Gói đăng ký","t1b":"MIỄN PHÍ","t1t":"Miễn phí","t1d":"3 khối · Trò chơi · Bản đồ · Bảng tin · Trò chuyện · Nhóm · Tin · Chợ · Ví · Tiền thưởng","t2b":"SILVER","t2t":"Silver","t2d":"10 khối · Phát trực tiếp · Tín hiệu · Phân tích","t3b":"GOLD","t3t":"Gold","t3d":"33 khối · Tất cả của Silver · Quỹ thưởng và API — sắp có","tmo":"/tháng","tyr":"/năm","tfr":"miễn phí","tpm":"Hằng tháng","tpy":"Hằng năm","tsave":"tiết kiệm","tin":"Có","tout":"Không có","tsoon":"Sắp có","tsoond":"Thuộc gói này. Sẽ được bật trong ứng dụng ở các bản cập nhật tới.","tget":"Nhận khóa →","tnote":"Nền tảng miễn phí. Chúng tôi thu phí cho những gì mang lại tiền.","tpay":"Thanh toán qua nhà cung cấp thanh toán. Bạn có thể hủy bất cứ lúc nào — khóa, khối và tin nhắn vẫn còn.","tcubes":"Khối của bạn","fgames":"Quay khối và chơi","fmap":"Bản đồ trực tiếp và chạy phố","ffeed":"Bảng tin, trò chuyện, nhóm, tin","fmarket":"Chợ","fwallet":"Ví, tiền tip và quà","fstream":"Phát trực tiếp","fsignal":"Tín hiệu của bạn","fanalytics":"Phân tích khối","fbadge":"Huy hiệu hồ sơ","fprio":"Ưu tiên trên bảng tin","ffund":"Phần trong quỹ thưởng","fclosed":"Khối kín","fapi":"Truy cập API"},"ja":{"bk":"← 戻る","tall":"すべてのプラン","tpg":"プラン","tsub":"サブスクリプション","t1b":"無料","t1t":"無料","t1d":"キューブ3個 · ゲーム · マップ · フィード · チャット · グループ · ストーリー · マーケット · ウォレット · チップ","t2b":"シルバー","t2t":"シルバー","t2d":"キューブ10個 · ライブ配信 · シグナル · 分析","t3b":"ゴールド","t3t":"ゴールド","t3d":"キューブ33個 · Silver のすべて · 報酬ファンドと API は近日公開","tmo":"/月","tyr":"/年","tfr":"無料","tpm":"月額","tpy":"年額","tsave":"お得","tin":"含まれる","tout":"含まれない","tsoon":"近日公開","tsoond":"プランに含まれます。今後のアップデートでアプリに追加します。","tget":"キーを取得 →","tnote":"プラットフォームは無料です。お金になるものだけ有料にしています。","tpay":"支払いは決済事業者を通して行います。いつでも解約できます — キー・キューブ・チャットは残ります。","tcubes":"自分のキューブ","fgames":"キューブを回す・遊ぶ","fmap":"ライブマップと街のラン","ffeed":"フィード・チャット・グループ・ストーリー","fmarket":"マーケット","fwallet":"ウォレット・チップ・ギフト","fstream":"ライブ配信","fsignal":"自分のシグナル","fanalytics":"キューブ分析","fbadge":"プロフィールバッジ","fprio":"フィードで優先表示","ffund":"報酬ファンドの分配","fclosed":"クローズドキューブ","fapi":"API アクセス"},"ko":{"bk":"← 뒤로","tall":"모든 플랜","tpg":"요금제","tsub":"구독","t1b":"무료","t1t":"무료","t1d":"큐브 3개 · 게임 · 지도 · 피드 · 채팅 · 그룹 · 스토리 · 마켓 · 지갑 · 팁","t2b":"실버","t2t":"실버","t2d":"큐브 10개 · 라이브 방송 · 시그널 · 분석","t3b":"골드","t3t":"골드","t3d":"큐브 33개 · Silver 전체 · 보상 기금과 API 곧 제공","tmo":"/월","tyr":"/년","tfr":"무료","tpm":"월간","tpy":"연간","tsave":"절약","tin":"포함","tout":"미포함","tsoon":"곧 제공","tsoond":"플랜에 포함됩니다. 다음 업데이트에서 앱에 켜집니다.","tget":"키 받기 →","tnote":"플랫폼은 무료입니다. 돈이 되는 기능에만 요금을 받습니다.","tpay":"결제는 결제 대행사를 통해 진행됩니다. 언제든 해지할 수 있고 키, 큐브, 대화는 남습니다.","tcubes":"내 큐브","fgames":"큐브 돌리기와 게임","fmap":"실시간 지도와 거리 달리기","ffeed":"피드, 채팅, 그룹, 스토리","fmarket":"마켓플레이스","fwallet":"지갑, 팁, 선물","fstream":"라이브 방송","fsignal":"내 시그널","fanalytics":"큐브 분석","fbadge":"프로필 배지","fprio":"피드 우선 노출","ffund":"보상 기금 지분","fclosed":"비공개 큐브","fapi":"API 접근"},"hi":{"bk":"← वापस","tall":"सभी प्लान","tpg":"प्लान","tsub":"सदस्यता","t1b":"मुफ़्त","t1t":"मुफ़्त","t1d":"3 क्यूब · गेम · नक्शा · फ़ीड · चैट · ग्रुप · स्टोरी · मार्केट · वॉलेट · टिप","t2b":"सिल्वर","t2t":"सिल्वर","t2d":"10 क्यूब · लाइव स्ट्रीम · सिग्नल · विश्लेषण","t3b":"गोल्ड","t3t":"गोल्ड","t3d":"33 क्यूब · Silver का सब कुछ · इनाम फंड और API जल्द","tmo":"/माह","tyr":"/वर्ष","tfr":"मुफ़्त","tpm":"मासिक","tpy":"वार्षिक","tsave":"बचत","tin":"शामिल","tout":"शामिल नहीं","tsoon":"जल्द आ रहा है","tsoond":"प्लान में शामिल है। अगले अपडेट में ऐप में चालू करेंगे।","tget":"कुंजी लें →","tnote":"मंच मुफ़्त है। पैसा उसी के लिए लेते हैं जो पैसा देता है।","tpay":"भुगतान एक भुगतान प्रदाता के ज़रिये होता है। आप कभी भी रद्द कर सकते हैं — कुंजी, क्यूब और चैट बने रहते हैं।","tcubes":"अपने क्यूब","fgames":"क्यूब घुमाना और खेल","fmap":"लाइव नक्शा और स्ट्रीट रन","ffeed":"फ़ीड, चैट, समूह, स्टोरी","fmarket":"मार्केटप्लेस","fwallet":"वॉलेट, टिप और उपहार","fstream":"लाइव स्ट्रीम","fsignal":"अपने सिग्नल","fanalytics":"क्यूब विश्लेषण","fbadge":"प्रोफ़ाइल बैज","fprio":"फ़ीड में प्राथमिकता","ffund":"इनाम फंड में हिस्सा","fclosed":"बंद क्यूब","fapi":"API पहुँच"}}</script>
+<script>
+var LANGS = JSON.parse(document.getElementById('tr').textContent);
+var FLAGS = {'ru':'🇷🇺','en':'🇬🇧','en-IN':'🇮🇳','uk':'🇺🇦','de':'🇩🇪','fr':'🇫🇷','fr-CA':'🇨🇦','es':'🇪🇸','es-419':'🇲🇽','it':'🇮🇹','pt':'🇵🇹','pl':'🇵🇱','tr':'🇹🇷','ar':'🇸🇦','ar-AE':'🇦🇪','vi':'🇻🇳','zh':'🇨🇳','ja':'🇯🇵','ko':'🇰🇷','hi':'🇮🇳'};
+var CODES = {'ru':'RU','en':'EN','en-IN':'EN-IN','uk':'UK','de':'DE','fr':'FR','fr-CA':'FR-CA','es':'ES','es-419':'ES-LA','it':'IT','pt':'PT','pl':'PL','tr':'TR','ar':'AR','ar-AE':'AR-AE','vi':'VI','zh':'ZH','ja':'JA','ko':'KO','hi':'HI'};
+var NAMES = {'ru':'Русский','en':'English','en-IN':'English (India)','uk':'Українська','de':'Deutsch','fr':'Français','fr-CA':'Français (Canada)','es':'Español','es-419':'Español (Latinoamérica)','it':'Italiano','pt':'Português','pl':'Polski','tr':'Türkçe','ar':'العربية','ar-AE':'العربية (الخليج)','vi':'Tiếng Việt','zh':'中文','ja':'日本語','ko':'한국어','hi':'हिन्दी'};
+var BASE = {'ru':'ru','en':'en','en-IN':'en','uk':'uk','de':'de','fr':'fr','fr-CA':'fr','es':'es','es-419':'es','it':'it','pt':'pt','pl':'pl','tr':'tr','ar':'ar','ar-AE':'ar','vi':'vi','zh':'zh','ja':'ja','ko':'ko','hi':'hi'};
+var LANG_LIST = ["ru","en","en-IN","uk","de","fr","fr-CA","es","es-419","it","pt","pl","tr","ar","ar-AE","vi","zh","ja","ko","hi"];
+
+var API = (function(){
+  var h = location.hostname || '';
+  var local = h === 'localhost' || h === '127.0.0.1' || h === '[::1]'
+    || /^192\.168\./.test(h) || /^10\./.test(h)
+    || /^172\.(1[6-9]|2[0-9]|3[01])\./.test(h);
+  return local ? location.protocol + '//' + h + ':8000'
+               : 'https://cubeworld-backend.onrender.com';
+})();
+
+/* Те же числа, что в database.ТАРИФЫ. Нужны ровно на тот случай, когда
+   сервер ещё поднимается: страница с ценой лучше страницы с прочерком. */
+var ЗАПАС = {
+  order: ['free','silver','gold'],
+  plans: {
+    free:   {cubes:3,  month:0.0,   year:0.0,    streams:false,signals:false,analytics:false,
+             fund:false,closed_cubes:false,api:false,badge:false,priority:false},
+    silver: {cubes:10, month:6.99,  year:59.99,  streams:true, signals:true, analytics:true,
+             fund:false,closed_cubes:false,api:false,badge:true, priority:false},
+    gold:   {cubes:33, month:14.99, year:129.99, streams:true, signals:true, analytics:true,
+             fund:true, closed_cubes:true, api:true,  badge:true, priority:true}
+  }
+};
+var ДАННЫЕ = ЗАПАС;
+
+/* Пункт тарифа: подпись из словаря и поле права с сервера.
+   поле:null — работает у всех, тариф тут ни при чём.
+   скоро:true — право тариф даёт, в приложении пока не включено. */
+var ПУНКТЫ = [
+  {к:'fgames',    поле:null},
+  {к:'fmap',      поле:null},
+  {к:'ffeed',     поле:null},
+  {к:'fmarket',   поле:null},
+  {к:'fwallet',   поле:null},
+  {к:'fstream',   поле:'streams'},
+  {к:'fsignal',   поле:'signals'},
+  {к:'fanalytics',поле:'analytics'},
+  {к:'fbadge',    поле:'badge',        скоро:true},
+  {к:'fprio',     поле:'priority',     скоро:true},
+  {к:'ffund',     поле:'fund',         скоро:true},
+  {к:'fclosed',   поле:'closed_cubes', скоро:true},
+  {к:'fapi',      поле:'api',          скоро:true}
+];
+
+var тариф = 'free';
+var lang = 'en';
+var ddOpen = false;
+var пер = 'month';
+
+function TR(){ return LANGS[BASE[lang] || lang] || LANGS.en || {}; }
+
+function парам(имя){
+  var m = new RegExp('[?&]' + имя + '=([^&]*)').exec(location.search || '');
+  return m ? decodeURIComponent(m[1]) : '';
+}
+
+function угадатьЯзык(){
+  var сп = (navigator.languages && navigator.languages.length)
+           ? navigator.languages : [navigator.language || 'en'];
+  for (var i = 0; i < сп.length; i++) {
+    var м = String(сп[i]);
+    for (var j = 0; j < LANG_LIST.length; j++)
+      if (LANG_LIST[j].toLowerCase() === м.toLowerCase()) return LANG_LIST[j];
+    var баз = м.split('-')[0].toLowerCase();
+    if (LANG_LIST.indexOf(баз) >= 0) return баз;
+    if (баз === 'be' || баз === 'kk') return 'ru';
+  }
+  return 'en';
+}
+
+function деньги(ч){
+  var н = Number(ч) || 0;
+  return '$' + (Math.abs(н - Math.round(н)) < 0.005
+                ? String(Math.round(н)) : н.toFixed(2));
+}
+
+/* ── Язык ── */
+function крутить(){
+  ddOpen = !ddOpen;
+  document.getElementById('ldd').classList.toggle('open', ddOpen);
+}
+document.addEventListener('click', function(){
+  if (ddOpen) { ddOpen = false; document.getElementById('ldd').classList.remove('open'); }
+});
+
+function списокЯзыков(){
+  var m = document.getElementById('ldm');
+  m.innerHTML = '';
+  for (var i = 0; i < LANG_LIST.length; i++) {
+    var l = LANG_LIST[i];
+    var b = document.createElement('button');
+    b.id = 'lo-' + l;
+    b.innerHTML = '<span class="lfi">' + (FLAGS[l] || '') + '</span><span></span>';
+    b.lastChild.textContent = NAMES[l] || l;
+    b.onclick = (function(x){ return function(e){
+      e.stopPropagation();
+      ddOpen = false; document.getElementById('ldd').classList.remove('open');
+      поставитьЯзык(x);
+    }; })(l);
+    m.appendChild(b);
+  }
+}
+
+function поставитьЯзык(l){
+  if (LANG_LIST.indexOf(l) < 0) l = 'en';
+  lang = l;
+  /* Арабский пишется справа налево — иначе строки разъезжаются. */
+  document.documentElement.setAttribute('dir', (BASE[l] || l) === 'ar' ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('lang', l);
+  var ф = document.getElementById('lflag'), к = document.getElementById('lcode');
+  if (ф) ф.innerHTML = FLAGS[l] || '🌐';
+  if (к) к.textContent = CODES[l] || l.toUpperCase();
+  for (var i = 0; i < LANG_LIST.length; i++) {
+    var э = document.getElementById('lo-' + LANG_LIST[i]);
+    if (э) э.classList.toggle('cur', LANG_LIST[i] === l);
+  }
+  /* Выбор языка общий с титульной: там он лежит в той же памяти. */
+  try { localStorage.setItem('cw_lang', l); } catch (e) {}
+  нарисовать();
+}
+
+function период(п){
+  пер = (п === 'year') ? 'year' : 'month';
+  нарисовать();
+}
+
+/* ── Отрисовка ── */
+function нарисовать(){
+  var т = TR();
+  var п = (ДАННЫЕ.plans || {})[тариф] || (ЗАПАС.plans[тариф] || {});
+  var н = {free:'1', silver:'2', gold:'3'}[тариф];
+
+  document.title = 'CubeWorld · ' + (т['t' + н + 't'] || тариф);
+  document.getElementById('kick').textContent = т.tsub || 'Subscription';
+  var зн = document.getElementById('badge');
+  зн.className = 'badge ' + тариф;
+  зн.textContent = т['t' + н + 'b'] || '';
+  document.getElementById('title').textContent = т['t' + н + 't'] || '';
+  document.getElementById('note').textContent = т.tnote || '';
+
+  // Закладки
+  var tb = document.getElementById('tabs');
+  tb.innerHTML = '';
+  var пор = ДАННЫЕ.order || ЗАПАС.order;
+  for (var i = 0; i < пор.length; i++) {
+    var имя = пор[i];
+    var нн = {free:'1', silver:'2', gold:'3'}[имя];
+    if (!нн) continue;
+    var a = document.createElement('a');
+    a.className = 'tab' + (имя === тариф ? ' cur' : '');
+    a.href = 'tariff.html?p=' + имя + '&lang=' + encodeURIComponent(lang);
+    a.textContent = т['t' + нн + 't'] || имя;
+    tb.appendChild(a);
+  }
+
+  // Цена и период
+  var цена = п[пер];
+  var платный = Number(п.month) > 0 || Number(п.year) > 0;
+  document.getElementById('price').textContent =
+    платный ? деньги(цена) : (т.tfr || 'free');
+  document.getElementById('unit').textContent = платный
+    ? (пер === 'year' ? (т.tyr || '/yr') : (т.tmo || '/mo')) : '';
+  document.getElementById('per').style.display = платный ? 'flex' : 'none';
+  document.getElementById('b-month').textContent = т.tpm || 'Monthly';
+  document.getElementById('b-year').textContent = т.tpy || 'Yearly';
+  document.getElementById('b-month').className = (пер === 'month' ? 'cur' : '');
+  document.getElementById('b-year').className = (пер === 'year' ? 'cur' : '');
+  var эк = document.getElementById('save');
+  var мес = Number(п.month) || 0, год = Number(п.year) || 0;
+  if (платный && пер === 'year' && мес > 0 && год > 0 && год < мес * 12) {
+    эк.textContent = (т.tsave || 'save') + ' ' +
+                     Math.round((1 - год / (мес * 12)) * 100) + '%';
+  } else { эк.textContent = ''; }
+
+  // Три списка: входит · скоро · не входит
+  var группы = {
+    in:   {узел: document.getElementById('g-in'),   имя: т.tin  || 'Included'},
+    soon: {узел: document.getElementById('g-soon'), имя: т.tsoon || 'Coming soon'},
+    out:  {узел: document.getElementById('g-out'),  имя: т.tout || 'Not included'}
+  };
+  var строки = {in: [], soon: [], out: []};
+
+  // Кубы — первой строкой: это и есть главный размер тарифа.
+  строки.in.push((т.tcubes || 'Your own cubes') + ': ' + (п.cubes || 0));
+
+  for (var j = 0; j < ПУНКТЫ.length; j++) {
+    var пт = ПУНКТЫ[j];
+    var подпись = т[пт.к] || пт.к;
+    if (пт.поле === null) { строки.in.push(подпись); continue; }
+    var есть = !!п[пт.поле];
+    if (!есть) { строки.out.push(подпись); }
+    else if (пт.скоро) { строки.soon.push(подпись); }
+    else { строки.in.push(подпись); }
+  }
+
+  var знак = {in: '✓', soon: '⏳', out: '✕'};
+  var имена = ['in', 'soon', 'out'];
+  for (var k = 0; k < имена.length; k++) {
+    var г = группы[имена[k]], сп = строки[имена[k]];
+    г.узел.innerHTML = '';
+    if (!сп.length) { г.узел.style.display = 'none'; continue; }
+    г.узел.style.display = 'block';
+    var h2 = document.createElement('h2');
+    h2.textContent = г.имя;
+    г.узел.appendChild(h2);
+    for (var m2 = 0; m2 < сп.length; m2++) {
+      var r = document.createElement('div');
+      r.className = 'row ' + имена[k];
+      var s1 = document.createElement('span');
+      s1.className = 'mk'; s1.textContent = знак[имена[k]];
+      var s2 = document.createElement('span');
+      s2.textContent = сп[m2];
+      r.appendChild(s1); r.appendChild(s2);
+      г.узел.appendChild(r);
+    }
+    if (имена[k] === 'soon') {
+      var пз = document.createElement('p');
+      пз.className = 'soonnote';
+      пз.textContent = т.tsoond || '';
+      г.узел.appendChild(пз);
+    }
+  }
+
+  /* Ключ всегда бесплатный: тариф включается уже внутри приложения,
+     поэтому кнопка у всех трёх ведёт на выдачу ключа. */
+  var cta = document.getElementById('cta');
+  cta.textContent = т.tget || 'Get key ›';
+  cta.href = 'index.html?get=free';
+  document.getElementById('pay').textContent = платный ? (т.tpay || '') : '';
+  document.getElementById('back').textContent = '← ' + (т.tall || 'All plans');
+}
+
+(function начало(){
+  var p = парам('p').toLowerCase();
+  тариф = (['free','silver','gold'].indexOf(p) >= 0) ? p : 'free';
+
+  var l = парам('lang');
+  if (LANG_LIST.indexOf(l) < 0) {
+    try { l = localStorage.getItem('cw_lang') || ''; } catch (e) { l = ''; }
+  }
+  if (LANG_LIST.indexOf(l) < 0) l = угадатьЯзык();
+
+  списокЯзыков();
+  поставитьЯзык(l);
+
+  /* Цены и права — с сервера. Не ответил — остаёмся на ЗАПАС:
+     страница уже нарисована и не ждёт сети. */
+  try {
+    fetch(API + '/plans').then(function(r){ return r.json(); }).then(function(д){
+      if (!д || !д.plans) return;
+      ДАННЫЕ = д;
+      нарисовать();
+    }).catch(function(){});
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
