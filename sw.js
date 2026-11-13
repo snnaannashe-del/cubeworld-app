@@ -28,7 +28,7 @@
    ══════════════════════════════════════════════════════════════════ */
 'use strict';
 
-var КЭШ = 'cubeworld-оболочка-1';
+var КЭШ = 'cubeworld-оболочка-2';   /* -2: в -1 попали «переброшенные» ответы, см. чистая() */
 
 /* Что кладём сразу при установке. Только своё и только лёгкое, кроме
    самой страницы — она и есть главный груз. */
@@ -62,6 +62,23 @@ function ключ(адрес){
   return u.toString();
 }
 
+/* ── Ответ без признака переброса ─────────────────────────────────────
+   Cloudflare Pages отдаёт «/world.html» переходом на «/world». fetch идёт
+   по переходу сам и возвращает ответ с пометкой redirected. Такой ответ
+   можно положить в кэш — и нельзя им ответить на ПЕРЕХОД НА СТРАНИЦУ:
+   браузер отказывается и показывает свою страницу ошибки. Так и вышло на
+   домене: слой встал, а второй вход упал в «chrome-error». На стенде
+   переброса нет, поэтому проверка этого не поймала.
+
+   Лечится пересборкой: берём тело и заголовки, делаем свой ответ — он
+   уже обычный, без пометки. */
+function чистая(о){
+  if(!о || !о.redirected) return Promise.resolve(о);
+  return о.blob().then(function(т){
+    return new Response(т, {status: о.status, statusText: о.statusText, headers: о.headers});
+  }).catch(function(){ return null; });
+}
+
 self.addEventListener('install', function(е){
   е.waitUntil(
     caches.open(КЭШ).then(function(c){
@@ -69,7 +86,8 @@ self.addEventListener('install', function(е){
          файл не доехал, и тогда слой не встаёт вовсе. */
       return Promise.all(ОБОЛОЧКА.map(function(а){
         return fetch(а, {cache: 'reload'})
-          .then(function(о){ if(о && о.ok) return c.put(ключ(new URL(а, self.location).href), о); })
+          .then(function(о){ return (о && о.ok) ? чистая(о) : null; })
+          .then(function(о){ if(о) return c.put(ключ(new URL(а, self.location).href), о); })
           .catch(function(){});
       }));
     }).then(function(){ return self.skipWaiting(); })
@@ -149,9 +167,11 @@ function освежить(к, запись, адрес){
   return fetch(адрес, {cache: 'reload', credentials: 'same-origin'})
     .then(function(о){
       if(!о || !о.ok) return;
-      return к.put(адрес, о.clone()).then(function(){
+      return чистая(о).then(function(ч){
+        if(!ч) return;
+        return к.put(адрес, ч.clone()).then(function(){
         if(!страница) return;
-        return читатьНачало(о.clone(), 65536).then(function(начало){
+        return читатьНачало(ч.clone(), 65536).then(function(начало){
           var стал = номерИз(начало);
           if(стал === null){
             /* Номер не прочитался — падаем на заголовок, но только если
@@ -168,6 +188,7 @@ function освежить(к, запись, адрес){
             });
           });
         });
+      });
       });
     })
     .catch(function(){});
@@ -191,23 +212,32 @@ self.addEventListener('fetch', function(е){
     caches.open(КЭШ).then(function(к){
       return к.match(адрес).then(function(запись){
 
-        /* Дома — сначала сеть: на стенде правка должна быть видна сразу. */
-        if(ДОМА){
+        /* Из сети: кладём и отдаём уже «чистый» ответ — без пометки о
+           перебросе, иначе браузер откажется принять его как страницу. */
+        function изСети(){
           return fetch(зпр).then(function(о){
-            if(о && о.ok) к.put(адрес, о.clone());
-            return о;
-          }).catch(function(){ return запись || new Response('', {status: 504}); });
+            if(!о) return new Response('', {status: 504});
+            if(!о.ok) return о;
+            return чистая(о.clone()).then(function(ч){
+              if(ч) к.put(адрес, ч.clone());
+              return ч || о;
+            });
+          });
         }
 
-        /* На домене — сначала диск, обновление в фоне. */
-        if(запись){
+        /* Дома — сначала сеть: на стенде правка должна быть видна сразу. */
+        if(ДОМА){
+          return изСети().catch(function(){ return запись || new Response('', {status: 504}); });
+        }
+
+        /* На домене — сначала диск, обновление в фоне.
+           Запись с пометкой о перебросе не отдаём никогда: такой ответ
+           браузер для перехода не примет. Лучше сходить в сеть. */
+        if(запись && !запись.redirected){
           е.waitUntil(освежить(к, запись, адрес));
           return запись;
         }
-        return fetch(зпр).then(function(о){
-          if(о && о.ok) к.put(адрес, о.clone());
-          return о;
-        }).catch(function(){ return new Response('', {status: 504}); });
+        return изСети().catch(function(){ return new Response('', {status: 504}); });
       });
     })
   );
