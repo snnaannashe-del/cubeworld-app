@@ -9,9 +9,9 @@
      кусок старой страницы: та самая «лишняя страница», которая
      мелькала перед нужной. Теперь уход происходит до того, как
      нарисовано хоть что-нибудь. -->
-<script id="vf-cache-bust">/* v=707 · Смена версии и свежесть файла.
+<script id="vf-cache-bust">/* v=708 · Смена версии и свежесть файла.
 
-   Снаружи (на домене) работает как раньше: нет ?v=707 в адресе — добавляем
+   Снаружи (на домене) работает как раньше: нет ?v=708 в адресе — добавляем
    и перезагружаемся один раз. Браузер видит новый адрес и берёт новый файл.
 
    Дома и по домашней сети (localhost, 127.0.0.1, 192.168.*, 10.*) раньше
@@ -46,7 +46,7 @@
   window.cwУйтиНа = уходим;
   var h = location.hostname || "";
   var дома = (h === "localhost" || h === "127.0.0.1" || h === "" || /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./.test(h));
-  window.CW_ВЕРСИЯ = "707";
+  window.CW_ВЕРСИЯ = "708";
   if(дома){
     /* v=454: при нажатии «обновить» страница грузилась ДВАЖДЫ. Сначала
        браузер открывал её, потом этот код видел старую метку времени и
@@ -74,7 +74,7 @@
       var м = /[?&]t=(\d+)/.exec(location.search || "");
       var было = м ? +м[1] : 0;
       if(Date.now() - было > 5000){
-        уходим(location.pathname + "?v=707&t=" + Date.now() + (location.hash || ""));
+        уходим(location.pathname + "?v=708&t=" + Date.now() + (location.hash || ""));
       }
     }
     return;
@@ -103164,6 +103164,119 @@ html.cw-занавес[data-theme="light"]::after{background:var(--bg,#f2f3f7)!i
   подцепить();
 })();
 </script>
+
+<style id="cw-fix708-игры-значки-стиль">
+/* v=708 · НАШИ ЗНАЧКИ НА КНОПКАХ УПРАВЛЕНИЯ В ИГРАХ.
+
+   Карточки зала игр уже рисуются нашим набором — их одевает слой знаков.
+   А вот кнопки, которыми в игру играют, остались системными глифами:
+   «▶» на «Играть» и «Старт», крестовина тетриса (⟲ ⬅ ⬇ ➡ ⏸) и
+   крестовина новых игр (⬆ ⬅ ⬇ ➡). На одном экране выходило два разных
+   почерка: заголовок и карточки — наши, а то, что под пальцем, — чужое.
+
+   Трогаем ТОЛЬКО игры. Тот же «▶» стоит ещё на голосовых, на видео и в
+   плеерах по всей программе — там он остаётся как был: Анна выбрала
+   «только в играх». */
+.gc-btn i.cw-игра-зн{color:inherit;margin-right:.34em;font-size:1em;vertical-align:-0.1em}
+#modal-tetris .modal-actions i.cw-игра-зн,
+#modal-snake  .modal-actions i.cw-игра-зн,
+#modal-cuberun .modal-actions i.cw-игра-зн{color:inherit;margin-right:.34em;font-size:1em;vertical-align:-0.1em}
+#cw-touchpad button i.cw-игра-зн{color:inherit;margin:0;font-size:1.15em;vertical-align:-0.08em}
+#cw-game .г-крест .г-кн i.cw-игра-зн{color:inherit;margin:0;font-size:1.05em;vertical-align:-0.06em}
+</style>
+
+<script id="cw-fix708-игры-значки">
+(function(){
+  'use strict';
+  function ладно(ф){ try{ return ф(); }catch(_){ return null; } }
+
+  /* Глиф → имя значка нашего шрифта. «⟲» поворота в шрифте нет, ближе
+     всего по смыслу «repeat»: две стрелки по кругу. */
+  var ЗНАКИ = {
+    '▶':'player-play',  /* ▶ */
+    '⏸':'player-pause', /* ⏸ */
+    '⟲':'repeat',       /* ⟲ */
+    '⬆':'arrow-up',     /* ⬆ */
+    '⬅':'arrow-left',   /* ⬅ */
+    '⬇':'arrow-down',   /* ⬇ */
+    '➡':'arrow-right'   /* ➡ */
+  };
+  var РЕ = /[▶⏸⟲⬆⬅⬇➡]️?/;
+
+  /* Кнопки игр и только они. Подсказки под полем («← → передвигать»)
+     сюда не входят: это предложение словами, а не кнопка. */
+  var ГДЕ = '#games-grid .gc-btn,'
+          + '#modal-tetris .modal-actions .btn,'
+          + '#modal-snake .modal-actions .btn,'
+          + '#modal-cuberun .modal-actions .btn,'
+          + '#cw-touchpad button';
+
+  function значок(имя){
+    var и = document.createElement('i');
+    /* «cw-зн-свой» — чтобы слой цвета не перекрашивал: цвет берёт кнопка. */
+    и.className = 'ti ti-' + имя + ' cw-зн cw-зн-свой cw-игра-зн';
+    и.setAttribute('aria-hidden', 'true');
+    return и;
+  }
+
+  function одеть(кн){
+    if(!кн || кн.querySelector('i.cw-игра-зн')) return;
+    var ход = document.createTreeWalker(кн, NodeFilter.SHOW_TEXT, null), у, цели = [];
+    while((у = ход.nextNode())) if(РЕ.test(у.nodeValue || '')) цели.push(у);
+    цели.forEach(function(у){
+      var м = РЕ.exec(у.nodeValue || ''); if(!м) return;
+      var имя = ЗНАКИ[м[0].charAt(0)]; if(!имя) return;
+      var хвост = у.nodeValue.slice(м.index + м[0].length);
+      у.nodeValue = у.nodeValue.slice(0, м.index);
+      var и = значок(имя);
+      у.parentNode.insertBefore(и, у.nextSibling);
+      if(хвост) у.parentNode.insertBefore(document.createTextNode(хвост), и.nextSibling);
+    });
+  }
+
+  /* ── Крестовина новых игр ────────────────────────────────────────────
+     Здесь по тексту идти нельзя: «⬇» есть в словаре слоя знаков как
+     «скачать», и кнопка «вниз» могла бы стать стрелкой загрузки. Клетки
+     крестовины всегда стоят одним порядком — ['', ⬆, ''], [⬅, ⬇, ➡], —
+     поэтому берём их по месту, а не по содержимому. */
+  var ПОМЕСТУ = {1:'arrow-up', 3:'arrow-left', 4:'arrow-down', 5:'arrow-right'};
+  function крестовина(){
+    [].forEach.call(document.querySelectorAll('#cw-game .г-крест'), function(с){
+      var кн = с.querySelectorAll('.г-кн');
+      for(var i = 0; i < кн.length; i++){
+        var имя = ПОМЕСТУ[i]; if(!имя) continue;
+        var б = кн[i];
+        if(б.classList.contains('пусто')) continue;
+        var есть = б.querySelector('i.cw-игра-зн');
+        if(есть && есть.classList.contains('ti-' + имя)) continue;
+        б.textContent = '';
+        б.appendChild(значок(имя));
+      }
+    });
+  }
+
+  function проход(){
+    ладно(function(){ [].forEach.call(document.querySelectorAll(ГДЕ), одеть); });
+    ладно(крестовина);
+  }
+
+  проход();
+  setInterval(проход, 900);
+  /* Зал игр перерисовывает сетку при каждом открытии — одеваем сразу,
+     а не через секунду. */
+  ладно(function(){
+    var прежний = window.openGamesHub;
+    if(typeof прежний !== 'function') return;
+    window.openGamesHub = function(){
+      var р = прежний.apply(this, arguments);
+      ладно(проход);
+      setTimeout(проход, 60);
+      return р;
+    };
+  });
+})();
+</script>
+
 
 <script id="cw-fix572-последний">
 /* v=572 · САМЫЙ ПОСЛЕДНИЙ БЛОК ФАЙЛА.
