@@ -9,9 +9,9 @@
      кусок старой страницы: та самая «лишняя страница», которая
      мелькала перед нужной. Теперь уход происходит до того, как
      нарисовано хоть что-нибудь. -->
-<script id="vf-cache-bust">/* v=712 · Смена версии и свежесть файла.
+<script id="vf-cache-bust">/* v=713 · Смена версии и свежесть файла.
 
-   Снаружи (на домене) работает как раньше: нет ?v=712 в адресе — добавляем
+   Снаружи (на домене) работает как раньше: нет ?v=713 в адресе — добавляем
    и перезагружаемся один раз. Браузер видит новый адрес и берёт новый файл.
 
    Дома и по домашней сети (localhost, 127.0.0.1, 192.168.*, 10.*) раньше
@@ -46,7 +46,7 @@
   window.cwУйтиНа = уходим;
   var h = location.hostname || "";
   var дома = (h === "localhost" || h === "127.0.0.1" || h === "" || /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./.test(h));
-  window.CW_ВЕРСИЯ = "712";
+  window.CW_ВЕРСИЯ = "713";
   if(дома){
     /* v=454: при нажатии «обновить» страница грузилась ДВАЖДЫ. Сначала
        браузер открывал её, потом этот код видел старую метку времени и
@@ -74,7 +74,7 @@
       var м = /[?&]t=(\d+)/.exec(location.search || "");
       var было = м ? +м[1] : 0;
       if(Date.now() - было > 5000){
-        уходим(location.pathname + "?v=712&t=" + Date.now() + (location.hash || ""));
+        уходим(location.pathname + "?v=713&t=" + Date.now() + (location.hash || ""));
       }
     }
     return;
@@ -103734,6 +103734,185 @@ html.cw-занавес[data-theme="light"]::after{background:var(--bg,#f2f3f7)!i
   }
 }
 </style>
+
+
+<style id="cw-fix713-установка-стиль">
+/* ══════════════════════════════════════════════════════════════════════
+   v=713 · «СКАЧАТЬ CUBE» ТЕПЕРЬ ПРАВДА СТАВИТ ПРИЛОЖЕНИЕ.
+
+   Раньше кнопка показывала «скоро». Скачивать, однако, нечего и не надо:
+   приложение — это сама страница. Android и настольный Chrome умеют
+   ставить её по-настоящему, своим окном; айфон умеет, но только руками
+   через «Поделиться»; Safari на Маке — через «Файл → Добавить в Dock».
+
+   Поэтому кнопка смотрит, на чём её нажали, и делает то единственное,
+   что на этом устройстве возможно: либо вызывает настоящее окно
+   установки, либо показывает три шага ровно для этого браузера.
+   ══════════════════════════════════════════════════════════════════ */
+#cw-уст{position:fixed;inset:0;z-index:100020;display:none;
+  align-items:flex-end;justify-content:center;
+  background:rgba(var(--shade-rgb,0,0,0),.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#cw-уст.вид{display:flex}
+#cw-уст .лист{width:100%;max-width:440px;max-height:84vh;overflow-y:auto;
+  background:rgba(var(--veil-rgb,10,10,20),.98);
+  border:1px solid rgba(var(--fg-rgb,255,255,255),.12);
+  border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));
+  box-shadow:0 -10px 50px rgba(var(--shade-rgb,0,0,0),.6)}
+#cw-уст .шапка{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+#cw-уст .шапка i{font-size:22px;color:var(--accent,#0095F6)}
+#cw-уст h3{margin:0;font-size:16px;font-weight:700;color:var(--text-hi,#fff);flex:1}
+#cw-уст .шаг{display:flex;gap:11px;align-items:flex-start;margin:0 0 12px}
+#cw-уст .номер{flex:0 0 22px;height:22px;border-radius:50%;
+  background:rgba(var(--accent-rgb,0,149,246),.16);color:var(--accent,#0095F6);
+  font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+#cw-уст .текст{flex:1;font-size:13.5px;line-height:1.45;color:var(--text,#c9ccd6)}
+#cw-уст .текст i{font-size:15px;vertical-align:-2px;margin:0 2px;color:var(--accent,#0095F6)}
+#cw-уст .ладно{width:100%;margin-top:6px;padding:11px;border:none;border-radius:12px;
+  background:var(--accent,#0095F6);color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+/* Пометки «скоро» у строки больше нет — ставить можно прямо сейчас. */
+#cw-dl-row .cw-скоро{display:none!important}
+</style>
+
+<script id="cw-fix713-установка">
+(function(){
+  'use strict';
+  function ладно(ф){ try{ return ф(); }catch(_){ return undefined; } }
+  function эл(и){ return document.getElementById(и); }
+  function сл(т){ return ладно(function(){
+    return (typeof window.cwСлово === 'function') ? window.cwСлово(т) : т; }) || т; }
+  function крик(т){ ладно(function(){ if(typeof window.showToast === 'function') window.showToast(т); }); }
+
+  /* ── Слова ──────────────────────────────────────────────────────── */
+  var С = {
+ "ru":{"Установить Cube":"Установить Cube","Приложение уже установлено":"Приложение уже установлено","Нажми «Поделиться» внизу экрана":"Нажми «Поделиться» внизу экрана","Выбери «На экран \"Домой\"»":"Выбери «На экран \"Домой\"»","Нажми «Добавить» справа вверху":"Нажми «Добавить» справа вверху","Открой меню «Файл» в строке сверху":"Открой меню «Файл» в строке сверху","Выбери «Добавить в Dock»":"Выбери «Добавить в Dock»","Открой меню браузера":"Открой меню браузера","Выбери «Установить приложение»":"Выбери «Установить приложение»","Понятно":"Понятно","Готово — значок на месте":"Готово — значок на месте","Установка отменена":"Установка отменена"},
+ "en":{"Установить Cube":"Install Cube","Приложение уже установлено":"The app is already installed","Нажми «Поделиться» внизу экрана":"Tap Share at the bottom of the screen","Выбери «На экран \"Домой\"»":"Choose “Add to Home Screen”","Нажми «Добавить» справа вверху":"Tap “Add” in the top right","Открой меню «Файл» в строке сверху":"Open the File menu in the top bar","Выбери «Добавить в Dock»":"Choose “Add to Dock”","Открой меню браузера":"Open the browser menu","Выбери «Установить приложение»":"Choose “Install app”","Понятно":"Got it","Готово — значок на месте":"Done — the icon is in place","Установка отменена":"Installation cancelled"},
+ "es":{"Установить Cube":"Instalar Cube","Приложение уже установлено":"La aplicación ya está instalada","Нажми «Поделиться» внизу экрана":"Pulsa Compartir en la parte inferior","Выбери «На экран \"Домой\"»":"Elige «Añadir a inicio»","Нажми «Добавить» справа вверху":"Pulsa «Añadir» arriba a la derecha","Открой меню «Файл» в строке сверху":"Abre el menú Archivo en la barra superior","Выбери «Добавить в Dock»":"Elige «Añadir al Dock»","Открой меню браузера":"Abre el menú del navegador","Выбери «Установить приложение»":"Elige «Instalar aplicación»","Понятно":"Entendido","Готово — значок на месте":"Listo: el icono ya está","Установка отменена":"Instalación cancelada"},
+ "de":{"Установить Cube":"Cube installieren","Приложение уже установлено":"Die App ist bereits installiert","Нажми «Поделиться» внизу экрана":"Tippe unten auf „Teilen“","Выбери «На экран \"Домой\"»":"Wähle „Zum Home-Bildschirm“","Нажми «Добавить» справа вверху":"Tippe oben rechts auf „Hinzufügen“","Открой меню «Файл» в строке сверху":"Öffne das Menü „Ablage“ oben","Выбери «Добавить в Dock»":"Wähle „Zum Dock hinzufügen“","Открой меню браузера":"Öffne das Browsermenü","Выбери «Установить приложение»":"Wähle „App installieren“","Понятно":"Verstanden","Готово — значок на месте":"Fertig – das Symbol ist da","Установка отменена":"Installation abgebrochen"},
+ "fr":{"Установить Cube":"Installer Cube","Приложение уже установлено":"L’application est déjà installée","Нажми «Поделиться» внизу экрана":"Touche « Partager » en bas de l’écran","Выбери «На экран \"Домой\"»":"Choisis « Sur l’écran d’accueil »","Нажми «Добавить» справа вверху":"Touche « Ajouter » en haut à droite","Открой меню «Файл» в строке сверху":"Ouvre le menu « Fichier » en haut","Выбери «Добавить в Dock»":"Choisis « Ajouter au Dock »","Открой меню браузера":"Ouvre le menu du navigateur","Выбери «Установить приложение»":"Choisis « Installer l’application »","Понятно":"Compris","Готово — значок на месте":"Terminé — l’icône est en place","Установка отменена":"Installation annulée"},
+ "it":{"Установить Cube":"Installa Cube","Приложение уже установлено":"L’app è già installata","Нажми «Поделиться» внизу экрана":"Tocca Condividi in basso","Выбери «На экран \"Домой\"»":"Scegli «Aggiungi a Home»","Нажми «Добавить» справа вверху":"Tocca «Aggiungi» in alto a destra","Открой меню «Файл» в строке сверху":"Apri il menu «Archivio» in alto","Выбери «Добавить в Dock»":"Scegli «Aggiungi al Dock»","Открой меню браузера":"Apri il menu del browser","Выбери «Установить приложение»":"Scegli «Installa app»","Понятно":"Capito","Готово — значок на месте":"Fatto — l’icona è al suo posto","Установка отменена":"Installazione annullata"},
+ "pt":{"Установить Cube":"Instalar o Cube","Приложение уже установлено":"O aplicativo já está instalado","Нажми «Поделиться» внизу экрана":"Toque em Compartilhar na parte de baixo","Выбери «На экран \"Домой\"»":"Escolha «Adicionar à Tela de Início»","Нажми «Добавить» справа вверху":"Toque em «Adicionar» no canto superior direito","Открой меню «Файл» в строке сверху":"Abra o menu «Arquivo» na barra superior","Выбери «Добавить в Dock»":"Escolha «Adicionar ao Dock»","Открой меню браузера":"Abra o menu do navegador","Выбери «Установить приложение»":"Escolha «Instalar aplicativo»","Понятно":"Entendi","Готово — значок на месте":"Pronto — o ícone está lá","Установка отменена":"Instalação cancelada"},
+ "tr":{"Установить Cube":"Cube’u yükle","Приложение уже установлено":"Uygulama zaten yüklü","Нажми «Поделиться» внизу экрана":"Ekranın altındaki Paylaş’a dokun","Выбери «На экран \"Домой\"»":"“Ana Ekrana Ekle”yi seç","Нажми «Добавить» справа вверху":"Sağ üstteki “Ekle”ye dokun","Открой меню «Файл» в строке сверху":"Üst çubuktaki “Dosya” menüsünü aç","Выбери «Добавить в Dock»":"“Dock’a Ekle”yi seç","Открой меню браузера":"Tarayıcı menüsünü aç","Выбери «Установить приложение»":"“Uygulamayı yükle”yi seç","Понятно":"Anladım","Готово — значок на месте":"Tamam — simge yerinde","Установка отменена":"Yükleme iptal edildi"},
+ "pl":{"Установить Cube":"Zainstaluj Cube","Приложение уже установлено":"Aplikacja jest już zainstalowana","Нажми «Поделиться» внизу экрана":"Dotknij „Udostępnij” na dole ekranu","Выбери «На экран \"Домой\"»":"Wybierz „Do ekranu początkowego”","Нажми «Добавить» справа вверху":"Dotknij „Dodaj” w prawym górnym rogu","Открой меню «Файл» в строке сверху":"Otwórz menu „Plik” na górnym pasku","Выбери «Добавить в Dock»":"Wybierz „Dodaj do Docka”","Открой меню браузера":"Otwórz menu przeglądarki","Выбери «Установить приложение»":"Wybierz „Zainstaluj aplikację”","Понятно":"Jasne","Готово — значок на месте":"Gotowe — ikona jest na miejscu","Установка отменена":"Instalacja anulowana"},
+ "uk":{"Установить Cube":"Встановити Cube","Приложение уже установлено":"Застосунок уже встановлено","Нажми «Поделиться» внизу экрана":"Натисни «Поділитися» внизу екрана","Выбери «На экран \"Домой\"»":"Обери «На екран \"Домівка\"»","Нажми «Добавить» справа вверху":"Натисни «Додати» вгорі праворуч","Открой меню «Файл» в строке сверху":"Відкрий меню «Файл» угорі","Выбери «Добавить в Dock»":"Обери «Додати в Dock»","Открой меню браузера":"Відкрий меню браузера","Выбери «Установить приложение»":"Обери «Встановити застосунок»","Понятно":"Зрозуміло","Готово — значок на месте":"Готово — значок на місці","Установка отменена":"Встановлення скасовано"},
+ "ar":{"Установить Cube":"تثبيت Cube","Приложение уже установлено":"التطبيق مثبّت بالفعل","Нажми «Поделиться» внизу экрана":"اضغط «مشاركة» أسفل الشاشة","Выбери «На экран \"Домой\"»":"اختر «إضافة إلى الشاشة الرئيسية»","Нажми «Добавить» справа вверху":"اضغط «إضافة» أعلى اليمين","Открой меню «Файл» в строке сверху":"افتح قائمة «ملف» في الشريط العلوي","Выбери «Добавить в Dock»":"اختر «إضافة إلى Dock»","Открой меню браузера":"افتح قائمة المتصفح","Выбери «Установить приложение»":"اختر «تثبيت التطبيق»","Понятно":"حسناً","Готово — значок на месте":"تم — الأيقونة في مكانها","Установка отменена":"أُلغي التثبيت"},
+ "hi":{"Установить Cube":"Cube इंस्टॉल करें","Приложение уже установлено":"ऐप पहले से इंस्टॉल है","Нажми «Поделиться» внизу экрана":"स्क्रीन के नीचे «शेयर» दबाएँ","Выбери «На экран \"Домой\"»":"«होम स्क्रीन में जोड़ें» चुनें","Нажми «Добавить» справа вверху":"ऊपर दाईं ओर «जोड़ें» दबाएँ","Открой меню «Файл» в строке сверху":"ऊपर की पट्टी में «File» मेन्यू खोलें","Выбери «Добавить в Dock»":"«Add to Dock» चुनें","Открой меню браузера":"ब्राउज़र का मेन्यू खोलें","Выбери «Установить приложение»":"«ऐप इंस्टॉल करें» चुनें","Понятно":"ठीक है","Готово — значок на месте":"हो गया — आइकन अपनी जगह है","Установка отменена":"इंस्टॉल रद्द हुआ"},
+ "zh":{"Установить Cube":"安装 Cube","Приложение уже установлено":"应用已安装","Нажми «Поделиться» внизу экрана":"点按屏幕底部的「分享」","Выбери «На экран \"Домой\"»":"选择「添加到主屏幕」","Нажми «Добавить» справа вверху":"点按右上角的「添加」","Открой меню «Файл» в строке сверху":"打开顶部的「文件」菜单","Выбери «Добавить в Dock»":"选择「添加到程序坞」","Открой меню браузера":"打开浏览器菜单","Выбери «Установить приложение»":"选择「安装应用」","Понятно":"知道了","Готово — значок на месте":"完成 — 图标已就位","Установка отменена":"已取消安装"},
+ "ja":{"Установить Cube":"Cube をインストール","Приложение уже установлено":"アプリはすでにインストール済みです","Нажми «Поделиться» внизу экрана":"画面下の「共有」をタップ","Выбери «На экран \"Домой\"»":"「ホーム画面に追加」を選択","Нажми «Добавить» справа вверху":"右上の「追加」をタップ","Открой меню «Файл» в строке сверху":"上部の「ファイル」メニューを開く","Выбери «Добавить в Dock»":"「Dock に追加」を選択","Открой меню браузера":"ブラウザのメニューを開く","Выбери «Установить приложение»":"「アプリをインストール」を選択","Понятно":"わかりました","Готово — значок на месте":"完了 — アイコンが追加されました","Установка отменена":"インストールを中止しました"},
+ "ko":{"Установить Cube":"Cube 설치","Приложение уже установлено":"앱이 이미 설치되어 있습니다","Нажми «Поделиться» внизу экрана":"화면 아래의 «공유»를 누르세요","Выбери «На экран \"Домой\"»":"«홈 화면에 추가»를 선택하세요","Нажми «Добавить» справа вверху":"오른쪽 위의 «추가»를 누르세요","Открой меню «Файл» в строке сверху":"상단의 «파일» 메뉴를 여세요","Выбери «Добавить в Dock»":"«Dock에 추가»를 선택하세요","Открой меню браузера":"브라우저 메뉴를 여세요","Выбери «Установить приложение»":"«앱 설치»를 선택하세요","Понятно":"알겠습니다","Готово — значок на месте":"완료 — 아이콘이 추가되었습니다","Установка отменена":"설치가 취소되었습니다"},
+ "vi":{"Установить Cube":"Cài đặt Cube","Приложение уже установлено":"Ứng dụng đã được cài đặt","Нажми «Поделиться» внизу экрана":"Chạm «Chia sẻ» ở cuối màn hình","Выбери «На экран \"Домой\"»":"Chọn «Thêm vào MH chính»","Нажми «Добавить» справа вверху":"Chạm «Thêm» ở góc trên bên phải","Открой меню «Файл» в строке сверху":"Mở menu «Tệp» trên thanh trên cùng","Выбери «Добавить в Dock»":"Chọn «Thêm vào Dock»","Открой меню браузера":"Mở menu trình duyệt","Выбери «Установить приложение»":"Chọn «Cài đặt ứng dụng»","Понятно":"Đã hiểu","Готово — значок на месте":"Xong — biểu tượng đã có","Установка отменена":"Đã huỷ cài đặt"}};
+  (function слова(п){
+    if(typeof window.cwДобавитьСлова !== 'function'){
+      if((п || 0) > 25) return;
+      setTimeout(function(){ слова((п || 0) + 1); }, 400);
+      return;
+    }
+    window.cwДобавитьСлова(С, ['#cw-уст']);
+  })();
+
+  /* ── Кто мы ─────────────────────────────────────────────────────── */
+  function стоитУже(){
+    return ладно(function(){
+      return (window.matchMedia && matchMedia('(display-mode: standalone)').matches)
+          || navigator.standalone === true;
+    }) || false;
+  }
+  var ua = navigator.userAgent || '';
+  var айфон = /iPad|iPhone|iPod/.test(ua)
+           || (/Macintosh/.test(ua) && ладно(function(){ return 'ontouchend' in document; }) === true);
+  var мак = /Macintosh/.test(ua) && !айфон;
+
+  /* ── Настоящее окно установки (Android, Chrome, Edge) ───────────── */
+  var ПРИГЛАШЕНИЕ = null;
+  window.addEventListener('beforeinstallprompt', function(е){
+    е.preventDefault();
+    ПРИГЛАШЕНИЕ = е;
+  });
+  window.addEventListener('appinstalled', function(){
+    ПРИГЛАШЕНИЕ = null;
+    крик(сл('Готово — значок на месте'));
+  });
+
+  /* ── Лист с тремя шагами — для тех, кто иначе не умеет ───────────── */
+  function листок(шаги){
+    var о = эл('cw-уст');
+    if(!о){
+      о = document.createElement('div');
+      о.id = 'cw-уст';
+      о.innerHTML = '<div class="лист">'
+        + '<div class="шапка"><i class="ti ti-download"></i>'
+        + '<h3>' + сл('Установить Cube') + '</h3></div>'
+        + '<div class="шаги"></div>'
+        + '<button class="ладно" type="button"></button></div>';
+      document.body.appendChild(о);
+      о.addEventListener('click', function(е){ if(е.target === о) закрыть(); });
+      о.querySelector('.ладно').onclick = закрыть;
+    }
+    о.querySelector('h3').textContent = сл('Установить Cube');
+    о.querySelector('.ладно').textContent = сл('Понятно');
+    var где = о.querySelector('.шаги');
+    где.innerHTML = '';
+    шаги.forEach(function(т, i){
+      var р = document.createElement('div');
+      р.className = 'шаг';
+      р.innerHTML = '<div class="номер">' + (i + 1) + '</div><div class="текст"></div>';
+      р.querySelector('.текст').textContent = сл(т);
+      где.appendChild(р);
+    });
+    о.classList.add('вид');
+    ладно(function(){ if(typeof window.cwПеревестиДобавленный === 'function') window.cwПеревестиДобавленный(о); });
+  }
+  function закрыть(){ var о = эл('cw-уст'); if(о) о.classList.remove('вид'); }
+  window.cwУстановкаЗакрыть = закрыть;
+
+  /* ── Что делаем по нажатию ──────────────────────────────────────── */
+  function поставить(){
+    ладно(function(){ if(typeof window.cwОтклик === 'function') window.cwОтклик('касание'); });
+
+    if(стоитУже()){ крик(сл('Приложение уже установлено')); return; }
+
+    if(ПРИГЛАШЕНИЕ){
+      var п = ПРИГЛАШЕНИЕ; ПРИГЛАШЕНИЕ = null;
+      ладно(function(){
+        п.prompt();
+        if(п.userChoice && п.userChoice.then) п.userChoice.then(function(в){
+          if(!в || в.outcome !== 'accepted'){ ПРИГЛАШЕНИЕ = п; крик(сл('Установка отменена')); }
+        });
+      });
+      return;
+    }
+
+    if(айфон){
+      листок(['Нажми «Поделиться» внизу экрана',
+              'Выбери «На экран "Домой"»',
+              'Нажми «Добавить» справа вверху']);
+      return;
+    }
+    if(мак){
+      листок(['Открой меню «Файл» в строке сверху',
+              'Выбери «Добавить в Dock»']);
+      return;
+    }
+    листок(['Открой меню браузера',
+            'Выбери «Установить приложение»']);
+  }
+  window.cwПоставитьПриложение = поставить;
+
+  /* ── Перехватываем строку меню, когда её нарисует блок v=701 ────── */
+  function подцепить(){
+    var р = эл('cw-dl-row');
+    if(!р || р.__ставит) return;
+    р.__ставит = true;
+    р.onclick = function(е){
+      е.stopPropagation();
+      var м = эл('wb-acct-menu');
+      if(м) ладно(function(){ м.classList.remove('open'); });
+      поставить();
+    };
+  }
+  setInterval(подцепить, 1200);
+  подцепить();
+})();
+</script>
 
 
 <script id="cw-fix572-последний">
