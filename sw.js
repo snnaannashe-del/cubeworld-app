@@ -1,13 +1,229 @@
-// SW v191
-// Раньше здесь было url.split('?')[0] — service worker срезал ?v=NNN и тем
-// самым обнулял всю систему версий: страница грузилась, номер версии не
-// доходил, и правки «не появлялись». Теперь адрес передаётся целиком.
-self.addEventListener('install', e => self.skipWaiting());
-self.addEventListener('activate', e => e.waitUntil(clients.claim()));
-self.addEventListener('fetch', e => {
-  if (e.request.url.includes('world.html')) {
-    e.respondWith(
-      fetch(e.request.url, { cache: 'no-store' }).catch(() => fetch(e.request))
-    );
+/* ══════════════════════════════════════════════════════════════════════
+   CubeWorld · служебный слой (service worker)       введён в v=709
+
+   Зачем он. Страница весит 10,4 МБ и по сети едет 2,68 МБ. Без этого
+   слоя человек качает их при КАЖДОМ открытии, даже если вчера уже был.
+   Со слоем второй и все следующие запуски берут файл с диска: сеть не
+   трогается вовсе, запуск становится мгновенным. Для установленного
+   приложения (с домашнего экрана, из окна на Маке) это и есть разница
+   между «подождите» и «открылось».
+
+   Чего он НЕ делает — и это важнее того, что делает:
+     • не трогает чужие адреса. Сервер (Render) и медиа (Bunny) идут
+       мимо него полностью: ни одного байта чужого origin мы не кэшируем
+       и не задерживаем. Ответ сервера всегда живой.
+     • не трогает ничего, кроме GET.
+     • дома (localhost, 127.0.0.1, домашняя сеть) работает наоборот —
+       сначала сеть, кэш только как запасной выход. Иначе на стенде
+       видишь вчерашнюю правку и сходишь с ума.
+
+   Как узнаёт о новой версии. На каждом открытии он всё равно тихо
+   спрашивает сервер, в фоне, уже ПОСЛЕ того как отдал страницу с диска.
+   Если ETag файла изменился — значит Анна залила новую версию: слой
+   кладёт её в кэш и говорит об этом странице. Страница сама решает,
+   перезагрузиться молча или показать подпись.
+
+   Запасной выход. Открыть с «?nosw=1» — слой снимается и кэш чистится.
+   Это на случай, если он когда-нибудь начнёт мешать.
+   ══════════════════════════════════════════════════════════════════ */
+'use strict';
+
+var КЭШ = 'cubeworld-оболочка-1';
+
+/* Что кладём сразу при установке. Только своё и только лёгкое, кроме
+   самой страницы — она и есть главный груз. */
+var ОБОЛОЧКА = [
+  '/world.html', '/index.html', '/tariff.html', '/manifest.webmanifest',
+  '/favicon.svg', '/favicon-96.png', '/apple-touch-icon.png',
+  '/icon-192.png', '/icon-512.png', '/og.png'
+];
+
+var ДОМА = (function(){
+  var h = self.location.hostname || '';
+  return h === 'localhost' || h === '127.0.0.1' || h === ''
+      || /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./.test(h);
+})();
+
+/* ── Ключ кэша ────────────────────────────────────────────────────────
+   Адрес страницы несёт версию («?v=708») и дома метку времени («?t=…»).
+   Если класть по полному адресу, каждая версия заводила бы свою запись,
+   а старые копились бы мусором. Поэтому метку в ключе отбрасываем: файл
+   один, и он либо свежий, либо нет.
+
+   Cloudflare Pages отдаёт «/world» и «/world.html» одним и тем же
+   файлом — сводим их к одному ключу, иначе после перехода на короткий
+   адрес кэш оказался бы пустым. */
+function ключ(адрес){
+  var u = new URL(адрес);
+  u.search = ''; u.hash = '';
+  if(u.pathname === '/world') u.pathname = '/world.html';
+  if(u.pathname === '/') u.pathname = '/index.html';
+  if(u.pathname === '/tariff') u.pathname = '/tariff.html';
+  return u.toString();
+}
+
+self.addEventListener('install', function(е){
+  е.waitUntil(
+    caches.open(КЭШ).then(function(c){
+      /* Поштучно, а не addAll: addAll падает целиком, если хоть один
+         файл не доехал, и тогда слой не встаёт вовсе. */
+      return Promise.all(ОБОЛОЧКА.map(function(а){
+        return fetch(а, {cache: 'reload'})
+          .then(function(о){ if(о && о.ok) return c.put(ключ(new URL(а, self.location).href), о); })
+          .catch(function(){});
+      }));
+    }).then(function(){ return self.skipWaiting(); })
+  );
+});
+
+self.addEventListener('activate', function(е){
+  е.waitUntil(
+    caches.keys().then(function(имена){
+      return Promise.all(имена.map(function(и){
+        if(и !== КЭШ) return caches.delete(и);
+      }));
+    }).then(function(){ return self.clients.claim(); })
+  );
+});
+
+/* ── Сказать страницам, что приехало новое ───────────────────────────── */
+function крикнуть(весть){
+  return self.clients.matchAll({type: 'window', includeUncontrolled: true})
+    .then(function(список){ список.forEach(function(к){ try{ к.postMessage(весть); }catch(_){} }); });
+}
+
+/* ── Чем отличаем одну копию файла от другой ──────────────────────────
+   Сначала пробовали заголовки (ETag, дата, длина). Это оказалось и
+   ненадёжно, и не по сути: сервер может не прислать ETag вовсе, а может
+   прислать новый, пересжав тот же самый файл, — и человек получил бы
+   перезагрузку на ровном месте.
+
+   Настоящий признак у нас уже есть: номер версии написан в самом файле
+   («window.CW_ВЕРСИЯ = "709"»), в первых строках головы. Его и читаем —
+   не весь файл, а первые 64 КБ потока. Это честный ответ на вопрос «а
+   это другая программа?»: другая, только если Анна подняла номер.
+
+   Заголовок остаётся запасным признаком — на случай, если номер почему-то
+   не прочитался. И правило осторожности прежнее: НЕ знаем — значит НЕ
+   менялось. Соблазн обратного («не знаем — обновим») кончается вечной
+   перезагрузкой; цена осторожности — человек увидит правку при следующем
+   открытии, потому что свежий файл в кэш мы кладём в любом случае. */
+/* Служебная запись в том же кэше — своя для каждой страницы: у витрины,
+   тарифов и приложения номера свои, и мешать их нельзя. */
+function отметка(адрес){ return '/__cw-версия?' + encodeURIComponent(адрес); }
+
+function читатьНачало(о, предел){
+  try{
+    if(!о || !о.body) return Promise.resolve('');
+    var ч = о.body.getReader(), д = new TextDecoder(), т = '', взято = 0;
+    function дальше(){
+      if(взято >= предел){ try{ ч.cancel(); }catch(_){} return т; }
+      return ч.read().then(function(к){
+        if(к.done) return т;
+        взято += к.value.length;
+        т += д.decode(к.value, {stream: true});
+        return дальше();
+      });
+    }
+    return Promise.resolve(дальше()).catch(function(){ return т; });
+  }catch(_){ return Promise.resolve(''); }
+}
+
+function номерИз(текст){
+  var m = /window\.CW_ВЕРСИЯ\s*=\s*"(\d+)"/.exec(текст || '');
+  return m ? m[1] : null;
+}
+
+function прежнийНомер(к, адрес){
+  return к.match(отметка(адрес)).then(function(о){ return о ? о.text() : null; })
+          .catch(function(){ return null; });
+}
+function записатьНомер(к, адрес, н){
+  return к.put(отметка(адрес), new Response(String(н))).catch(function(){});
+}
+
+/* Фоновая сверка: тянем свежий файл мимо браузерного кэша, кладём его и,
+   если номер версии в нём другой, говорим страницам. */
+function освежить(к, запись, адрес){
+  var страница = /\/(world|index|tariff)\.html$/.test(адрес);
+  return fetch(адрес, {cache: 'reload', credentials: 'same-origin'})
+    .then(function(о){
+      if(!о || !о.ok) return;
+      return к.put(адрес, о.clone()).then(function(){
+        if(!страница) return;
+        return читатьНачало(о.clone(), 65536).then(function(начало){
+          var стал = номерИз(начало);
+          if(стал === null){
+            /* Номер не прочитался — падаем на заголовок, но только если
+               он есть с обеих сторон. */
+            var б = запись && запись.headers && запись.headers.get('etag');
+            var с = о.headers && о.headers.get('etag');
+            if(б && с && б !== с) return крикнуть({тип: 'cw-новая-версия', адрес: адрес});
+            return;
+          }
+          return прежнийНомер(к, адрес).then(function(был){
+            return записатьНомер(к, адрес, стал).then(function(){
+              if(был && был !== стал)
+                return крикнуть({тип: 'cw-новая-версия', адрес: адрес, версия: стал});
+            });
+          });
+        });
+      });
+    })
+    .catch(function(){});
+}
+
+self.addEventListener('fetch', function(е){
+  var зпр = е.request;
+  if(зпр.method !== 'GET') return;
+
+  var u;
+  try{ u = new URL(зпр.url); }catch(_){ return; }
+
+  /* Чужой origin — не наше дело. Сервер и медиа идут напрямую. */
+  if(u.origin !== self.location.origin) return;
+  /* Сам себя не кэшируем, иначе слой не сможет обновиться. */
+  if(/\/sw\.js$/.test(u.pathname)) return;
+
+  var адрес = ключ(зпр.url);
+
+  е.respondWith(
+    caches.open(КЭШ).then(function(к){
+      return к.match(адрес).then(function(запись){
+
+        /* Дома — сначала сеть: на стенде правка должна быть видна сразу. */
+        if(ДОМА){
+          return fetch(зпр).then(function(о){
+            if(о && о.ok) к.put(адрес, о.clone());
+            return о;
+          }).catch(function(){ return запись || new Response('', {status: 504}); });
+        }
+
+        /* На домене — сначала диск, обновление в фоне. */
+        if(запись){
+          е.waitUntil(освежить(к, запись, адрес));
+          return запись;
+        }
+        return fetch(зпр).then(function(о){
+          if(о && о.ok) к.put(адрес, о.clone());
+          return о;
+        }).catch(function(){ return new Response('', {status: 504}); });
+      });
+    })
+  );
+});
+
+/* Страница может попросить снять слой («?nosw=1»). */
+self.addEventListener('message', function(е){
+  var д = е.data || {};
+  if(д.тип === 'cw-снять'){
+    caches.keys().then(function(и){ return Promise.all(и.map(function(x){ return caches.delete(x); })); })
+      .then(function(){ return self.registration.unregister(); });
+  }
+  if(д.тип === 'cw-проверить'){
+    caches.open(КЭШ).then(function(к){
+      var а = new URL('/world.html', self.location).href;
+      к.match(а).then(function(з){ освежить(к, з, а); });
+    });
   }
 });
