@@ -9,9 +9,9 @@
      кусок старой страницы: та самая «лишняя страница», которая
      мелькала перед нужной. Теперь уход происходит до того, как
      нарисовано хоть что-нибудь. -->
-<script id="vf-cache-bust">/* v=715 · Смена версии и свежесть файла.
+<script id="vf-cache-bust">/* v=716 · Смена версии и свежесть файла.
 
-   Снаружи (на домене) работает как раньше: нет ?v=715 в адресе — добавляем
+   Снаружи (на домене) работает как раньше: нет ?v=716 в адресе — добавляем
    и перезагружаемся один раз. Браузер видит новый адрес и берёт новый файл.
 
    Дома и по домашней сети (localhost, 127.0.0.1, 192.168.*, 10.*) раньше
@@ -46,7 +46,7 @@
   window.cwУйтиНа = уходим;
   var h = location.hostname || "";
   var дома = (h === "localhost" || h === "127.0.0.1" || h === "" || /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./.test(h));
-  window.CW_ВЕРСИЯ = "715";
+  window.CW_ВЕРСИЯ = "716";
   if(дома){
     /* v=454: при нажатии «обновить» страница грузилась ДВАЖДЫ. Сначала
        браузер открывал её, потом этот код видел старую метку времени и
@@ -74,7 +74,7 @@
       var м = /[?&]t=(\d+)/.exec(location.search || "");
       var было = м ? +м[1] : 0;
       if(Date.now() - было > 5000){
-        уходим(location.pathname + "?v=715&t=" + Date.now() + (location.hash || ""));
+        уходим(location.pathname + "?v=716&t=" + Date.now() + (location.hash || ""));
       }
     }
     return;
@@ -104079,6 +104079,158 @@ html[data-theme="glass"] #crypto-ticker{
   text-shadow: 0 1px 3px rgba(0,0,0,.75), 0 0 10px rgba(0,0,0,.45);
 }
 </style>
+
+
+<style id="cw-fix716-низ-стиль">
+/* ══════════════════════════════════════════════════════════════════════
+   v=716 · ЛЕНТА НАЕЗЖАЛА НА МЕНЮ. И ЗАМЕР ПОЛЕЙ ТЕЛЕФОНА.
+
+   ── Столкновение ────────────────────────────────────────────────────
+   В ленте подпись автора и столбик «комментарий / сердце / поделиться»
+   подняты над нижним меню ровно на 74 пиксела — столько меню и занимало,
+   пока у него не было поля под полоску жеста. С v=715 меню на айфоне
+   стало выше на это поле, а 74 остались прежними: ряд значков лёг прямо
+   на меню. Поднимаем ряд на ту же величину, на какую вырос низ.
+
+   ── Замер ───────────────────────────────────────────────────────────
+   Чёрную полосу под меню я чиню третий раз вслепую: такого экрана у меня
+   нет, а айфон считает свои поля по-своему. Поэтому здесь спрятан замер.
+   Долгое нажатие (полторы секунды) на кнопку «Ещё» в нижнем меню —
+   и поверх всего встанет листок с числами: высота экрана, высота окна,
+   поля сверху и снизу, где стоит меню, докуда достаёт кадр. Один снимок
+   этого листка отвечает на всё сразу.
+   ══════════════════════════════════════════════════════════════════ */
+@media(max-width:768px){
+  #sec-feed .vf-actions{
+    bottom: calc(74px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  #sec-feed .vf-info{
+    padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* ── ОКНА ВО ВЕСЬ ЭКРАН НАЧИНАЮТСЯ НИЖЕ ВЫРЕЗА ─────────────────────
+     Анна: «смотри как тут вверху запало, я даже выйти не могу, только
+     приложение сворачивать». Это профиль: он открывается во весь экран,
+     а стрелка «назад» стоит в самом верху — под «островом» айфона.
+     Нажать её нельзя, и выйти из окна нечем.
+
+     Отступ под вырез был у верхней полосы куба и у полосы карты. У окон
+     поверх них — не было ни у одного. Даём разом всем, у кого наверху
+     своя шапка с кнопкой: профиль, портфолио, поиск, три окна переписки,
+     сведения о группе, документы, архив, эфир, просмотр снимка, истории,
+     звонок, загрузка видео, админ-панель.
+
+     Окно и так во весь экран (inset:0), а высота считается вместе с
+     отступами — поэтому оно остаётся во весь экран, просто содержимое
+     начинается ниже выреза. */
+  #pe-overlay, #portfolio-overlay, #srch-overlay,
+  #dm-chat-overlay, #fav-chat-overlay, #grp-chat-overlay,
+  #grp-info-panel, #cw-docs, #cw-ред, #cw-stream, #cw-adm,
+  #cw-gal, #cw-st-view, #cw-call, #gco-call-overlay, #vf-upload-overlay{
+    padding-top: env(safe-area-inset-top, 0px) !important;
+  }
+}
+
+#cw-замер{position:fixed;inset:0;z-index:100030;display:none;
+  align-items:center;justify-content:center;background:rgba(0,0,0,.82);
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+#cw-замер.вид{display:flex}
+#cw-замер .лист{width:92%;max-width:420px;max-height:84vh;overflow:auto;
+  background:#0b0b16;border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:16px}
+#cw-замер h4{margin:0 0 10px;font-size:14px;color:#fff;font-weight:700}
+#cw-замер pre{margin:0;font-size:12px;line-height:1.5;color:#9ff;white-space:pre-wrap;
+  font-family:ui-monospace,Menlo,Consolas,monospace}
+#cw-замер button{width:100%;margin-top:12px;padding:10px;border:none;border-radius:10px;
+  background:#0095F6;color:#fff;font-size:14px;font-weight:600}
+#cw-замер-щуп{position:fixed;left:-9999px;top:0;width:1px;height:1px;pointer-events:none;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px)
+          env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+</style>
+
+<script id="cw-fix716-замер">
+(function(){
+  'use strict';
+  function ладно(ф){ try{ return ф(); }catch(_){ return undefined; } }
+  function эл(и){ return document.getElementById(и); }
+
+  function поля(){
+    var щ = эл('cw-замер-щуп');
+    if(!щ){
+      щ = document.createElement('div');
+      щ.id = 'cw-замер-щуп';
+      document.body.appendChild(щ);
+    }
+    var cs = getComputedStyle(щ);
+    return { сверху: cs.paddingTop, справа: cs.paddingRight,
+             снизу: cs.paddingBottom, слева: cs.paddingLeft };
+  }
+
+  function числа(){
+    var п = поля();
+    function рамка(с){
+      var э = document.querySelector(с); if(!э) return 'нет';
+      var b = э.getBoundingClientRect();
+      return Math.round(b.top) + ' … ' + Math.round(b.bottom) + '  (высота ' + Math.round(b.height) + ')';
+    }
+    var вв = window.visualViewport;
+    return [
+      'версия            ' + (window.CW_ВЕРСИЯ || '?'),
+      'отдельное окно    ' + ((ладно(function(){ return matchMedia('(display-mode: standalone)').matches; })
+                               || navigator.standalone === true) ? 'да' : 'нет'),
+      'экран телефона    ' + screen.width + ' × ' + screen.height,
+      'окно (inner)      ' + window.innerWidth + ' × ' + window.innerHeight,
+      'видимое окно      ' + (вв ? Math.round(вв.width) + ' × ' + Math.round(вв.height)
+                                   + '  сдвиг ' + Math.round(вв.offsetTop) : 'нет'),
+      'документ          ' + document.documentElement.clientWidth + ' × '
+                           + document.documentElement.clientHeight,
+      'плотность         ' + (window.devicePixelRatio || 1),
+      '',
+      'поле сверху       ' + п.сверху,
+      'поле снизу        ' + п.снизу,
+      'поле слева/справа ' + п.слева + ' / ' + п.справа,
+      '',
+      'нижнее меню       ' + рамка('#mob-nav'),
+      'слой камеры       ' + рамка('#cw-cam-layer'),
+      'верхняя полоса    ' + рамка('#int-topbar'),
+      'полоса карты      ' + рамка('#world-bar'),
+      'тема              ' + document.documentElement.getAttribute('data-theme')
+    ].join('\n');
+  }
+
+  function показать(){
+    var о = эл('cw-замер');
+    if(!о){
+      о = document.createElement('div');
+      о.id = 'cw-замер';
+      о.innerHTML = '<div class="лист"><h4>Замер экрана</h4><pre></pre>'
+                  + '<button type="button">Закрыть</button></div>';
+      document.body.appendChild(о);
+      о.querySelector('button').onclick = function(){ о.classList.remove('вид'); };
+      о.addEventListener('click', function(е){ if(е.target === о) о.classList.remove('вид'); });
+    }
+    о.querySelector('pre').textContent = числа();
+    о.classList.add('вид');
+  }
+  window.cwЗамерЭкрана = показать;
+
+  /* Долгое нажатие на «Ещё» — полторы секунды. */
+  function завести(){
+    var к = document.getElementById('mnb-more')
+         || document.querySelector('#mob-nav .mnb:last-child');
+    if(!к || к.__замер) return;
+    к.__замер = true;
+    var часы = null;
+    function начать(){ clearTimeout(часы); часы = setTimeout(показать, 1500); }
+    function бросить(){ clearTimeout(часы); }
+    к.addEventListener('pointerdown', начать);
+    ['pointerup','pointerleave','pointercancel'].forEach(function(с){
+      к.addEventListener(с, бросить);
+    });
+  }
+  setInterval(завести, 1500);
+  завести();
+})();
+</script>
 
 
 <script id="cw-fix572-последний">
