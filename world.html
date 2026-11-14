@@ -9,9 +9,9 @@
      кусок старой страницы: та самая «лишняя страница», которая
      мелькала перед нужной. Теперь уход происходит до того, как
      нарисовано хоть что-нибудь. -->
-<script id="vf-cache-bust">/* v=729 · Смена версии и свежесть файла.
+<script id="vf-cache-bust">/* v=730 · Смена версии и свежесть файла.
 
-   Снаружи (на домене) работает как раньше: нет ?v=729 в адресе — добавляем
+   Снаружи (на домене) работает как раньше: нет ?v=730 в адресе — добавляем
    и перезагружаемся один раз. Браузер видит новый адрес и берёт новый файл.
 
    Дома и по домашней сети (localhost, 127.0.0.1, 192.168.*, 10.*) раньше
@@ -46,7 +46,7 @@
   window.cwУйтиНа = уходим;
   var h = location.hostname || "";
   var дома = (h === "localhost" || h === "127.0.0.1" || h === "" || /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./.test(h));
-  window.CW_ВЕРСИЯ = "729";
+  window.CW_ВЕРСИЯ = "730";
   if(дома){
     /* v=454: при нажатии «обновить» страница грузилась ДВАЖДЫ. Сначала
        браузер открывал её, потом этот код видел старую метку времени и
@@ -74,7 +74,7 @@
       var м = /[?&]t=(\d+)/.exec(location.search || "");
       var было = м ? +м[1] : 0;
       if(Date.now() - было > 5000){
-        уходим(location.pathname + "?v=729&t=" + Date.now() + (location.hash || ""));
+        уходим(location.pathname + "?v=730&t=" + Date.now() + (location.hash || ""));
       }
     }
     return;
@@ -104805,6 +104805,76 @@ html[data-theme="glass"] #crypto-ticker{
     }
     window.cwПризраковУбрано = убрано;
   });
+})();
+</script>
+
+<script id="cw-fix730-вселенная-не-пуста">
+/* ══════════════════════════════════════════════════════════════════════
+   v=730 · ПУСТАЯ ВСЕЛЕННАЯ ЗАПИРАЛА ЧЕЛОВЕКА В ОКНЕ ВЫБОРА.
+
+   Моя недоработка из v=728. Раньше вселенная по умолчанию состояла из
+   восьми выдуманных кубов — пустой она не бывала никогда. Выдуманные я
+   убрал, а замену не поставил. У нового человека вышло так: кубов в мире
+   ноль, мир пустой и белый, окно «Мой Юниверс» открывается снова и снова,
+   и выйти из него некуда.
+
+   Чиним по-человечески: если вселенная пуста, кладём в неё ВСЕ живые
+   кубы, какие есть на сервере, и сохраняем — и у себя, и на сервере.
+   Человек приходит в полный мир, а переложить под себя может когда
+   захочет, через то же окно.
+
+   Заодно снимаем метку «окно было открыто»: из-за неё окно всплывало при
+   каждом новом заходе.
+   ══════════════════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  function ладно(ф){ try{ return ф(); }catch(_){ return undefined; } }
+  var сделано = false;
+
+  function ключВселенной(){
+    return ладно(function(){ return _uniKey(); })
+        || ('cw_universe_' + (ладно(function(){ return localStorage.getItem('cw_user_id'); }) || 'guest'));
+  }
+
+  function попытка(){
+    if(сделано) return;
+    if(!window.app || !Array.isArray(app.cubes) || !app.cubes.length) return;
+    /* Пока человек не вошёл, вселенной у него нет и трогать нечего. */
+    if(!ладно(function(){ return localStorage.getItem('cw_access_token'); })) return;
+
+    var у = app.myUniverse;
+    if(Array.isArray(у) && у.length){ сделано = true; return; }
+
+    /* Берём только настоящие кубы с сервера и только живые. */
+    var все = app.cubes.filter(function(к){
+      return к && к.id && String(к.id).indexOf('bc') === 0
+          && (к.life === undefined || к.life === null || к.life > 0);
+    }).map(function(к){ return к.id; });
+    if(!все.length) return;
+
+    app.myUniverse = все;
+    ладно(function(){ localStorage.setItem(ключВселенной(), JSON.stringify(все)); });
+    ладно(function(){
+      if(typeof apiCall === 'function')
+        apiCall('/me/universe', {method:'POST', body: JSON.stringify({universe: все})});
+    });
+    ладно(function(){
+      все.forEach(function(ид){
+        var к = app.cubes.filter(function(x){ return x.id === ид; })[0];
+        if(к && typeof addCubeToWorld === 'function') addCubeToWorld(к);
+      });
+    });
+    /* Чтобы окно не всплывало при следующем заходе. */
+    ладно(function(){ localStorage.removeItem('cw_uni_modal'); });
+    сделано = true;
+    ладно(function(){
+      if(typeof showToast === 'function') showToast('Мир собран — ' + все.length + ' кубов');
+    });
+  }
+
+  var часы = setInterval(попытка, 800);
+  setTimeout(function(){ clearInterval(часы); }, 90000);
+  попытка();
 })();
 </script>
 

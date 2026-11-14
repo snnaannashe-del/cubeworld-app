@@ -1,0 +1,53 @@
+# ══════════════════════════════════════════════════════════════════════
+# Как долго Cloudflare держит наши файлы у себя.
+#
+# Зачем это появилось. 14 ноября Анна залила свежий world.html, GitHub его
+# принял, а домен ещё час отдавал старую страницу. Оказалось, что на адрес
+# /world стоял запас в четыре часа (max-age=14400). То есть любая наша
+# правка доезжала до человека не сразу, а когда у Cloudflare истечёт срок.
+# Выглядело это как «правки не применяются».
+#
+# Что здесь написано. Страницы — всегда спрашивать у источника, не устарели
+# ли они. Это не значит «качать заново каждый раз»: если файл не менялся,
+# ответ будет короткий «не менялся», и браузер возьмёт своё. А когда мы
+# выложим новый — человек получит его сразу.
+#
+# Картинки, значки и шрифты меняются редко — их держим неделю, чтобы
+# страница открывалась быстро.
+# ══════════════════════════════════════════════════════════════════════
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/world
+  Cache-Control: public, max-age=0, must-revalidate
+
+/world.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/manifest.webmanifest
+  Cache-Control: public, max-age=0, must-revalidate
+
+/tariff.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/privacy.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/terms.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*.png
+  Cache-Control: public, max-age=604800
+
+/*.svg
+  Cache-Control: public, max-age=604800
+
+/*.ico
+  Cache-Control: public, max-age=604800
