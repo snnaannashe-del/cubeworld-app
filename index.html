@@ -350,8 +350,13 @@ var API = (function(){
   var local = h === 'localhost' || h === '127.0.0.1' || h === '[::1]'
     || /^192\.168\./.test(h) || /^10\./.test(h)
     || /^172\.(1[6-9]|2[0-9]|3[01])\./.test(h);
+  /* v=729 · Адрес сервера был свой: главная ходила в cubeworld-backend, а
+     само приложение (world.html) — в cubeworld-backend-1. Два сервиса на
+     одной базе, и пока оба работали, разницы было не видно. Стоило погасить
+     лишний — у главной пропала связь, хотя площадка работала.
+     Сводим обе страницы на ОДИН сервер, тот, которым живёт приложение. */
   return local ? location.protocol + '//' + h + ':8000'
-               : 'https://cubeworld-backend.onrender.com';
+               : 'https://cubeworld-backend-1.onrender.com';
 })();
 var LANGS = JSON.parse(document.getElementById('tr').textContent);
 var FLAGS = {'ru':'🇷🇺','en':'🇬🇧','en-IN':'🇮🇳','uk':'🇺🇦','de':'🇩🇪','fr':'🇫🇷','fr-CA':'🇨🇦','es':'🇪🇸','es-419':'🇲🇽','it':'🇮🇹','pt':'🇵🇹','pl':'🇵🇱','tr':'🇹🇷','ar':'🇸🇦','ar-AE':'🇦🇪','vi':'🇻🇳','zh':'🇨🇳','ja':'🇯🇵','ko':'🇰🇷','hi':'🇮🇳'};
