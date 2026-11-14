@@ -9,9 +9,9 @@
      кусок старой страницы: та самая «лишняя страница», которая
      мелькала перед нужной. Теперь уход происходит до того, как
      нарисовано хоть что-нибудь. -->
-<script id="vf-cache-bust">/* v=724 · Смена версии и свежесть файла.
+<script id="vf-cache-bust">/* v=728 · Смена версии и свежесть файла.
 
-   Снаружи (на домене) работает как раньше: нет ?v=724 в адресе — добавляем
+   Снаружи (на домене) работает как раньше: нет ?v=728 в адресе — добавляем
    и перезагружаемся один раз. Браузер видит новый адрес и берёт новый файл.
 
    Дома и по домашней сети (localhost, 127.0.0.1, 192.168.*, 10.*) раньше
@@ -46,7 +46,7 @@
   window.cwУйтиНа = уходим;
   var h = location.hostname || "";
   var дома = (h === "localhost" || h === "127.0.0.1" || h === "" || /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./.test(h));
-  window.CW_ВЕРСИЯ = "724";
+  window.CW_ВЕРСИЯ = "728";
   if(дома){
     /* v=454: при нажатии «обновить» страница грузилась ДВАЖДЫ. Сначала
        браузер открывал её, потом этот код видел старую метку времени и
@@ -74,7 +74,7 @@
       var м = /[?&]t=(\d+)/.exec(location.search || "");
       var было = м ? +м[1] : 0;
       if(Date.now() - было > 5000){
-        уходим(location.pathname + "?v=724&t=" + Date.now() + (location.hash || ""));
+        уходим(location.pathname + "?v=728&t=" + Date.now() + (location.hash || ""));
       }
     }
     return;
@@ -6638,7 +6638,9 @@ async function loadChatHistory(roomId){
 const app = {
   keyType: null, userKey: null,
   cubes: [], currentCubeId: null,
-  myUniverse: ["c0","c1","c2","c3","c4","c5","c6","c7"],
+  /* v=728 · Была вселенная из восьми выдуманных кубов. Теперь пусто:
+     настоящие кубы приходят с сервера и подставляются сами. */
+  myUniverse: [],
   chatMessages: {},
   currentRoomId: null,
   feedPosts: [],
@@ -6665,17 +6667,33 @@ window.app = app;
 // ════════════════════════════════════════════════
 //  CUBE WORLD DATA
 // ════════════════════════════════════════════════
-const SEED_CUBES = [
-  {id:'c0',name:'Open Space',    type:'public', colorHex:0x4ade80,colorCss:'#4ade80',life:82800,icon:'🌐',desc:'Открытое сообщество'},
-  {id:'c1',name:'CryptoVault',   type:'private',key:'CUBE-7A2F',  colorHex:0xfbbf24,colorCss:'#fbbf24',life:19440,icon:'🔐',desc:'Зашифрованный крипто-канал'},
-  {id:'c2',name:'Neural Lab',    type:'private',key:'CUBE-NN90',  colorHex:0x60a5fa,colorCss:'#60a5fa',life:3240, icon:'🧠',desc:'ИИ исследования'},
-  {id:'c3',name:'Ghost Room',    type:'private',key:'CUBE-G057',  colorHex:0x94a3b8,colorCss:'#94a3b8',life:900,  icon:'👻',desc:'15 минут'},
-  {id:'c4',name:'BizHub Alpha',  type:'public', colorHex:0xa78bfa,colorCss:'#a78bfa',life:43200,icon:'💼',desc:'Бизнес нетворкинг'},
-  {id:'c5',name:'Art Dimension', type:'public', colorHex:0xfb7185,colorCss:'#fb7185',life:172800,icon:'🎨',desc:'Творческое сообщество'},
-  {id:'c6',name:'Alpha Signal',  type:'private',key:'CUBE-A1PH', colorHex:0x22d3ee,colorCss:'#22d3ee',life:7200, icon:'📡',desc:'Торговые сигналы'},
-  {id:'c7',name:'???',           type:'private',key:'CUBE-????', colorHex:0x1e293b,colorCss:'#475569',life:300,  icon:'?', desc:'Неизвестный'},
-];
-app.cubes = SEED_CUBES.map(c=>({...c}));
+/* ══════════════════════════════════════════════════════════════════════
+   v=728 · ВОСЕМЬ ВЫДУМАННЫХ КУБОВ УБРАНЫ.
+
+   Анна: «почему тут какие-то ещё дополнительные кубы появились?» На
+   сервере кубов было восемь, а страница показывала шестнадцать.
+
+   Разбор. Здесь лежал список SEED_CUBES — Open Space, CryptoVault,
+   Neural Lab, Ghost Room, BizHub Alpha, Art Dimension, Alpha Signal и
+   «???». Остатки от самой первой, показательной версии, когда сервера
+   ещё не было и кубы надо было чем-то нарисовать.
+
+   С ними страница начинала жизнь так: кладём восемь выдуманных, потом
+   добавляем настоящие с сервера. Чистка в конце убирала только лишние
+   настоящие (их номера начинаются на «bc») — выдуманные не трогал никто,
+   и они оставались навсегда.
+
+   Беда не в счётчике. У выдуманного куба нет номера на сервере: зайти в
+   него по-настоящему нельзя, написать в нём нельзя, выложить нельзя. Для
+   человека это выглядит как «половина площадки не работает» — он жмёт
+   кубы, которых не существует.
+
+   Теперь список пуст. Кубы берутся только с сервера, и вселенная по
+   умолчанию заполняется ими же — для этого в коде уже всё есть
+   (авто-добавление, когда своего списка человек ещё не выбирал).
+   ══════════════════════════════════════════════════════════════════ */
+const SEED_CUBES = [];
+app.cubes = [];
 // myUniverse = always the 8 seed cubes (user can add their own on top)
 // We do NOT auto-add backend cubes — user controls this via "Моя вселенная"
 
@@ -104713,6 +104731,58 @@ html[data-theme="glass"] #crypto-ticker{
       });
     };
   }
+})();
+</script>
+
+<script id="cw-fix728-призраки">
+/* ══════════════════════════════════════════════════════════════════════
+   v=728 · ВЫМЕСТИ ВЫДУМАННЫХ КУБОВ ИЗ ПАМЯТИ БРАУЗЕРА.
+
+   Самих выдуманных кубов в странице больше нет. Но их номера (c0…c7)
+   успели осесть в памяти браузера: в выбранной вселенной, в списке
+   посещённых, в сохранённых при выходе. Оттуда они полезли бы обратно и
+   на новой странице — человек снова увидел бы кубы, которых нет.
+
+   Проходим по всем таким спискам один раз и вычищаем. Чужого не трогаем:
+   настоящие номера выглядят иначе («bc» и число).
+   ══════════════════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  function ладно(ф){ try{ return ф(); }catch(_){ return undefined; } }
+  var ПРИЗРАК = /^c[0-7]$/;
+
+  function чистыйСписок(знач){
+    var р = ладно(function(){ return JSON.parse(знач); });
+    if(!Array.isArray(р)) return null;
+    var было = р.length;
+    var стало = р.filter(function(э){
+      var ид = (э && typeof э === 'object') ? э.id : э;
+      return !ПРИЗРАК.test(String(ид));
+    });
+    return (стало.length === было) ? null : JSON.stringify(стало);
+  }
+
+  ладно(function(){
+    var убрано = 0;
+    for(var i = localStorage.length - 1; i >= 0; i--){
+      var к = localStorage.key(i);
+      if(!к) continue;
+      if(к.indexOf('cw_universe') !== 0 && к.indexOf('cw_my_cubes') !== 0
+         && к.indexOf('cw_visited_cubes') !== 0 && к.indexOf('cw_joined_') !== 0) continue;
+      var новое = чистыйСписок(localStorage.getItem(к));
+      if(новое !== null){ localStorage.setItem(к, новое); убрано++; }
+    }
+    /* И в живом списке, если он уже собран. */
+    if(window.app){
+      if(Array.isArray(app.myUniverse))
+        app.myUniverse = app.myUniverse.filter(function(и){ return !ПРИЗРАК.test(String(и)); });
+      if(Array.isArray(app.cubes))
+        app.cubes = app.cubes.filter(function(к){ return !ПРИЗРАК.test(String(к && к.id)); });
+      if(Array.isArray(app.visitedCubes))
+        app.visitedCubes = app.visitedCubes.filter(function(к){ return !ПРИЗРАК.test(String(к && к.id)); });
+    }
+    window.cwПризраковУбрано = убрано;
+  });
 })();
 </script>
 
