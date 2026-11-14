@@ -9,9 +9,9 @@
      кусок старой страницы: та самая «лишняя страница», которая
      мелькала перед нужной. Теперь уход происходит до того, как
      нарисовано хоть что-нибудь. -->
-<script id="vf-cache-bust">/* v=738 · Смена версии и свежесть файла.
+<script id="vf-cache-bust">/* v=739 · Смена версии и свежесть файла.
 
-   Снаружи (на домене) работает как раньше: нет ?v=738 в адресе — добавляем
+   Снаружи (на домене) работает как раньше: нет ?v=739 в адресе — добавляем
    и перезагружаемся один раз. Браузер видит новый адрес и берёт новый файл.
 
    Дома и по домашней сети (localhost, 127.0.0.1, 192.168.*, 10.*) раньше
@@ -46,7 +46,7 @@
   window.cwУйтиНа = уходим;
   var h = location.hostname || "";
   var дома = (h === "localhost" || h === "127.0.0.1" || h === "" || /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./.test(h));
-  window.CW_ВЕРСИЯ = "738";
+  window.CW_ВЕРСИЯ = "739";
   if(дома){
     /* v=454: при нажатии «обновить» страница грузилась ДВАЖДЫ. Сначала
        браузер открывал её, потом этот код видел старую метку времени и
@@ -74,7 +74,7 @@
       var м = /[?&]t=(\d+)/.exec(location.search || "");
       var было = м ? +м[1] : 0;
       if(Date.now() - было > 5000){
-        уходим(location.pathname + "?v=738&t=" + Date.now() + (location.hash || ""));
+        уходим(location.pathname + "?v=739&t=" + Date.now() + (location.hash || ""));
       }
     }
     return;
@@ -105407,12 +105407,51 @@ html[data-theme="glass"] #crypto-ticker{
 
   /* Разовая доводка при запуске: на сервере пусто, а у человека
      настроено — значит профиль туда просто никогда не уезжал. */
+  /* v=739 · ОБРАТНАЯ СТОРОНА: СЕРВЕР ГЛАВНЕЕ БРАУЗЕРА.
+
+     Анна сняла на видео два устройства с ОДНИМ аккаунтом (@tona444):
+     на телефоне он зовётся «Tona», на Маке — «Dima». Имя у каждого
+     своё, потому что страница показывала свою местную копию и ничего
+     не спрашивала у сервера.
+
+     Правило простое и одно: у кого имя записано на сервере — то и
+     настоящее. Нет его там вовсе — отправляем своё (как раньше).
+     Так два устройства сходятся к одному, а не спорят. */
+  function принять(м){
+    ладно(function(){
+      var п = ладно(function(){
+        return JSON.parse(localStorage.getItem('cw_my_profile') || '{}'); }) || {};
+      var менялось = false;
+      if(м.display_name && м.display_name !== п.displayName){
+        п.displayName = м.display_name; менялось = true;
+        ладно(function(){ localStorage.setItem('cw_display_name', м.display_name); });
+        ладно(function(){ if(typeof app !== 'undefined') app.displayName = м.display_name; });
+      }
+      var лицо = м.avatar_url || '';
+      if(лицо && лицо !== (п.photoUrl || п.avatar)){
+        if(/^(data:|https?:)/.test(лицо)) п.photoUrl = лицо; else п.avatar = лицо;
+        менялось = true;
+      }
+      if(!менялось) return;
+      localStorage.setItem('cw_my_profile', JSON.stringify(п));
+      ладно(function(){ if(typeof app !== 'undefined') app.myProfile = Object.assign(app.myProfile || {}, п); });
+      ладно(function(){ if(typeof _syncTopbarAvatar === 'function') _syncTopbarAvatar(); });
+      ладно(function(){ if(typeof updateProfileUI === 'function') updateProfileUI(); });
+    });
+  }
+
   var догнали = false;
   function догнать(){
     ладно(function(){
       apiCall('/me').then(function(м){
         var п = профиль();
-        if(м && ((!м.display_name && п.имя) || (!м.avatar_url && п.лицо))) отправить(п);
+        if(м && (м.display_name || м.avatar_url)){
+          /* На сервере что-то есть — оно и главное. */
+          принять(м);
+          var св = профиль();
+          послано = св.имя + '|' + св.лицо + '|' + св.про;
+        }
+        else if(м && (п.имя || п.лицо)) отправить(п);
         else послано = п.имя + '|' + п.лицо + '|' + п.про;
         догнали = true;
       }).catch(function(){ догнали = true; });
