@@ -9,9 +9,9 @@
      кусок старой страницы: та самая «лишняя страница», которая
      мелькала перед нужной. Теперь уход происходит до того, как
      нарисовано хоть что-нибудь. -->
-<script id="vf-cache-bust">/* v=740 · Смена версии и свежесть файла.
+<script id="vf-cache-bust">/* v=742 · Смена версии и свежесть файла.
 
-   Снаружи (на домене) работает как раньше: нет ?v=740 в адресе — добавляем
+   Снаружи (на домене) работает как раньше: нет ?v=742 в адресе — добавляем
    и перезагружаемся один раз. Браузер видит новый адрес и берёт новый файл.
 
    Дома и по домашней сети (localhost, 127.0.0.1, 192.168.*, 10.*) раньше
@@ -46,7 +46,7 @@
   window.cwУйтиНа = уходим;
   var h = location.hostname || "";
   var дома = (h === "localhost" || h === "127.0.0.1" || h === "" || /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./.test(h));
-  window.CW_ВЕРСИЯ = "740";
+  window.CW_ВЕРСИЯ = "742";
   if(дома){
     /* v=454: при нажатии «обновить» страница грузилась ДВАЖДЫ. Сначала
        браузер открывал её, потом этот код видел старую метку времени и
@@ -74,7 +74,7 @@
       var м = /[?&]t=(\d+)/.exec(location.search || "");
       var было = м ? +м[1] : 0;
       if(Date.now() - было > 5000){
-        уходим(location.pathname + "?v=740&t=" + Date.now() + (location.hash || ""));
+        уходим(location.pathname + "?v=742&t=" + Date.now() + (location.hash || ""));
       }
     }
     return;
@@ -105047,14 +105047,28 @@ html[data-theme="glass"] #crypto-ticker{
   var послали = 0;
 
   /* Собрать отбор заново: всё, кроме убранного. */
+  /* v=741 · Сравниваем НАБОР, а не порядок.
+
+     Анна: «было семь мельканий, кубы пропали и появились».
+
+     Это была моя недоделка. Сторож отбора сравнивал два списка строкой,
+     а порядок кубов в app.cubes меняется от сверки к сверке — список тот
+     же, строка другая. Сторож каждые полторы секунды решал, что отбор
+     изменился, и пересобирал мир заново. Каждая пересборка — это снос
+     всех тел и сборка с нуля, то есть видимое мигание.
+
+     Теперь сравниваем отсортированные наборы: одни и те же кубы в другом
+     порядке — это не изменение, и мир никто не трогает. */
+  function набором(сп){ return (сп || []).slice().sort().join('\u0001'); }
+
   function пересобрать(послать){
     try{
       var уб = убранные();
       var нов = всеКубы().filter(function(id){ return уб.indexOf(id) < 0; });
-      var было = JSON.stringify(app.myUniverse || []);
+      var было = набором(app.myUniverse);
       app.myUniverse = нов;
-      /* Ничего не изменилось — не трогаем ни память, ни сервер. */
-      if(JSON.stringify(нов) === было) return;
+      /* Ничего не изменилось — не трогаем ни память, ни сервер, ни экран. */
+      if(набором(нов) === было) return;
       ладно(function(){ localStorage.setItem(_uniKey(), JSON.stringify(нов)); });
       /* На сервер — не чаще раза в пять секунд: пересборку теперь зовут
          постоянно, и без этого можно было бы устроить очередь запросов. */
@@ -105064,8 +105078,43 @@ html[data-theme="glass"] #crypto-ticker{
         ладно(function(){ apiCall('/me/universe',
           {method:'POST', body: JSON.stringify({universe: нов})}).catch(function(){}); });
       }
-      ладно(function(){ if(typeof wDone !== 'undefined' && wDone) _refreshWorld(); });
+      перерисовать();
     }catch(_){}
+  }
+
+  /* v=742 · СТОРОЖ НЕ ИМЕЕТ ПРАВА ТРОГАТЬ ЭКРАН ПРОСТО ТАК.
+
+     Анна: «я весь месяц прикручивал всё, чтобы оно не телепалось, а
+     сейчас телепается ещё сильнее».
+
+     Справедливо. За вечер я навесил несколько сторожей по таймеру, и
+     каждый при срабатывании перерисовывал кусок экрана. Перерисовка
+     мира — это снос всех кубов и сборка заново, то есть видимый рывок.
+
+     Теперь одно правило на всех: перерисовка только если карта
+     действительно открыта, и не чаще раза в десять секунд. Данные
+     сторож поправит тихо, а показывать их будет тот, кто и так рисует
+     этот экран. */
+  var рисовали = 0;
+  function картаНаЭкране(){
+    try{
+      var х = document.getElementById('world-canvas');
+      if(!х) return false;
+      var р = х.getBoundingClientRect();
+      if(р.width < 4 || р.height < 4) return false;
+      var с = getComputedStyle(х);
+      return с.display !== 'none' && с.visibility !== 'hidden';
+    }catch(_){ return false; }
+  }
+  function перерисовать(){
+    ладно(function(){
+      if(typeof wDone === 'undefined' || !wDone) return;
+      if(!картаНаЭкране()) return;
+      var т = Date.now();
+      if(т - рисовали < 10000) return;
+      рисовали = т;
+      _refreshWorld();
+    });
   }
   window.cwПересобратьОтбор = пересобрать;
 
@@ -105435,8 +105484,15 @@ html[data-theme="glass"] #crypto-ticker{
       if(!менялось) return;
       localStorage.setItem('cw_my_profile', JSON.stringify(п));
       ладно(function(){ if(typeof app !== 'undefined') app.myProfile = Object.assign(app.myProfile || {}, п); });
+      /* v=742 · Значок в шапке поправить можно — он маленький и на месте.
+         А вот общий перерисовщик профиля зовём только если профиль
+         действительно открыт: иначе это рывок на ровном месте. */
       ладно(function(){ if(typeof _syncTopbarAvatar === 'function') _syncTopbarAvatar(); });
-      ладно(function(){ if(typeof updateProfileUI === 'function') updateProfileUI(); });
+      ладно(function(){
+        var п = document.getElementById('pe-overlay') || document.getElementById('modal-profile-edit');
+        var открыт = п && getComputedStyle(п).display !== 'none';
+        if(открыт && typeof updateProfileUI === 'function') updateProfileUI();
+      });
     });
   }
 
@@ -105715,11 +105771,10 @@ html[data-theme="glass"] #crypto-ticker{
       if(р && typeof р.then === 'function') р.catch(function(){});
     });
     /* Мир уже собран — пересобрать его с новым списком. */
+    /* v=742 · Мир сами не перерисовываем: пересборка отбора сделает это
+       сама, если состав кубов правда изменился и карта на экране.
+       Лишний снос и сборка — это рывок, который видно. */
     setTimeout(function(){
-      ладно(function(){
-        if(typeof wDone !== 'undefined' && wDone && typeof _refreshWorld === 'function')
-          _refreshWorld();
-      });
       ладно(function(){
         if(typeof window.cwПересобратьОтбор === 'function') window.cwПересобратьОтбор();
       });
