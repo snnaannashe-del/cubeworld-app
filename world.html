@@ -9,9 +9,9 @@
      кусок старой страницы: та самая «лишняя страница», которая
      мелькала перед нужной. Теперь уход происходит до того, как
      нарисовано хоть что-нибудь. -->
-<script id="vf-cache-bust">/* v=730 · Смена версии и свежесть файла.
+<script id="vf-cache-bust">/* v=732 · Смена версии и свежесть файла.
 
-   Снаружи (на домене) работает как раньше: нет ?v=730 в адресе — добавляем
+   Снаружи (на домене) работает как раньше: нет ?v=732 в адресе — добавляем
    и перезагружаемся один раз. Браузер видит новый адрес и берёт новый файл.
 
    Дома и по домашней сети (localhost, 127.0.0.1, 192.168.*, 10.*) раньше
@@ -46,7 +46,7 @@
   window.cwУйтиНа = уходим;
   var h = location.hostname || "";
   var дома = (h === "localhost" || h === "127.0.0.1" || h === "" || /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./.test(h));
-  window.CW_ВЕРСИЯ = "730";
+  window.CW_ВЕРСИЯ = "732";
   if(дома){
     /* v=454: при нажатии «обновить» страница грузилась ДВАЖДЫ. Сначала
        браузер открывал её, потом этот код видел старую метку времени и
@@ -74,7 +74,7 @@
       var м = /[?&]t=(\d+)/.exec(location.search || "");
       var было = м ? +м[1] : 0;
       if(Date.now() - было > 5000){
-        уходим(location.pathname + "?v=730&t=" + Date.now() + (location.hash || ""));
+        уходим(location.pathname + "?v=732&t=" + Date.now() + (location.hash || ""));
       }
     }
     return;
@@ -6898,8 +6898,13 @@ function wDrawCube(obj){
   // Sort back-to-front by average depth
   const sorted=faces.map(f=>({...f,depth:f.vi.reduce((s,i)=>s+(proj[i]?.z??0),0)/4})).sort((a,b)=>a.depth-b.depth);
   sorted.forEach(f=>{
-    const pts=f.vi.map(i=>proj[i]).filter(Boolean);
-    if(pts.length<3)return;
+    /* v=732 · Грань рисуем только целиком. Раньше тут стояло
+       «.filter(Boolean)»: угол, не попавший в кадр, молча выбрасывался,
+       и четырёхугольная грань рисовалась по трём точкам — осколком.
+       Сейчас этой рисовалкой почти никогда не пользуются (её подменяет
+       рисовалка форм ниже), но пусть и она будет честной. */
+    const pts=f.vi.map(i=>proj[i]);
+    if(pts.some(p=>!p))return;
     const br=f.sh*(hov?1.3:1);
     const fr=Math.min(255,Math.round(r*br)),fg=Math.min(255,Math.round(g*br)),fb=Math.min(255,Math.round(b*br));
     wCtx.beginPath();
@@ -7009,9 +7014,14 @@ function _refreshWorld(){
   (wObjects||[]).forEach(o=>{if(o.cube&&o.cube.id)_prev[o.cube.id]={x:o.x,y:o.y,z:o.z,size:o.size,rotY:o.rotY,rotVY:o.rotVY,floatOff:o.floatOff,floatSpd:o.floatSpd};});
   wObjects=[];
   const ov=document.getElementById('world-overlay');if(ov)ov.innerHTML='';
+  /* v=731 · Пустая вселенная больше не означает «не показывать ничего».
+     Раньше у человека с пустым списком мир был чёрным, а окно выбора
+     открывалось снова и снова — выйти было нечем. Нет отбора — показываем
+     все кубы; как только человек выберет своё, отбор заработает. */
   (app.cubes||[]).forEach((cube,i)=>{
     if(cube.life<=0)return;
-    if(!(app.myUniverse||[]).includes(cube.id))return;
+    var отбор = app.myUniverse || [];
+    if(отбор.length && !отбор.includes(cube.id))return;
     _addObjToWorld(cube,i,_prev[cube.id]);
   });
 }
@@ -7035,7 +7045,12 @@ function initWorld(){
   // Create objects
   wObjects=[];
   const ov=document.getElementById('world-overlay');ov.innerHTML='';
-  app.cubes.forEach((cube,i)=>{if(cube.life<=0)return;if(!app.myUniverse.includes(cube.id))return;_addObjToWorld(cube,i);});
+  /* v=731 · То же правило при первой сборке мира: пустой список — не
+     повод оставить человека в пустоте. */
+  app.cubes.forEach((cube,i)=>{if(cube.life<=0)return;
+    var отбор=app.myUniverse||[];
+    if(отбор.length && !отбор.includes(cube.id))return;
+    _addObjToWorld(cube,i);});
   // Size canvas
   const rsz=()=>{
     const dpr=window.devicePixelRatio||1;
@@ -7208,6 +7223,13 @@ function _saveUniModalState(open, tab){
   try{localStorage.setItem('cw_uni_modal',JSON.stringify({open:!!open,tab:tab||'all'}));}catch(e){}
 }
 function _restoreUniModal(){
+  /* v=731 · Окно «Мой Юниверс» больше не открывается само при запуске.
+     Задумка была удобная: закрыл страницу с открытым окном — вернулся и
+     продолжил. На деле вышла ловушка: мир пустой, окно всплывает при
+     каждом заходе, и человек не может до мира добраться. Открывать это
+     окно должен человек, а не страница. Метку на всякий случай стираем. */
+  try{ localStorage.removeItem('cw_uni_modal'); }catch(_){}
+  if(true) return;
   try{
     const s=localStorage.getItem('cw_uni_modal');
     if(!s) return;
@@ -7482,7 +7504,10 @@ function _renderMineCubes(grid){
     const lifeStr=isExpired?'истёк':cube.life>0?fmtTime(cube.life):'∞';
     const isBackend=!!cube.backendId;
     const canDel=isBackend?'':'opacity:.4;pointer-events:none;';
-    const inUni=(app.myUniverse||[]).includes(cube.id);
+    /* v=731 · Пустой список значит «показываем всё» — значит и галочки
+       стоят у всех. Нажатие «Сохранить» тогда закрепит это как есть. */
+    const _отбор=(app.myUniverse||[]);
+    const inUni=(_отбор.length===0) || _отбор.includes(cube.id);
     const expiredBadge=isExpired?'<span style="font-size:9px;background:rgba(255,59,48,.2);color:var(--tint-red);border-radius:4px;padding:1px 5px;margin-left:4px">истёк</span>':'';
     return '<div class="uni-cube-card'+(inUni?' in-universe':'')+'" id="uni-card-'+cube.id+'" style="flex-direction:column;align-items:flex-start;gap:8px;'+(isExpired?'opacity:.7;':'')+'" >'+
       '<div style="display:flex;align-items:center;gap:8px;width:100%" onclick="'+(isExpired?'':' toggleMineCube(\''+cube.id+'\')')+'" style="cursor:'+(isExpired?'default':'pointer')+'">'+
@@ -17230,12 +17255,16 @@ async function _cwUploadChunked(file, t, kind, setBar){
 
 /* Загрузка целиком — для мелких файлов. */
 async function _cwUploadWhole(file, t, kind, setBar){
+  /* v=732 · Прямая запись в хранилище больше не выдаётся сервером, но
+     старый билет может ещё лежать в чьём-то открытом окне. Поэтому путь
+     оставлен — и если он не прошёл, мы не сдаёмся молча, как раньше, а
+     кладём файл через свой сервер. Именно это «return null» и выглядело
+     у Анны как «Ошибка загрузки, попробуй снова». */
   if(t.mode === 'put'){
-    // Прямо в хранилище, мимо нашего сервера.
-    var r = await fetch(t.upload_url, {method:'PUT', headers:t.headers||{}, body:file});
-    if(!r.ok) return null;
-    if(setBar) setBar(95);
-    return t.public_url;
+    try{
+      var r = await fetch(t.upload_url, {method:'PUT', headers:t.headers||{}, body:file});
+      if(r.ok){ if(setBar) setBar(95); return t.public_url; }
+    }catch(_){}
   }
   var fd = new FormData();
   fd.append('file', file, file.name || 'file');
@@ -65383,7 +65412,22 @@ html[class*="сем-"]:not(.мс-ок) #cw3-box .cw3-нет{display:block!import
   function язык(){
     var l = пам('cw_ui_lang') || пам('cw_lang');
     if (ЯЗЫКИ.indexOf(l) >= 0) return l;
-    return угадать();
+    /* v=732 · ПОЧЕМУ У АННЫ СРЕДИ РУССКОГО ВЫЛЕЗАЛ АНГЛИЙСКИЙ.
+       Снимки: «Go live», «Add content», «New post», TYPE, SIGNATURE,
+       TAGS — а рядом, в том же окне, «Отмена», «Опубликовать» и
+       «ВИДЕО И ОБЛОЖКА» по-русски. Разметка у всех этих надписей
+       русская: английскими их делал наш же перевод.
+       Стоило памяти языка опустеть — после чистки хранилища, в другом
+       окне, на другом устройстве, в приватной вкладке — как здесь
+       срабатывало «угадать по браузеру». Chrome на Маке сплошь и рядом
+       стоит английским, и приложение послушно переводило половину
+       надписей на английский. Половину — потому что словарь неполный:
+       чего в нём нет, то оставалось русским. Отсюда и мешанина.
+       Теперь без памяти берём русский, а не браузер. Кому нужен другой
+       язык — выбирает его на титульной или в «Оформлении», и выбор
+       запоминается. Угадывание осталось только для титульной, где
+       человек ещё ничего не выбирал. */
+    return 'ru';
   }
 
   function таблица(){
