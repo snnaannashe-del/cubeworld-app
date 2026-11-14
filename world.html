@@ -9,9 +9,9 @@
      кусок старой страницы: та самая «лишняя страница», которая
      мелькала перед нужной. Теперь уход происходит до того, как
      нарисовано хоть что-нибудь. -->
-<script id="vf-cache-bust">/* v=732 · Смена версии и свежесть файла.
+<script id="vf-cache-bust">/* v=733 · Смена версии и свежесть файла.
 
-   Снаружи (на домене) работает как раньше: нет ?v=732 в адресе — добавляем
+   Снаружи (на домене) работает как раньше: нет ?v=733 в адресе — добавляем
    и перезагружаемся один раз. Браузер видит новый адрес и берёт новый файл.
 
    Дома и по домашней сети (localhost, 127.0.0.1, 192.168.*, 10.*) раньше
@@ -46,7 +46,7 @@
   window.cwУйтиНа = уходим;
   var h = location.hostname || "";
   var дома = (h === "localhost" || h === "127.0.0.1" || h === "" || /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./.test(h));
-  window.CW_ВЕРСИЯ = "732";
+  window.CW_ВЕРСИЯ = "733";
   if(дома){
     /* v=454: при нажатии «обновить» страница грузилась ДВАЖДЫ. Сначала
        браузер открывал её, потом этот код видел старую метку времени и
@@ -74,7 +74,7 @@
       var м = /[?&]t=(\d+)/.exec(location.search || "");
       var было = м ? +м[1] : 0;
       if(Date.now() - было > 5000){
-        уходим(location.pathname + "?v=732&t=" + Date.now() + (location.hash || ""));
+        уходим(location.pathname + "?v=733&t=" + Date.now() + (location.hash || ""));
       }
     }
     return;
@@ -5220,8 +5220,18 @@ i.ti-share-3{color:var(--accent,#0095f6)!important;font-size:12px!important}
   <div class="modal">
     <h3>✦ Создать куб</h3>
     <label>Название</label>
-    <input type="text" id="cc-name" placeholder="Мой куб" maxlength="40" oninput="validateCubeName(this)">
-    <div id="cc-name-err" style="display:none;margin-top:6px;padding:8px 12px;border-radius:8px;background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.3);color:var(--tint-red);font-size:12px;animation:fadeIn .2s ease"></div>
+    <!-- v=733 · ПОЧЕМУ SAFARI ПРЕДЛАГАЛ ЗДЕСЬ БАНКОВСКИЕ КАРТЫ.
+         Поле называлось id="cc-name". В веб-стандарте «cc-name» — это
+         ровно «имя держателя карты» (cc = credit card), и Safari читает
+         имена полей как подсказку. Он честно решал, что человек вводит
+         имя с карты, и показывал над клавиатурой Visa и Mastercard.
+         Переименовали поле и запретили автозаполнение явно. -->
+    <input type="text" id="cw-имя-куба" placeholder="Мой куб" maxlength="40"
+           name="cw-имя-куба" autocomplete="off" autocorrect="off"
+           autocapitalize="sentences" spellcheck="false" inputmode="text"
+           data-lpignore="true" data-form-type="other"
+           oninput="validateCubeName(this)">
+    <div id="cw-имя-куба-ошибка" style="display:none;margin-top:6px;padding:8px 12px;border-radius:8px;background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.3);color:var(--tint-red);font-size:12px;animation:fadeIn .2s ease"></div>
     <label>Тип куба</label>
     <select id="cc-type">
       <option value="public">🌐 Публичный — виден всем в мире</option>
@@ -7255,7 +7265,7 @@ function submitEntryKey(){
 document.getElementById('mke-input').addEventListener('keydown',e=>{if(e.key==='Enter')submitEntryKey();});
 function openCreateCube(){openModal('modal-create-cube');}
 function validateCubeName(inp){
-  const v=inp.value;const err=document.getElementById('cc-name-err');
+  const v=inp.value;const err=document.getElementById('cw-имя-куба-ошибка');
   if(!err)return;
   if(v.length===0){err.style.display='none';return;}
   const len=[...v].length; // count unicode codepoints (emojis = 1)
@@ -7263,13 +7273,13 @@ function validateCubeName(inp){
   else{err.style.display='none';}
 }
 async function submitCreateCube(){
-  const rawName=document.getElementById('cc-name').value.trim();
+  const rawName=document.getElementById('cw-имя-куба').value.trim();
   const nameLen=[...rawName].length;
-  const errEl=document.getElementById('cc-name-err');
+  const errEl=document.getElementById('cw-имя-куба-ошибка');
   // Validation
   if(nameLen===0){
     if(errEl){errEl.style.display='block';errEl.textContent='⚠️ Введи название куба — от 1 до 40 символов';}
-    document.getElementById('cc-name').focus();return;
+    document.getElementById('cw-имя-куба').focus();return;
   }
   if(nameLen>40){
     if(errEl){errEl.style.display='block';errEl.textContent='⚠️ Название слишком длинное — максимум 40 символов';}
@@ -57992,8 +58002,8 @@ html #cw-play-sheet .pc-fold{border-bottom-color:transparent!important}
     о.id = 'cw-акк';
     о.innerHTML = '<div class="кор">'
       + '<h3>Добавить аккаунт</h3>'
-      + '<div class="под">Введи ключ другого аккаунта. Этот останется в списке — '
-      + 'между ними можно переключаться и менять их местами.</div>'
+      /* v=733 · Пояснение убрано по просьбе Анны: «Удалить блок текста».
+         Поле с подсказкой CUBE-XXXX-XXXX говорит само за себя. */
       + '<input id="cw-акк-поле" placeholder="CUBE-XXXX-XXXX" autocomplete="off" '
       + 'autocapitalize="characters" spellcheck="false">'
       + '<div class="бед" id="cw-акк-бед"></div>'
@@ -104919,6 +104929,68 @@ html[data-theme="glass"] #crypto-ticker{
   var часы = setInterval(попытка, 800);
   setTimeout(function(){ clearInterval(часы); }, 90000);
   попытка();
+})();
+</script>
+
+<script id="cw-fix733-медиа-запасной-путь">
+(function(){
+  'use strict';
+  /* ══════════════════════════════════════════════════════════════════
+     v=733 · КОГДА ЗОНА ДОСТАВКИ МОЛЧИТ — БЕРЁМ ФАЙЛ У СВОЕГО СЕРВЕРА.
+
+     14 ноября Bunny отключил нашу зону доставки: на любой файл он отвечал
+     «Domain suspended or not configured». Запись работала, чтение — нет.
+     Снаружи это выглядело как «не работает вообще ничего»: фото в
+     переписке квадратиком, видео одним треугольником, обложка с
+     вопросиком, файлы, голосовые и кружки молчат. Один чужой домен
+     уронил всю медиа-часть площадки разом.
+
+     Сервер теперь выписывает новые ссылки на себя, пока зона молчит. Но
+     в переписке и постах остались старые ссылки на b-cdn.net — их уже не
+     переписать. Поэтому ловим неудачу здесь: не загрузилась картинка,
+     ролик или голосовое с b-cdn.net — молча берём тот же файл у своего
+     сервера по адресу /media/… Человек ничего не замечает.
+
+     Ровно одна попытка на элемент: иначе при настоящем отсутствии файла
+     получилась бы бесконечная карусель запросов. ══════════════════════ */
+  var ЦДН = 'cubeworld.b-cdn.net';
+
+  function база(){
+    try{ if(typeof CUBE_API !== 'undefined' && CUBE_API) return String(CUBE_API); }catch(_){}
+    return '';
+  }
+
+  function перевести(адрес){
+    if(!адрес) return null;
+    try{
+      var u = new URL(адрес, location.href);
+      if(u.hostname !== ЦДН) return null;
+      var б = база(); if(!б) return null;
+      return б.replace(/\/+$/, '') + '/media' + u.pathname + (u.search || '');
+    }catch(_){ return null; }
+  }
+
+  document.addEventListener('error', function(е){
+    var э = е && е.target;
+    if(!э || !э.tagName) return;
+    var т = String(э.tagName).toLowerCase();
+    if(т !== 'img' && т !== 'video' && т !== 'audio' && т !== 'source') return;
+    try{ if(э.dataset && э.dataset.cwЗапас === '1') return; }catch(_){ return; }
+    var нов = перевести(э.currentSrc || э.src || э.getAttribute('src') || '');
+    if(!нов) return;
+    try{ э.dataset.cwЗапас = '1'; }catch(_){}
+    э.src = нов;
+    if(т === 'source'){
+      var р = э.parentElement;
+      if(р && typeof р.load === 'function'){ try{ р.load(); }catch(_){} }
+    }
+  }, true);
+
+  /* Фоновая картинка у плиток галереи грузится не элементом, а стилем —
+     отказ браузер не сообщает. Такие места переписываем заранее. */
+  window.cwМедиаАдрес = function(адрес){
+    return перевести(адрес) && !window.cwЦднЖив ? перевести(адрес) : адрес;
+  };
 })();
 </script>
 
