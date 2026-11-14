@@ -9,9 +9,9 @@
      кусок старой страницы: та самая «лишняя страница», которая
      мелькала перед нужной. Теперь уход происходит до того, как
      нарисовано хоть что-нибудь. -->
-<script id="vf-cache-bust">/* v=728 · Смена версии и свежесть файла.
+<script id="vf-cache-bust">/* v=729 · Смена версии и свежесть файла.
 
-   Снаружи (на домене) работает как раньше: нет ?v=728 в адресе — добавляем
+   Снаружи (на домене) работает как раньше: нет ?v=729 в адресе — добавляем
    и перезагружаемся один раз. Браузер видит новый адрес и берёт новый файл.
 
    Дома и по домашней сети (localhost, 127.0.0.1, 192.168.*, 10.*) раньше
@@ -46,7 +46,7 @@
   window.cwУйтиНа = уходим;
   var h = location.hostname || "";
   var дома = (h === "localhost" || h === "127.0.0.1" || h === "" || /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./.test(h));
-  window.CW_ВЕРСИЯ = "728";
+  window.CW_ВЕРСИЯ = "729";
   if(дома){
     /* v=454: при нажатии «обновить» страница грузилась ДВАЖДЫ. Сначала
        браузер открывал её, потом этот код видел старую метку времени и
@@ -74,7 +74,7 @@
       var м = /[?&]t=(\d+)/.exec(location.search || "");
       var было = м ? +м[1] : 0;
       if(Date.now() - было > 5000){
-        уходим(location.pathname + "?v=728&t=" + Date.now() + (location.hash || ""));
+        уходим(location.pathname + "?v=729&t=" + Date.now() + (location.hash || ""));
       }
     }
     return;
@@ -19021,10 +19021,11 @@ setInterval(function(){
     <input type="text" class="uni-search" placeholder="🔍 Поиск кубов по названию..." oninput="filterUniGrid(this.value)" style="width:100%;box-sizing:border-box;margin-bottom:8px">
     <div id="uni-hint" class="uni-hint"></div>
     <div id="uni-grid" class="uni-grid"></div>
+    <!-- v=729 · «Отмена» убрана: крестик наверху делает то же самое, а три
+         кнопки в ряд жались друг к другу. Две оставшиеся делят ширину поровну. -->
     <div style="display:flex;gap:8px;margin-top:14px">
-      <button onclick="closeModal('modal-universe')" style="padding:10px 16px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:14px;font-weight:500">Отмена</button>
-      <button class="uni-create-btn" style="flex:1" onclick="closeModal('modal-universe');openCreateCube()">+ Создать куб</button>
-      <button class="uni-save-btn" style="flex:1" onclick="saveUniverse()">✓ Сохранить</button>
+      <button class="uni-create-btn" style="flex:1 1 0;min-width:0" onclick="closeModal('modal-universe');openCreateCube()">+ Создать куб</button>
+      <button class="uni-save-btn" style="flex:1 1 0;min-width:0" onclick="saveUniverse()">✓ Сохранить</button>
     </div>
   </div>
 </div>
@@ -57925,11 +57926,32 @@ html #cw-play-sheet .pc-fold{border-bottom-color:transparent!important}
       return {ok:false, беда:(e && e.message) || 'Сервер не ответил'};
     }
   }
+  /* v=729 · Мёртвый ключ уходит из списка сам.
+
+     Список аккаунтов живёт в памяти браузера и сервером не проверяется.
+     После обнуления площадки (или если ключ просто перестал действовать)
+     строка оставалась на месте: Анна завела ОДИН ключ, а в кабинете
+     видела два. Нажать на такую строку нельзя — вход не проходит.
+
+     Теперь ответ сервера «такого ключа нет» означает, что помнить его
+     незачем: вычёркиваем и говорим об этом вслух. Чужих строк не трогаем —
+     отказ по сети или блокировка списка не касаются. */
+  function забыть(ключ){
+    var л = список().filter(function(a){ return a.key !== ключ; });
+    записать(л);
+  }
+  window.cwЗабытьАккаунт = забыть;
+
   window.cwSwitchAccount = function(ключ){
     return войтиКлючом(ключ).then(function(р){
-      if(р.ok) location.reload();
-      else крик('Не вышло: ' + р.беда);
-      return р.ok;
+      if(р.ok){ location.reload(); return true; }
+      if(/нет или он больше не действует/i.test(String(р.беда || ''))){
+        забыть(ключ);
+        крик('Этот ключ больше не действует — убрал его из списка');
+      } else {
+        крик('Не вышло: ' + р.беда);
+      }
+      return false;
     });
   };
 
