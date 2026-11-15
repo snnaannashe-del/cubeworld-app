@@ -9,9 +9,9 @@
      кусок старой страницы: та самая «лишняя страница», которая
      мелькала перед нужной. Теперь уход происходит до того, как
      нарисовано хоть что-нибудь. -->
-<script id="vf-cache-bust">/* v=745 · Смена версии и свежесть файла.
+<script id="vf-cache-bust">/* v=747 · Смена версии и свежесть файла.
 
-   Снаружи (на домене) работает как раньше: нет ?v=745 в адресе — добавляем
+   Снаружи (на домене) работает как раньше: нет ?v=747 в адресе — добавляем
    и перезагружаемся один раз. Браузер видит новый адрес и берёт новый файл.
 
    Дома и по домашней сети (localhost, 127.0.0.1, 192.168.*, 10.*) раньше
@@ -46,7 +46,7 @@
   window.cwУйтиНа = уходим;
   var h = location.hostname || "";
   var дома = (h === "localhost" || h === "127.0.0.1" || h === "" || /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./.test(h));
-  window.CW_ВЕРСИЯ = "745";
+  window.CW_ВЕРСИЯ = "747";
   if(дома){
     /* v=454: при нажатии «обновить» страница грузилась ДВАЖДЫ. Сначала
        браузер открывал её, потом этот код видел старую метку времени и
@@ -74,7 +74,7 @@
       var м = /[?&]t=(\d+)/.exec(location.search || "");
       var было = м ? +м[1] : 0;
       if(Date.now() - было > 5000){
-        уходим(location.pathname + "?v=745&t=" + Date.now() + (location.hash || ""));
+        уходим(location.pathname + "?v=747&t=" + Date.now() + (location.hash || ""));
       }
     }
     return;
@@ -158,6 +158,111 @@
 html.cw-тихо .int-section{animation:none!important}
 .int-section.cw-без-съезда{animation:none!important}
 </style>
+<script id="cw-fix747-кубы-спрашиваем-сразу">
+(function(){
+  /* ══════════════════════════════════════════════════════════════════════
+     v=747 · СПРАШИВАЕМ КУБЫ С ПЕРВОЙ СЕКУНДЫ, А НЕ С ТРЕТЬЕЙ.
+
+     Анна: «до этого всё работало, бага не было, а ты предлагаешь поставить
+     надпись „загружается“». Справедливо — надпись это замазать, а не
+     починить.
+
+     Что происходит на самом деле. Шапка с надписью «0 кубов» нарисована
+     в первые миллисекунды: она лежит в начале файла. А код, который
+     спрашивает у сервера кубы, лежит дальше, и до него очередь доходит
+     через несколько секунд. Сервер при этом отвечает за полсекунды —
+     замерено с её же мака: /cubes → 200, 548 мс, девять кубов. То есть
+     ждём мы не сервер, а собственный разбор файла.
+
+     Запрос к серверу разбора не требует. Значит его можно пустить сразу,
+     здесь, в начале файла, пока страница ещё читается. Ответ полежит
+     наготове, а когда настоящий код дойдёт и спросит то же самое — отдадим
+     готовое, без второго похода в сеть.
+
+     Карта в итоге собирается сразу полной, а не пустой с дорисовкой.
+     ══════════════════════════════════════════════════════════════════════ */
+  try{
+    var пути = ['/cubes', '/me', '/me/cubes', '/me/cube-memberships', '/me/universe'];
+
+    var h = location.hostname || '';
+    var дома = (h === 'localhost' || h === '127.0.0.1' || h === '[::1]');
+    var база = дома ? (location.protocol + '//' + h + ':8000')
+                    : 'https://cubeworld-backend-1.onrender.com';
+
+    var токен = null, устройство = '';
+    try{
+      токен = localStorage.getItem('cw_access_token');
+      устройство = localStorage.getItem('cw_device_id') || '';
+    }catch(_){}
+
+    window.__cwРано = {};
+    if(токен){
+      var шапки = {
+        'Content-Type': 'application/json',
+        'X-Device-Id': устройство,
+        'Authorization': 'Bearer ' + токен
+      };
+      пути.forEach(function(п){
+        try{
+          window.__cwРано[п] = {
+            начато: Date.now(),
+            взяли: false,
+            обещание: fetch(база + п, {headers: шапки})
+              .then(function(о){ return (о && о.ok) ? о.json() : null; })
+              .catch(function(){ return null; })
+          };
+        }catch(_){}
+      });
+    }
+
+    /* Когда появится обычный спрашивальщик — подменяем его так, чтобы на
+       первый запрос по этим адресам он брал уже приехавший ответ.
+       Не вышло (нет сети, просроченный ключ, пустой ответ) — идём
+       обычным путём, как будто нас тут и не было. */
+    var поставлен = false;
+    function поставить(){
+      if(поставлен) return true;
+      if(typeof window.apiCall !== 'function') return false;
+      поставлен = true;
+      var прежний = window.apiCall;
+
+      window.apiCall = function(путь, способ, тело){
+        var сам = this, доводы = arguments;
+        function обычным(){ return прежний.apply(сам, доводы); }
+        try{
+          if(typeof путь !== 'string') return обычным();
+          var ключ = путь.split('?')[0];
+          var з = window.__cwРано[ключ];
+          if(!з || з.взяли) return обычным();
+
+          /* Только чтение: всё, что меняет, идёт обычным путём. */
+          var м = 'GET';
+          if(typeof способ === 'string') м = способ.toUpperCase();
+          else if(способ && typeof способ === 'object' && способ.method)
+            м = String(способ.method).toUpperCase();
+          if(м !== 'GET') return обычным();
+
+          /* Ответ, пролежавший больше минуты, считаем несвежим. */
+          if(Date.now() - з.начато > 60000) return обычным();
+
+          з.взяли = true;
+          return з.обещание.then(function(д){
+            if(д === null || д === undefined) return обычным();
+            return д;
+          }).catch(function(){ return обычным(); });
+        }catch(_){ return обычным(); }
+      };
+      return true;
+    }
+
+    if(!поставить()){
+      var ч = setInterval(function(){ if(поставить()) clearInterval(ч); }, 20);
+      setTimeout(function(){ try{ clearInterval(ч); }catch(_){} }, 20000);
+    }
+  }catch(_){}
+})();
+</script>
+
 <script id="cw-fix743-петля-входа-в-мир">
 (function(){
   /* ══════════════════════════════════════════════════════════════════════
@@ -106068,6 +106173,106 @@ html[data-theme="glass"] #crypto-ticker{
   });
 
   window.cwСверитьКарту = сверить;
+})();
+</script>
+
+<script id="cw-fix746-строка-наблюдения">
+(function(){
+  /* ══════════════════════════════════════════════════════════════════════
+     v=746 · СТРОКА НАБЛЮДЕНИЯ.
+
+     Анна проходит круг на телефоне, карта на миг пустеет — а я вижу
+     экран только в тот момент, когда делаю снимок, и промахиваюсь мимо
+     провала. Пересылать видео — долго и мучительно.
+
+     Поэтому страница следит за собой сама. Каждые 200 мс она смотрит:
+     кубы в памяти есть, карта на экране — а тел на ней нет? Значит
+     провал. Считаем, сколько их было и какой самый долгий, и пишем это
+     в угол экрана. Один снимок — и видно всё.
+
+     Строка маленькая, полупрозрачная, нажатием прячется. Выключить
+     совсем: в адресе добавить ?тихо=1 — или сказать мне, уберу блок.
+     ══════════════════════════════════════════════════════════════════════ */
+  try{
+    if(location.search.indexOf('тихо=1') >= 0) return;
+
+    var провалов = 0, самый = 0, началоПровала = 0, идёт = false;
+    var строка = null;
+
+    function ладно(д){ try{ return д(); }catch(_){ return null; } }
+
+    function карта(){
+      var в = document.getElementById('v-world');
+      if(!в || !в.classList.contains('active')) return null;
+      var х = document.getElementById('world-canvas');
+      if(!х) return null;
+      var р = х.getBoundingClientRect();
+      if(р.width < 4 || р.height < 4) return null;
+      return true;
+    }
+
+    function числа(){
+      return {
+        в: ладно(function(){ return window.CW_ВЕРСИЯ; }) || '?',
+        к: ладно(function(){ return (window.app && app.cubes)
+              ? app.cubes.filter(function(c){ return c && c.life > 0; }).length : -1; }),
+        т: ладно(function(){ return (typeof wObjects !== 'undefined' && wObjects)
+              ? wObjects.length : -1; }),
+        с: ладно(function(){ return (typeof wDone !== 'undefined') ? (wDone ? 1 : 0) : -1; })
+      };
+    }
+
+    function поставить(){
+      if(строка && строка.parentNode) return строка;
+      строка = document.createElement('div');
+      строка.id = 'cw-строка-наблюдения';
+      строка.style.cssText = [
+        'position:fixed', 'left:4px', 'bottom:4px', 'z-index:2147483646',
+        'font:10px/1.25 ui-monospace,Menlo,monospace', 'color:#9fe8ff',
+        'background:rgba(0,0,0,.62)', 'padding:3px 6px', 'border-radius:6px',
+        'pointer-events:auto', 'cursor:pointer', 'white-space:nowrap',
+        'letter-spacing:.2px', 'user-select:none'
+      ].join(';');
+      строка.addEventListener('click', function(){
+        строка.style.display = 'none';
+      });
+      (document.body || document.documentElement).appendChild(строка);
+      return строка;
+    }
+
+    function шаг(){
+      ладно(function(){
+        var ч = числа();
+        var наЭкране = карта();
+        var пусто = (наЭкране === true) && ч.к > 0 && ч.т === 0;
+
+        var т = Date.now();
+        if(пусто && !идёт){ идёт = true; началоПровала = т; провалов++; }
+        if(!пусто && идёт){
+          идёт = false;
+          var д = т - началоПровала;
+          if(д > самый) самый = д;
+        }
+        if(идёт){
+          var д2 = т - началоПровала;
+          if(д2 > самый) самый = д2;
+        }
+
+        var с = поставить();
+        с.textContent =
+          'v' + ч.в + ' · кубов ' + ч.к + ' · на карте ' + ч.т +
+          ' · мир ' + (ч.с === 1 ? 'собран' : ч.с === 0 ? 'НЕ СОБРАН' : '?') +
+          ' · провалов ' + провалов +
+          (самый ? (' · самый ' + (самый / 1000).toFixed(1) + ' с') : '') +
+          (идёт ? ' · ИДЁТ' : '');
+        с.style.color = идёт ? '#ffb3b3' : (провалов ? '#ffe08a' : '#9fe8ff');
+      });
+    }
+
+    setInterval(шаг, 200);
+    шаг();
+    window.cwНаблюдение = function(){ return {провалов: провалов, самыйМс: самый}; };
+  }catch(_){}
 })();
 </script>
 
