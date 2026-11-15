@@ -9,9 +9,9 @@
      кусок старой страницы: та самая «лишняя страница», которая
      мелькала перед нужной. Теперь уход происходит до того, как
      нарисовано хоть что-нибудь. -->
-<script id="vf-cache-bust">/* v=752 · Смена версии и свежесть файла.
+<script id="vf-cache-bust">/* v=753 · Смена версии и свежесть файла.
 
-   Снаружи (на домене) работает как раньше: нет ?v=752 в адресе — добавляем
+   Снаружи (на домене) работает как раньше: нет ?v=753 в адресе — добавляем
    и перезагружаемся один раз. Браузер видит новый адрес и берёт новый файл.
 
    Дома и по домашней сети (localhost, 127.0.0.1, 192.168.*, 10.*) раньше
@@ -46,7 +46,7 @@
   window.cwУйтиНа = уходим;
   var h = location.hostname || "";
   var дома = (h === "localhost" || h === "127.0.0.1" || h === "" || /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./.test(h));
-  window.CW_ВЕРСИЯ = "752";
+  window.CW_ВЕРСИЯ = "753";
   if(дома){
     /* v=454: при нажатии «обновить» страница грузилась ДВАЖДЫ. Сначала
        браузер открывал её, потом этот код видел старую метку времени и
@@ -74,7 +74,7 @@
       var м = /[?&]t=(\d+)/.exec(location.search || "");
       var было = м ? +м[1] : 0;
       if(Date.now() - было > 5000){
-        уходим(location.pathname + "?v=752&t=" + Date.now() + (location.hash || ""));
+        уходим(location.pathname + "?v=753&t=" + Date.now() + (location.hash || ""));
       }
     }
     return;
@@ -106350,6 +106350,141 @@ html[data-theme="glass"] #crypto-ticker{
     /* И один раз при запуске — чтобы вчерашняя память не ждала суток. */
     забыть();
     setTimeout(перерисовать, 1200);
+  }catch(_){}
+})();
+</script>
+
+<script id="cw-fix753-кружок-группы-один-вид">
+(function(){
+  /* ══════════════════════════════════════════════════════════════════════
+     v=753 · КРУЖОК ГРУППЫ ПЕРЕБИРАЕТ ЧЕТЫРЕ ВИДА ЗА ОДНУ ЗАГРУЗКУ.
+
+     Анна прислала десять кадров подряд и спросила: «сколько раз изменилась
+     иконка? сколько у неё разных форм?» Считаем по кадрам:
+
+        1. гладкий цветной кружок — просто заливка
+        2. цветной кружок со значком людей
+        3. настоящий снимок
+        4. чёрный пустой кружок
+
+     Четыре вида. И в «Информации» то же: сперва значок людей, потом снимок,
+     и так при КАЖДОМ нажатии.
+
+     Почему так. Кружок рисуют четыре слоя по очереди: разметка ставит
+     заливку и значок, слой снимков вставляет картинку, слой «одно лицо»
+     прячет значок классом. Каждый делает свой шаг — человек видит все
+     шаги. Пока снимки ехали по три секунды, первые шаги сливались в
+     ожидание; теперь снимок приходит за две миллисекунды, и перебор
+     промелькивает целиком.
+
+     Лечение: кружок должен появляться СРАЗУ в окончательном виде.
+     Мы помним, у каких групп есть снимок (и какой), и подставляем его
+     прямо в разметку карточки — ещё до того, как она попадёт на экран.
+     Ни заливки, ни значка, ни чёрного кружка: один вид с первого кадра.
+
+     Память о снимках живёт неделю и обновляется сама: как только снимок
+     загрузился, мы это записываем; если перестал — забываем.
+     ══════════════════════════════════════════════════════════════════════ */
+  try{
+    var КЛЮЧ = 'cw_группы_со_снимком';
+    var СРОК = 7 * 24 * 60 * 60 * 1000;
+
+    function склад(){
+      try{
+        var о = JSON.parse(localStorage.getItem(КЛЮЧ) || '{}') || {};
+        var т = Date.now(), чисто = {}, менялось = false;
+        for(var к in о){
+          if(о[к] && (т - о[к]) < СРОК) чисто[к] = о[к]; else менялось = true;
+        }
+        if(менялось) localStorage.setItem(КЛЮЧ, JSON.stringify(чисто));
+        return чисто;
+      }catch(_){ return {}; }
+    }
+    function запомнить(номер){
+      try{
+        var о = склад();
+        if(о[String(номер)]) return;
+        о[String(номер)] = Date.now();
+        localStorage.setItem(КЛЮЧ, JSON.stringify(о));
+      }catch(_){}
+    }
+    function забыть(номер){
+      try{
+        var о = склад();
+        if(!о[String(номер)]) return;
+        delete о[String(номер)];
+        localStorage.setItem(КЛЮЧ, JSON.stringify(о));
+      }catch(_){}
+    }
+
+    function основа(){
+      try{
+        if(typeof CUBE_API !== 'undefined' && CUBE_API) return CUBE_API;
+        if(typeof API_BASE !== 'undefined' && API_BASE) return API_BASE;
+      }catch(_){}
+      return '';
+    }
+    function адресСнимка(номер){ return основа() + '/groups/' + номер + '/avatar'; }
+
+    /* ── 1 · Карточка списка рисуется сразу со снимком ─────────────────── */
+    function поставитьОбёртку(){
+      if(typeof window.renderGroupCard !== 'function') return false;
+      if(window.renderGroupCard.__cwОдинВид) return true;
+      var прежний = window.renderGroupCard;
+
+      var обёртка = function(g){
+        var html = прежний.apply(this, arguments);
+        try{
+          if(!g || !g.id) return html;
+          if(!склад()[String(g.id)]) return html;      /* снимка не знаем — как было */
+
+          var адрес = адресСнимка(g.id);
+          /* Заменяем содержимое кружка на снимок и убираем заливку. */
+          html = html.replace(
+            /<div class="grp-list-av"([^>]*)>([\s\S]*?)<\/div>/,
+            function(всё, атрибуты, внутри){
+              var замок = /grp-list-lock/.test(внутри)
+                ? '<div class="grp-list-lock">\u{1F512}</div>' : '';
+              return '<div class="grp-list-av cw-со-снимком" data-cw-gav="' + g.id + '"' +
+                     ' style="background:#10131c">' +
+                     '<img class="cw-gav" src="' + адрес + '" alt=""' +
+                     ' style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">' +
+                     замок + '</div>';
+            });
+        }catch(_){}
+        return html;
+      };
+
+      обёртка.__cwОдинВид = true;
+      window.renderGroupCard = обёртка;
+      return true;
+    }
+
+    if(!поставитьОбёртку()){
+      var ч = setInterval(function(){ if(поставитьОбёртку()) clearInterval(ч); }, 80);
+      setTimeout(function(){ try{ clearInterval(ч); }catch(_){} }, 30000);
+    }
+
+    /* ── 2 · Учимся: снимок загрузился — помним, отвалился — забываем ──── */
+    function учиться(){
+      try{
+        var круги = document.querySelectorAll('.grp-list-item[id^="grp-card-"] .grp-list-av,' +
+                                              ' #gip-av-big, #grp-chat-overlay .gco-av-circle');
+        for(var i = 0; i < круги.length; i++){
+          var к = круги[i];
+          var карточка = к.closest ? к.closest('.grp-list-item[id^="grp-card-"]') : null;
+          var номер = карточка ? (карточка.id || '').replace('grp-card-', '')
+                               : (к.dataset ? (к.dataset.cwGav || '') : '');
+          if(!номер) continue;
+          var и = к.querySelector('img');
+          if(и && и.complete && и.naturalWidth > 0) запомнить(номер);
+          else if(и && и.complete && и.naturalWidth === 0) забыть(номер);
+        }
+      }catch(_){}
+    }
+    setInterval(учиться, 1500);
+    setTimeout(учиться, 1200);
+    setTimeout(учиться, 3000);
   }catch(_){}
 })();
 </script>
