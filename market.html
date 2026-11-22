@@ -1,0 +1,1614 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Маркетплейс · CubeWorld</title>
+<meta name="theme-color" content="#01010c">
+<link rel="icon" href="icons/favicon.svg?v=20261122-363">
+<link rel="stylesheet" href="shared/style.css?v=20261122-363">
+<link rel="stylesheet" href="shared/window.css?v=20261122-363">
+<link rel="stylesheet" href="shared/account.css?v=20261122-363">
+<script src="shared/theme.js?v=20261122-363"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261122-363">
+<!--
+  МАРКЕТПЛЕЙС.
+
+  Два разных мира под одним именем, и у сервера они тоже разные:
+
+      Цифровой  — /market — файлы, ключи, доступы. Покупка списывает CUBE
+                  и открывает покупателю текст доставки и файлы. Файлы
+                  закрыты до покупки: за ними ходят с ключом.
+      Шопинг    — /shop   — вещи. Снимки открыты всем, это и есть витрина.
+                  Покупка — заказ с адресом: деньги лежат у площадки, пока
+                  покупатель не скажет «получил».
+
+  Разделы, подразделы и состояния НЕ придуманы здесь: их отдаёт сервер в
+  том же ответе, что и товары. Напишешь свой список — он разойдётся с тем,
+  что сервер принимает, и половина разделов окажется пустой навсегда.
+
+  Чего нет и почему: переписка с продавцом. Чаты — отдельное окно, и
+  открыть в нём нужного человека по ссылке оно пока не умеет. Обещать
+  кнопку, которая никуда не ведёт, не будем.
+-->
+<style>
+
+/* ── шапка ───────────────────────────────────────────────────────── */
+.верх-рынка{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.верх-рынка h1{ margin:0; font-size:1.4rem; font-weight:700; letter-spacing:-.02em; }
+
+/* ── два раздела ─────────────────────────────────────────────────── */
+/* Кнопки по содержимому, а не во всю ширину. Прежде у каждой стояло
+   flex:1, они растягивались на пол-экрана, и внутри оставалось по
+   ладони пустоты с каждой стороны от слов. */
+.режимы{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+.режим{
+  flex:0 0 auto; display:flex; align-items:center; gap:8px;
+  padding:9px 14px; cursor:pointer; font-family:inherit;
+  border-radius:11px; border:1px solid transparent; background:none;
+  color:var(--текст3); font-size:0.8667rem; font-weight:800;
+  transition:background .13s ease, color .13s ease, transform .1s ease;
+}
+.режим:hover{ background:var(--поле); color:var(--текст); }
+.режим:active{ transform:scale(.97); }
+.режим.тут{ color:var(--текст); background:rgba(var(--синий-ргб), .18); }
+.режим .зн{ display:flex; color:var(--синий); }
+.режим .зн svg{ width:17px; height:17px; }
+.режим em{ font-style:normal; font-size:0.7rem; font-weight:600; color:var(--текст3); }
+
+/* ── разделы и подразделы ────────────────────────────────────────── */
+.катряд{
+  display:flex; gap:7px; scrollbar-width:none; padding-bottom:8px;
+  /* Вбок — да, вверх-вниз — нет. Браузер, увидев прокрутку по одной
+     оси, разрешает её и по другой: ряд разделов можно было зажать и
+     подтянуть вверх, и фишки уезжали под край. */
+  overflow-x:auto; overflow-y:hidden;
+}
+.катряд::-webkit-scrollbar{ display:none; }
+.кат{
+  flex:0 0 auto; display:flex; align-items:center; gap:6px; cursor:pointer;
+  padding:6px 12px; border-radius:var(--радиус-круг); font-family:inherit;
+  border:1px solid transparent; background:none;
+  color:var(--текст3); font-size:0.8rem; font-weight:700; white-space:nowrap;
+  transition:background .13s ease, color .13s ease;
+}
+.кат:hover{ background:var(--поле); color:var(--текст); }
+.кат.тут{ color:var(--текст); background:rgba(var(--синий-ргб), .18); }
+.кат .зн{ display:flex; }
+.кат .зн svg{ width:15px; height:15px; }
+
+.подряд{ display:flex; gap:6px; scrollbar-width:none; padding-bottom:10px;
+  overflow-x:auto; overflow-y:hidden; }
+.подряд::-webkit-scrollbar{ display:none; }
+/* Имя «под» занято: так в оболочке зовётся подзаголовок окна. Фишка
+   подраздела, названная так же, получала рамку от чужого правила —
+   подзаголовок окна «Новый товар» оказывался в рамке поля ввода. */
+.подраздел{
+  flex:0 0 auto; cursor:pointer; padding:6px 12px; font-family:inherit;
+  border-radius:var(--радиус-круг); border:1px solid transparent;
+  background:none; color:var(--текст3); font-size:0.7667rem; white-space:nowrap;
+  transition:background .13s ease, color .13s ease;
+}
+.подраздел:hover{ background:var(--поле); color:var(--текст2); }
+.подраздел.тут{ color:var(--текст); background:rgba(0,153,255,.18); }
+
+/* ── вкладки витрины ─────────────────────────────────────────────── */
+.виды{ display:flex; gap:18px; margin:4px 0 14px; flex-wrap:wrap; }
+.вид{
+  display:flex; align-items:center; gap:7px; cursor:pointer; padding:0 0 3px;
+  background:none; border:none; border-bottom:1.5px solid transparent;
+  color:var(--текст3); font-family:inherit; font-size:0.9rem; font-weight:600;
+}
+.вид:hover{ color:var(--текст2); }
+.вид.тут{ color:var(--жёлтый); border-bottom-color:rgba(251,191,36,.55); }
+.вид .зн{ display:flex; }
+.вид .зн svg{ width:16px; height:16px; }
+
+/* ── поиск и кнопка ──────────────────────────────────────────────── */
+.поискряд{ display:flex; gap:10px; align-items:center; margin-bottom:18px; }
+.поискряд input{
+  flex:1; min-width:0; padding:12px 18px; font-size:0.9333rem; font-family:inherit;
+  background:var(--поле); border:none; color:var(--текст);
+  border-radius:var(--радиус-круг); outline:none;
+}
+.поискряд input:hover{ background:var(--край); }
+.поискряд input:focus{ box-shadow:0 0 0 2px rgba(var(--синий-ргб),.45); }
+.поискряд input::placeholder{ color:var(--текст3); }
+.кн-добавить{
+  flex:0 0 auto; cursor:pointer; padding:12px 22px; font-family:inherit;
+  border-radius:var(--радиус-круг); border:none; background:var(--синий);
+  color:#fff; font-size:0.9333rem; font-weight:700;
+}
+.кн-добавить:hover{ filter:brightness(1.1); }
+
+/* ── сетка товаров ───────────────────────────────────────────────── */
+.сетка{ display:grid; gap:14px;
+  grid-template-columns:repeat(auto-fill,minmax(184px,1fr)); }
+.карта{
+  display:flex; flex-direction:column; cursor:pointer; text-align:left;
+  background:var(--окно); border:1px solid var(--край); border-radius:16px;
+  overflow:hidden; padding:0; font-family:inherit; color:var(--текст);
+}
+.карта:hover{ border-color:var(--край2); transform:translateY(-2px); }
+/* У вещи снимок квадратный — это витрина, её и смотрят. У цифрового
+   товара обложка есть не всегда, и квадрат пустого места на полэкрана
+   выглядит поломкой; ему хватает полосы. */
+.сетка.цифра .карта .пик{ aspect-ratio:auto; height:132px; }
+.карта .пик{
+  position:relative; aspect-ratio:1; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,rgba(0,149,246,.16),rgba(167,139,250,.12));
+}
+.карта .пик img{ width:100%; height:100%; object-fit:cover; display:block; }
+.карта .пик .зн{ display:flex; opacity:.75; }
+.карта .пик .зн svg{ width:38px; height:38px; }
+.карта.снят .пик img{ filter:grayscale(.7) brightness(.6); }
+
+.метка-угол{
+  position:absolute; top:8px; left:8px; font-size:0.6333rem; font-weight:700;
+  padding:3px 9px; border-radius:var(--радиус-круг);
+  background:rgba(2,2,17,.68); color:var(--текст);
+  display:flex; align-items:center; gap:5px; max-width:calc(100% - 16px);
+}
+.метка-угол .зн{ display:flex; }
+.метка-угол .зн svg{ width:12px; height:12px; }
+.метка-угол .имя{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.метка-право{
+  position:absolute; top:8px; right:8px; font-size:0.6333rem; font-weight:800;
+  padding:3px 9px; border-radius:var(--радиус-круг); color:#101018;
+}
+.метка-право.моё{ background:rgba(251,191,36,.92); }
+.метка-право.куплено{ background:rgba(74,222,128,.92); color:#06210f; }
+.метка-низ{
+  position:absolute; bottom:8px; left:8px; font-size:0.6333rem; font-weight:700;
+  padding:3px 9px; border-radius:var(--радиус-круг);
+  background:rgba(248,113,113,.88); color:#2a0b0b;
+}
+/* Фигура вещи — в нижнем правом углу снимка, как в боевой: кружок с
+   самой фигурой и надпись рядом. Холст рисуем вдвое крупнее, чем он
+   стоит на экране, иначе на хорошем экране грани лохматятся. */
+.метка-фигура{
+  position:absolute; right:7px; bottom:7px;
+  display:flex; align-items:center; gap:5px;
+  max-width:calc(100% - 14px); pointer-events:none;
+}
+.метка-фигура canvas{
+  width:34px; height:34px; flex:0 0 34px; display:block;
+  border-radius:50%; background:rgba(2,2,17,.55);
+}
+.метка-фигура .слово{
+  font-size:0.6333rem; font-weight:700; color:var(--текст);
+  padding:3px 8px; border-radius:var(--радиус-круг);
+  background:rgba(2,2,17,.68);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+.карта .низ{ padding:11px 13px 13px; display:flex; flex-direction:column;
+  gap:4px; flex:1; }
+.карта .бренд{ font-size:0.6667rem; font-weight:800; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--синий); }
+.карта .имя{ font-size:0.9rem; font-weight:700; line-height:1.35;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  overflow:hidden; }
+.карта .кто{ font-size:0.7333rem; color:var(--текст3); }
+.карта .подвал{ display:flex; align-items:center; gap:8px; margin-top:auto;
+  padding-top:8px; }
+.цена{ font-size:0.9333rem; font-weight:800; color:var(--жёлтый);
+  font-family:ui-monospace,Menlo,monospace; white-space:nowrap; }
+.цена.даром{ color:var(--зелёный); font-family:inherit; font-size:0.8667rem; }
+.карта .мелко{ margin-left:auto; font-size:0.6667rem; color:var(--текст3);
+  text-align:right; line-height:1.45; }
+
+/* На телефоне в одну колонку витрина выглядит лентой объявлений, а не
+   витриной: карточки делаем мельче, чтобы встали по две. */
+@media (max-width:640px){
+  .сетка{ grid-template-columns:repeat(auto-fill,minmax(146px,1fr)); gap:10px; }
+  .сетка.цифра .карта .пик{ height:104px; }
+  .карта .имя{ font-size:0.8333rem; }
+  .режимы{ gap:6px; }
+  .режим{ padding:8px 11px; font-size:0.8rem; }
+  .режим em{ display:none; }
+  .метка-фигура canvas{ width:28px; height:28px; flex:0 0 28px; }
+}
+
+/* ── карточка товара ─────────────────────────────────────────────── */
+.назад-строка{ margin-bottom:16px; }
+.кн-назад{
+  display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+  background:none; border:none; color:var(--текст2); font-family:inherit;
+  font-size:0.9333rem; padding:0;
+}
+.кн-назад:hover{ color:var(--текст); }
+.кн-назад svg{ width:17px; height:17px; }
+
+.товар{ display:flex; gap:24px; align-items:flex-start; }
+.товар .слева{ flex:0 0 46%; min-width:0; }
+.товар .справа{ flex:1; min-width:0; }
+@media (max-width:860px){
+  .товар{ flex-direction:column; }
+  .товар .слева{ flex:1 1 auto; width:100%; }
+}
+.большой{
+  position:relative;
+  width:100%; aspect-ratio:1; border-radius:16px; overflow:hidden;
+  background:linear-gradient(135deg,rgba(0,149,246,.16),rgba(167,139,250,.12));
+  border:1px solid var(--край);
+  display:flex; align-items:center; justify-content:center;
+}
+/* На раскрытой карточке фигура крупнее: снимок во всю ширину окна, и
+   значок с витрины на нём потерялся бы. */
+.большой .метка-фигура{ right:12px; bottom:12px; }
+.большой .метка-фигура canvas{ width:58px; height:58px; flex:0 0 58px; }
+.большой .метка-фигура .слово{ font-size:0.8rem; padding:4px 11px; }
+.большой img,.большой video{ width:100%; height:100%; object-fit:cover; display:block; }
+.большой .зн{ display:flex; opacity:.7; }
+.большой .зн svg{ width:64px; height:64px; }
+.лента-снимков{ display:flex; gap:8px; margin-top:10px;
+  overflow-x:auto; overflow-y:hidden;
+  scrollbar-width:none; }
+.лента-снимков::-webkit-scrollbar{ display:none; }
+.снимочек{
+  flex:0 0 auto; width:62px; height:62px; border-radius:11px; cursor:pointer;
+  overflow:hidden; border:1px solid var(--край); background:var(--поле); padding:0;
+}
+.снимочек.тут{ border-color:var(--синий); }
+.снимочек img,.снимочек video{ width:100%; height:100%; object-fit:cover; display:block; }
+
+.товар h2{ margin:0 0 6px; font-size:1.4667rem; font-weight:700; line-height:1.25; }
+.товар .бренд{ font-size:0.7333rem; font-weight:800; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--синий); margin-bottom:6px; }
+.товар .кто{ font-size:0.8667rem; color:var(--текст3); margin-bottom:16px; }
+.товар .ценник{ display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  margin-bottom:16px; }
+.товар .ценник .цена{ font-size:1.6rem; }
+.знач-состояния{
+  font-size:0.7667rem; padding:4px 11px; border-radius:var(--радиус-круг);
+  border:1px solid var(--край2); color:var(--текст2);
+}
+.товар .текст{ font-size:0.9333rem; line-height:1.7; color:var(--текст2);
+  white-space:pre-wrap; word-break:break-word; margin-bottom:16px; }
+.свойства{ border:1px solid var(--край); border-radius:12px; overflow:hidden;
+  margin-bottom:16px; }
+.свойство{ display:flex; gap:12px; padding:10px 14px; font-size:0.9rem;
+  border-bottom:1px solid var(--край); }
+.свойство:last-child{ border-bottom:none; }
+.свойство .к{ color:var(--текст3); flex:0 0 40%; }
+.теги{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+.тег{ font-size:0.7333rem; color:var(--текст3); background:var(--поле);
+  border:1px solid var(--край); border-radius:var(--радиус-круг); padding:3px 10px; }
+
+.доставка-текст{
+  background:rgba(74,222,128,.07); border:1px solid rgba(74,222,128,.25);
+  border-radius:12px; padding:14px 16px; margin-bottom:16px;
+  font-size:0.9rem; line-height:1.7; color:var(--текст2);
+  white-space:pre-wrap; word-break:break-word;
+}
+.файлы{ display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+.файл{
+  display:flex; align-items:center; gap:11px; padding:10px 13px;
+  background:var(--поле); border:1px solid var(--край); border-radius:11px;
+  font-size:0.8667rem;
+}
+.файл .зн{ display:flex; color:var(--сирень); }
+.файл .зн svg{ width:16px; height:16px; }
+.файл .нм{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; }
+.файл .рз{ font-size:0.7333rem; color:var(--текст3); white-space:nowrap; }
+.файл button{
+  flex:0 0 auto; cursor:pointer; padding:5px 12px; font-family:inherit;
+  border-radius:8px; border:1px solid var(--край2); background:none;
+  color:var(--текст2); font-size:0.8rem;
+}
+.файл button:hover{ color:var(--текст); border-color:var(--синий); }
+
+.действия{ display:flex; gap:10px; flex-wrap:wrap; margin-top:4px; }
+.замечание{
+  background:rgba(251,191,36,.07); border:1px solid rgba(251,191,36,.28);
+  border-radius:12px; padding:12px 15px; font-size:0.8667rem; line-height:1.65;
+  color:var(--текст2); margin-bottom:14px;
+}
+
+/* ── заказы ──────────────────────────────────────────────────────── */
+.заказы{ display:flex; flex-direction:column; gap:12px; }
+.заказ{
+  background:var(--окно); border:1px solid var(--край); border-radius:14px;
+  padding:15px 17px;
+}
+.заказ .строка{ display:flex; align-items:center; gap:12px; }
+.заказ .имя{ font-size:1rem; font-weight:600; flex:1; min-width:0; }
+.заказ .когда{ font-size:0.8rem; color:var(--текст3); margin-top:4px; }
+.заказ .адрес{ font-size:0.8667rem; color:var(--текст2); margin-top:8px;
+  line-height:1.6; white-space:pre-wrap; word-break:break-word; }
+.шаг{
+  font-size:0.7333rem; font-weight:700; padding:4px 11px;
+  border-radius:var(--радиус-круг); white-space:nowrap;
+}
+.шаг.paid{ background:rgba(0,153,255,.16); color:#7fb9ff; }
+.шаг.sent{ background:rgba(251,191,36,.16); color:var(--жёлтый); }
+.шаг.done{ background:rgba(52,211,153,.16); color:var(--зелёный); }
+.шаг.cancelled{ background:rgba(248,113,113,.14); color:var(--красный); }
+.заказ .кнопки{ display:flex; gap:9px; margin-top:12px; flex-wrap:wrap; }
+.заказ .кнопки .кнопка{ padding:9px 16px; font-size:0.8667rem; }
+
+/* ── пусто ───────────────────────────────────────────────────────── */
+/* ── корзина ──────────────────────────────────────────────────────
+   Список, а не карточки: человек уже выбрал и смотрит на итог. */
+.крз-страница{ display:flex; flex-direction:column; gap:8px; max-width:720px; }
+.крз-ряд{
+  display:flex; align-items:center; gap:11px;
+  padding:9px 12px; border-radius:14px; background:var(--окно);
+  border:1px solid var(--край);
+}
+.крз-ряд .крз-кадр{
+  flex:0 0 48px; width:48px; height:48px; border-radius:11px; overflow:hidden;
+  background:var(--поле); display:grid; place-items:center; color:var(--текст3);
+}
+.крз-ряд .крз-кадр img{ width:100%; height:100%; object-fit:cover; display:block; }
+.крз-ряд .крз-имя{ flex:1; min-width:0; display:flex; flex-direction:column;
+  gap:3px; cursor:pointer; }
+.крз-ряд .крз-имя b{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.крз-ряд .крз-мелко{ font-size:0.7667rem; color:var(--текст3); }
+.крз-счёт{ display:flex; align-items:center; gap:7px; flex:0 0 auto; }
+.крз-кн{
+  width:26px; height:26px; border-radius:50%; border:1px solid var(--край);
+  background:var(--поле); color:var(--текст2); cursor:pointer;
+  display:grid; place-items:center; line-height:0;
+}
+.крз-кн:hover{ color:var(--текст); border-color:var(--край2); }
+.крз-число{ min-width:18px; text-align:center; font-weight:700;
+  font-size:0.8667rem; }
+.крз-ряд .крз-цена{ flex:0 0 auto; font-weight:800; font-size:0.9rem;
+  color:var(--жёлтый); }
+.крз-ряд .крз-убрать{
+  flex:0 0 auto; padding:6px; border:none; background:none; cursor:pointer;
+  color:var(--текст3); line-height:0; border-radius:9px;
+}
+.крз-ряд .крз-убрать:hover{ color:var(--красный); background:var(--поле); }
+.крз-низ{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  margin-top:6px; padding:12px; border-radius:14px; background:var(--окно);
+  border:1px solid var(--край);
+}
+.крз-сумма{ flex:1; display:flex; align-items:baseline; gap:9px; }
+.крз-сумма span{ color:var(--текст3); font-size:0.8667rem; }
+.крз-сумма b{ font-size:1.15rem; color:var(--жёлтый); }
+
+.пусто-рынка{ text-align:center; padding:64px 24px; }
+.пусто-рынка .зн{ display:flex; justify-content:center; color:var(--сирень);
+  margin-bottom:18px; }
+.пусто-рынка .зн svg{ width:44px; height:44px; }
+.пусто-рынка .слова{ font-size:0.9667rem; color:var(--текст3); line-height:1.8; }
+
+/* ── окно нового товара ──────────────────────────────────────────── */
+.знаки-разделов{ display:flex; gap:8px; flex-wrap:wrap; }
+.выбор-файла{
+  width:100%; font-size:0.8667rem; color:var(--текст3); padding:10px 0;
+  font-family:inherit;
+}
+.выбор-файла::-webkit-file-upload-button,
+.выбор-файла::file-selector-button{
+  margin-right:12px; cursor:pointer; padding:9px 16px; font-family:inherit;
+  font-size:0.8667rem; font-weight:600; border-radius:var(--радиус-мал);
+  border:1px solid var(--край2); background:var(--поле); color:var(--текст);
+}
+.выбор-файла::-webkit-file-upload-button:hover,
+.выбор-файла::file-selector-button:hover{ border-color:var(--синий); }
+.предпросмотр{ width:100%; height:130px; object-fit:cover; border-radius:11px;
+  margin-top:8px; display:block; border:1px solid var(--край); }
+
+</style>
+</head>
+<body>
+
+<script src="shared/api.js?v=20261122-363"></script>
+<script src="shared/ui.js?v=20261122-363"></script>
+<script src="shared/смайлы.js?v=20261122-363"></script>
+<script src="shared/лица.js?v=20261122-363"></script>
+<script src="shared/эфир.js?v=20261122-363"></script>
+<script src="shared/icons.js?v=20261122-363"></script>
+<script src="shared/window.js?v=20261122-363"></script>
+<script src="shared/продавец.js?v=20261122-363"></script>
+<script src="shared/корзина.js?v=20261122-363"></script>
+<script src="shared/без-копий.js?v=20261122-363"></script>
+<script src="shared/time.js?v=20261122-363"></script>
+<script src="shared/auth.js?v=20261122-363"></script>
+<script src="shared/account.js?v=20261122-363"></script>
+<script src="shared/shell.js?v=20261122-363"></script>
+<script>
+'use strict';
+
+CW.оболочка('market').then(function (место) {
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ЗНАЧКИ РАЗДЕЛОВ.
+
+   Сервер присылает к каждому разделу смайл. Смайл рисует система: на маке
+   он цветной и объёмный, на телефоне другой, в Windows третий — один ряд
+   разделов выглядел бы тремя разными. Поэтому здесь к каждому разделу
+   лежит линия, нарисованная нами, а смайл сервера остаётся запасом для
+   раздела, которого мы ещё не знаем.
+   ═══════════════════════════════════════════════════════════════════════ */
+var ЛИНИИ = {
+  /* цифровой */
+  keys:    'M15.5 3.5a5 5 0 0 0-4.6 7l-7.4 7.4v3h3v-2h2v-2h2l2-2a5 5 0 1 0 3-11.4zM17 8h.01',
+  nft:     'M4 5.5h16a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5V6a.5.5 0 0 1 .5-.5zM8.5 11a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2M3.5 16.5l5-4.5 5 4.5M13 14l3-2.5 4.5 4',
+  tools:   'M18.6 5.4a4.2 4.2 0 0 0-5.5 5.1l-7.5 7.5 2.4 2.4 7.5-7.5a4.2 4.2 0 0 0 5.1-5.5l-2.6 2.6-2-2z',
+  ai:      'M7.5 8.5h9a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM12 5.5v3M9.8 12.5h.01M14.2 12.5h.01M10 16h4M3.5 12v2.5M20.5 12v2.5',
+  content: 'M3.5 7.5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2zM15.5 10.5l5-3v9l-5-3z',
+  pass:    'M3.5 9.6a2.1 2.1 0 0 0 0 4.8v3.1a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1v-3.1a2.1 2.1 0 0 1 0-4.8V6.5a1 1 0 0 0-1-1h-15a1 1 0 0 0-1 1zM9.5 8v2M9.5 11.5v2M9.5 15v2',
+  domains: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3.6 12h16.8M12 3.2a14.5 14.5 0 0 1 0 17.6 14.5 14.5 0 0 1 0-17.6z',
+  service: 'M16 20.5v-1.8a3.7 3.7 0 0 0-3.7-3.7H6.2a3.7 3.7 0 0 0-3.7 3.7v1.8M9.2 11.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8M21.5 20.5v-1.8a3.7 3.7 0 0 0-2.8-3.6M15.5 3.7a3.7 3.7 0 0 1 0 7.2',
+  /* шопинг */
+  clothes: 'M8.6 3.5 4 6.2l1.6 4.1 2-1.1v11.3h8.8V9.2l2 1.1L20 6.2l-4.6-2.7a3.4 3.4 0 0 1-6.8 0z',
+  shoes:   'M3.5 17.6v-5.1l3.1-1 2.4-3 2 2.6 4.6 1.5a5 5 0 0 1 5 5zM3.5 17.6h17.1M9 13.1l1.4 1.4M12 14l1.4 1.4',
+  bags:    'M5.6 8.6h12.8l1 11.4h-14.8zM9 8.6v-2a3 3 0 0 1 6 0v2',
+  watch:   'M12 18.2a6.1 6.1 0 1 0 0-12.2 6.1 6.1 0 0 0 0 12.2zM12 9v3.2l2.1 1.4M8.6 6.4 9.1 3h5.8l.5 3.4M8.6 17.8l.5 3.2h5.8l.5-3.2',
+  jewel:   'M12 20.6a5.6 5.6 0 1 0 0-11.2 5.6 5.6 0 0 0 0 11.2zM9.4 10 8 5h8l-1.4 5M12 3.4 9.4 6.6h5.2z',
+  beauty:  'M9.2 10.4h5.6v10.1h-5.6zM10.3 10.4V5.3l3.6-1.8v6.9',
+  home:    'M4.6 11.6v-3a2 2 0 0 1 2-2h10.8a2 2 0 0 1 2 2v3M3.5 11.6h17v6h-17zM6.6 17.6v2M17.4 17.6v2M7.6 11.6v-2h8.8v2',
+  tech:    'M7.6 2.6h8.8a1.5 1.5 0 0 1 1.5 1.5v15.8a1.5 1.5 0 0 1-1.5 1.5H7.6a1.5 1.5 0 0 1-1.5-1.5V4.1a1.5 1.5 0 0 1 1.5-1.5zM10.4 18.4h3.2',
+  sport:   'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3.5 12h17M12 3.2c-2.9 2.4-4.4 5.3-4.4 8.8s1.5 6.4 4.4 8.8M12 3.2c2.9 2.4 4.4 5.3 4.4 8.8s-1.5 6.4-4.4 8.8z',
+  kids:    'M12 20.6a5.9 5.9 0 1 0 0-11.8 5.9 5.9 0 0 0 0 11.8zM7.7 8.4a2.5 2.5 0 1 1 1.9-4.1M16.3 8.4a2.5 2.5 0 1 0-1.9-4.1M10.2 14h.01M13.8 14h.01M10.5 17h3',
+  hobby:   'M9 18.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0zM20 16.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0zM9 18.5v-12l11-2v12',
+  books:   'M4.6 5a1.5 1.5 0 0 1 1.5-1.5h3.4a2.5 2.5 0 0 1 2.5 2.5v14a2 2 0 0 0-2-2h-3.9a1.5 1.5 0 0 1-1.5-1.5zM19.4 5a1.5 1.5 0 0 0-1.5-1.5h-3.4a2.5 2.5 0 0 0-2.5 2.5v14a2 2 0 0 1 2-2h3.9a1.5 1.5 0 0 0 1.5-1.5z',
+  auto:    'M4.6 16.6v-4.1l2-4.5h10.8l2 4.5v4.1M3.6 12.5h16.8M7.1 16.6v2.2H4.6v-2.2M19.4 16.6v2.2h-2.5v-2.2M7.6 14h2M14.4 14h2',
+  food:    'M5.6 4.6h12.8v14.8H5.6zM12 4.6v14.8M5.6 9.5h12.8M5.6 14.5h12.8',
+  art:     'M12 3a9 9 0 1 0 0 18 1.9 1.9 0 0 0 1.9-1.9c0-.5-.2-.9-.5-1.2a1.9 1.9 0 0 1 1.4-3.2h2.2A4 4 0 0 0 21 10.6C21 6.4 16.9 3 12 3zM7.3 11.2h.01M10.4 7.6h.01M14.5 7.6h.01',
+  other:   'M3.5 7.5h17v3h-17zM5 10.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-8.5M9.5 14h5'
+};
+
+var ЦВЕТА = {
+  keys:'#fbbf24', nft:'#a78bfa', tools:'#34d399', ai:'#4a9eff',
+  content:'#f472b6', pass:'#fbbf24', domains:'#22d3ee', service:'#34d399',
+  /* Часы - тёмно-зелёные. Жёлтого в ряду было три подряд (сумки,
+     часы, детям), и глаз переставал их различать. */
+  clothes:'#22d3ee', shoes:'#f472b6', bags:'#fbbf24', watch:'#15803d',
+  jewel:'#f87171', beauty:'#f472b6', home:'#a78bfa', tech:'#4a9eff',
+  sport:'#34d399', kids:'#fbbf24', hobby:'#a78bfa', books:'#4a9eff',
+  auto:'#22d3ee', food:'#f472b6', art:'#34d399', other:'#9aa4bf'
+};
+
+var ВИДЫ = [
+  { имя:'all',    подпись:'Витрина',     зн:'тележка', цвет:'#fbbf24' },
+  /* Корзина стоит сразу за витриной: набрал - и она под рукой.
+     Корзина ОДНА на обе половины рынка, на цифровое и на вещи: деньги
+     и баланс у человека тоже одни. Поэтому вкладка есть в обеих. */
+  { имя:'cart',   подпись:'Корзина',     зн:'тележка', цвет:'#f472b6' },
+  { имя:'mine',   подпись:'Мои товары',  зн:'ящик',    цвет:'#4a9eff' },
+  { имя:'bought', подпись:'Мои покупки', зн:'сумка',   цвет:'#fbbf24' },
+  { имя:'sold',   подпись:'Мои продажи', зн:'монета',  цвет:'#34d399' }
+];
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ЧТО СЕЙЧАС НА ЭКРАНЕ
+   ═══════════════════════════════════════════════════════════════════════ */
+var С = {
+  режим: вспомнитьРежим(),   /* digital | shop */
+  кат: '',
+  под: '',
+  вид: 'all',
+  ищем: '',
+  коты: { digital: [], shop: [] },
+  состояния: [],
+  товары: [],
+  заказы: [],
+  открыт: null,
+  снимок: 0,
+  грузим: false,
+  шаг: 0
+};
+
+/* ── разметка, которая собирается один раз ── */
+var шапка = ок('div', 'верх-рынка', '<h1>Маркетплейс</h1>');
+место.appendChild(шапка);
+
+var режимы = ок('div', 'режимы');
+режимы.appendChild(кнРежим('digital', 'дискета', 'Цифровой', 'файлы, ключи, доступы'));
+режимы.appendChild(кнРежим('shop', 'сумка', 'Шопинг', 'вещи: одежда, техника, всё'));
+место.appendChild(режимы);
+
+var катряд = ок('div', 'катряд');   место.appendChild(катряд);
+var подряд = ок('div', 'подряд');   место.appendChild(подряд);
+var виды   = ок('div', 'виды');     место.appendChild(виды);
+
+var поискряд = ок('div', 'поискряд',
+    '<input id="поиск-рынка" type="text" autocomplete="off" spellcheck="false">'
+  + '<button class="кн-добавить">Добавить товар</button>');
+место.appendChild(поискряд);
+
+var списком = ок('div', 'списком');
+место.appendChild(списком);
+
+/* Из окна выходят касанием мимо него и по Escape — правило общее. */
+
+поискряд.querySelector('.кн-добавить').onclick = новыйТовар;
+
+var поле = document.getElementById('поиск-рынка');
+var часыПоиска = null;
+поле.oninput = function () {
+  С.ищем = поле.value.trim();
+  clearTimeout(часыПоиска);
+  часыПоиска = setTimeout(загрузить, 320);
+};
+
+нарисоватьВерх();
+загрузить();
+
+/* Перезагрузка возвращает в тот же товар, а не на витрину. */
+(function () {
+  var было = CW.гдеБыл();
+  if (было && было.окно === 'товар' && было.ид) {
+    if (было.режим && было.режим !== С.режим) {
+      С.режим = было.режим;
+      [].slice.call(режимы.children).forEach(function (б) {
+        б.classList.toggle('тут', б.dataset.режим === С.режим);
+      });
+      нарисоватьВерх();
+    }
+    открыть(было.ид);
+  }
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ВЕРХ: разделы, подразделы, вкладки
+   ═══════════════════════════════════════════════════════════════════════ */
+function кнРежим(имя, знак, подпись, под) {
+  var б = ок('button', 'режим' + (С.режим === имя ? ' тут' : ''));
+  б.dataset.режим = имя;
+  б.innerHTML = '<span class="зн">' + CW.значок(знак) + '</span>'
+              + '<span>' + подпись + '</span>'
+              + '<em>' + под + '</em>';
+  б.onclick = function () { сменитьРежим(имя); };
+  return б;
+}
+
+function сменитьРежим(имя) {
+  if (имя === С.режим) return;
+  С.режим = имя; С.кат = ''; С.под = ''; С.открыт = null;
+  if (имя === 'digital' && С.вид === 'sold') С.вид = 'all';
+  try { localStorage.setItem('cw_рынок', имя); } catch (е) {}
+  [].slice.call(режимы.children).forEach(function (б) {
+    б.classList.toggle('тут', б.dataset.режим === имя);
+  });
+  поле.value = ''; С.ищем = '';
+  нарисоватьВерх();
+  загрузить();
+}
+
+function вспомнитьРежим() {
+  var н = null;
+  try { н = localStorage.getItem('cw_рынок'); } catch (е) {}
+  return н === 'shop' ? 'shop' : 'digital';
+}
+
+function нарисоватьВерх() {
+  var вещи = С.режим === 'shop';
+  поле.placeholder = вещи ? 'Поиск по названию, бренду, описанию'
+                          : 'Поиск по названию, описанию, тегам';
+
+  /* разделы */
+  катряд.innerHTML = '';
+  катряд.appendChild(кнКата('', 'Все', null));
+  (С.коты[С.режим] || []).forEach(function (к) {
+    катряд.appendChild(кнКата(к.id, к.name, к));
+  });
+
+  /* подразделы — только у вещей и только когда раздел выбран */
+  подряд.innerHTML = '';
+  var текущий = (С.коты[С.режим] || []).filter(function (к) {
+    return к.id === С.кат; })[0];
+  var субы = (текущий && текущий.subs) || [];
+  подряд.style.display = субы.length ? 'flex' : 'none';
+  if (субы.length) {
+    подряд.appendChild(кнПода('', 'Любой'));
+    субы.forEach(function (с) { подряд.appendChild(кнПода(с, с)); });
+  }
+
+  /* вкладки */
+  виды.innerHTML = '';
+  ВИДЫ.forEach(function (в) {
+    /* «Мои продажи» есть только у вещей: у цифрового товара продажа —
+       это мгновенная выдача файла, отслеживать нечего. */
+    if (в.имя === 'sold' && !вещи) return;
+    var б = ок('button', 'вид' + (С.вид === в.имя ? ' тут' : ''));
+    /* У корзины на вкладке стоит число: сколько уже набрано. Без него
+       человек не видит, что в ней что-то лежит, и собирает заново. */
+    var сколькоВКорзине = (в.имя === 'cart' && CW.корзина) ? CW.корзина.сколько() : 0;
+    б.innerHTML = '<span class="зн" style="color:' + в.цвет + '">'
+                + CW.значок(в.зн) + '</span><span>' + в.подпись
+                + (сколькоВКорзине ? ' · ' + сколькоВКорзине : '') + '</span>';
+    б.onclick = function () {
+      if (С.вид === в.имя) return;
+      С.вид = в.имя; С.открыт = null;
+      нарисоватьВерх();
+      /* Корзина лежит в браузере - ходить за ней на сервер незачем. */
+      if (С.вид === 'cart') нарисоватьСписок(); else загрузить();
+    };
+    виды.appendChild(б);
+  });
+
+  /* в корзине, в покупках и в продажах искать по витрине нечего */
+  if (С.вид === 'cart') {
+    поискряд.style.display = 'none';
+    катряд.style.display = 'none';
+    подряд.style.display = 'none';
+    return;
+  }
+  var своё = (С.вид === 'bought' || С.вид === 'sold');
+  поискряд.style.display = своё && вещи ? 'none' : 'flex';
+  катряд.style.display = своё && вещи ? 'none' : 'flex';
+  if (своё && вещи) подряд.style.display = 'none';
+}
+
+function кнКата(ид, имя, кот) {
+  var б = ок('button', 'кат' + (С.кат === ид ? ' тут' : ''));
+  var линия = ЛИНИИ[ид];
+  б.innerHTML = (линия
+      ? '<span class="зн" style="color:' + (ЦВЕТА[ид] || 'currentColor') + '">'
+        + CW.рисунок(линия) + '</span>'
+      : (кот && кот.icon ? '<span class="зн">' + CW.безопасно(кот.icon) + '</span>' : ''))
+    + '<span>' + CW.безопасно(имя) + '</span>';
+  б.onclick = function () {
+    if (С.кат === ид) return;
+    С.кат = ид; С.под = ''; С.открыт = null;
+    нарисоватьВерх(); загрузить();
+  };
+  return б;
+}
+
+function кнПода(значение, подпись) {
+  var б = ок('button', 'подраздел' + (С.под === значение ? ' тут' : ''));
+  б.textContent = подпись;
+  б.onclick = function () {
+    С.под = значение; С.открыт = null;
+    нарисоватьВерх(); нарисоватьСписок();
+  };
+  return б;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ЗАГРУЗКА.
+
+   Нажали подряд две кнопки — ответ показываем только на последнюю.
+   Иначе медленный первый ответ перетирает быстрый второй, и на экране
+   оказывается не тот раздел, что выбран.
+   ═══════════════════════════════════════════════════════════════════════ */
+function загрузить() {
+  var мой = ++С.шаг;
+  С.открыт = null;
+  CW.ждём(списком);
+
+  var путь = собратьПуть();
+  CW.спросить(путь, { сроком: 25000 })
+    .then(function (д) {
+      if (мой !== С.шаг) return;
+      запомнитьРазделы(д);
+      if (С.вид === 'bought' && С.режим === 'shop') {
+        С.заказы = (д && д.orders) || [];
+      } else if (С.вид === 'sold') {
+        С.заказы = (д && д.orders) || [];
+      } else {
+        С.товары = (д && д.items) || [];
+      }
+      нарисоватьВерх();
+      нарисоватьСписок();
+    })
+    .catch(function (е) {
+      if (мой !== С.шаг) return;
+      списком.innerHTML = '';
+      var б = ок('div', 'беда');
+      б.textContent = е.сеть ? 'Нет связи с сервером'
+                             : (е.message || 'Маркетплейс не ответил');
+      списком.appendChild(б);
+    });
+}
+
+function собратьПуть() {
+  if (С.режим === 'shop' && С.вид === 'bought') return '/shop/me/orders';
+  if (С.режим === 'shop' && С.вид === 'sold')   return '/shop/me/sales';
+
+  var куски = ['limit=60'];
+  if (С.кат) куски.push('cat=' + encodeURIComponent(С.кат));
+  if (С.ищем) куски.push('q=' + encodeURIComponent(С.ищем));
+  if (С.вид === 'mine') куски.push('mine=1');
+  if (С.вид === 'bought') куски.push('bought=1');
+  return (С.режим === 'shop' ? '/shop?' : '/market?') + куски.join('&');
+}
+
+/* Разделы приходят вместе с товарами. Держим их у себя, чтобы при
+   переходе между вкладками ряд не моргал пустотой. */
+function запомнитьРазделы(д) {
+  if (!д) return;
+  if (Array.isArray(д.cats) && д.cats.length) С.коты[С.режим] = д.cats;
+  if (Array.isArray(д.conds) && д.conds.length) С.состояния = д.conds;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   СПИСОК
+   ═══════════════════════════════════════════════════════════════════════ */
+function нарисоватьСписок() {
+  CW.гдеБыл(null);
+  списком.innerHTML = '';
+
+  if (С.вид === 'cart') { нарисоватьКорзину(); return; }
+
+  if (С.вид === 'sold' || (С.вид === 'bought' && С.режим === 'shop')) {
+    нарисоватьЗаказы();
+    return;
+  }
+
+  var ряды = С.товары;
+  if (С.под) {
+    ряды = ряды.filter(function (т) { return т.subcategory === С.под; });
+  }
+
+  if (!ряды.length) { списком.appendChild(пустое()); return; }
+
+  var сетка = ок('div', 'сетка' + (С.режим === 'shop' ? '' : ' цифра'));
+  ряды.forEach(function (т) { сетка.appendChild(карта(т)); });
+  списком.appendChild(сетка);
+}
+
+function пустое() {
+  var вещи = С.режим === 'shop';
+  var знак = 'сумка', слова;
+
+  if (С.вид === 'mine') {
+    знак = 'ящик';
+    слова = 'Ты пока ничего не выложил.<br>Кнопка «Добавить товар» наверху.';
+  } else if (С.вид === 'bought') {
+    знак = 'тележка';
+    слова = 'Ты пока ничего здесь не покупал.';
+  } else if (С.ищем) {
+    знак = 'лупа';
+    слова = 'По запросу «' + CW.безопасно(С.ищем) + '» ничего не нашлось.';
+  } else if (вещи) {
+    слова = 'Здесь пока пусто. Будь первым, нажми «Добавить товар».';
+  } else {
+    знак = 'дискета';
+    слова = 'В этой категории пока пусто.<br>'
+          + 'Выложи первым: витрина общая, товар увидят из всех кубов.';
+  }
+
+  var у = ок('div', 'пусто-рынка');
+  у.innerHTML = '<div class="зн">' + CW.значок(знак) + '</div>'
+              + '<div class="слова">' + слова + '</div>';
+  return у;
+}
+
+function карта(т) {
+  var б = ок('button', 'карта' + (т.status && т.status !== 'active' ? ' снят' : ''));
+  var кот = разделПо(т.category);
+
+  var пик = покрышка(т, кот);
+  var метки = '<span class="метка-угол"><span class="зн" style="color:'
+            + (ЦВЕТА[т.category] || 'currentColor') + '">'
+            + значокРаздела(кот) + '</span>'
+            + '<span class="имя">' + CW.безопасно(кот.name) + '</span></span>'
+    + (т.mine ? '<span class="метка-право моё">моё</span>'
+      : т.bought ? '<span class="метка-право куплено">куплено</span>' : '')
+    + (т.status && т.status !== 'active'
+        ? '<span class="метка-низ">' + состояниеТовара(т.status) + '</span>' : '');
+
+  б.innerHTML =
+      '<span class="пик">' + пик + метки + значокФигуры(т) + '</span>'
+    + '<span class="низ">'
+    +   (т.brand ? '<span class="бренд">' + CW.безопасно(т.brand) + '</span>' : '')
+    +   '<span class="имя">' + CW.безопасно(т.title || 'Без названия') + '</span>'
+    +   '<span class="кто">' + CW.безопасно(т.seller || '') + '</span>'
+    +   '<span class="подвал">' + ценник(т) + мелочь(т) + '</span>'
+    + '</span>';
+
+  нарисоватьФигуру(б, т);
+  б.onclick = function () { открыть(т.id); };
+
+  /* Имя продавца и на самой плитке витрины: навёл — карточка с
+     рейтингом, нажал — окно отзывов. Нажатие по имени до товара не
+     доходит: это разные двери, и открывать обе разом незачем. */
+  var ктоНаПлитке = б.querySelector('.кто');
+  if (ктоНаПлитке && т.seller_id && CW.продавец) {
+    CW.продавец.привязать(ктоНаПлитке, т.seller_id);
+  }
+  return б;
+}
+
+/* ── фигура вещи на карточке ───────────────────────────────────────
+   Когда вещь выставляют, хозяин выбирает ей фигуру, краску и надпись
+   (shape, shape_color, shape_text — они приходят в том же ответе, что
+   и сама вещь). На витрине этого не было видно вовсе, хотя выбор
+   делается руками и человек ждёт его увидеть.
+
+   Рисуем настоящую фигуру, а не смайл: тот же меш, которым мир рисует
+   куб, в выбранной краске. Смайл обещает не то — «🔻» и конус разные
+   вещи, а «⬡» на одной системе шестиугольник, на другой кружок.
+
+   Холст лёгкий (34 точки) и рисуется один раз. Сам движок форм
+   подтягиваем по надобности: на витрине цифровых товаров фигур нет, и
+   возить файл зря незачем. */
+function значокФигуры(т) {
+  if (!т.shape) return '';
+  var подпись = String(т.shape_text || '').trim();
+  return '<span class="метка-фигура">'
+       + '<canvas width="68" height="68" data-ф="' + CW.безопасно(т.shape) + '"'
+       + ' data-к="' + CW.безопасно(т.shape_color || '') + '"></canvas>'
+       + (подпись ? '<span class="слово">' + CW.безопасно(подпись) + '</span>' : '')
+       + '</span>';
+}
+
+function нарисоватьФигуру(где, т) {
+  if (!т.shape) return;
+  var холст = где.querySelector('.метка-фигура canvas');
+  if (!холст) return;
+  CW.нужен('shared/формы.js').then(function () {
+    /* Сперва рисуем фигуру краской — она видна сразу. Если на неё
+       натянута картинка, та приедет следом и перерисует. Ждать
+       картинку, чтобы показать хоть что-то, нельзя: на витрине их
+       столько же, сколько вещей. */
+    CW.формы.образец(холст, холст.dataset['ф'], холст.dataset['к']);
+    картинкаФигуры(т.id).then(function (кадр) {
+      if (кадр) CW.формы.образец(холст, холст.dataset['ф'], холст.dataset['к'], кадр);
+    });
+  }).catch(function () {
+    /* Движок форм не приехал — значок просто не появится. Ломать из-за
+       украшения всю витрину нельзя. */
+  });
+}
+
+/* ── картинка, натянутая на фигуру ─────────────────────────────────
+   Когда вещь выставляют, на фигуру можно натянуть своё фото или ролик
+   («Натянется на фигуру вместо цвета»). Лежит оно отдельно от снимков
+   товара и в списке витрины не приходит: сервер нарочно не кладёт его
+   в media, чтобы оно не попало в ленту снимков. Поэтому спрашиваем
+   его по номеру вещи — ровно так же делает боевая.
+
+   Спрашиваем один раз на вещь и держим ответ у себя: витрину
+   перерисовывают при каждом поиске, а картинка не меняется. */
+var ФИГ = {};
+
+function картинкаФигуры(ид) {
+  if (!ид) return Promise.resolve(null);
+  if (ФИГ[ид]) return ФИГ[ид];
+  ФИГ[ид] = CW.спросить('/shop/' + ид + '/shape-media', { тихо: true })
+    .then(function (д) {
+      if (!д || !д.url) return null;
+      return загрузитьКадр(CW.адрес + д.url, /^video\//.test(д.mime || ''));
+    })
+    .catch(function () { return null; });
+  return ФИГ[ид];
+}
+
+/* Из ролика берём один кадр: крутить видео в значке размером с ноготь
+   незачем, а первый кадр говорит о товаре ровно то же. */
+function загрузитьКадр(адрес, ролик) {
+  return new Promise(function (готово) {
+    if (!ролик) {
+      var и = new Image();
+      и.crossOrigin = 'anonymous';
+      и.onload = function () { готово(и); };
+      и.onerror = function () { готово(null); };
+      и.src = адрес;
+      return;
+    }
+    var в = document.createElement('video');
+    в.crossOrigin = 'anonymous';
+    в.muted = true; в.playsInline = true; в.preload = 'metadata';
+    в.onloadeddata = function () { готово(в); };
+    в.onerror = function () { готово(null); };
+    в.src = адрес + '#t=0.1';
+  });
+}
+
+function покрышка(т, кот) {
+  if (С.режим === 'shop') {
+    var первый = (т.media || [])[0];
+    if (первый && первый.kind !== 'video') {
+      return '<img loading="lazy" alt="" src="' + CW.адрес + первый.url + '">';
+    }
+  } else if (т.cover) {
+    return '<img loading="lazy" alt="" src="' + CW.безопасно(CW.файл(т.cover)) + '">';
+  }
+  return '<span class="зн" style="color:' + (ЦВЕТА[т.category] || 'currentColor')
+       + '">' + значокРаздела(кот, 38) + '</span>';
+}
+
+function значокРаздела(кот, размер) {
+  var линия = ЛИНИИ[кот.id];
+  if (линия) return CW.рисунок(линия, размер);
+  return CW.безопасно(кот.icon || '');
+}
+
+function разделПо(ид) {
+  var с = (С.коты[С.режим] || []).filter(function (к) { return к.id === ид; })[0];
+  return с || { id: ид || 'other', name: ид || 'Разное', icon: '📦' };
+}
+
+function ценник(т) {
+  var цена = Number(т.price || 0);
+  if (цена <= 0) {
+    return '<span class="цена даром">'
+         + (С.режим === 'shop' ? 'Цены нет' : 'Бесплатно') + '</span>';
+  }
+  return '<span class="цена">' + деньги(цена) + ' '
+       + CW.безопасно(т.currency || 'CUBE') + '</span>';
+}
+
+function мелочь(т) {
+  var части = [];
+  if (С.режим === 'shop') {
+    if (т.condition) части.push(имяСостояния(т.condition));
+    if (т.qty > 1) части.push(т.qty + ' шт');
+  } else {
+    if (т.files_count) части.push(т.files_count + ' ' + склонение(т.files_count, 'файл', 'файла', 'файлов'));
+    if (т.sales) части.push(т.sales + ' ' + склонение(т.sales, 'продажа', 'продажи', 'продаж'));
+  }
+  if (!части.length) return '';
+  return '<span class="мелко">' + CW.безопасно(части.join(' · ')) + '</span>';
+}
+
+function состояниеТовара(с) {
+  return { hidden: 'скрыт', removed: 'снят с витрины', sold: 'разобрали' }[с] || с;
+}
+
+function имяСостояния(ид) {
+  var с = С.состояния.filter(function (х) { return х.id === ид; })[0];
+  return с ? с.name : ид;
+}
+
+function деньги(ч) {
+  ч = Number(ч) || 0;
+  return (Math.round(ч * 100) / 100).toLocaleString('ru-RU');
+}
+
+function склонение(н, один, два, много) {
+  return CW.склонение(н, один, два, много);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   КАРТОЧКА ТОВАРА
+   ═══════════════════════════════════════════════════════════════════════ */
+function открыть(ид) {
+  var мой = ++С.шаг;
+  CW.ждём(списком);
+
+  CW.спросить((С.режим === 'shop' ? '/shop/' : '/market/') + ид, { сроком: 20000 })
+    .then(function (т) {
+      if (мой !== С.шаг) return;
+      С.открыт = т; С.снимок = 0;
+      CW.гдеБыл({ окно: 'товар', режим: С.режим, ид: ид });
+      нарисоватьТовар();
+    })
+    .catch(function (е) {
+      if (мой !== С.шаг) return;
+      списком.innerHTML = '';
+      var б = ок('div', 'беда');
+      б.textContent = е.message || 'Товар не открылся';
+      списком.appendChild(б);
+      списком.appendChild(кнопкаНазад());
+    });
+}
+
+function кнопкаНазад() {
+  var строка = ок('div', 'назад-строка');
+  var б = ок('button', 'кн-назад');
+  б.innerHTML = CW.значок('стрелка') + 'К витрине';
+  б.onclick = function () { С.открыт = null; нарисоватьСписок(); };
+  строка.appendChild(б);
+  return строка;
+}
+
+function нарисоватьТовар() {
+  var т = С.открыт;
+  списком.innerHTML = '';
+  списком.appendChild(кнопкаНазад());
+
+  var обёртка = ок('div', 'товар');
+  var слева = ок('div', 'слева');
+  var справа = ок('div', 'справа');
+  обёртка.appendChild(слева); обёртка.appendChild(справа);
+  списком.appendChild(обёртка);
+
+  нарисоватьСнимки(слева, т);
+  нарисоватьОписание(справа, т);
+}
+
+function нарисоватьСнимки(куда, т) {
+  куда.innerHTML = '';
+  var кот = разделПо(т.category);
+  var большой = ок('div', 'большой');
+
+  if (С.режим === 'shop') {
+    var медиа = т.media || [];
+    var ш = медиа[С.снимок] || медиа[0];
+    if (ш) {
+      большой.innerHTML = ш.kind === 'video'
+        ? '<video src="' + CW.адрес + ш.url + '" controls playsinline></video>'
+        : '<img alt="" src="' + CW.адрес + ш.url + '">';
+    } else {
+      большой.innerHTML = '<span class="зн" style="color:'
+        + (ЦВЕТА[т.category] || 'currentColor') + '">'
+        + значокРаздела(кот, 64) + '</span>';
+    }
+    /* Фигура вещи стоит и на раскрытой карточке — в том же углу
+       снимка, что на витрине, только крупнее. Раньше при раскрытии
+       она пропадала вовсе. */
+    большой.insertAdjacentHTML('beforeend', значокФигуры(т));
+    нарисоватьФигуру(большой, т);
+    куда.appendChild(большой);
+
+    if (медиа.length > 1) {
+      var лента = ок('div', 'лента-снимков');
+      медиа.forEach(function (м, и) {
+        var б = ок('button', 'снимочек' + (и === С.снимок ? ' тут' : ''));
+        б.innerHTML = м.kind === 'video'
+          ? '<video src="' + CW.адрес + м.url + '" muted></video>'
+          : '<img alt="" loading="lazy" src="' + CW.адрес + м.url + '">';
+        б.onclick = function () { С.снимок = и; нарисоватьСнимки(куда, т); };
+        лента.appendChild(б);
+      });
+      куда.appendChild(лента);
+    }
+    return;
+  }
+
+  большой.innerHTML = т.cover
+    ? '<img alt="" src="' + CW.безопасно(CW.файл(т.cover)) + '">'
+    : '<span class="зн" style="color:' + (ЦВЕТА[т.category] || 'currentColor')
+      + '">' + значокРаздела(кот, 64) + '</span>';
+  куда.appendChild(большой);
+}
+
+function нарисоватьОписание(куда, т) {
+  куда.innerHTML = '';
+  var вещь = (С.режим === 'shop');
+
+  if (т.brand) куда.appendChild(ок('div', 'бренд', CW.безопасно(т.brand)));
+
+  var з = document.createElement('h2');
+  з.textContent = т.title || 'Без названия';
+  куда.appendChild(з);
+
+  /* ── ИМЯ ПРОДАВЦА — ДВЕРЬ ──
+     Наведение показывает карточку с рейтингом, нажатие открывает окно
+     с отзывами (shared/продавец.js). Раньше имя было просто словом, и
+     про продавца нельзя было узнать ничего. */
+  var ктоСтрока = ок('div', 'кто', 'Продавец: ');
+  var имяПродавца = document.createElement('span');
+  имяПродавца.textContent = т.seller || '-';
+  ктоСтрока.appendChild(имяПродавца);
+  ктоСтрока.appendChild(document.createTextNode(
+      ' · ' + разделПо(т.category).name
+    + (т.subcategory ? ' · ' + т.subcategory : '')));
+  куда.appendChild(ктоСтрока);
+  if (т.seller_id && CW.продавец) CW.продавец.привязать(имяПродавца, т.seller_id);
+
+  var ценаСтрока = ок('div', 'ценник', ценник(т));
+  if (вещь && т.condition) {
+    ценаСтрока.appendChild(ок('span', 'знач-состояния', имяСостояния(т.condition)));
+  }
+  if (вещь) {
+    ценаСтрока.appendChild(ок('span', 'знач-состояния',
+      т.qty > 0 ? ('осталось ' + т.qty + ' шт') : 'разобрали'));
+  }
+  куда.appendChild(ценаСтрока);
+
+  if (т.description) куда.appendChild(ок('div', 'текст', CW.безопасно(т.description)));
+
+  if ((т.tags || []).length) {
+    куда.appendChild(ок('div', 'теги', т.tags.map(function (г) {
+      return '<span class="тег">' + CW.безопасно(г) + '</span>';
+    }).join('')));
+  }
+
+  if (вещь && (т.specs || []).length) {
+    куда.appendChild(ок('div', 'свойства', т.specs.map(function (п) {
+      return '<div class="свойство"><span class="к">' + CW.безопасно(п.k || '')
+           + '</span><span>' + CW.безопасно(п.v || '') + '</span></div>';
+    }).join('')));
+  }
+
+  if (вещь && т.shipping) {
+    куда.appendChild(ок('div', 'замечание',
+      '<b>Доставка.</b> ' + CW.безопасно(т.shipping)));
+  }
+
+  /* цифровой товар: что получено */
+  if (!вещь && (т.bought || т.mine)) {
+    if (т.delivery) {
+      куда.appendChild(ок('div', 'доставка-текст', CW.безопасно(т.delivery)));
+    }
+    var файлы = т.files || [];
+    if (файлы.length) {
+      var список = ок('div', 'файлы');
+      файлы.forEach(function (ф) {
+        var строка = ок('div', 'файл',
+            '<span class="зн">' + CW.значок('лист') + '</span>'
+          + '<span class="нм">' + CW.безопасно(ф.name) + '</span>'
+          + '<span class="рз">' + размер(ф.size) + '</span>'
+          + '<button>Скачать</button>');
+        строка.querySelector('button').onclick = function () { скачать(т, ф, this); };
+        список.appendChild(строка);
+      });
+      куда.appendChild(список);
+    }
+  }
+
+  куда.appendChild(действия(т));
+}
+
+function размер(б) {
+  б = Number(б) || 0;
+  if (б >= 1048576) return (б / 1048576).toFixed(1) + ' МБ';
+  if (б >= 1024) return Math.round(б / 1024) + ' КБ';
+  return б + ' Б';
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ДЕЙСТВИЯ НАД ТОВАРОМ
+   ═══════════════════════════════════════════════════════════════════════ */
+function действия(т) {
+  var ряд = ок('div', 'действия');
+  var вещь = (С.режим === 'shop');
+
+  if (т.mine) {
+    ряд.appendChild(кнопка(т.status === 'active' ? 'Снять с витрины' : 'Вернуть в продажу',
+      '', function () { переключитьПродажу(т); }));
+    if (!вещь) {
+      ряд.appendChild(кнопка('Приложить файл', '', function () { приложитьФайл(т); }));
+    } else {
+      ряд.appendChild(кнопка('Добавить снимок', '', function () { приложитьСнимок(т); }));
+    }
+    ряд.appendChild(кнопка('Удалить', 'опасная', function () { удалить(т); }));
+    return ряд;
+  }
+
+  if (!вещь) {
+    if (т.bought) {
+      ряд.appendChild(ок('div', 'замечание', 'Товар у тебя. Файлы и текст выше.'));
+      return ряд;
+    }
+    var цена = Number(т.price || 0);
+    ряд.appendChild(кнопка(цена > 0 ? ('Купить за ' + деньги(цена) + ' CUBE')
+                                    : 'Забрать бесплатно',
+      'главная', function () { купить(т); }));
+    ряд.appendChild(вКорзину(т, 'market'));
+    return ряд;
+  }
+
+  /* вещь */
+  if (т.status !== 'active' || !т.qty) {
+    ряд.appendChild(ок('div', 'замечание', 'Этого товара сейчас нет в продаже.'));
+    return ряд;
+  }
+  if (Number(т.price || 0) <= 0) {
+    ряд.appendChild(ок('div', 'замечание',
+      'У товара не проставлена цена, купить через площадку нельзя. '
+      + 'Это вопрос к продавцу.'));
+    return ряд;
+  }
+  /* Площадка считает только в CUBE. Если продавец выставил цену в другой
+     валюте, кнопка «купить» списала бы столько же CUBE — молча и не по
+     той цене. Честнее не показывать кнопку вовсе. */
+  if (String(т.currency || 'CUBE').toUpperCase() !== 'CUBE') {
+    ряд.appendChild(ок('div', 'замечание',
+      'Цена выставлена в ' + CW.безопасно(т.currency) + ', а площадка считает '
+      + 'в CUBE. Купить отсюда нельзя, договаривайтесь с продавцом.'));
+    return ряд;
+  }
+  ряд.appendChild(кнопка('Купить за ' + деньги(т.price) + ' CUBE', 'главная',
+    function () { купить(т); }));
+  ряд.appendChild(вКорзину(т, 'shop'));
+  return ряд;
+}
+
+/* ── «В КОРЗИНУ» РЯДОМ С «КУПИТЬ» ──
+   Купить сразу - по-прежнему первым делом: чаще всего берут одну вещь
+   и не хотят лишних шагов. Корзина - для тех, кто набирает несколько.
+
+   Кнопка знает, лежит ли товар в корзине, и вторым нажатием его
+   оттуда убирает: иначе человек жмёт её дважды и не понимает, стало
+   ли их два. */
+function вКорзину(т, род) {
+  var есть = CW.корзина && CW.корзина.есть(род, т.id);
+  var б = кнопка(есть ? 'Убрать из корзины' : 'В корзину', '', function () {
+    if (!CW.корзина) return;
+    if (CW.корзина.есть(род, т.id)) {
+      CW.корзина.убрать(род + ':' + т.id);
+      CW.сказать('Убрано из корзины', 2000);
+    } else {
+      var о = CW.корзина.положить(т, род, 1);
+      CW.сказать(о.беда ? о.беда
+               : (о.добавлено ? 'В корзине' : 'Уже в корзине'), 2500);
+    }
+    нарисоватьВерх();
+    нарисоватьТовар();
+  });
+  if (есть) б.classList.add('вкорзине');
+  return б;
+}
+
+function кнопка(подпись, вид, что) {
+  var б = ок('button', 'кнопка' + (вид ? ' ' + вид : ''));
+  б.textContent = подпись;
+  б.onclick = что;
+  return б;
+}
+
+
+
+/* ── покупка и создание — общими окнами (modals/) ──────────────────
+   Раньше эти четыре окна жили здесь, и потому купить вещь можно было
+   только с витрины. Теперь они общие: покупка открывается и из
+   профиля продавца, и по прямой ссылке на товар. */
+function купить(т) {
+  CW.открыть('purchase', {
+    товар: т,
+    род: С.режим === 'shop' ? 'shop' : 'market',
+    потом: function (о) {
+      if (С.режим === 'shop') { С.вид = 'bought'; нарисоватьВерх(); загрузить(); }
+      else if (о && о.item) { С.открыт = о.item; С.снимок = 0; нарисоватьТовар(); }
+      else открыть(т.id);
+    }
+  });
+}
+
+function послеСоздания(о) {
+  CW.сказать(С.режим === 'shop' ? 'Выложено. Теперь добавь снимки'
+                                : 'Товар на витрине');
+  С.вид = 'mine';
+  нарисоватьВерх();
+  if (о && о.id) открыть(о.id); else загрузить();
+}
+
+function переключитьПродажу(т) {
+  var куда = т.status === 'active' ? 'hidden' : 'active';
+  CW.спросить((С.режим === 'shop' ? '/shop/' : '/market/') + т.id + '/status', {
+    способ: 'POST', тело: { status: куда }
+  }).then(function () {
+    CW.сказать(куда === 'active' ? 'Товар снова на витрине' : 'Снят с витрины');
+    открыть(т.id);
+  }).catch(function (е) { CW.сказать(е.message || 'Не вышло'); });
+}
+
+function удалить(т) {
+  CW.лист([
+    { заголовок: 'Удалить «' + (т.title || '') + '»?' },
+    { зн: CW.значок('урна', 16), подпись: 'Удалить', опасная: true, делать: function () {
+        CW.спросить((С.режим === 'shop' ? '/shop/' : '/market/') + т.id,
+                    { способ: 'DELETE' })
+          .then(function (о) {
+            CW.сказать(о && о.reason ? о.reason : 'Удалён');
+            С.открыт = null; загрузить();
+          })
+          .catch(function (е) { CW.сказать(е.message || 'Не вышло удалить'); });
+      } },
+    { зн: CW.значок('стрелка', 16), подпись: 'Оставить' }
+  ]);
+}
+
+/* Файл лежит за ключом: обычной ссылкой его не взять — к адресу
+   /market/{id}/files/{file} браузер наш ключ не приложит. Поэтому берём
+   запросом и отдаём из памяти браузера. */
+function скачать(т, ф, кн) {
+  var было = кн.textContent;
+  кн.textContent = 'Беру…'; кн.disabled = true;
+
+  fetch(CW.адрес + '/market/' + т.id + '/files/' + ф.id, {
+    headers: { Authorization: 'Bearer ' + CW.токен() }
+  }).then(function (о) {
+    if (!о.ok) throw new Error('не отдалось');
+    return о.blob();
+  }).then(function (б) {
+    /* Файл уже у нас в памяти — отдаём его тем же общим способом, что
+       и везде. Адрес из памяти отпускаем через полминуты: раньше нельзя,
+       браузер ещё не дописал, позже незачем. */
+    var адрес = URL.createObjectURL(б);
+    CW.скачать(адрес, ф.name || 'файл');
+    setTimeout(function () { URL.revokeObjectURL(адрес); }, 30000);
+    кн.textContent = было; кн.disabled = false;
+  }).catch(function () {
+    кн.textContent = было; кн.disabled = false;
+    CW.сказать('Файл не скачался');
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ЗАКАЗЫ
+   ═══════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════
+   КОРЗИНА НА СТРАНИЦЕ
+
+   Собрали несколько товаров - вот они списком, с итогом внизу. Что-то
+   передумал - убрал урной, количество у вещи правится тут же. Кнопка
+   внизу открывает окно оплаты (modals/cart.js): там цены спрашиваются
+   у сервера заново, сверяется баланс и один раз спрашивается адрес.
+
+   Сама корзина живёт в shared/корзина.js - одна на обе половины рынка
+   и на все окна, которые её когда-нибудь позовут.
+   ═══════════════════════════════════════════════════════════════════════ */
+function нарисоватьКорзину() {
+  var сп = CW.корзина ? CW.корзина.список() : [];
+  if (!сп.length) {
+    var у = ок('div', 'пусто-рынка');
+    у.innerHTML = '<div class="зн">' + CW.значок('тележка')
+                + '</div><div class="слова">Корзина пуста.<br>'
+                + 'У товара на витрине есть кнопка «В корзину».</div>';
+    списком.appendChild(у);
+    return;
+  }
+
+  var коробка = ок('div', 'крз-страница');
+  сп.forEach(function (з) {
+    var р = ок('div', 'крз-ряд');
+
+    var кадр = ок('span', 'крз-кадр');
+    if (з.снимок) кадр.innerHTML = '<img src="' + CW.безопасно(CW.файл(з.снимок)) + '" alt="">';
+    else кадр.innerHTML = CW.значок(з.род === 'shop' ? 'сумка' : 'дискета', 18);
+    р.appendChild(кадр);
+
+    var имя = ок('span', 'крз-имя');
+    имя.innerHTML = '<b>' + CW.безопасно(з.имя) + '</b>'
+      + '<span class="крз-мелко">' + CW.безопасно(з.продавец || '')
+      + (з.род === 'shop' ? ' · вещь' : ' · цифровой') + '</span>';
+    имя.onclick = function () {
+      С.режим = з.род === 'shop' ? 'shop' : 'digital';
+      С.вид = 'all';
+      запомнитьРежим(С.режим);
+      нарисоватьВерх();
+      открыть(з.ид);
+    };
+    р.appendChild(имя);
+
+    /* Количество - только у вещей: цифровой товар один и тот же файл,
+       двух штук у него не бывает. */
+    if (з.род === 'shop') {
+      var счёт = ок('span', 'крз-счёт');
+      счёт.appendChild(кнСчёта('минус', function () {
+        CW.корзина.поправить(з.ключ, (з.сколько || 1) - 1);
+        нарисоватьВерх(); нарисоватьСписок();
+      }));
+      var ч = ок('span', 'крз-число'); ч.textContent = з.сколько || 1;
+      счёт.appendChild(ч);
+      счёт.appendChild(кнСчёта('плюс', function () {
+        CW.корзина.поправить(з.ключ, (з.сколько || 1) + 1);
+        нарисоватьВерх(); нарисоватьСписок();
+      }));
+      р.appendChild(счёт);
+    }
+
+    var цена = ок('span', 'крз-цена');
+    цена.textContent = String(з.валюта || 'CUBE').toUpperCase() !== 'CUBE'
+      ? (з.цена + ' ' + з.валюта)
+      : (з.цена ? (деньги(з.цена * (з.сколько || 1)) + ' CUBE') : 'даром');
+    р.appendChild(цена);
+
+    var урна = ок('button', 'крз-убрать');
+    урна.title = 'Убрать из корзины';
+    урна.innerHTML = CW.значок('урна', 16);
+    урна.onclick = function () {
+      CW.корзина.убрать(з.ключ);
+      нарисоватьВерх(); нарисоватьСписок();
+    };
+    р.appendChild(урна);
+
+    коробка.appendChild(р);
+  });
+
+  var низ = ок('div', 'крз-низ');
+  var итог = CW.корзина.итог();
+  низ.innerHTML = '<div class="крз-сумма"><span>Итого</span><b>'
+                + деньги(итог) + ' CUBE</b></div>';
+  var оплатить = ок('button', 'кнопка главная');
+  оплатить.textContent = 'Оплатить всё';
+  оплатить.onclick = function () {
+    CW.открыть('cart', { потом: function () {
+      нарисоватьВерх(); нарисоватьСписок();
+    } });
+  };
+  низ.appendChild(оплатить);
+  var очистить = ок('button', 'кнопка');
+  очистить.textContent = 'Очистить';
+  очистить.onclick = function () {
+    CW.лист([
+      { заголовок: 'Убрать всё из корзины?' },
+      { зн: CW.значок('урна', 16), подпись: 'Убрать всё', делать: function () {
+          CW.корзина.очистить(); нарисоватьВерх(); нарисоватьСписок();
+        } },
+      { зн: CW.значок('стрелка', 16), подпись: 'Передумать' }
+    ]);
+  };
+  низ.appendChild(очистить);
+  коробка.appendChild(низ);
+
+  списком.appendChild(коробка);
+}
+
+function кнСчёта(знак, что) {
+  var б = ок('button', 'крз-кн');
+  б.innerHTML = CW.значок(знак, 14) || (знак === 'плюс' ? '+' : '-');
+  б.onclick = что;
+  return б;
+}
+
+function нарисоватьЗаказы() {
+  if (!С.заказы.length) {
+    var у = ок('div', 'пусто-рынка');
+    у.innerHTML = '<div class="зн">' + CW.значок(С.вид === 'sold' ? 'монета' : 'тележка')
+                + '</div><div class="слова">'
+                + (С.вид === 'sold' ? 'Твои вещи пока никто не заказывал.'
+                                    : 'Ты пока ничего здесь не покупал.')
+                + '</div>';
+    списком.appendChild(у);
+    return;
+  }
+
+  var где = ок('div', 'заказы');
+  С.заказы.forEach(function (з) { где.appendChild(заказ(з)); });
+  списком.appendChild(где);
+}
+
+function заказ(з) {
+  var у = ок('div', 'заказ');
+  var продавец = (з.role === 'seller');
+
+  у.innerHTML =
+      '<div class="строка">'
+    +   '<div class="имя">' + CW.безопасно(з.title || 'Товар') + '</div>'
+    +   '<span class="шаг ' + CW.безопасно(з.status) + '">' + шагЗаказа(з.status) + '</span>'
+    + '</div>'
+    + '<div class="когда">' + деньги(з.total) + ' CUBE · ' + (з.qty || 1) + ' шт · '
+    +   CW.безопасно(CW.подпись(з.created_at)) + ' · '
+    +   (продавец ? 'покупатель ' + CW.безопасно(з.buyer)
+                  : 'продавец ' + CW.безопасно(з.seller)) + '</div>'
+    + (з.address ? '<div class="адрес">Куда: ' + CW.безопасно(з.address) + '</div>' : '')
+    + (з.note ? '<div class="адрес">Записка: ' + CW.безопасно(з.note) + '</div>' : '');
+
+  var кнопки = ок('div', 'кнопки');
+  if (продавец && з.status === 'paid') {
+    кнопки.appendChild(кнопка('Отправил', 'главная', function () { двинуть(з, 'sent'); }));
+    кнопки.appendChild(кнопка('Отменить', 'опасная', function () { двинуть(з, 'cancelled'); }));
+  } else if (продавец && з.status === 'sent') {
+    кнопки.appendChild(кнопка('Отменить', 'опасная', function () { двинуть(з, 'cancelled'); }));
+  } else if (!продавец && з.status === 'paid') {
+    кнопки.appendChild(кнопка('Отменить заказ', 'опасная', function () { двинуть(з, 'cancelled'); }));
+  } else if (!продавец && з.status === 'sent') {
+    кнопки.appendChild(кнопка('Получил', 'главная', function () { двинуть(з, 'done'); }));
+  }
+  if (кнопки.children.length) у.appendChild(кнопки);
+  return у;
+}
+
+function шагЗаказа(с) {
+  return { paid: 'оплачен, ждёт отправки', sent: 'в пути',
+           done: 'получен', cancelled: 'отменён' }[с] || с;
+}
+
+function двинуть(з, куда) {
+  var спросить = function () {
+    CW.спросить('/shop/orders/' + з.id + '/status', {
+      способ: 'POST', тело: { status: куда }
+    }).then(function () {
+      CW.сказать({ sent: 'Отмечено: отправлено', done: 'Готово, деньги у продавца',
+                   cancelled: 'Заказ отменён, деньги вернулись' }[куда]);
+      /* Деньги шевельнулись — спрашиваем, сколько их теперь, и правим
+         верхнюю полосу: своего счёта ответ о заказе не содержит. */
+      CW.кто(true).then(function (я) { CW.обновитьБаланс(я && я.cube_balance); });
+      загрузить();
+    }).catch(function (е) { CW.сказать(е.message || 'Не вышло'); });
+  };
+
+  if (куда === 'done') {
+    CW.лист([
+      { заголовок: 'Вещь получена?' },
+      { зн: CW.значок('галка', 16), подпись: 'Да, получил', делать: спросить },
+      { зн: CW.рисунок('M6 6 18 18M18 6 6 18', 15), подпись: 'Ещё нет' }
+    ]);
+    return;
+  }
+  if (куда === 'cancelled') {
+    CW.лист([
+      { заголовок: 'Отменить заказ?' },
+      { зн: CW.значок('урна', 16), подпись: 'Отменить', опасная: true, делать: спросить },
+      { зн: CW.значок('стрелка', 16), подпись: 'Оставить' }
+    ]);
+    return;
+  }
+  спросить();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   НОВЫЙ ТОВАР
+   ═══════════════════════════════════════════════════════════════════════ */
+function новыйТовар() {
+  /* Окна создания и покупки живут в modals/ — они нужны не только
+     здесь: выложить вещь хочется и из профиля, и из поиска. */
+  /* Вместе со списком разделов отдаём и наши линии: окно рисует ими
+     значки в выборе категории. Держать второй такой же список внутри
+     окна нельзя — однажды они разойдутся, и в выборе будет одно, а на
+     витрине другое. */
+  function сЛиниями(список) {
+    return (список || []).map(function (к) {
+      var с = {};
+      Object.keys(к).forEach(function (п) { с[п] = к[п]; });
+      с.линия = ЛИНИИ[к.id] || '';
+      return с;
+    });
+  }
+
+  if (С.режим === 'shop') {
+    CW.открыть('create-item', {
+      разделы: сЛиниями(С.коты.shop),
+      состояния: С.состояния || [],
+      потом: послеСоздания
+    });
+  } else {
+    /* Разделы лежат под именем режима — «digital», а не «market».
+       С чужим ключом сюда приезжал пустой список, и в окне товара
+       оставалась одна выдуманная категория «Прочее»: восьми настоящих
+       («Ключи и коды», «NFT и коллекции», …) человек не видел вовсе. */
+    CW.открыть('create-product', {
+      разделы: сЛиниями(С.коты.digital),
+      потом: послеСоздания
+    });
+  }
+}
+
+
+
+/* ── приложить файл к своему товару ── */
+function приложитьФайл(т) { взятьФайл('*/*', function (ф) {
+  послатьФайл('/market/' + т.id + '/files', ф, т);
+}); }
+
+function приложитьСнимок(т) { взятьФайл('image/*,video/*', function (ф) {
+  послатьФайл('/shop/' + т.id + '/media', ф, т);
+}); }
+
+/* Одно поле выбора файла на весь экран, и оно стоит в разметке с самого
+   начала. Создавать его на каждое нажатие нельзя: поле, которого нет в
+   разметке, в части браузеров молча не сообщает о выборе — человек
+   выбирает файл, а ничего не происходит. */
+var полеФайла = document.createElement('input');
+полеФайла.type = 'file';
+полеФайла.id = 'выбор-файла-рынка';
+полеФайла.style.cssText =
+  'position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
+document.body.appendChild(полеФайла);
+var кудаФайл = null;
+
+полеФайла.onchange = function () {
+  var ф = полеФайла.files && полеФайла.files[0];
+  полеФайла.value = '';
+  if (ф && кудаФайл) кудаФайл(ф);
+  кудаФайл = null;
+};
+
+function взятьФайл(что, дальше) {
+  кудаФайл = дальше;
+  полеФайла.accept = что;
+  полеФайла.click();
+}
+
+function послатьФайл(путь, ф, т) {
+  CW.сказать('Загружаю ' + ф.name + '…', 8000);
+  var пачка = new FormData();
+  пачка.append('file', ф);
+  CW.спросить(путь, { способ: 'POST', тело: пачка, сроком: 120000 })
+    .then(function () { CW.сказать('Готово'); открыть(т.id); })
+    .catch(function (е) {
+      CW.сказать(е.сеть ? 'Нет связи с сервером' : (е.message || 'Не загрузилось'));
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   МЕЛОЧЬ
+   ═══════════════════════════════════════════════════════════════════════ */
+/* Собственных окон у маркетплейса больше нет: и создание, и покупка
+   живут в modals/ и выглядят так же, как остальные тридцать с лишним
+   окон программы. Здесь остались только витрина и карточка товара. */
+
+function ок(тег, класс, внутри) { return CW.элВ(тег, класс, внутри); }
+
+});
+</script>
+</body>
+</html>

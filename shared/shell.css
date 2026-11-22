@@ -1,0 +1,1509 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   ОБОЛОЧКА КУБА.
+
+   Всё, что окружает содержимое: рама по центру, верхняя полоса, строка
+   кубов и левое меню. Один набор правил на все экраны меню.
+
+   Про раму: программа живёт в столбце по центру экрана, а не во всю
+   ширину. На широком мониторе полоса в два метра читается плохо, и в
+   работающей программе так и сделано.
+
+   Полосы держатся на «липком» положении, а не на «прикреплённом»:
+   прикреплённое к окну не умеет сидеть внутри рамы — оно всегда во всю
+   ширину экрана, и на широком мониторе верх расползался за края
+   столбца. Липкое живёт внутри рамы и само прилипает к верху при
+   прокрутке.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root{
+  --полоса-верх:54px;
+  /* Полосы кубов больше нет: фишки стоят в верхней полосе за балансом,
+     и высоте второй полосы взяться неоткуда. Переменную убрали, чтобы
+     в файле не оставалось размера без хозяина. */
+  --меню-ширина:210px;
+  /* Ширина рамы, поля по краям и скругление низа заданы в стиль.css:
+     они общие для всей программы, не только для экранов куба. */
+}
+
+html,body{ min-height:100%; }
+body{ background:var(--вне-рамы); }
+
+/* Рама экранов куба — та же, что в стиль.css, только её содержимое
+   разложено столбцом: шапка, строка кубов, а ниже меню и содержимое.
+   Прокручивается ТОЛЬКО содержимое (и меню, если не влезло). */
+.об-рама{
+  position:fixed; top:0; bottom:0; left:50%; transform:translateX(-50%);
+  width:min(var(--рама-ширина), calc(100vw - var(--поля-по-краям) * 2));
+  background:var(--фон);
+  border-left:1px solid var(--край);
+  border-right:1px solid var(--край);
+  border-bottom:1px solid var(--край);
+  border-bottom-left-radius:var(--низ-скругление);
+  border-bottom-right-radius:var(--низ-скругление);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+
+/* ── верхняя полоса ──────────────────────────────────────────────── */
+.об-верх{
+  flex:0 0 auto; z-index:40;
+  height:calc(var(--полоса-верх) + env(safe-area-inset-top));
+  padding-top:env(safe-area-inset-top);
+  display:flex; align-items:center; gap:12px; padding-left:16px; padding-right:16px;
+  background:var(--полоса-цвет);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--край);
+}
+
+/* Надпись слева — та же, что в мире: «Cube» цветом текста, «World»
+   синим. Вид описан здесь, а не в каждой странице: надпись одна на всю
+   программу. */
+.об-знак{
+  flex:0 0 auto; font-size:1.0667rem; font-weight:800; letter-spacing:-.02em;
+  color:var(--текст); cursor:pointer; user-select:none;
+}
+.об-знак span{ color:var(--синий); }
+@media (max-width:900px){ .об-знак{ display:none; } }
+
+.об-лицо{
+  width:32px; height:32px; flex:0 0 32px; border-radius:50%; padding:0;
+  border:2px solid var(--синий); background:linear-gradient(140deg,#223055,#161d33);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; overflow:hidden; color:#7f9ddb;
+}
+.об-лицо img{ width:100%; height:100%; object-fit:cover; display:block; }
+.об-лицо svg{ width:17px; height:17px; }
+
+/* ── стрелка под лицом ──
+   Лицо в разделах ведёт прямо в профиль, а меню аккаунта (Живая карта,
+   Голос, Документы, Скачать) висит под этой маленькой стрелкой рядом.
+   Без неё в разделах эти четыре вещи не открыть вовсе. */
+.об-лицо-ещё{
+  width:20px; height:20px; flex:0 0 20px; padding:0; margin-left:-4px;
+  border:none; background:none; cursor:pointer; color:var(--текст3);
+  display:flex; align-items:center; justify-content:center;
+}
+.об-лицо-ещё svg{ width:14px; height:14px; transform:rotate(180deg); }
+.об-лицо-ещё:hover, .об-лицо-ещё.горит{ color:var(--текст); }
+
+/* Правый ряд прижат к краю: длинной строки поиска в полосе больше нет,
+   вместо неё значок в самом ряду. Распорка — просто пустое место. */
+.об-верх > .об-право{ margin-left:auto; }
+
+.об-поиск{ flex:1; min-width:0; position:relative; display:flex; align-items:center; }
+.об-поиск input{
+  width:100%; padding:8px 44px 8px 38px; font-size:0.9rem;
+  background:var(--поле); border:1px solid var(--край); color:var(--текст);
+  border-radius:var(--радиус-круг); outline:none;
+}
+.об-поиск input:focus{ border-color:rgba(74,158,255,.6); }
+.об-поиск input::placeholder{ color:var(--текст3); }
+.об-поиск .лупа{ position:absolute; left:15px; display:flex; color:var(--текст3);
+  pointer-events:none; }
+.об-поиск .лупа svg{ width:15px; height:15px; }
+.об-поиск .горячо{
+  position:absolute; right:13px; font-size:0.7333rem; color:var(--текст3);
+  pointer-events:none; letter-spacing:.04em;
+}
+
+.об-право{ display:flex; align-items:center; gap:10px; flex:0 0 auto; }
+
+.об-cube{
+  display:flex; align-items:center; gap:8px; white-space:nowrap;
+  border:1px solid rgba(251,191,36,.45); background:rgba(251,191,36,.08);
+  color:var(--жёлтый); border-radius:var(--радиус-круг);
+  padding:6px 13px; font-size:0.8667rem; font-weight:600; cursor:pointer;
+}
+/* Монета крупнее прочих значков: у неё есть тело, и в 13 точках куб
+   внутри сливается в пятно. */
+.об-cube svg{ width:16px; height:16px; }
+
+/* Три кружка наверху (лупа, колокол, микрофон) стоят голыми: ни
+   рамки, ни подложки, только значок на полосе. Границу оставили
+   прозрачной, а не убрали совсем, чтобы кнопка не стала на два
+   пикселя меньше и ряд не поехал, и чтобы «горит» у микрофона могло
+   её зажечь. Подложка возвращается под мышкой. */
+.об-круг{
+  width:32px; height:32px; flex:0 0 32px; border-radius:50%; position:relative;
+  border:1px solid transparent; background:none; color:var(--текст2);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
+}
+.об-круг svg{ width:16px; height:16px; }
+.об-круг{ transition:background .13s ease, color .13s ease, transform .1s ease; }
+.об-круг:hover{ color:var(--текст); background:var(--поле); }
+/* Нажатие видно и здесь: тот же отклик, что у кругляшей в окнах. */
+.об-круг:active{ background:var(--край); transform:scale(.9); }
+/* Микрофон слушает — кнопка горит. Иначе единственный признак, что он
+   включён, это строка внизу, а она через четыре секунды прячется. */
+.об-круг.горит{
+  /* Цвет из оформления, а не вписанный синим: кружок горит тем же, чем
+     горит вся программа. */
+  background:rgba(var(--синий-ргб), .22); border-color:var(--синий);
+  color:var(--текст);
+  box-shadow:0 0 0 3px rgba(var(--синий-ргб), .15);
+}
+.об-круг .счёт{
+  position:absolute; top:-3px; right:-3px; min-width:18px; height:18px;
+  border-radius:9px; background:var(--красный); color:#fff;
+  font-size:0.7rem; font-weight:700; display:none;
+  align-items:center; justify-content:center; padding:0 5px;
+  border:2px solid var(--фон);
+}
+.об-круг .счёт.видно{ display:flex; }
+
+/* Кнопки «Мир» и значка срока куба в полосе разделов больше нет —
+   правила убраны вместе с ними, чтобы в файле не копилась одежда без
+   хозяина. В мир ведёт надпись CubeWorld, срок написан на фишке куба. */
+
+/* ── открытые кубы: внутри верхней полосы, сразу за балансом ──────
+   Своей полосы у кубов больше нет. Место под фишки тянется на всё
+   свободное и прокручивается вбок — кубов бывает много, и ряд кнопок
+   справа они потеснить не должны. Полоски прокрутки не показываем:
+   она в полосе высотой в 54 точки заняла бы треть высоты. */
+.об-кубы{
+  flex:1 1 auto; min-width:0;
+  display:flex; align-items:center; gap:10px;
+  overflow-x:auto; overflow-y:hidden; scrollbar-width:none;
+}
+.об-кубы::-webkit-scrollbar{ display:none; }
+/* Класс ставит shell.js, когда вправо есть что прокручивать. */
+.об-кубы.есть-ещё{
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);
+          mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);
+}
+/* Куб в верхней полосе: без рамки, подложкой. Выбранный — ровной
+   синей заливкой, без кольца и без перелива: градиент на маленькой
+   плашке читался как мокрое пятно. */
+.об-куб{
+  display:flex; align-items:center; gap:8px; flex:0 0 auto; cursor:pointer;
+  border:1px solid transparent; background:var(--поле);
+  border-radius:var(--радиус-круг); padding:6px 14px; font-size:0.9rem;
+  color:var(--текст2); white-space:nowrap;
+  transition:background .13s ease, color .13s ease;
+}
+.об-куб:hover{ color:var(--текст); background:var(--край); }
+/* Выбранный куб светится цветом оформления, а не вписанным синим:
+   перекрасил куб в сирень — и фишка в шапке сиреневая. Тот же приём,
+   что у выбранного пункта меню. */
+.об-куб.тут{ color:var(--текст); background:rgba(var(--синий-ргб), .16); }
+.об-куб .срок{ font-size:0.8rem; color:var(--текст3); }
+/* Лицо куба: наш значок линиями или своё фото кружком. */
+.об-куб > span:first-child{ display:flex; align-items:center; }
+.об-куб > span:first-child svg{ width:15px; height:15px; }
+.об-куб > span:first-child img{
+  width:17px; height:17px; border-radius:5px; object-fit:cover; display:block;
+}
+/* Ключ куба: только значок, жёлтым, кругом 32 точки — как соседние
+   кругляши полосы. Рамки нет, подложка появляется под рукой. */
+.об-ключ{
+  width:32px; height:32px; flex:0 0 32px; padding:0; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid transparent; border-radius:50%;
+  background:none; color:var(--жёлтый);
+  transition:background .13s ease, transform .1s ease;
+}
+.об-ключ:hover{ background:rgba(251,191,36,.14); }
+.об-ключ:active{ background:rgba(251,191,36,.22); transform:scale(.9); }
+.об-ключ:focus-visible{
+  outline:2px solid rgba(251,191,36,.6); outline-offset:2px;
+}
+.об-ключ svg{ width:17px; height:17px; }
+@media (pointer: coarse){ .об-ключ{ width:36px; height:36px; flex:0 0 36px; } }
+.об-плюс{
+  width:32px; height:32px; flex:0 0 32px; border-radius:50%; cursor:pointer;
+  border:1px solid transparent; background:none; color:var(--жёлтый);
+  font-size:1.2rem; display:flex; align-items:center; justify-content:center; padding:0;
+  transition:background .13s ease, color .13s ease, transform .1s ease;
+}
+/* Тот же жёлтый, что у ключа рядом: обе кнопки про куб, и читаются
+   они теперь одной парой, а не «ключ и что-то серое». */
+.об-плюс:hover{ background:rgba(251,191,36,.14); }
+.об-плюс:active{ background:rgba(251,191,36,.22); transform:scale(.9); }
+.об-плюс:focus-visible{
+  outline:2px solid rgba(251,191,36,.6); outline-offset:2px;
+}
+@media (pointer: coarse){ .об-плюс{ width:36px; height:36px; flex:0 0 36px; } }
+.об-плюс svg{ width:17px; height:17px; }
+
+/* ── низ рамы: меню слева, содержимое справа ─────────────────────── */
+.об-тело{ flex:1; min-height:0; display:flex; align-items:stretch; }
+
+/* Полоски прокрутки у меню нет нарочно. На компьютере меню помещается
+   целиком даже при крупном тексте, и серый ползунок вдоль левого края
+   просто стоял и отвлекал — ни разу не понадобившись.
+
+   Сама прокрутка при этом осталась: на низком окне или телефоне меню
+   прокручивается колесом, пальцем и с клавиатуры, просто без ползунка.
+   Убрать и её значило бы отрезать нижние пункты тому, у кого экран
+   ниже нашего. */
+.об-меню{
+  width:var(--меню-ширина); flex:0 0 var(--меню-ширина);
+  overflow-y:auto; overscroll-behavior:contain; padding:14px 12px 26px;
+  border-right:1px solid var(--край); background:var(--фон);
+  scrollbar-width:none;            /* Firefox */
+  -ms-overflow-style:none;         /* старая Edge */
+}
+.об-меню::-webkit-scrollbar{ width:0; height:0; display:none; }
+.об-раздел{
+  font-size:0.7rem; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--текст3); padding:16px 10px 7px;
+}
+.об-раздел:first-child{ padding-top:2px; }
+
+/* Шаг между пунктами 52 точки, сам пункт 42 — так в работающей
+   программе; меряно по снимку. Было 65 и 62: меню выглядело крупнее
+   и не помещалось целиком. */
+.об-пункт{
+  display:flex; align-items:center; gap:12px; width:100%;
+  border:none; background:none; cursor:pointer; text-align:left;
+  color:var(--текст2); font-size:0.9667rem; padding:4px 10px;
+  border-radius:12px; margin-bottom:9px;
+}
+.об-пункт:hover{ background:var(--поле); color:var(--текст); }
+/* Значок стоит прямо на полотне: ни рамки, ни серого квадрата под
+   ним. Квадраты рисовали в меню десять одинаковых плиток, и столбец
+   читался таблицей. Размер гнезда остаётся прежним — 34 точки, —
+   иначе подписи поехали бы влево и шаг строк сбился.
+
+   Серая плашка осталась ровно у одного пункта — выбранного, и там она
+   не серая, а залита акцентом: это и есть примета «ты здесь». */
+.об-пункт .зн{
+  width:34px; height:34px; flex:0 0 34px; border-radius:11px;
+  background:none; border:none;
+  display:flex; align-items:center; justify-content:center;
+}
+.об-пункт .зн svg{ width:17px; height:17px; }
+/* ВЫБРАННЫЙ ПУНКТ — как в работающей программе.
+
+   Там у него три приметы, и важны все три. Полоска слева в два
+   пиксела — по ней видно, где ты, даже боковым зрением и даже на
+   светлой теме, где заливка почти не читается. Заливка идёт слева
+   направо и гаснет к правому краю, а не наискось: полоска и заливка
+   тогда читаются как одно целое, начатое от края. И плашка значка —
+   залита акцентом, значок на ней белый.
+
+   Все три части берут цвет из одного места — var(--синий-ргб).
+   Прежде здесь стояло синее число. Человек перекрашивал куб в сирень,
+   и получал сиреневые кнопки рядом с синим пунктом меню: правка
+   цвета выглядела недоделанной. Теперь перекрашивается вместе со
+   всем остальным.
+
+   Полоска съедает два пиксела слева — ровно на столько уменьшен и
+   отступ, чтобы значки выбранного и соседних пунктов стояли в одну
+   линию. */
+.об-пункт.тут{
+  color:var(--текст); font-weight:600;
+  background:linear-gradient(90deg,rgba(var(--синий-ргб),.2),
+                                   rgba(var(--синий-ргб),.08));
+  border-left:2px solid var(--синий); padding-left:8px;
+}
+.об-пункт.тут .зн{
+  background:linear-gradient(135deg,rgba(var(--синий-ргб),1),
+                                    rgba(var(--синий-ргб),.72));
+  color:#fff;
+  box-shadow:0 2px 10px rgba(var(--синий-ргб),.35);
+}
+/* Белый значок на яркой плашке. Тень даёт ему собственный край: без
+   неё на светлых красках — золотой, жёлтой — белое по яркому сливается
+   и значок пропадает. Плашку при этом не затемняем, она остаётся
+   полного цвета. */
+.об-пункт.тут .зн svg{
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.5));
+}
+/* «Выйти» красное целиком — и слово, и значок. Серый значок рядом с
+   красным словом читался как недокрашенный: в одном пункте два цвета
+   без причины. Колечка вокруг плашки нет: обводок в меню не осталось
+   нигде, и эта была бы единственной. */
+.об-пункт.выход{ color:var(--красный); margin-top:4px; }
+.об-пункт.выход .зн{ color:var(--красный); }
+
+/* ── содержимое ──────────────────────────────────────────────────── */
+.об-место{
+  flex:1; min-width:0; overflow-y:auto; overflow-x:hidden;
+  overscroll-behavior:contain;
+}
+.об-место::-webkit-scrollbar{ width:9px; }
+.об-место::-webkit-scrollbar-thumb{
+  background:var(--край2); border-radius:5px;
+  border:2px solid transparent; background-clip:content-box;
+}
+.об-место::-webkit-scrollbar-track{ background:transparent; }
+/* Поле снизу было 60 точек. Шестьдесят точек пустоты - это ровно
+   столько, сколько нужно, чтобы на коротком окне появилась полоса
+   прокрутки у страницы, которой прокручивать нечего: на «Рефералах»
+   содержимого 605 точек, а полоса приезжала из-за одного этого
+   поля. Двадцати шести хватает, чтобы последняя карточка не
+   прилипала к низу, и короткие страницы перестали листаться. */
+.об-лист{ padding:22px 26px 26px; }
+
+/* ── поля по бокам у разделов-списков ──
+   Сигналы, Маркетплейс, Заработать, Кошелёк, Аналитика, Приглашения —
+   это длинные списки во всю ширину рамы. По 26 точек с краёв они
+   упирались в стенки и читались как сплошное полотно. Ставим полтора
+   сантиметра — 75 точек (50 точек = 1 см, как и везде у нас).
+   Лента, чаты и группы сюда не входят: там два окна со своей
+   раскладкой, и поля им задаёт «.об-лист:has(.две-колонки)». */
+.об-лист[data-раздел="signals"],
+.об-лист[data-раздел="market"],
+.об-лист[data-раздел="earn"],
+.об-лист[data-раздел="wallet"],
+.об-лист[data-раздел="stats"],
+.об-лист[data-раздел="refs"]{
+  padding-left:75px; padding-right:75px;
+}
+
+.об-заглавие{ display:flex; align-items:center; gap:12px; margin-bottom:22px; }
+.об-заглавие h1{ margin:0; font-size:1.4rem; font-weight:700; letter-spacing:-.02em; }
+.об-живое{
+  margin-left:auto; display:flex; align-items:center; gap:8px;
+  font-size:0.8667rem; color:var(--зелёный); font-weight:600;
+}
+.об-живое .точка{
+  width:7px; height:7px; border-radius:50%; background:var(--зелёный);
+  box-shadow:0 0 8px var(--зелёный);
+}
+
+/* ── телефон: меню уезжает в ящик ────────────────────────────────── */
+.об-ящик-кнопка{ display:none; }
+
+@media (max-width:980px){
+  /* На телефоне полей по краям нет: там дорог каждый пиксель. */
+  .об-рама{
+    width:100%; border-left:none; border-right:none; border-bottom:none;
+    border-radius:0;
+  }
+
+  .об-ящик-кнопка{
+    display:flex; width:38px; height:38px; flex:0 0 38px; border-radius:12px;
+    border:1px solid var(--край); background:var(--поле); color:var(--текст2);
+    align-items:center; justify-content:center; cursor:pointer; padding:0;
+  }
+  .об-ящик-кнопка svg{ width:19px; height:19px; }
+
+  .об-меню{
+    position:fixed; left:0; top:0; bottom:0; height:100%; z-index:60;
+    width:292px; flex-basis:0;
+    transform:translateX(-100%); transition:transform .22s;
+    box-shadow:var(--тень); padding-top:calc(20px + env(safe-area-inset-top));
+  }
+  .об-меню.открыто{ transform:none; }
+
+  .об-подложка{ position:fixed; inset:0; z-index:55; background:rgba(0,0,0,.6); display:none; }
+  .об-подложка.видно{ display:block; }
+
+  .об-поиск .горячо{ display:none; }
+  .об-cube .слово{ display:none; }
+  .об-лист{ padding:20px 16px 26px; }
+  /* На узком экране полутора сантиметров с каждого бока просто нет —
+     списки возвращаются к общим 16 точкам. */
+  .об-лист[data-раздел]{ padding-left:16px; padding-right:16px; }
+}
+
+@media (max-width:640px){
+  .об-поиск{ display:none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ОБЩИЕ КУСКИ ЭКРАНОВ.
+
+   Здесь то, чем пользуются ДВА и больше экранов меню: заголовок раздела,
+   полоса уровня, плитки кошельков, пустые строки и сообщения об ошибке.
+   Нужное одному экрану живёт в самом экране.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── заголовок раздела внутри экрана ─────────────────────────────── */
+/* Подпись раздела по меркам боевой: 11 точек, поле снизу 10. */
+.раздел{
+  display:flex; align-items:center; gap:8px; margin:0 0 10px;
+  font-size:11px; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--текст2); font-weight:700;
+}
+.раздел .знак{ display:flex; color:var(--сирень); }
+.раздел .знак svg{ width:14px; height:14px; }
+.раздел .тихо{
+  margin-left:auto; font-size:0.7667rem; letter-spacing:0;
+  text-transform:none; color:var(--текст3); font-weight:400;
+}
+
+/* ── полоса уровня ───────────────────────────────────────────────── */
+/* Полоса уровня по меркам боевой: поле 12/14, строка 12, жёлоб 5. */
+.уровень{
+  background:var(--окно); border:1px solid var(--край);
+  border-radius:10px; padding:12px 14px;
+}
+.уровень .ряд{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.уровень .ряд .имя{ font-size:12px; font-weight:800; }
+.уровень .ряд .знак{ display:flex; color:var(--жёлтый); }
+.уровень .ряд .знак svg{ width:15px; height:15px; }
+.уровень .ряд .xp{
+  margin-left:auto; font-family:ui-monospace,Menlo,monospace;
+  font-size:12px; color:var(--текст3);
+}
+.уровень .пояснение{ margin-top:12px; font-size:0.8667rem; line-height:1.65; color:var(--текст2); }
+.жёлоб{ height:5px; border-radius:3px; background:var(--поле); overflow:hidden; }
+.жёлоб i{
+  display:block; height:100%; border-radius:4px; min-width:3px;
+  background:linear-gradient(90deg,#2563eb,#60a5fa);
+}
+
+/* ── свайп ───────────────────────────────────────────────────────── */
+/* Как в боевой: поле 14, буквы 14, значок 18. Было 17 и 1.07rem —
+   кнопка выходила заметно выше ряда. */
+.кн-свайп{
+  width:100%; display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:14px; font-size:14px; font-weight:800; cursor:pointer;
+  color:#fff; border-radius:14px; border:1px solid rgba(74,158,255,.45);
+  background:linear-gradient(135deg,#2563eb,#3b82f6); margin-bottom:16px;
+  box-shadow:0 4px 18px rgba(74,158,255,.3);
+  transition:transform .14s, box-shadow .14s;
+}
+.кн-свайп:hover{ transform:translateY(-1px); box-shadow:0 8px 26px rgba(74,158,255,.45); }
+.кн-свайп svg{ width:18px; height:18px; }
+
+/* ── кошельки ────────────────────────────────────────────────────── */
+.нет-кошельков{ font-size:0.9333rem; color:var(--текст3); margin-bottom:16px; }
+.мои-кошельки{ margin-bottom:16px; }
+.мой-кошелёк{
+  display:flex; align-items:center; gap:12px; padding:13px 16px;
+  background:var(--окно); border:1px solid var(--край);
+  border-radius:var(--радиус); margin-bottom:8px;
+}
+.мой-кошелёк .адрес{
+  font-family:ui-monospace,Menlo,monospace; font-size:0.8667rem; word-break:break-all;
+}
+.мой-кошелёк .метка{
+  font-size:0.7rem; padding:3px 9px; border-radius:var(--радиус-круг);
+  border:1px solid currentColor; white-space:nowrap;
+}
+.мой-кошелёк .метка.проверен{ color:var(--зелёный); }
+.мой-кошелёк .метка.нет{ color:var(--текст3); }
+.мой-кошелёк .убрать{
+  margin-left:auto; background:none; border:none; cursor:pointer;
+  color:var(--текст3); font-size:1.1333rem; padding:4px 8px;
+}
+.мой-кошелёк .убрать:hover{ color:var(--красный); }
+
+/* Девять кошельков ровно так же, как в боевой: три в ряд, плитки
+   небольшие, а край у каждой карточки своего цвета — того же, что и
+   значок внутри. Цвет берётся из самого списка кошельков (цветКрая),
+   поэтому второго перечня красок здесь нет. */
+.сетка-кошельков{
+  display:grid; gap:9px; margin-bottom:14px;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+@media (max-width:560px){ .сетка-кошельков{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.кошелёк{
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--кош-край, var(--край)); border-radius:12px;
+  padding:12px 4px 8px; text-align:center; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  transition:border-color .15s, transform .15s;
+}
+.кошелёк:hover{ transform:translateY(-2px); border-color:var(--кош-свет, var(--край2)); }
+.кошелёк .плитка{
+  width:40px; height:40px; margin:0; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.2rem; font-weight:800; color:#fff;
+  box-shadow:0 2px 8px var(--кош-тень, transparent);
+}
+.кошелёк .плитка svg{ width:24px; height:24px; display:block; }
+.кошелёк .имя{ font-size:0.7333rem; font-weight:600; color:var(--текст2); line-height:1.2; }
+
+/* ── окно кошелька: два действия ──
+   Кошелька в браузере нет: поставить или вписать адрес руками. Третьей
+   строки «Отмена» нет — её делают крестик в углу и касание мимо.
+   Одно окно у всех девяти — рисует его shared/wallets.js.
+
+   Мерки маленькие нарочно: окно узкое (250 точек), и плитка в 56 точек
+   с полями в палец занимала в нём половину высоты. */
+.кош-окно{ text-align:center; padding:2px 0 0; }
+.кош-окно .плитка{
+  width:48px; height:48px; margin:0 auto 10px; border-radius:13px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem; font-weight:800; color:#fff;
+}
+.кош-окно .плитка svg{ width:26px; height:26px; display:block; }
+.кош-окно .имя{
+  font-size:0.9333rem; font-weight:700; color:var(--текст); margin-bottom:5px;
+}
+.кош-окно .слова{ font-size:0.8rem; color:var(--текст2); line-height:1.5; }
+.кош-дела{ display:flex; flex-direction:column; gap:7px; margin-top:14px; }
+.кош-дела button{ font:inherit; cursor:pointer; border-radius:10px; }
+.кош-первая{
+  padding:10px; border:none; color:#fff; font-size:0.8333rem; font-weight:700;
+}
+.кош-вторая{
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  padding:10px; font-size:0.8333rem; font-weight:600; color:var(--текст);
+  background:var(--поле); border:1px solid var(--край);
+}
+.кош-вторая:hover{ border-color:var(--край2); }
+
+/* ── вписать адрес руками ──
+   То же окно мерками: узкое, без шапки. Название строкой в теле, а не
+   шапкой, — иначе окно перестало бы быть похожим на соседнее. */
+.кош-заголовок{
+  font-size:0.9333rem; font-weight:700; color:var(--текст);
+  text-align:center; margin-bottom:6px;
+}
+.кош-слова{
+  font-size:0.8rem; color:var(--текст2); line-height:1.5;
+  text-align:center; margin-bottom:12px;
+}
+.кош-поле{
+  width:100%; box-sizing:border-box; padding:9px 11px; border-radius:10px;
+  background:var(--поле); border:1px solid var(--край); color:var(--текст);
+  font-family:ui-monospace,Menlo,monospace; font-size:0.8rem; outline:none;
+}
+.кош-поле:focus{ border-color:rgba(var(--синий-ргб),.7); }
+.кош-поле.плохо{ border-color:rgba(231,76,60,.7); }
+.кош-беда{
+  display:none; margin-top:7px; font-size:0.7667rem; color:var(--красный);
+  line-height:1.45;
+}
+.кош-беда.видно{ display:block; }
+
+/* ── ПОЛОСЫ СОВЕТОВ НА ПРАВОЙ ПОЛКЕ ──────────────────────────────
+   Сверху три товара, снизу три ролика «что ещё посмотреть». Карточка
+   9:16 — тот же кадр, что в ленте: иначе обложка обрезается и обещает
+   не тот ролик.
+
+   Видно ровно три; остальные уезжают вбок сами, раз в несколько секунд.
+   Ползунка нет намеренно: это подсказка сбоку, а не список, который
+   листают руками. Пальцем и колесом прокрутить всё равно можно. */
+.сов-полоса{
+  position:relative;        /* подпись полосы лежит ВНУТРИ, поверх карточек */
+  display:flex; flex-direction:column;
+  /* Полоса отдаёт место первой: на низком окне ужимается она, а не
+     кнопки. Свой рост она и так знает (--сов-рост), но ужаться должна
+     уметь — иначе полка вылезет за колонку. */
+  flex:0 1 auto; min-height:0; overflow:hidden;
+}
+/* Название полосы — внутри, в левом верхнем углу карточек, как и
+   подпись снизу. Снаружи оно съедало строку и делало два блока
+   непохожими друг на друга: у одного текст был над картинками, у
+   другого под ними. Теперь у обоих одинаково: верхняя надпись внутри
+   сверху, нижняя — внутри снизу. */
+.сов-шапка{
+  position:absolute; top:10px; left:8px; z-index:3; pointer-events:none;
+  padding:3px 8px; border-radius:7px;
+  background:rgba(0,0,0,.58); backdrop-filter:blur(3px);
+  font-size:0.6rem; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; color:#fff;
+}
+/* Рост полосы считает shelf.js по ширине колонки: три карточки 9:16
+   должны лечь в ряд точно по ширине, а выше потолка не подниматься —
+   иначе полка перестаёт помещаться в колонку. */
+/* Поле в 3 точки внутри: окошко прокручивается, а значит обрезает всё,
+   что вылезает. Без него у карточки срезалась верхняя линия рамки, а при
+   наведении — ещё и подъём на две точки. Теперь и рамка, и подъём внутри. */
+.сов-окошко{
+  height:var(--сов-рост, 150px); padding:3px 0;
+  overflow-x:auto; overflow-y:hidden; scrollbar-width:none;
+  -ms-overflow-style:none; scroll-snap-type:x mandatory;
+}
+.сов-окошко::-webkit-scrollbar{ width:0; height:0; display:none; }
+.сов-дорожка{ display:flex; gap:8px; height:100%; }
+.сов-карта{
+  /* ── ТРИ КАРТОЧКИ В РЯД, РОВНО ТРИ ──
+     Ширину задаём прямо: треть полосы минус два зазора по 8. Прежде
+     она считалась из высоты по пропорции 9:16, а высота упиралась в
+     потолок — и на узкой колонке третья карточка срезалась краем.
+     Теперь три всегда ложатся по ширине, а пропорция кадра держится
+     высотой полосы (её считает shelf.js) и обрезкой картинки. */
+  flex:0 0 calc((100% - 16px) / 3); height:100%;
+  position:relative; overflow:hidden;
+  padding:0; cursor:pointer; scroll-snap-align:start;
+  border:1px solid var(--край); border-radius:10px; background:#000;
+  transition:border-color .15s, transform .15s;
+}
+.сов-карта:hover{ border-color:var(--синий); transform:translateY(-2px); }
+.сов-карта img, .сов-карта video{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  display:block;
+}
+.сов-карта.пусто{
+  display:flex; align-items:center; justify-content:center;
+  background:var(--поле); color:var(--текст3);
+}
+/* Заготовка — та же клетка, но без рамки и почти незаметная: она
+   держит место, пока едут карточки, и не притворяется содержимым. */
+.сов-карта.заготовка{
+  border-color:transparent; background:var(--поле); opacity:.35;
+  cursor:default; pointer-events:none;
+}
+.сов-подпись{
+  position:absolute; left:0; right:0; bottom:0; z-index:2;
+  padding:14px 6px 5px; font-size:0.6rem; line-height:1.3; color:#fff;
+  text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  background:linear-gradient(transparent, rgba(0,0,0,.78));
+}
+
+.вручную{
+  width:100%; padding:16px; cursor:pointer; font-size:0.9333rem;
+  color:var(--текст3); background:none;
+  border:1px dashed var(--край2); border-radius:var(--радиус);
+}
+.вручную:hover{ color:var(--текст); border-color:var(--синий); }
+
+/* ── мелочи, общие всем экранам ──────────────────────────────────── */
+.пусто-строка{
+  padding:34px 20px; text-align:center; color:var(--текст3);
+  font-size:0.9rem; line-height:1.7;
+}
+.беда{
+  padding:15px 17px; border-radius:var(--радиус); font-size:0.9rem;
+  background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.3);
+  color:#fca5a5; margin-bottom:20px;
+}
+.весть{ min-height:19px; font-size:0.9rem; margin-top:10px; }
+.весть.плохо{ color:var(--красный); }
+.весть.ждём{ color:var(--текст3); }
+.весть.хорошо{ color:var(--зелёный); }
+
+/* ── окно поверх экрана и поля в нём ──────────────────────────────────
+   Было написано дважды: в группах и в сигналах, и уже разошлось —
+   где-то окно 460 точек, где-то 520, у поля разная высота. Третьим стал
+   маркетплейс, и это тот самый случай, когда кусок переезжает сюда.
+   Экрану, которому нужно уже, хватает одной строки поверх. */
+.подложка{
+  position:fixed; inset:0; z-index:90; display:none;
+  background:rgba(2,2,17,.86); backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  align-items:center; justify-content:center; padding:20px;
+}
+.подложка.видно{ display:flex; }
+.окно{
+  width:100%; max-width:520px; max-height:86vh; overflow-y:auto;
+  background:var(--окно); border:1px solid var(--край2);
+  border-radius:18px; box-shadow:var(--тень); padding:24px;
+}
+.окно h2{ margin:0 0 6px; font-size:1.2667rem; font-weight:700; }
+.окно .под{ color:var(--текст3); font-size:0.8667rem; margin-bottom:20px; }
+.поле{ margin-bottom:14px; }
+.поле label{
+  display:block; font-size:0.7667rem; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--текст3); margin-bottom:7px;
+}
+.поле input, .поле select, .поле textarea{
+  width:100%; padding:12px 14px; font-size:0.9667rem; font-family:inherit;
+  background:var(--фон); border:1px solid var(--край); color:var(--текст);
+  border-radius:var(--радиус-мал); outline:none;
+}
+.поле input:focus, .поле select:focus, .поле textarea:focus{
+  border-color:var(--синий);
+}
+.поле textarea{ resize:vertical; min-height:70px; }
+.пара-строка{ display:grid; gap:12px; grid-template-columns:1fr 1fr; }
+.окно .кнопки{ display:flex; gap:10px; margin-top:20px; }
+.окно .кнопки .кнопка{ flex:1; padding:13px; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ПЕРЕПИСКА: шапка раздела, поиск, лента пузырей, поле ввода.
+
+   ПРАВИЛО. Избранное, чаты и группы внутри устроены одинаково: сверху
+   название с кнопками-кругляшами и поиском, посередине лента сообщений
+   пузырями, снизу поле ввода. Меняются только подписи и то, откуда
+   берутся сообщения.
+
+   Поэтому вид живёт ЗДЕСЬ, а сборка — в shared/chat.js. Экран, который
+   захочет «почти то же самое», берёт готовое и меняет подписи. Писать
+   свои пузыри ему незачем: так и появляются три разных пузыря и четыре
+   разных поля ввода.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── шапка раздела ───────────────────────────────────────────────── */
+.раздел-верх{ display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+/* Кругляши в шапке раздела стоят группой, а не вразброс: между
+   соседними зазор 4, а не 10. Десять было верно, пока у кнопок была
+   подложка и каждая читалась отдельным предметом; у голых значков
+   такой зазор разносит их по всей строке, и ряд перестаёт читаться
+   как один набор действий. До заголовка и до соседей группы зазор
+   остаётся прежним. */
+.раздел-верх .кругляш + .кругляш{ margin-left:-6px; }
+.раздел-верх h1{ margin:0; font-size:1.4rem; font-weight:700; letter-spacing:-.02em; }
+.раздел-верх .вправо{ margin-left:auto; display:flex; align-items:center; gap:10px; }
+.раздел-знак{ display:flex; color:var(--жёлтый); }
+.раздел-знак svg{ width:19px; height:19px; }
+.раздел-кружок{
+  width:46px; height:46px; flex:0 0 46px; border-radius:50%;
+  border:1.5px solid rgba(139,124,246,.5); background:rgba(139,124,246,.12);
+  color:var(--сирень); display:flex; align-items:center; justify-content:center;
+}
+.раздел-кружок svg{ width:23px; height:23px; }
+.раздел-имя{ min-width:0; }
+.раздел-имя h1{ margin:0; font-size:1.2667rem; font-weight:700; letter-spacing:-.02em; }
+.раздел-имя .под{ font-size:0.8333rem; color:var(--текст3); margin-top:3px; }
+
+/* Кнопка в углу раздела: звезда, папки, архив, звуки, лупа, «новая
+   группа». Правило то же, что у кругляшей в окнах: в покое одна линия
+   значка — ни рамки, ни подложки, — а под рукой появляется светлая
+   подложка, при нажатии плотнее и кнопка приседает.
+
+   Рамка была у одних кнопок и не была у других («голый»), от этого
+   один ряд стоял в клетках, а соседний без них. Разницы больше нет:
+   класс «голый» оставлен, чтобы старая разметка не ломалась, но он
+   ничего не меняет. */
+.кругляш{
+  width:32px; height:32px; flex:0 0 32px; border-radius:10px; cursor:pointer;
+  border:1px solid transparent; background:none; color:var(--текст2);
+  display:flex; align-items:center; justify-content:center; padding:0;
+  transition:background .13s ease, color .13s ease, transform .1s ease;
+}
+.кругляш:hover{ color:var(--текст); background:var(--поле); }
+.кругляш:active{ background:var(--край); transform:scale(.9); }
+.кругляш:focus-visible{
+  outline:2px solid rgba(var(--синий-ргб), .55); outline-offset:2px;
+}
+.кругляш svg{ width:16px; height:16px; }
+@media (pointer: coarse){ .кругляш{ width:36px; height:36px; flex:0 0 36px; } }
+.кругляш.голый{ border-color:transparent; background:none; }
+.кругляш.голый:hover{ background:var(--поле); }
+.кругляш.горит{ color:var(--синий); background:rgba(var(--синий-ргб), .16); }
+.кн-словом{
+  display:flex; align-items:center; gap:8px; cursor:pointer;
+  background:none; border:none; color:var(--текст2); font-size:0.9333rem;
+  padding:0; font-family:inherit;
+}
+.кн-словом:hover{ color:var(--текст); }
+.кн-словом svg{ width:16px; height:16px; }
+
+/* ── строка поиска: одна на всю программу ─────────────────────────
+   Четырнадцать полей поиска стояли в разных местах, и каждое было
+   нарисовано по-своему: своя высота, свой радиус, своя рамка, своё
+   место лупы. Теперь вид один и живёт здесь, а собирает поле
+   CW.строкаПоиска из shared/ui.js.
+
+   Обводки нет. Поле отличается от страницы подложкой, а не рамкой:
+   рамка вокруг каждого поля спорила с рамками карточек рядом.
+   Отклик тот же, что у кнопок: под рукой подложка светлеет, в работе
+   поле обводится мягким синим кольцом и лупа загорается синим. */
+.поиск-строка{ position:relative; margin-bottom:18px; }
+.поиск-строка.спрятан{ display:none; }
+.поиск-строка input{
+  width:100%; padding:12px 15px 12px 42px; font-size:0.9667rem; font-family:inherit;
+  background:var(--поле); border:none; color:var(--текст);
+  border-radius:12px; outline:none;
+  transition:background .13s ease, box-shadow .13s ease;
+}
+.поиск-строка input:hover{ background:var(--край); }
+.поиск-строка input:focus{
+  background:var(--поле);
+  box-shadow:0 0 0 2px rgba(var(--синий-ргб), .45);
+}
+.поиск-строка input::placeholder{ color:var(--текст3); }
+.поиск-строка .лупа{
+  position:absolute; left:15px; top:50%; transform:translateY(-50%);
+  display:flex; color:var(--текст3); pointer-events:none;
+  transition:color .13s ease;
+}
+/* :focus-within, а не «input:focus ~ .лупа»: лупа лежит в разметке
+   ПЕРЕД полем, и соседний селектор её бы не достал. */
+.поиск-строка:focus-within .лупа{ color:var(--синий); }
+.поиск-строка .лупа svg{ width:16px; height:16px; }
+/* Крестик «очистить» внутри поля — там, где он нужен (лента, маркет). */
+.поиск-строка .стереть{
+  position:absolute; right:8px; top:50%; transform:translateY(-50%);
+  width:26px; height:26px; border:none; border-radius:50%; cursor:pointer;
+  background:none; color:var(--текст3); display:none;
+  align-items:center; justify-content:center; padding:0;
+  transition:background .13s ease, color .13s ease, transform .1s ease;
+}
+.поиск-строка.есть-текст .стереть{ display:flex; }
+.поиск-строка .стереть:hover{ background:var(--край); color:var(--текст); }
+.поиск-строка .стереть:active{ transform:translateY(-50%) scale(.9); }
+.поиск-строка .стереть svg{ width:14px; height:14px; }
+/* Поле в ряду с кнопками (маркет, сигналы): без нижнего отступа. */
+.поиск-строка.в-ряду{ margin-bottom:0; flex:1; min-width:0; }
+
+/* ── окно переписки ──────────────────────────────────────────────── */
+.переписка-окно{
+  border:1px solid var(--край); border-radius:14px; background:var(--окно);
+  display:flex; flex-direction:column; height:min(66vh,560px);
+}
+.переписка-шапка{
+  display:flex; align-items:center; gap:12px; flex:0 0 auto;
+  padding:13px 16px; border-bottom:1px solid var(--край);
+}
+.переписка-шапка .назад{
+  background:none; border:none; cursor:pointer; color:var(--текст2);
+  display:flex; padding:0;
+}
+.переписка-шапка .назад svg{ width:18px; height:18px; }
+.переписка-шапка .имя{ font-size:1rem; font-weight:600; }
+.переписка-шапка .сколько{ font-size:0.8333rem; color:var(--текст3); }
+.переписка-шапка .ещё{
+  margin-left:auto; background:none; border:none; cursor:pointer;
+  color:var(--текст3); font-size:1.2rem; padding:0 4px;
+}
+
+/* ── лента сообщений ─────────────────────────────────────────────── */
+.лента-сообщений{
+  flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain;
+  padding:16px; display:flex; flex-direction:column; gap:10px;
+  /* Полоса прокрутки не отнимает ширину у ленты и не появляется
+     рывком: место под неё держится всегда. Без этого первое же
+     сообщение сдвигало всю переписку на девять точек влево. */
+  scrollbar-gutter:stable;
+  /* ── ЯКОРЬ ПРОКРУТКИ ВКЛЮЧЁН ──
+     Браузер сам держит то, на что человек смотрит, когда выше по
+     ленте что-то меняет высоту: догрузился снимок, пришла новая
+     строка, сменился шрифт. Прежде здесь стояло «none», и каждая
+     такая мелочь уводила ленту из-под глаз.
+
+     Прилипанию к низу якорь не мешает: когда лента внизу, мы и так
+     уводим её в самый низ сами (CW.прилипало). */
+  overflow-anchor:auto;
+}
+/* Пустая переписка прижата к низу: первое сообщение ложится в нижний
+   угол, рядом со строкой ввода, а не висит под шапкой посреди пустоты.
+   Делается полем у первого пузыря, а не justify-content: при
+   justify-content:flex-end верх ленты становится недостижимым, когда
+   сообщений набирается больше экрана. Это известная беда гибкой
+   раскладки, и обходят её именно так. */
+.лента-сообщений > *:first-child{ margin-top:auto; }
+
+/* ── ПУЗЫРЬ ──
+   22 ноября: ни плотной заливки, ни обводки. Был плотный синий
+   прямоугольник у своих и серый у чужих - в переписке из двадцати
+   сообщений это двадцать залитых плашек, и картинки в них тонули.
+   Волосяная обводка, которая стояла здесь следующие полчаса, тоже
+   ушла: двадцать прямоугольных контуров подряд читаются как таблица,
+   а не как разговор.
+
+   Осталось самое тихое, что отличает одного говорящего от другого:
+   прозрачная заливка разного оттенка. У своих синеватая, у чужих
+   светло-серая - обе настолько слабые, что сквозь них видны обои.
+
+   Отступ от текста до края - один миллиметр, пять точек по её мерке.
+   Вбок чуть больше: у скруглённого угла буквы иначе упираются в
+   закругление. */
+.пузырь{
+  max-width:76%; padding:5px 10px; border-radius:12px;
+  border:none;
+  font-size:0.9667rem; line-height:1.5; word-break:break-word;
+}
+.пузырь.чужое{
+  align-self:flex-start; background:rgba(255,255,255,.055);
+  border-bottom-left-radius:4px;
+}
+.пузырь.своё{
+  align-self:flex-end; background:rgba(var(--синий-ргб), .16);
+  border-bottom-right-radius:4px;
+}
+/* На светлой теме белая дымка на белом не видна: там чужой пузырь
+   притеняем, а не высветляем. */
+html[data-тема="светлая"] .пузырь.чужое{ background:rgba(16,22,36,.06); }
+/* ── ПУЗЫРЬ ПОД ОДНИМ ВЛОЖЕНИЕМ ──
+   Снимок, ролик, кружок и строка-файл сами по себе уже предмет:
+   обводка вокруг них рисует рамку вокруг рамки. Ставит класс
+   CW.пузырь() в shared/chat.js - только когда слов и кнопок в
+   сообщении нет. */
+.пузырь.медиа{
+  background:none; padding:0;
+}
+.пузырь.медиа > .кто{ margin:0 4px 4px; }
+/* Кнопки под вложением: без общей подложки они стоят вплотную к
+   кадру, поэтому им нужен свой зазор сверху. */
+.пузырь.медиа > .кн-сетка{ margin-top:6px; }
+.пузырь.медиа > .время{ margin:4px 4px 0; }
+/* Сообщение из одних смайлов — без пузыря: заливка вокруг крупного
+   смайла превращала жест в наклейку на наклейке. Время под ним
+   остаётся, у своего сообщения оно снова берёт обычный цвет текста:
+   белым на пустом месте его не видно. */
+.пузырь.одни-смайлы{
+  background:none !important; padding:2px 4px;
+  color:var(--текст) !important;
+}
+.пузырь .кто{ font-size:0.8rem; color:var(--сирень); font-weight:600;
+  margin-bottom:4px; }
+.пузырь .время{ font-size:0.7333rem; opacity:.6; margin-top:5px; text-align:right; }
+/* Остаток срока стоит в одной строке с часами, справа от них:
+   отдельной строкой «исчезнет через 4м» он был длиннее самого
+   сообщения. Жёлтым - это единственное место в пузыре, где цвет
+   что-то значит: «это скоро пропадёт». */
+.пузырь .срок{
+  font-size:0.7333rem; color:var(--жёлтый); margin-left:6px;
+  opacity:1;
+}
+.пузырь.медиа > .время{ opacity:.75; }
+.пузырь.закреплён{ box-shadow:inset 0 0 0 1px rgba(251,191,36,.45); }
+/* Найденное поиском. «нашлось» — все совпадения разом, «тут» — то, на
+   котором человек сейчас стоит. Разница нарочная: без неё в переписке
+   с десятком совпадений непонятно, куда тебя увели стрелки. */
+.пузырь.нашлось{ box-shadow:inset 0 0 0 1px rgba(74,158,255,.55); }
+.пузырь.тут{ box-shadow:0 0 0 2px rgba(74,158,255,.9); }
+
+/* ── СТРЕЛКА ВНИЗ ──
+   Ушёл вверх читать - внизу появляется кружок со стрелкой. Нажал,
+   лента плавно едет к последнему сообщению. Пока стоишь внизу,
+   кнопки нет совсем: она была бы кнопкой «я уже здесь».
+
+   Живёт внутри тела окна, поверх ленты, над строкой ввода. Ставит её
+   CW.прилипало() в shared/chat.js - один раз на переписку. */
+.лента-вниз{
+  position:absolute; right:16px; bottom:16px; z-index:4;
+  width:38px; height:38px; display:grid; place-items:center;
+  border:1px solid var(--край2); border-radius:50%; cursor:pointer;
+  background:var(--окно); color:var(--текст2);
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
+  opacity:0; transform:translateY(8px) scale(.9); pointer-events:none;
+  transition:opacity .16s ease, transform .16s ease,
+             background .13s ease, color .13s ease;
+}
+.лента-вниз.видно{ opacity:1; transform:none; pointer-events:auto; }
+.лента-вниз:hover{ background:var(--поле); color:var(--текст); }
+.лента-вниз:active{ transform:scale(.92); }
+.лента-вниз svg{ width:18px; height:18px; }
+
+/* ── СТРОКА ПОИСКА ПО ПЕРЕПИСКЕ ───────────────────────────────────────
+   Одна на личную переписку и на группы: собирается в shared/chat.js. */
+/* ── ПАНЕЛЬ ПОИСКА ПО ПЕРЕПИСКЕ ─────────────────────────────────────
+   Одна на избранное, чаты и группы: строка поиска, стрелки по
+   совпадениям, полки содержимого и строка итога. Прежде у избранного
+   была своя («изб-панель») с одними мерками, а у чатов и групп своя
+   («пер-поиск») с другими: поле там было на 9 точек ниже, чипы мельче
+   и без зазора под ними. Теперь правило одно, и выглядит это везде
+   одинаково. */
+.пер-панель{
+  flex:0 0 auto; border-bottom:1px solid var(--край); background:var(--окно);
+}
+.пер-панель.спрятан{ display:none; }
+.пер-строка{ display:flex; align-items:center; gap:6px; padding:12px 16px 0; }
+.пер-строка .поиск-строка{ flex:1; min-width:0; margin-bottom:0; }
+.пер-шаг{
+  flex:0 0 auto; width:34px; height:44px; cursor:pointer; padding:0;
+  border:none; background:none; color:var(--текст3); font-size:1.0667rem;
+  border-radius:10px; font-family:inherit;
+}
+.пер-шаг:hover{ color:var(--текст); background:var(--поле); }
+.пер-итог{
+  padding:0 18px 10px; font-size:0.8rem; color:var(--текст3); min-height:17px;
+}
+
+/* Полки содержимого: «Фото · Видео · Аудио · Ссылки» со счётом. */
+.пер-вкладки{
+  display:flex; gap:7px; padding:12px 16px; overflow-x:auto; overflow-y:hidden;
+  scrollbar-width:none; flex:0 0 auto;
+}
+.пер-вкладки::-webkit-scrollbar{ display:none; }
+.пер-вкладка{
+  flex:0 0 auto; cursor:pointer; padding:7px 14px; font-family:inherit;
+  border-radius:var(--радиус-круг); border:1px solid var(--край);
+  background:var(--поле); color:var(--текст2); font-size:0.8333rem; font-weight:600;
+}
+.пер-вкладка:hover{ color:var(--текст); }
+.пер-вкладка.тут{
+  border-color:rgba(74,158,255,.9); color:var(--текст);
+  background:rgba(0,153,255,.2);
+}
+.пер-вкладка .сколько{ opacity:.6; margin-left:5px; font-weight:400; }
+
+/* Пузырь не того рода, пока выбрана полка. */
+.пузырь.мимо{ display:none; }
+/* Строка-файл без обводки и без подложки: это уже предмет, и рамка
+   вокруг него рисовала рамку вокруг рамки. Отличает его от текста
+   значок слева, а не плашка. */
+/* ── СТРОКА ФАЙЛА И КАРТОЧКА МЕСТА ЛЕЖАТ НА ЛЁГКОЙ ПОДЛОЖКЕ ──
+   Обводку у файлов убрали, а вместе с ней ушла и подложка: имя файла
+   со значком повисло прямо на тёмном, и строка перестала читаться
+   как вложение. Возвращаем тихую заливку - ту же, что у проигрывателя
+   песни, - своего оттенка для своих и чужих.
+
+   Место живёт по тем же правилам: это такая же строка со значком и
+   подписью, и стоять ей голой, когда у соседней строки файла есть
+   подложка, не за что.
+
+   Снимка, ролика и кружка это не касается: они показывают себя сами,
+   и подкладывать под них плашку незачем. */
+.пузырь .вложение,
+.пузырь .вл-место{
+  display:flex; align-items:center; gap:9px; margin-top:8px;
+  padding:7px 10px; border:none; border-radius:12px;
+  background:rgba(255,255,255,.055); font-size:0.8667rem;
+}
+.пузырь.своё .вложение,
+.пузырь.своё .вл-место{ background:rgba(var(--синий-ргб), .16); }
+html[data-тема="светлая"] .пузырь .вложение,
+html[data-тема="светлая"] .пузырь .вл-место{ background:rgba(16,22,36,.06); }
+html[data-тема="светлая"] .пузырь.своё .вложение,
+html[data-тема="светлая"] .пузырь.своё .вл-место{
+  background:rgba(var(--синий-ргб), .14);
+}
+.пузырь.медиа > .вложение,
+.пузырь.медиа > .вл-место{ margin-top:0; }
+.пузырь .вложение svg{ width:15px; height:15px; flex:0 0 15px; opacity:.8; }
+.пузырь .вложение .нм{ flex:1; min-width:0; overflow:hidden;
+  text-overflow:ellipsis; white-space:nowrap; }
+.пузырь .вложение .рз{ font-size:0.7333rem; opacity:.7; white-space:nowrap; }
+
+/* ── ВЛОЖЕНИЯ, КОТОРЫЕ ВИДНО ───────────────────────────────────────
+   Снимок, ролик, кружок, голос и место показываем в самом пузыре.
+   Ширину берут по пузырю, высоту ограничиваем: снимок в полстраницы
+   выталкивает переписку, и человек листает мимо разговора. */
+/* ── СНИМОК И РОЛИК ИДУТ НАШИМ РАЗМЕРОМ ──
+   22 ноября: место под кадр стандартной формы. Девять форм, других в
+   ленте не бывает: 9:16, 2:3, 3:4, 4:5, 1:1, 4:3, 3:2, 16:9, 2:1.
+   Ближайшую к настоящему кадру выбирает ближайшаяФорма() в
+   shared/chat.js и кладёт её сюда переменными.
+
+   Сам кадр не режется: он стоит в этом месте целиком, по середине.
+   У вертикального снимка не срезает голову, у панорамы не теряются
+   края, а по бокам остаётся чистый фон переписки - ни рамки, ни
+   обводки, ни чёрной подложки.
+
+   ── ПОЧЕМУ НЕ object-fit ──
+   Было «растянуть на всё место и вписать содержимым». Скругление при
+   этом резало КОРОБКУ, а не картинку: по краям оставались прозрачные
+   поля, и углы самого снимка торчали прямыми. Теперь картинка стоит
+   своим размером по середине места, и круглые углы режут её саму.
+
+   ── ПРЕДЕЛ ВЫСОТЫ ──
+   300 точек, шесть сантиметров по её мерке. Было 420, и вертикальный
+   снимок занимал полокна: разговор выталкивался, человек листал мимо.
+   Ширина едет за высотой: 9:16 даёт 169, 16:9 даёт 300. */
+.пузырь .вл-снимок,
+.пузырь .вл-ролик{ margin-top:6px; }
+.пузырь.медиа > .вл-снимок:first-child,
+.пузырь.медиа > .вл-ролик:first-child{ margin-top:0; }
+/* ── МЕСТО ПОД СНИМОК ДЕРЖИТСЯ ДО ТОГО, КАК ОН ПРИШЁЛ ──
+   Слот стоит сразу, ещё пустой: по умолчанию 3:4. Настоящая форма
+   приходит, когда картинка догрузилась, и меняет только ШИРИНУ -
+   высота у слота всегда одна и та же, триста точек.
+
+   Прежде места не было вовсе: пустой снимок занимал ноль, а через
+   полсекунды вырастал на триста точек, и вся переписка под ним
+   уезжала вниз. Пока в ленте догружался десяток снимков, сообщения
+   дёргались непрерывно - Анна сняла это на видео. */
+.пузырь .вл-снимок,
+.пузырь .вл-ролик{
+  aspect-ratio:var(--форма, 3 / 4);
+  /* Ширина числом, а не долей: пузырь сам меряется по содержимому, и
+     «сто процентов» внутри него считались бы от того, что мы же и
+     задаём. */
+  width:calc(300px * var(--отношение, .75));
+  max-width:100%; height:auto;
+  display:grid;
+  grid-template-rows:minmax(0, 1fr); grid-template-columns:minmax(0, 1fr);
+  place-items:center;
+}
+.пузырь .вл-снимок img,
+.пузырь .вл-ролик video{
+  display:block; width:auto; height:auto;
+  max-width:100%; max-height:100%; border-radius:14px;
+  border:none; background:none;
+}
+
+/* Кружок — круглый нарочно: само видео квадратное, круглой его делает
+   рамка. Обрезать байты ради вида было бы дороже и необратимо. */
+.пузырь .вл-кружок{ margin-top:6px; }
+.пузырь .вл-кружок video{
+  display:block; width:190px; height:190px; max-width:100%;
+  border-radius:50%; object-fit:cover; background:#000;
+}
+/* ── ГОЛОС И ЗВУК: наш проигрыватель ──
+   Браузерный занимал всю ширину пузыря, в тёмной теме был светлой
+   заплаткой и носил три чужие кнопки — громкость, скорость и
+   «скачать». В переписке нужны три вещи: пуск, полоса и время. */
+.пузырь .вл-звук{
+  display:flex; align-items:center; gap:9px; margin-top:6px;
+  padding:7px 10px; border-radius:12px; background:rgba(255,255,255,.07);
+  min-width:210px;
+}
+.пузырь .вл-звук audio{ display:none; }
+.пузырь .вл-звук .пуск{
+  flex:0 0 30px; width:30px; height:30px; padding:0; cursor:pointer;
+  border:none; border-radius:50%; background:rgba(255,255,255,.16);
+  color:inherit; display:flex; align-items:center; justify-content:center;
+}
+.пузырь .вл-звук .пуск:hover{ background:rgba(255,255,255,.26); }
+.пузырь .вл-звук .пуск svg{ width:14px; height:14px; }
+.пузырь .вл-звук .зн{ display:flex; flex:0 0 auto; opacity:.7; }
+.пузырь .вл-звук .зн svg{ width:14px; height:14px; }
+.пузырь .вл-звук .полоса{
+  flex:1; min-width:60px; height:4px; border-radius:2px; cursor:pointer;
+  background:rgba(255,255,255,.22); position:relative;
+}
+.пузырь .вл-звук .полоса i{
+  position:absolute; left:0; top:0; bottom:0; width:0;
+  border-radius:2px; background:currentColor; opacity:.9;
+}
+.пузырь .вл-звук .время{
+  flex:0 0 auto; font-size:0.7333rem; opacity:.75;
+  font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+
+/* Ролик оставляем с кнопками браузера: там они к месту и умеют
+   перемотку, громкость и полный экран. Тему ему подсказываем. */
+.пузырь .вл-ролик video{ color-scheme:dark; }
+[data-тема="светлая"] .пузырь .вл-ролик video{ color-scheme:light; }
+
+/* Кружок: своя круглая кнопка пуска поверх видео, чужих кнопок нет. */
+.пузырь .вл-кружок{ position:relative; width:190px; max-width:100%; }
+.пузырь .вл-кружок .пуск{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:52px; height:52px; padding:0; cursor:pointer; border:none;
+  border-radius:50%; background:rgba(0,0,0,.45); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+}
+.пузырь .вл-кружок .пуск svg{ width:20px; height:20px; }
+.пузырь .вл-кружок.идёт .пуск{ opacity:0; pointer-events:none; }
+.пузырь .вл-кружок video{ cursor:pointer; }
+/* Раскладка у карточки места общая со строкой файла - она задана
+   выше, вместе с подложкой. Здесь только то, чем место от файла
+   отличается: значок крупнее и подпись с координатами. */
+.пузырь .вл-место svg{ width:16px; height:16px; flex:0 0 16px; opacity:.85; }
+.пузырь .вл-место .нм{ flex:1; min-width:0; }
+.пузырь .вл-место .рз{ font-size:0.7333rem; opacity:.7; white-space:nowrap; }
+
+/* ── окно записи видеокружка ──────────────────────────────────────── */
+.кр-место{
+  width:230px; height:230px; margin:16px auto 10px; border-radius:50%;
+  overflow:hidden; background:#000; border:1px solid var(--край);
+}
+.кр-место video{ width:100%; height:100%; object-fit:cover; display:block;
+  transform:scaleX(-1); }   /* себя видим как в зеркале */
+.кр-время{ text-align:center; font-size:0.8667rem; color:var(--текст2);
+  margin-bottom:14px; }
+.кр-ряд{ display:flex; gap:10px; justify-content:center; padding:0 16px 18px; }
+
+
+/* ── стоячее окно ──
+   Правила .стойка-подложка / .стойка / .стойка-верх / .стойка-внутри
+   стояли здесь с прежней сборки окна и были мертвы: CW.стойка() давно
+   собирает то же самое общими классами .ок-подложка / .ок-окно, а эти
+   тридцать пять строк не трогал никто. Проверка 18 ноября; удалено. */
+
+/* ── ДВА ОКНА РЯДОМ (лента, чаты, группы) ───────────────────────────
+   Раздел здесь не одна колонка во всю ширину, а два окна: слева сам
+   раздел, справа полка «Стримить» и «Добавить контент». Между ними —
+   разделитель, тонкая черта: без неё два окна читаются как одно
+   разъехавшееся.
+
+   Первое окно 8,5 см — тот же размер, что был в боевой. Доли в
+   процентах тут не годятся: на широком экране лента раздувалась, и
+   список чатов растягивался строками в полметра.
+
+   Раздел из двух окон живёт во всю высоту: страница не прокручивается,
+   прокручивается только первое окно внутри себя. Так было в ленте, и
+   теперь так же в чатах и группах — три раздела должны быть устроены
+   одинаково, иначе переход между ними выглядит переходом в другую
+   программу. Правило одно на всех и лежит здесь, а не в трёх файлах.
+
+   Разделитель идёт от самого верха до самого низа. Поэтому полей
+   сверху и снизу у листа здесь нет вовсе — они перенесены внутрь
+   колонок: будь поле снаружи, черта обрывалась бы за восемнадцать
+   точек до края и висела бы в воздухе. */
+.об-место:has(.две-колонки){ overflow:hidden; }
+/* Поле по бокам у страниц с двумя окнами — 22, а не 26. Ровно столько
+   же стоит между первым окном и чертой (.левая{margin-right:22px}), и
+   с 26 слева зазор был на четыре точки шире правого: глазом это видно
+   как лишний миллиметр, Анна его и увидела. Теперь по обе стороны
+   карточки одно и то же число, и оно одно на ленту, чаты и группы. */
+.об-лист:has(.две-колонки){ padding:0 22px; height:100%; box-sizing:border-box; }
+
+.две-колонки{ display:flex; gap:0; align-items:stretch;
+  height:100%; min-height:0; }
+
+/* Первое окно — ровно 8,5 см. Отступ до черты задан полем СНАРУЖИ
+   (margin), а не внутри: будь он внутри, содержимое получило бы 403
+   точки вместо 425, и лента с чатами разошлись бы на эти двадцать две
+   точки — именно так они и разошлись в прошлый раз. */
+.левая{
+  flex:0 0 var(--окно-8-5см); min-width:0; min-height:0;
+  margin-right:22px; display:flex; flex-direction:column;
+  padding:18px 0; overflow-y:auto;
+}
+/* Правая колонка держится ровно в тех же границах, что окно слева:
+   сверху и снизу ничего не вылезает. Раньше тут стояло
+   justify-content:center без всякого присмотра за высотой — и две
+   полосы советов выпирали за край страницы. */
+.правая{
+  flex:1 1 auto; min-width:0; min-height:0;
+  display:flex; flex-direction:column;
+  /* 21 сверху и снизу — ровно столько же, сколько отступает рамка окна
+     слева (.левая.в-рамке{margin:21px 0}). Так верх полки совпадает с
+     верхом окна, а низ — с его низом, и ряд читается одной линией. */
+  padding:21px 0 21px 22px; border-left:1px solid var(--край);
+  overflow:hidden;
+}
+/* Расстояния между кусками полки задаёт один gap, а не собственные
+   margin у каждого: только так они равны между собой и совпадают с
+   полями окна слева. */
+.правая > .полка{
+  display:flex; flex-direction:column; height:100%; min-height:0;
+  gap:16px;
+}
+/* ── КНОПКИ НЕ ЗАВИСЯТ ОТ РЕКЛАМЫ ──
+   «Добавить контент» и «Стримить» — это работа, а не реклама, и
+   выглядеть они обязаны ОДИНАКОВО, включены полосы советов или нет.
+
+   Прежде было наоборот: с полосами карточка тянулась («flex:1 1 auto»),
+   а без них ей считали рост формулой «вся колонка минус 410». Поэтому
+   она прыгала и меняла размер в трёх случаях: переключили рекламу,
+   полоса ещё не наполнилась (её нет в раскладке) и полоса наполнилась.
+   Этого и не должно быть.
+
+   Теперь обе кнопки держат свой рост всегда, а место отдают и забирают
+   полосы советов: им его и так ровно столько, сколько осталось. */
+.правая > .полка > .кн-стрим{ flex:0 0 auto; }
+.правая > .полка > .добавить{
+  flex:0 0 auto; min-height:220px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+/* Реклама выключена — полоса пустая сверху и снизу не нужна, и две
+   кнопки стоят по центру колонки: так просила хозяйка и так же это
+   выглядит в работающей программе. Размеров кнопок это не меняет. */
+html[data-полка="нет"] .правая > .полка{ justify-content:center; }
+@media (max-width:1000px){
+  /* Узко — окна встают друг под друга, и разделитель с боковой черты
+     переезжает на верхнюю: он по-прежнему между ними. */
+  .об-место:has(.две-колонки){ overflow:auto; }
+  .об-лист:has(.две-колонки){ height:auto; }
+  .две-колонки{ flex-direction:column; height:auto; }
+  .левая{ flex:1 1 auto; width:100%; margin-right:0; margin-bottom:0;
+    padding-bottom:18px; overflow:visible; }
+  .правая{
+    flex:1 1 auto; width:100%; padding:18px 0 0;
+    border-left:none; border-top:1px solid var(--край);
+  }
+}
+
+.кн-стрим{
+  width:100%; display:flex; align-items:center; justify-content:center; gap:11px;
+  padding:16px; cursor:pointer; font-size:1.0333rem; font-weight:600;
+  /* По умолчанию кнопка прозрачная, с тем же серым пунктиром, что у
+     «Добавить контент»: две кнопки стоят одна под другой и должны
+     быть одной породы. Синяя рамка делала «Стримить» нажатой с виду,
+     хотя её никто не трогал. Синий остаётся на наведение. */
+  color:var(--текст); border-radius:14px;
+  border:1px dashed var(--край2); background:none;
+  /* Своего отступа у кнопки нет: расстояния между кусками полки задаёт
+     один общий gap, иначе они разъезжаются и ряд выглядит кривым. */
+}
+/* При наведении — ровно как у «Добавить контент»: рамка синеет. */
+.кн-стрим:hover{ border-color:var(--синий); color:#fff; }
+.кн-стрим svg{ width:18px; height:18px; }
+/* Точка у «Стримить» мигает, как огонёк записи: кнопка так сама
+   говорит, что эфир — дело живое. Выключенное «Плавное появление»
+   моргание тоже выключает: кому мешает движение, тому мешает и оно. */
+.кн-стрим .точка{
+  width:8px; height:8px; border-radius:50%; background:var(--синий);
+  box-shadow:0 0 8px var(--синий);
+  animation:точка-мигает 1.4s ease-in-out infinite;
+}
+html[data-движение="нет"] .кн-стрим .точка{ animation:none; }
+@keyframes точка-мигает{
+  0%, 100% { opacity:1;   transform:scale(1);   }
+  50%      { opacity:.25; transform:scale(.72); }
+}
+
+.добавить{
+  width:100%; cursor:pointer; text-align:center;
+  border:1px dashed var(--край2); border-radius:16px; padding:40px 24px;
+  background:none; color:var(--текст);
+}
+.добавить:hover{ border-color:var(--синий); }
+/* flex:0 0 auto — иначе в колонке-флексе кружок сплющивался в овал:
+   высоту у него отбирал сосед, а ширина оставалась прежней. */
+.добавить .плюс{
+  flex:0 0 auto;
+  width:72px; height:72px; margin:0 auto 20px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(0,153,255,.14); border:1px solid rgba(74,158,255,.4);
+  color:var(--синий); font-size:2.2667rem; font-weight:300;
+}
+/* Плюс рисуется нашим значком, а не знаком «＋» из шрифта: во всей
+   программе плюсы линиями, и один чужой выбивался. */
+.добавить .плюс svg{ width:28px; height:28px; }
+.добавить .имя{ font-size:1.2rem; font-weight:700; margin-bottom:12px; }
+.добавить .что{ font-size:0.9rem; line-height:1.9; color:var(--текст3); }
+/* Метки SHORT и POST — те же, что подписывают запись в кадре ленты.
+   Правило живёт здесь, а вид самих меток — там, где они родились
+   (feed.html): это одни и те же две метки, и разъехаться им нельзя.
+   Здесь только расстановка в строке. */
+.добавить .что > div{ display:flex; align-items:center;
+  justify-content:center; gap:8px; }
+.добавить .метка{ font-size:0.6rem; padding:2px 6px; border-radius:4px;
+  font-weight:700; letter-spacing:.05em; flex:0 0 auto; }
+.добавить .метка.short{ background:rgba(0,149,246,.17); color:#4a9eff; }
+.добавить .метка.post{ background:rgba(99,220,120,.17); color:#63dc78; }
+
+/* кружок лица в списках */
+.лицо{
+  width:42px; height:42px; flex:0 0 42px; border-radius:50%;
+  background:linear-gradient(140deg,#2a3356,#1b2340); color:var(--сирень);
+  display:flex; align-items:center; justify-content:center; font-size:1.0667rem;
+  overflow:hidden;
+}
+.лицо img{ width:100%; height:100%; object-fit:cover; display:block; }
+.лицо.мал{ width:32px; height:32px; flex:0 0 32px; font-size:0.8667rem; }
+/* Лицо рисуется нашим значком, а не смайлом: размер задаём здесь, чтобы
+   он не зависел от font-size кружка. Тот же человек линиями стоит в
+   чатах, в поиске, в уведомлениях и в кружке CW.кружок. */
+.лицо svg{ width:17px; height:17px; }
+.лицо.мал svg{ width:14px; height:14px; }
+
+/* ── СКРУГЛЁННАЯ РАМКА РАЗДЕЛА (чаты, группы) ──────────────────────
+   Та же рамка, что у колонки ленты: один и тот же радиус и та же
+   черта. Отличие одно и нарочное — внутри не чёрное, а цвет окна. В
+   ленте чёрное потому, что там ждут ролик и под него готовят тёмное
+   поле; в чатах и группах это список, и красить его в чёрное значило
+   бы обещать показ, которого не будет. */
+.левая.в-рамке{
+  border:1px solid var(--край); border-radius:16px;
+  background:var(--фон); box-sizing:border-box;
+  /* Геометрия слово в слово как у колонки ленты:
+       ширина  — те же 8,5 см (её даёт .левая);
+       сверху и снизу — 21 точка, как у ленты;
+       справа  — 22 до черты; это поле НЕ трогаем, оно от .левая.
+     В прошлый раз я написал тут margin:18px 0 — и обнулил правое поле:
+     рамка упёрлась в разделитель. Поэтому правим только верх и низ.
+     Поля внутри — 16 по верху и низу, 14 по бокам: содержимое не должно
+     упираться в черту. */
+  margin-top:21px; margin-bottom:21px;
+  /* Поля ВНУТРИ рамки. Сама рамка от них не двигается и не ужимается —
+     она где была; отступает только содержимое. Без них заголовок,
+     поиск и строки упираются в черту и выглядят обрезанными. */
+  padding:16px 14px;
+}
+@media (max-width:1000px){
+  /* Узко рамка не нужна: она тратит по тринадцать точек с каждой
+     стороны там, где их и так мало. */
+  .левая.в-рамке{ border:none; border-radius:0; padding:0 0 18px;
+    margin-top:0; margin-bottom:0; }
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   ОКНО ПРОСМОТРА
+
+       shared/смотр.js  ·  CW.смотреть(адрес, {вид, имя})
+
+   Своя подложка во весь экран, а не обычное окно: у наших окон
+   ширина 8,5 см, и снимок в таком окне - это тот же снимок, что и в
+   пузыре, только с крестиком.
+   ═════════════════════════════════════════════════════════════════ */
+.см-подложка{
+  position:fixed; inset:0; z-index:9500;
+  background:rgba(3,4,10,.94);
+  display:flex; flex-direction:column;
+  opacity:0; transition:opacity .16s ease;
+}
+.см-подложка.видно{ opacity:1; }
+.см-верх{
+  flex:0 0 auto; display:flex; align-items:center; gap:10px;
+  padding:12px 14px; color:#e9edf6;
+}
+.см-имя{
+  flex:1; min-width:0; font-size:0.9rem; opacity:.8;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.см-кн{
+  width:36px; height:36px; flex:0 0 36px; display:grid; place-items:center;
+  border:none; border-radius:50%; cursor:pointer; padding:0;
+  background:rgba(255,255,255,.08); color:#e9edf6; text-decoration:none;
+  transition:background .13s ease, transform .1s ease;
+}
+.см-кн:hover{ background:rgba(255,255,255,.18); }
+.см-кн:active{ transform:scale(.92); }
+.см-кн svg{ width:17px; height:17px; }
+/* Кадр вписан целиком: смотреть пришли на него, а не на обрезку.
+   Строка и столбец сетки заданы через minmax(0, 1fr) нарочно: у
+   обычной сетки строка растёт под содержимое, и «не выше ста
+   процентов» у снимка меряется от него самого, то есть ни от чего.
+   Снимок 1170 на 2532 при таком правиле вставал во весь свой рост и
+   уезжал за экран. */
+.см-рама{
+  flex:1; min-height:0; display:grid; overflow:auto;
+  grid-template-rows:minmax(0, 1fr); grid-template-columns:minmax(0, 1fr);
+  place-items:center; padding:0 14px 16px;
+}
+.см-кадр{
+  display:block; max-width:100%; max-height:100%;
+  width:auto; height:auto; border-radius:10px;
+  cursor:zoom-in;
+}
+/* Нажал - снимок вырос до настоящего размера и листается. */
+.см-рама.крупно{ place-items:start center; }
+.см-рама.крупно .см-кадр{
+  max-width:none; max-height:none; cursor:zoom-out; border-radius:0;
+}
+@media (max-width: 760px){
+  .см-верх{ padding:10px; }
+  .см-рама{ padding:0 8px 10px; }
+}
+
+/* ── КУЧКА: ПАЧКА ВЛОЖЕНИЙ ОДНИМ БЛОКОМ ──
+   Собирает её CW.кучками() в shared/chat.js: идущие подряд вложения
+   одного человека, отправленные в ту же минуту, до десяти штук.
+
+   Ни пузыря, ни обводки - только раскладка. Снимки внутри мельче
+   одиночных: десять снимков по триста точек это три экрана, мимо
+   которых человек пролистывает весь разговор. */
+.кучка{
+  display:flex; flex-wrap:wrap; gap:4px;
+  max-width:76%; align-self:flex-start;
+}
+.кучка.своё{ align-self:flex-end; justify-content:flex-end; }
+.кучка .пузырь{
+  max-width:none; padding:0; background:none; margin:0;
+  align-self:auto;
+}
+/* ── СТРОКИ В КУЧКЕ ИДУТ ВО ВСЮ ШИРИНУ ──
+   Снимки и ролики стоят рядами по сто десять точек, а строка файла,
+   проигрыватель песни и карточка места тянутся через всю кучку: имя
+   файла в колонке шириной со снимок читать нельзя.
+
+   Так десять вложений разом - хоть все снимки, хоть снимки вперемешку
+   с договором, песней и таблицей - лежат одной пачкой: картинки
+   плиткой, строки под ними, часы внизу одни на всех. */
+.кучка .пузырь.строкой{ flex:1 1 100%; width:100%; }
+.кучка .пузырь.строкой .вложение,
+.кучка .пузырь.строкой .вл-место{ margin-top:0; }
+.кучка .пузырь.строкой .дорожка{ margin-top:0; max-width:none; }
+/* Время внутри каждого снимка убрано: у кучки оно одно, своей
+   строкой под ней. Десять одинаковых «03:29» подряд - это шум. */
+.кучка .пузырь > .время{ display:none; }
+.кучка-время{
+  flex:0 0 100%; text-align:right;
+  font-size:0.7333rem; opacity:.6; margin-top:1px;
+}
+.кучка.чужое .кучка-время{ text-align:left; }
+/* Снимок в кучке: сто десять точек по длинной стороне, форма своя.
+   Три таких в ряд как раз укладываются в ширину пузыря. */
+.кучка .вл-снимок,
+.кучка .вл-ролик{ width:calc(110px * var(--отношение, .75)); }
+.кучка .вл-снимок img,
+.кучка .вл-ролик video{ max-height:100%; border-radius:10px; }
+.кучка .вл-кружок video{ width:110px; height:110px; }
+
+/* Имя звукового файла в проигрывателе: песня, присланная файлом,
+   играет так же, как голосовое, но её ещё надо узнать по названию. */
+.пузырь .вл-звук .нм{
+  flex:1 1 auto; min-width:0; overflow:hidden;
+  text-overflow:ellipsis; white-space:nowrap; font-size:0.8333rem;
+}
+.пузырь .вл-звук .нм + .полоса{ flex:0 1 56px; min-width:40px; }
+/* Проигрыватель сам себе предмет: внутри пузыря без подложки ему
+   нужна своя, иначе полоса висит в пустоте. */
+.пузырь.медиа > .вл-звук{ margin-top:0; }
+
+/* ── СНИМОК И РОЛИК, ПРИСЛАННЫЕ ФАЙЛОМ ──
+   Слева не значок, а сам кадрик: серая строка с именем ничем не
+   отличалась от строки с договором, и человек не видел, что ему
+   прислали, пока не откроет. */
+.пузырь .вложение.скадром{ gap:10px; padding:5px 4px; }
+.пузырь .вложение .кадрик{
+  position:relative; flex:0 0 44px; width:44px; height:44px;
+  border-radius:9px; overflow:hidden; background:#0a0d14;
+}
+.пузырь .вложение .кадрик img,
+.пузырь .вложение .кадрик video{
+  display:block; width:100%; height:100%; object-fit:cover;
+}
+/* У ролика поверх кадрика маленький треугольник: иначе он не
+   отличается от снимка. */
+.пузырь .вложение .кадрик .зн{
+  position:absolute; inset:0; display:grid; place-items:center;
+  background:rgba(0,0,0,.35); color:#fff; opacity:1;
+}
+.пузырь .вложение .кадрик .зн svg{ width:13px; height:13px; }

@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Рефералы · CubeWorld</title>
+<meta name="theme-color" content="#01010c">
+<link rel="icon" href="icons/favicon.svg?v=20261122-363">
+<link rel="stylesheet" href="shared/style.css?v=20261122-363">
+<link rel="stylesheet" href="shared/window.css?v=20261122-363">
+<link rel="stylesheet" href="shared/account.css?v=20261122-363">
+<script src="shared/theme.js?v=20261122-363"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261122-363">
+<!--
+  ПРИГЛАШЕНИЯ.
+
+  Один запрос: /me/referral. Оттуда код, ссылка, счётчики и список тех,
+  кто пришёл. Размер награды тоже оттуда (bonus_inviter) — в разметке он
+  не вписан, иначе страница обещала бы одно, а сервер платил другое.
+
+  Ссылку строим от адреса САЙТА, а не от адреса сервера: человек делится
+  местом, куда придёт друг.
+-->
+<style>
+/* ── строка про награду ──────────────────────────────────────────── */
+.про-награду{
+  font-size:1.0667rem; line-height:1.6; margin:0 0 20px; color:var(--текст);
+}
+.про-награду b{ color:var(--синий); font-weight:700; }
+
+/* ── коробка со ссылкой ──────────────────────────────────────────── */
+/* Краски здесь не вписаны числами: и коробка, и кнопка берут цвет
+   оформления (--синий-ргб — он же числами, для прозрачных подложек).
+   Было вписано синим, и при сиреневом или золотом кубе эти две вещи
+   оставались единственным синим пятном на странице. */
+.ссылка-коробка{
+  background:rgba(var(--синий-ргб),.05); border:1px solid rgba(var(--синий-ргб),.45);
+  border-radius:16px; padding:20px; margin-bottom:14px;
+}
+.ссылка-коробка .над{
+  font-size:0.7667rem; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--текст2); margin-bottom:10px;
+}
+.ссылка-коробка .сама{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:1rem; color:var(--синий); word-break:break-all;
+  margin-bottom:16px; user-select:all;
+}
+.кн-копировать{
+  display:inline-flex; align-items:center; gap:10px;
+  padding:11px 22px; font-size:0.9667rem; font-weight:700; cursor:pointer;
+  color:var(--текст); border-radius:var(--радиус-круг);
+  border:1px solid transparent;
+  background:rgba(var(--синий-ргб), .2);
+  transition:background .13s ease, color .13s ease, transform .1s ease;
+}
+.кн-копировать:hover{ background:rgba(var(--синий-ргб), .3); color:#fff; }
+.кн-копировать:active{ transform:scale(.97); }
+.кн-копировать svg{ width:16px; height:16px; }
+.кн-копировать:disabled{ opacity:.5; cursor:default; }
+
+/* ── три числа ───────────────────────────────────────────────────── */
+/* Ячейки чисел той же мерки, что в «Аналитике» и в боевой: 11 между
+   ними, 15 внутри, число 26 точек. Одна мерка на всю программу. */
+.числа{
+  display:grid; gap:11px; margin-bottom:16px;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+.число{
+  background:var(--окно); border:1px solid var(--край);
+  border-radius:var(--радиус); padding:15px; text-align:center;
+}
+.число .значение{
+  font-size:26px; font-weight:800; letter-spacing:-.03em; line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.число.синее .значение{ color:var(--синий); }
+.число.зелёное .значение{ color:var(--зелёный); }
+.число .подпись{ margin-top:4px; font-size:10.5px; color:var(--текст2); }
+@media (max-width:560px){ .числа{ grid-template-columns:1fr; } }
+
+/* ── кто пришёл ──────────────────────────────────────────────────── */
+.друзья{ border:1px solid var(--край); border-radius:var(--радиус);
+  overflow:hidden; background:var(--окно); margin-bottom:18px; }
+/* Пустая коробка не должна занимать столько же, сколько полный список.
+   Общая «пусто-строка» держит 34 точки сверху и снизу - это верно там,
+   где под ней ничего нет, а здесь ниже ещё две полки, и страница из-за
+   этих семидесяти точек получала полосу прокрутки, которой нечего
+   прокручивать. */
+.друзья .пусто-строка{ padding:20px; }
+.друг{
+  display:flex; align-items:center; gap:13px;
+  padding:14px 17px; border-bottom:1px solid var(--край);
+}
+.друг:last-child{ border-bottom:none; }
+.друг .лицо{
+  width:36px; height:36px; flex:0 0 36px; border-radius:50%;
+  background:linear-gradient(140deg,#2a3356,#1b2340); color:var(--сирень);
+  display:flex; align-items:center; justify-content:center; font-size:0.9333rem;
+}
+.друг .лицо svg{ width:17px; height:17px; }
+.друг .имя{ font-size:0.9667rem; }
+.друг .когда{ font-size:0.8rem; color:var(--текст3); margin-top:2px; }
+.друг .метка{
+  margin-left:auto; font-size:0.7333rem; padding:4px 11px;
+  border-radius:var(--радиус-круг); border:1px solid currentColor; white-space:nowrap;
+}
+.друг .метка.засчитан{ color:var(--зелёный); }
+.друг .метка.ждёт{ color:var(--текст3); }
+.друг .метка.отклонён{ color:var(--жёлтый); }
+
+/* ── как это работает ────────────────────────────────────────────── */
+.как-работает{
+  background:rgba(251,191,36,.05); border:1px solid rgba(251,191,36,.3);
+  border-radius:14px; padding:16px 20px; margin-bottom:14px;
+  font-size:0.9667rem; line-height:1.7; color:var(--текст);
+  display:flex; gap:12px; align-items:flex-start;
+}
+.как-работает .знак{ flex:0 0 18px; display:flex; color:var(--жёлтый); margin-top:3px; }
+.как-работает .знак svg{ width:17px; height:17px; }
+.как-работает b{ color:var(--синий); font-weight:700; }
+
+.мелким{ font-size:0.9rem; line-height:1.7; color:var(--текст3); }
+</style>
+</head>
+<body>
+
+<script src="shared/api.js?v=20261122-363"></script>
+<script src="shared/ui.js?v=20261122-363"></script>
+<script src="shared/смайлы.js?v=20261122-363"></script>
+<script src="shared/лица.js?v=20261122-363"></script>
+<script src="shared/эфир.js?v=20261122-363"></script>
+<script src="shared/icons.js?v=20261122-363"></script>
+<script src="shared/window.js?v=20261122-363"></script>
+<script src="shared/без-копий.js?v=20261122-363"></script>
+<script src="shared/time.js?v=20261122-363"></script>
+<script src="shared/auth.js?v=20261122-363"></script>
+<script src="shared/account.js?v=20261122-363"></script>
+<script src="shared/shell.js?v=20261122-363"></script>
+<script>
+'use strict';
+
+CW.оболочка('refs').then(function (место) {
+
+CW.заглавие(место, { имя: 'Рефералы' });
+
+var тело = document.createElement('div');
+место.appendChild(тело);
+CW.ждём(тело);
+
+CW.спросить('/me/referral', { сроком: 20000 })
+  .then(показать)
+  .catch(function (е) {
+    тело.innerHTML = '';
+    var б = document.createElement('div');
+    б.className = 'беда';
+    б.textContent = е.сеть ? 'Нет связи с сервером'
+                           : (е.message || 'Не вышло получить приглашения');
+    тело.appendChild(б);
+  });
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ОТРИСОВКА
+   ═══════════════════════════════════════════════════════════════════════ */
+function кусок(класс, внутри) { return CW.кусок(класс, внутри); }
+
+/* Числа CUBE по-русски, с запятой и без хвоста нулей. */
+function cube(ч) {
+  var з = Number(ч || 0);
+  if (!з) return '0';
+  return з.toFixed(4).replace(/0+$/, '').replace(/\.$/, '').replace('.', ',');
+}
+
+var ССЫЛКА = '';
+
+function показать(д) {
+  д = д || {};
+  var код = д.code || '';
+
+  /* Короткий вид, как на сайте: адрес сайта и ?ref=КОД. Берём именно
+     адрес страницы, а не адрес сервера — друг должен попасть на сайт. */
+  ССЫЛКА = код ? (location.origin + '/?ref=' + encodeURIComponent(код)) : '';
+
+  тело.innerHTML = '';
+
+  /* ── сколько платят ── */
+  тело.appendChild(кусок('про-награду',
+      '<b>' + cube(д.bonus_inviter) + '</b> CUBE приходят когда '
+    + 'приглашённый оплатит подписку.'
+    + (д.bonus_friend ? ' Другу: <b>' + cube(д.bonus_friend) + '</b> CUBE.' : '')));
+
+  /* ── ссылка ── */
+  var коробка = кусок('ссылка-коробка',
+      '<div class="над">Твоя ссылка</div>'
+    + '<div class="сама">' + CW.безопасно(ССЫЛКА || '-') + '</div>'
+    + '<button class="кн-копировать">' + CW.значок('копия') + ' Скопировать</button>');
+
+  var кн = коробка.querySelector('button');
+  if (ССЫЛКА) кн.onclick = скопировать; else кн.disabled = true;
+  тело.appendChild(коробка);
+
+  /* ── три числа ──
+     Третье поле у сервера — заработанные CUBE (earned). Опыта за
+     приглашения он отдельно не считает, и подменять одно другим нельзя:
+     человек решит, что ему начислили XP, которых нет. */
+  var числа = кусок('числа');
+  [
+    { класс: 'синее',  знач: д.invited, подпись: 'Приглашено' },
+    { класс: 'зелёное', знач: д.active, подпись: 'Активных' },
+    { класс: '',       знач: д.earned,  подпись: 'CUBE за них', дробь: true }
+  ].forEach(function (н) {
+    var з = Number(н.знач || 0);
+    числа.appendChild(кусок('число ' + н.класс,
+        '<div class="значение">' + (н.дробь ? cube(з) : з.toLocaleString('ru')) + '</div>'
+      + '<div class="подпись">' + н.подпись + '</div>'));
+  });
+  тело.appendChild(числа);
+
+  /* ── кто пришёл ── */
+  тело.appendChild(кусок('раздел', 'Кто пришёл по ссылке'));
+
+  var друзья = д.friends || [];
+  var список = кусок('друзья');
+  if (!друзья.length) {
+    список.innerHTML = '<div class="пусто-строка">'
+      + 'Пока никто не переходил по твоей ссылке.</div>';
+  } else {
+    друзья.forEach(function (ч) {
+      var метка = ч.blocked ? ['отклонён', 'не засчитано']
+                : ч.active  ? ['засчитан', 'засчитано']
+                            : ['ждёт', 'ждёт оплаты'];
+      список.appendChild(кусок('друг',
+          '<span class="лицо">' + CW.значок('человек', 17) + '</span>'
+        + '<span>'
+        +   '<div class="имя">' + CW.безопасно(ч.name || '-') + '</div>'
+        +   '<div class="когда">'
+        +     CW.безопасно(ч.joined_at ? CW.подпись(ч.joined_at) : '') + '</div>'
+        + '</span>'
+        + '<span class="метка ' + метка[0] + '">' + метка[1] + '</span>'));
+    });
+  }
+  тело.appendChild(список);
+
+  /* ── как это работает ── */
+  тело.appendChild(кусок('как-работает',
+      '<span class="знак">' + CW.значок('лампа') + '</span>'
+    + '<span><b>Как это работает:</b> ссылка у тебя одна и навсегда. '
+    + 'Приглашение засчитывается только тому, кто зашёл впервые и оплатил '
+    + 'тариф.</span>'));
+
+  тело.appendChild(кусок('мелким',
+      'Ключи выдаются анонимно. Приглашения с того же устройства не '
+    + 'засчитываются. За одного человека оплата один раз, всё это видно '
+    + 'в истории CUBE.'));
+}
+
+function скопировать() {
+  if (!ССЫЛКА) return;
+  CW.вбуфер(ССЫЛКА, 'Ссылка скопирована');
+}
+
+});
+</script>
+</body>
+</html>

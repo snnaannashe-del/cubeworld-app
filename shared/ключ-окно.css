@@ -1,0 +1,91 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   ВИД ОКНА ВЫДАННОГО КЛЮЧА
+
+       shared/ключ-окно.css   (поведение — shared/ключ-окно.js)
+
+   Было написано дважды: на титулке и на странице тарифа, местами слово
+   в слово, местами чуть иначе — и окно на двух страницах потихоньку
+   расходилось. Здесь оно одно.
+
+   Снаружи вселенной живут только index.html и tariff.html, они этот
+   лист и подключают. Страница сама решает, где окно стоит (на титулке —
+   целый экран, на тарифе — на месте карточки), а как оно выглядит
+   внутри — написано тут.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.ключ-окно{
+  position:relative;
+  width:clamp(290px,26vw,380px);
+  display:flex; flex-direction:column;
+  gap:clamp(14px,2vh,22px); text-align:center;
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--край);
+  border-radius:20px;
+  padding:clamp(18px,2.4vh,28px) clamp(16px,1.6vw,24px);
+}
+
+/* Два значка в правом верхнем углу: «Копировать» и «Назад». Полосы с
+   полноширокими кнопками внизу нет — она занимала строку ради того, что
+   делает один значок. Отрицательные поля подтягивают их к самому углу. */
+.углы-ключа{
+  display:flex; align-items:center; justify-content:flex-end;
+  gap:2px; margin:-4px -4px -10px 0;
+}
+.уголок-кнопка{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%;
+  background:none; border:none; cursor:pointer; color:var(--текст3);
+}
+.уголок-кнопка:hover{ color:var(--текст); background:rgba(255,255,255,.06); }
+
+/* Верх отделён полоской — бирка с заголовком читаются как шапка блока,
+   а не как первая строка списка. */
+.верх-ключа{
+  flex:0 0 auto;
+  padding-bottom:clamp(8px,1.4vh,14px);
+  border-bottom:1px solid var(--край);
+}
+.ключ-бирка{
+  display:inline-block;
+  font-size:0.7rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--жёлтый); border:1px solid rgba(251,191,36,.4);
+  border-radius:var(--радиус-круг); padding:5px 14px; margin-bottom:12px;
+}
+.ключ-окно h2{
+  margin:0; font-size:clamp(20px,2.8vh,30px);
+  font-weight:700; letter-spacing:-.02em;
+}
+
+.середина-ключа{ display:flex; flex-direction:column; justify-content:center; }
+.низ-ключа{ flex:0 0 auto; }
+
+.крутилка{
+  width:32px; height:32px; margin:0 auto; border-radius:50%;
+  border:2px solid var(--край); border-top-color:var(--синий);
+  animation:верт .8s linear infinite;
+}
+@keyframes верт{ to{ transform:rotate(360deg); } }
+
+/* Коробка с ключом стоит спрятанной, пока ключа нет: пустая рамка с
+   подписью «твой ключ» и ничем внутри сбивает с толку. */
+.ключ-коробка{ display:none; }
+.ключ-коробка.видно{ display:block; }
+.ключ-рамка{
+  background:rgba(0,153,255,.06); border:1px solid rgba(74,158,255,.4);
+  border-radius:16px; padding:clamp(14px,2vh,22px) 14px;
+}
+.ключ-подпись{
+  font-size:0.6667rem; letter-spacing:.17em; text-transform:uppercase;
+  color:var(--синий); margin-bottom:10px;
+}
+.ключ-значение{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:clamp(15px,2vh,20px); letter-spacing:.08em;
+  word-break:break-all; user-select:all;
+}
+
+.ключ-кнопки{ display:flex; flex-direction:column; gap:8px; }
+.ключ-кнопки .кнопка{ width:100%; padding:clamp(10px,1.5vh,13px); }
+
+.ключ-окно .весть{ min-height:16px; font-size:0.8333rem; margin-top:8px; }
+.ключ-окно .весть:empty{ min-height:0; margin-top:0; }

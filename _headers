@@ -43,6 +43,27 @@
 /terms.html
   Cache-Control: public, max-age=0, must-revalidate
 
+# ── НОВАЯ ПРОГРАММА: МНОГО ЛЁГКИХ ФАЙЛОВ ──
+# Страниц теперь не три, а полтора десятка (feed, chats, market, окна),
+# и каждая должна спрашивать источник: не вышла ли новая сборка.
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Общие части (shared, modals, windows, games) едут с номером сборки
+# прямо в адресе: ?v=20261122-363. У новой сборки адрес другой, значит
+# старое из запаса никогда не подменит новое - такие файлы можно
+# держать долго.
+/shared/*
+  Cache-Control: public, max-age=604800
+/modals/*
+  Cache-Control: public, max-age=604800
+/windows/*
+  Cache-Control: public, max-age=604800
+/games/*
+  Cache-Control: public, max-age=604800
+/icons/*
+  Cache-Control: public, max-age=604800
+
 /*.png
   Cache-Control: public, max-age=604800
 

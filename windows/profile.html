@@ -1,0 +1,1568 @@
+<!doctype html>
+<html lang="ru" data-под-обои="да">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Портфолио · CubeWorld</title>
+<meta name="theme-color" content="#01010c">
+<link rel="icon" href="../icons/favicon.svg?v=20261122-363">
+<link rel="stylesheet" href="../shared/style.css?v=20261122-363">
+<link rel="stylesheet" href="../shared/window.css?v=20261122-363">
+<link rel="stylesheet" href="../shared/account.css?v=20261122-363">
+<script src="../shared/theme.js?v=20261122-363"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261122-363">
+<!--
+  ПРОФИЛЬ: два окна.
+
+      Портфолио   — как тебя видят: лицо, имя, тип, счётчики, публикации.
+      Редактировать — как ты себя меняешь.
+
+  Оба стоят по центру, шириной 10 см (500 точек; 50 точек = 1 см на её
+  экране). Число лежит в стиль.css как --окно-10см, сама стойка — в
+  оболочке: следующее окно такого рода возьмёт готовое, а не своё.
+
+  ЧТО СЕРВЕР УМЕЕТ ХРАНИТЬ, А ЧТО НЕТ.
+
+  В таблице людей есть: имя, лицо, цвет лица, @username, тип (публичный
+  или скрытый). Их правит PATCH /me и POST /me/username — это настоящий
+  профиль, его видят другие.
+
+  Ни статуса, ни описания, ни ссылок, ни адреса, ни типа «бизнес» в
+  таблице НЕТ. Выдумывать их некуда, терять — нельзя, поэтому они легли
+  в личное хранилище человека (/me/prefs): оно живёт на сервере и едет
+  за ним на другое устройство. Но оно личное: пока в таблице людей не
+  появятся эти поля, описание и ссылки видит только их хозяин. Это не
+  обход — это честная граница, и её надо снимать на сервере.
+-->
+<style>
+
+
+/* ── лицо с кольцом ──────────────────────────────────────────────── */
+/* Кружок один на оба окна — и в портфолио, и в правке. Был 160 в
+   портфолио и 118 в правке: одно и то же лицо двух разных размеров на
+   соседних экранах. Теперь 79: это прежние 118, уменьшенные в полтора
+   раза. */
+.лицо-кольцо{
+  width:79px; height:79px; margin:14px auto 0; position:relative;
+  border-radius:50%; padding:3px;
+  background:linear-gradient(135deg,#4a9eff,#8b7cf6 45%,#f472b6);
+}
+.лицо-кольцо .внутри{
+  width:100%; height:100%; border-radius:50%; overflow:hidden;
+  background:var(--фон); color:var(--сирень);
+  display:flex; align-items:center; justify-content:center;
+}
+.лицо-кольцо .внутри img{ width:100%; height:100%; object-fit:cover; display:block; }
+.лицо-кольцо .внутри svg{ width:38px; height:38px; }
+/* .мал остался как метка «это окно правки»: размер у обоих теперь
+   один, а класс нужен кнопке со снимком. */
+.лицо-кольцо .правка{
+  position:absolute; right:-2px; bottom:-2px; width:26px; height:26px;
+  border-radius:50%; cursor:pointer; padding:0;
+  border:2px solid var(--фон); background:var(--синий); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+}
+.лицо-кольцо .правка svg{ width:13px; height:13px; }
+
+/* ── портфолио ───────────────────────────────────────────────────── */
+.про-имя{
+  text-align:center; font-size:1.8rem; font-weight:700; margin:18px 0 0;
+  letter-spacing:-.02em; word-break:break-word;
+}
+.про-ник{ text-align:center; font-size:0.9333rem; color:var(--текст3); margin-top:4px; }
+.про-тип{
+  display:flex; align-items:center; gap:8px; margin:14px auto 0;
+  padding:8px 18px; cursor:default; font-family:inherit;
+  border-radius:var(--радиус-круг); border:1px solid rgba(74,158,255,.5);
+  background:rgba(0,153,255,.1); color:var(--синий);
+  font-size:0.9rem; font-weight:600;
+}
+.про-тип svg{ width:15px; height:15px; }
+.про-статус{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  margin-top:10px; font-size:0.8667rem; color:var(--текст2);
+}
+.про-статус .точка{ width:9px; height:9px; border-radius:50%; }
+
+.про-счёты{ display:flex; align-items:center; margin:24px 0 6px; }
+/* Числа — кнопки, но выглядеть должны надписями: браузер рисует
+   кнопке серую заливку, рамку и свой шрифт, и строка «Подписки ·
+   Подписчиков · Лайки» превращалась в три серых плитки. */
+.про-счёт{
+  flex:1; text-align:center; position:relative; cursor:pointer;
+  border:none; background:none; padding:6px 4px; font:inherit;
+  color:var(--текст); border-radius:10px;
+}
+.про-счёт:hover{ background:rgba(var(--синий-ргб),.1); }
+.про-счёт:hover .ч{ color:var(--синий); }
+.про-счёт + .про-счёт::before{
+  content:''; position:absolute; left:0; top:4px; bottom:4px;
+  border-left:1px solid var(--край);
+}
+.про-счёт .ч{ font-size:1.4rem; font-weight:700; }
+.про-счёт .п{ font-size:0.8333rem; color:var(--текст3); margin-top:4px; }
+
+.про-опис{
+  font-size:0.9333rem; line-height:1.65; color:var(--текст2); margin-top:18px;
+  white-space:pre-wrap; word-break:break-word; text-align:center;
+}
+.про-ссылки{ display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+.про-ссылка{
+  display:flex; align-items:center; gap:10px; padding:11px 14px;
+  border:1px solid var(--край); border-radius:12px; background:var(--окно);
+  color:var(--синий); text-decoration:none; font-size:0.9rem;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.про-ссылка:hover{ border-color:var(--синий); }
+.про-ссылка svg{ width:15px; height:15px; flex:0 0 15px; }
+.про-адрес{
+  display:flex; align-items:center; gap:9px; justify-content:center;
+  margin-top:12px; font-size:0.9rem; color:var(--текст2);
+}
+.про-адрес svg{ width:15px; height:15px; color:var(--текст3); }
+
+/* ── вкладки и фильтры ───────────────────────────────────────────── */
+.про-вкладки{
+  display:flex; margin-top:24px; border-bottom:1px solid var(--край);
+}
+.про-вкладка{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:13px 0; cursor:pointer; font-family:inherit;
+  background:none; border:none; border-bottom:2.5px solid transparent;
+  color:var(--текст3); font-size:0.9rem; font-weight:600; margin-bottom:-1px;
+}
+.про-вкладка:hover{ color:var(--текст2); }
+.про-вкладка.тут{ color:var(--текст); border-bottom-color:var(--синий); }
+.про-вкладка svg{ width:16px; height:16px; }
+
+.про-фильтры{
+  display:flex; gap:2px; margin:14px auto 0; width:max-content; padding:4px;
+  border:1px solid var(--край); border-radius:13px; background:var(--окно);
+}
+.про-фильтр{
+  width:76px; height:38px; cursor:pointer; padding:0; font-family:inherit;
+  border:none; background:none; color:var(--текст3); border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+}
+.про-фильтр:hover{ color:var(--текст2); }
+.про-фильтр.тут{ color:var(--текст); background:var(--поле); }
+.про-фильтр svg{ width:18px; height:18px; }
+
+/* ── сетка публикаций ────────────────────────────────────────────── */
+.про-сетка{
+  display:grid; gap:4px; margin-top:16px;
+  grid-template-columns:repeat(3,1fr);
+}
+.про-клетка{
+  position:relative; aspect-ratio:9/16; overflow:hidden; cursor:pointer;
+  border:none; padding:0; background:var(--поле); border-radius:8px;
+}
+.про-клетка img,
+.про-клетка video{ width:100%; height:100%; object-fit:cover; display:block; }
+
+/* Есть живая история — в углу кружка лица глазок, и он её открывает.
+   Само кольцо не трогаем: оно и так цветное, а второй цвет на нём
+   читался бы как другое состояние, а не как «есть история». */
+.лицо-кольцо .глазок{
+  position:absolute; right:-2px; bottom:2px; width:26px; height:26px; padding:0;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  border-radius:50%; border:2px solid var(--окно);
+  background:var(--синий); color:#fff;
+}
+.лицо-кольцо .глазок svg{ width:13px; height:13px; }
+.лицо-кольцо .глазок:hover{ background:var(--синий-светлее); }
+
+/* Своя история во весь экран — поверх всего, по нажатию закрывается. */
+.про-клетка .нет{
+  width:100%; height:100%; display:flex; align-items:center;
+  justify-content:center; color:var(--текст3); font-size:0.7333rem;
+  padding:8px; text-align:center; line-height:1.4;
+  overflow:hidden; word-break:break-word;
+}
+.про-клетка .смотры{
+  position:absolute; left:6px; bottom:6px; font-size:0.7rem; font-weight:700;
+  color:#fff; text-shadow:0 1px 4px rgba(0,0,0,.8);
+  display:flex; align-items:center; gap:4px;
+}
+
+.про-пусто{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:60px 20px; gap:16px; text-align:center;
+}
+.про-пусто .круг{
+  width:74px; height:74px; border-radius:50%; background:var(--поле);
+  display:flex; align-items:center; justify-content:center; color:var(--текст2);
+}
+.про-пусто .круг svg{ width:31px; height:31px; }
+.про-пусто .слово{ font-size:1rem; font-weight:700; }
+.про-пусто .под{ font-size:0.8667rem; color:var(--текст3); line-height:1.6; }
+
+/* ── правка ──────────────────────────────────────────────────────── */
+.пр-переключить{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  margin:12px auto 0; cursor:pointer; padding:0; font-family:inherit;
+  background:none; border:none; color:var(--текст3); font-size:0.8667rem;
+}
+.пр-переключить:hover{ color:var(--текст2); }
+.пр-переключить svg{ width:15px; height:15px; }
+
+.пр-uid{
+  margin-top:12px; padding:13px 16px; text-align:center;
+  border:1px solid var(--край); border-radius:12px; background:var(--окно);
+  font-family:ui-monospace,Menlo,monospace; font-size:0.9333rem; letter-spacing:.1em;
+  color:var(--текст2);
+}
+
+.пр-подпись{
+  font-size:0.9rem; font-weight:600; color:var(--текст2); margin:22px 0 9px;
+}
+.пр-подпись .тихо{ float:right; font-weight:400; color:var(--текст3);
+  font-size:0.8333rem; }
+.пр-подпись svg{ width:14px; height:14px; vertical-align:-2px; margin-right:4px;
+  color:var(--текст3); }
+
+.пр-типы{ display:flex; gap:8px; }
+.пр-тип{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:7px;
+  padding:12px 6px; cursor:pointer; font-family:inherit;
+  border-radius:12px; border:1px solid var(--край); background:var(--поле);
+  color:var(--текст2); font-size:0.8667rem; font-weight:600;
+}
+.пр-тип:hover{ background:rgba(0,153,255,.1); }
+.пр-тип.тут{
+  border-color:rgba(74,158,255,.9); color:var(--текст);
+  background:rgba(0,153,255,.18);
+}
+.пр-тип svg{ width:15px; height:15px; }
+
+.пр-статус{
+  width:100%; display:flex; align-items:center; gap:10px; cursor:pointer;
+  padding:13px 16px; font-family:inherit; font-size:0.9667rem;
+  border:1px solid var(--край); border-radius:12px; background:var(--окно);
+  color:var(--текст); text-align:left;
+}
+.пр-статус .точка{ width:10px; height:10px; border-radius:50%; flex:0 0 10px; }
+.пр-статус .стрелка{ margin-left:auto; color:var(--текст3); display:flex; }
+.пр-статус .стрелка svg{ width:15px; height:15px; }
+
+.пр-список{
+  margin-top:8px; border:1px solid var(--край); border-radius:12px;
+  overflow:hidden; background:var(--окно); display:none;
+}
+.пр-список.видно{ display:block; }
+.пр-пункт{
+  width:100%; display:flex; align-items:center; gap:11px; cursor:pointer;
+  padding:13px 16px; font-family:inherit; font-size:0.9667rem; text-align:left;
+  background:none; border:none; border-bottom:1px solid var(--край);
+  color:var(--текст);
+}
+.пр-пункт:last-child{ border-bottom:none; }
+.пр-пункт:hover{ background:var(--поле); }
+.пр-пункт.тут{ background:var(--поле); }
+.пр-пункт .точка{ width:10px; height:10px; border-radius:50%; flex:0 0 10px; }
+
+/* Поля ссылок живут в своей строке, а не в .пр-поле — без них в списке
+   правил поле ввода оставалось белым, системным. */
+.пр-поле input,.пр-поле textarea,.пр-ссылка-строка input{
+  width:100%; padding:13px 16px; font-size:0.9667rem; font-family:inherit;
+  background:var(--окно); border:1px solid var(--край); color:var(--текст);
+  border-radius:12px; outline:none;
+}
+.пр-поле input:focus,.пр-поле textarea:focus,
+.пр-ссылка-строка input:focus{ border-color:var(--синий); }
+.пр-поле input::placeholder,.пр-поле textarea::placeholder,
+.пр-ссылка-строка input::placeholder{ color:var(--текст3); }
+.пр-поле textarea{ resize:vertical; min-height:92px; line-height:1.6; }
+.пр-ник{ position:relative; }
+.пр-ник .собака{
+  position:absolute; left:16px; top:50%; transform:translateY(-50%);
+  color:var(--текст3); font-size:1rem; pointer-events:none;
+}
+.пр-ник input{ padding-left:38px; font-family:ui-monospace,Menlo,monospace; }
+.пр-счётчик{ text-align:right; font-size:0.8rem; color:var(--текст3); margin-top:6px; }
+
+.пр-ссылка-строка{ display:flex; gap:8px; margin-bottom:8px; }
+.пр-ссылка-строка input{ flex:1; min-width:0; }
+.пр-убрать{
+  flex:0 0 auto; width:44px; cursor:pointer; padding:0; font-size:1.1333rem;
+  border:1px solid var(--край); border-radius:12px; background:var(--окно);
+  color:var(--текст3);
+}
+.пр-убрать:hover{ color:var(--красный); border-color:rgba(248,113,113,.4); }
+.пр-добавить{
+  width:100%; cursor:pointer; padding:13px; font-family:inherit; font-size:0.9333rem;
+  border:1px dashed rgba(74,158,255,.45); border-radius:12px;
+  background:rgba(0,153,255,.05); color:var(--синий);
+}
+.пр-добавить:hover{ border-style:solid; }
+
+/* Полосы кнопок внизу больше нет: «Сохранить» переехала в шапку, где
+   её видно и на длинной форме, а «Отмена» отменять стало нечего —
+   правка уезжает сама. Осталась только строка состояния. */
+.весть{ margin-top:20px; }
+
+</style>
+</head>
+<body>
+
+<script src="../shared/api.js?v=20261122-363"></script>
+<script src="../shared/ui.js?v=20261122-363"></script>
+<script src="../shared/смайлы.js?v=20261122-363"></script>
+<script src="../shared/лица.js?v=20261122-363"></script>
+<script src="../shared/эфир.js?v=20261122-363"></script>
+<script src="../shared/icons.js?v=20261122-363"></script>
+<script src="../shared/window.js?v=20261122-363"></script>
+<script src="../shared/продавец.js?v=20261122-363"></script>
+<script src="../shared/без-копий.js?v=20261122-363"></script>
+<script src="../shared/time.js?v=20261122-363"></script>
+<script src="../shared/auth.js?v=20261122-363"></script>
+<script src="../shared/account.js?v=20261122-363"></script>
+<script src="../shared/shell.js?v=20261122-363"></script>
+<script>
+'use strict';
+
+CW.оболочка('profile').then(function (место) {
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ЗНАЧКИ ЭТОГО ЭКРАНА.
+   Нужны только здесь, поэтому живут здесь, а собираются общим способом —
+   CW.рисунок: толщина линии и размер те же, что у всей программы.
+   ═══════════════════════════════════════════════════════════════════════ */
+/* Значки переехали в общий набор: ими пользуются уже не только тут. */
+function зн(имя, размер) { return CW.значок(имя, размер); }
+
+var ТИПЫ = [
+  { имя: 'public',   подпись: 'Публичный', зн: 'глобус' },
+  { имя: 'hidden',   подпись: 'Скрытый',   зн: 'замок' },
+  { имя: 'business', подпись: 'Бизнес',    зн: 'портфель' }
+];
+
+var СТАТУСЫ = [
+  { имя: 'online', подпись: 'В сети',  цвет: '#34d399' },
+  { имя: 'busy',   подпись: 'Занят',   цвет: '#f87171' },
+  { имя: 'away',   подпись: 'Отошёл',  цвет: '#fbbf24' },
+  { имя: 'ghost',  подпись: 'Призрак', цвет: '#6b7280' }
+];
+
+/* Ключи личного хранилища. Имена с приставкой, чтобы не столкнуться с
+   чужими списками в том же хранилище. */
+var КЛЮЧИ = {
+  статус:  'профиль.статус',
+  опис:    'профиль.описание',
+  ссылки:  'профиль.ссылки',
+  адрес:   'профиль.адрес',
+  бизнес:  'профиль.бизнес',
+  uidвидно:'профиль.uid-видно'
+};
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ЧТО МЫ ЗНАЕМ О СЕБЕ
+   ═══════════════════════════════════════════════════════════════════════ */
+var Я = {
+  id: null, uid: '', display_name: '', avatar_url: '', avatar_color: '', username: '',
+  account_type: 'public',
+  статус: 'online', опис: '', ссылки: [], адрес: '',
+  бизнес: false, uidВидно: true,
+  подписки: 0, подписчики: 0, лайки: 0,
+  записи: []
+};
+
+/* ── ЧЕЙ ЭТО ПРОФИЛЬ ───────────────────────────────────────────────────
+   Без «?кто» окно показывает меня — так оно и жило с самого начала.
+   С «?кто» показывает другого человека: то же самое портфолио, тот же
+   вид, только без правки.
+
+   Отдельного окна «чужой профиль» нет нарочно: это одно и то же
+   портфолио, и два окна немедленно разошлись бы видом.
+
+   Чего у чужого не будет: описание, ссылки, адрес и статус. Они лежат
+   в личном хранилище (/me/prefs), а оно у каждого своё — сервер чужое
+   не отдаёт никому, и выдумывать тут нечего. */
+var КТО = null;
+try { КТО = new URLSearchParams(location.search).get('кто'); } catch (е) {}
+var ЧУЖОЙ = false;
+
+var вкладка = 'short';     /* short | post */
+var фильтр = 'мои';        /* мои | репосты | сохранённое */
+var новоеЛицо = null;      /* выбранный, но ещё не сохранённый снимок */
+var новыйЦвет = null;      /* цвет значка лица, если выбрали в окне */
+
+/* Экран — это одно стоячее окно поверх оболочки. Собирает его общий
+   каркас (shared/window.js): шапка, выход, ширина 10 см и оба правила —
+   выход касанием мимо и возврат в то же окно после перезагрузки — там
+   уже есть, и здесь их писать не нужно. */
+var ОКНО = CW.стойка({
+  имя: 'профиль',
+  назад: уйтиВМеню,
+  крест: true
+});
+ОКНО.открыть();
+
+var внутри = ОКНО.тело;
+
+место.appendChild(ок('div', 'пусто-строка',
+  'Профиль открыт отдельным окном. Закрой его, чтобы вернуться.'));
+
+CW.ждём(внутри);
+собрать();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ЗАГРУЗКА
+   ═══════════════════════════════════════════════════════════════════════ */
+function собрать() {
+  CW.кто(true).then(function (я) {
+    if (!я) throw CW.Беда(0, 'Сервер не сказал, кто я');
+    Я.id = я.id;
+    Я.uid = я.uid || '';
+    Я.display_name = я.display_name || '';
+    Я.avatar_url = я.avatar_url || '';
+    Я.avatar_color = я.avatar_color || '';
+    Я.username = я.username || '';
+
+    ЧУЖОЙ = !!(КТО && String(КТО) !== String(я.id));
+    if (ЧУЖОЙ) {
+      /* Про чужого мы пока не знаем ничего — всё приедет ответом.
+         Своё имя и своё лицо надо стереть, иначе они на миг мелькнут
+         в чужом окне. */
+      Я.id = КТО; Я.uid = ''; Я.display_name = '';
+      Я.avatar_url = ''; Я.username = '';
+    }
+
+    var чей = Я.id;
+    return Promise.all([
+      CW.спросить('/users/' + чей, { тихо: true }),
+      CW.спросить('/follow/' + чей, { тихо: true }),
+      /* Личное хранилище есть только своё: чужое спрашивать не у кого. */
+      ЧУЖОЙ ? Promise.resolve(null)
+            : CW.спросить('/me/prefs?keys=' + значения(КЛЮЧИ).join(','), { тихо: true }),
+      CW.спросить('/feed/user/' + чей, { тихо: true }),
+      /* Сторис живут сутки и лежат своей ручкой. Спрашиваем их здесь
+         же, одним заходом: по ним кружок лица получает метку «есть
+         история», а полка «Истории» — свой список. */
+      CW.спросить('/stories', { тихо: true }).catch(function () { return null; }),
+      /* Подписка, уведомления и блокировка — одним ответом. Своё
+         отношение к себе не спрашиваем: его не бывает. */
+      (КТО && String(КТО) !== String(Я.id))
+        ? CW.спросить('/people/' + чей + '/relation', { тихо: true })
+            .catch(function () { return null; })
+        : Promise.resolve(null)
+    ]);
+  }).then(function (о) {
+    var профиль = о[0] || {};
+    if (ЧУЖОЙ) {
+      Я.display_name = профиль.display_name || '';
+      Я.avatar_url = профиль.avatar_url || '';
+      Я.avatar_color = профиль.avatar_color || '';
+    }
+    if (профиль.account_type) Я.account_type = профиль.account_type;
+    if (профиль.username) Я.username = профиль.username;
+    if (профиль.uid) Я.uid = профиль.uid;
+
+    var счёт = о[1] || {};
+    Я.подписки = счёт.following_count || 0;
+    Я.подписчики = счёт.followers_count || 0;
+    /* Подписана ли я на него — говорит тот же ответ. Без этого меню
+       чужого всегда предлагало бы «Подписаться», даже когда подписка
+       уже есть. */
+    Я.подписан = !!счёт.following;
+
+    разобратьХранилище((о[2] && о[2].prefs) || {});
+
+    Я.записи = Array.isArray(о[3]) ? о[3] : [];
+
+    /* Чьи это сторис, знаем по Я.id: переменная «чей» осталась в
+       прошлом звене цепочки, сюда она не доезжает. */
+    var люди = (о[4] && о[4].people) || [];
+    var его = люди.filter(function (ч) {
+      return String(ч.user_id) === String(Я.id);
+    })[0];
+    Я.истории = (его && его.items) || [];
+
+    var связь = о[5] || {};
+    Я.подписан = !!связь.following;
+    Я.уведомлять = !!связь.notify;
+    Я.заблокирован = !!связь.blocked;
+
+    /* Чужое портфолио открываем на той вкладке, где у человека что-то
+       есть. Открыть «Шортс» пустыми, когда у него одни посты, — значит
+       показать «ничего нет» там, где всё есть, просто рядом. */
+    if (ЧУЖОЙ && Я.записи.length) {
+      var естьШорт = Я.записи.some(function (з) {
+        var т = String(з.post_type || '').toLowerCase();
+        return т === '' || т === 'short';
+      });
+      if (!естьШорт) вкладка = 'post';
+    }
+    Я.лайки = Я.записи.reduce(function (с, з) { return с + (Number(з.likes) || 0); }, 0);
+
+    /* Перезагрузка возвращает в то окно, где человек был. Чужое
+       портфолио правкой не бывает: править можно только своё. */
+    var было = CW.гдеБыл();
+    if (было && было.окно === 'правка' && !ЧУЖОЙ) правкаОкно();
+    else портфолио();
+  }).catch(function (е) {
+    внутри.innerHTML = '';
+    ОКНО.шапку({ знак: 'внимание', заголовок: 'Профиль', назад: уйтиВМеню });
+    var б = ок('div', 'беда');
+    б.textContent = е && е.сеть ? 'Нет связи с сервером'
+                                : ((е && е.message) || 'Профиль не открылся');
+    внутри.appendChild(б);
+  });
+}
+
+function значения(о) {
+  return Object.keys(о).map(function (к) { return о[к]; });
+}
+
+function разобратьХранилище(п) {
+  var взять = function (ключ) {
+    var з = п[ключ];
+    return з && з.v != null ? String(з.v) : '';
+  };
+  Я.статус = взять(КЛЮЧИ.статус) || 'online';
+  Я.опис = взять(КЛЮЧИ.опис);
+  Я.адрес = взять(КЛЮЧИ.адрес);
+  Я.бизнес = взять(КЛЮЧИ.бизнес) === 'да';
+  Я.uidВидно = взять(КЛЮЧИ.uidвидно) !== 'нет';
+  try { Я.ссылки = JSON.parse(взять(КЛЮЧИ.ссылки) || '[]') || []; }
+  catch (е) { Я.ссылки = []; }
+  if (!Array.isArray(Я.ссылки)) Я.ссылки = [];
+}
+
+/* Тип показываем один: «бизнес» на сервере не живёт, он лежит у нас
+   отдельной пометкой поверх публичного. */
+function типСейчас() {
+  if (Я.бизнес && Я.account_type !== 'hidden') return 'business';
+  return Я.account_type === 'hidden' ? 'hidden' : 'public';
+}
+
+function типПо(имя) {
+  return ТИПЫ.filter(function (т) { return т.имя === имя; })[0] || ТИПЫ[0];
+}
+
+function статусПо(имя) {
+  return СТАТУСЫ.filter(function (с) { return с.имя === имя; })[0] || СТАТУСЫ[0];
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ОКНО ПЕРВОЕ: ПОРТФОЛИО
+   ═══════════════════════════════════════════════════════════════════════ */
+function написатьЕму() {
+  CW.уйти(CW.окно('dm') + '?кто=' + encodeURIComponent(Я.id)
+          + '&имя=' + encodeURIComponent(Я.display_name || номерUID()));
+}
+
+/* ── ЧТО МОЖНО СДЕЛАТЬ С ЧУЖИМ ──────────────────────────────────────
+   Пять пунктов, как в работающей программе: подписаться, написать,
+   позвонить, уведомления, заблокировать. Работают все пятеро:
+
+       подписка       POST / DELETE  /follow/{id}
+       уведомления    POST / DELETE  /notify/{id}
+       блокировка     POST / DELETE  /block/{id}
+
+   Две последние ручки пришлось завести на сервере (main.py,
+   database.py) — их там не было вовсе, и рисовать кнопку, за которой
+   ничего не стоит, мы не стали. Блокировка не косметическая: сервер
+   рвёт подписки в обе стороны и после неё не пропускает ни письмо, ни
+   новую подписку.
+
+   Состояние всех трёх спрашивается одним запросом /people/{id}/relation
+   при открытии окна: три галочки — не повод для трёх походов. */
+function менюЧужого(е, кнопка) {
+  var имя = Я.display_name || номерUID();
+  CW.лист([
+    { зн: CW.значок(Я.подписан ? 'галка' : 'человек-плюс', 16),
+      подпись: Я.подписан ? 'Вы подписаны' : 'Подписаться',
+      делать: переключитьПодписку },
+    '-',
+    { зн: CW.значок('речь', 16), подпись: 'Написать', делать: написатьЕму },
+    { зн: CW.значок('трубка', 16), подпись: 'Позвонить', делать: позвонитьЕму },
+    { зн: CW.значок('колокол', 16),
+      подпись: Я.уведомлять ? 'Уведомления включены' : 'Уведомления',
+      делать: переключитьУведомления },
+    '-',
+    { зн: CW.значок('нельзя', 16),
+      подпись: Я.заблокирован ? 'Разблокировать' : 'Заблокировать',
+      опасная: true, делать: спроситьБлокировку }
+  ], кнопка ? { узел: кнопка } : null);
+}
+
+function переключитьПодписку() {
+  var было = !!Я.подписан;
+  CW.спросить('/follow/' + Я.id, { способ: было ? 'DELETE' : 'POST' })
+    .then(function (о) {
+      Я.подписан = о && о.following != null ? !!о.following : !было;
+      if (о && о.followers_count != null) Я.подписчики = о.followers_count;
+      if (о && о.following_count != null) Я.подписки = о.following_count;
+      CW.сказать(Я.подписан ? 'Подписалась' : 'Отписалась', 2000);
+      портфолио();
+    })
+    .catch(function (е) { CW.сказать((е && е.message) || 'Не вышло', 5000); });
+}
+
+/* Уведомления по человеку: сервер помнит, о ком сообщать, а события
+   собирает окно уведомлений — /notify/new отдаёт его новые публикации. */
+function переключитьУведомления() {
+  var было = !!Я.уведомлять;
+  CW.спросить('/notify/' + Я.id, { способ: было ? 'DELETE' : 'POST' })
+    .then(function () {
+      Я.уведомлять = !было;
+      CW.сказать(Я.уведомлять
+        ? 'Сообщу о его новых публикациях'
+        : 'Больше не сообщаю о нём', 3000);
+    })
+    .catch(function (е) { CW.сказать((е && е.message) || 'Не вышло', 5000); });
+}
+
+/* Блокировка рвёт подписки в обе стороны и закрывает переписку —
+   поэтому спрашиваем, а не делаем с одного нажатия. Снятие такого
+   вопроса не требует: оно ничего не ломает. */
+function спроситьБлокировку() {
+  var имя = Я.display_name || номерUID();
+  if (Я.заблокирован) { блокировать(false); return; }
+  CW.лист([
+    { заголовок: 'Заблокировать «' + имя + '»?' },
+    { зн: CW.значок('нельзя', 16), подпись: 'Заблокировать', опасная: true,
+      делать: function () { блокировать(true); } },
+    { зн: CW.значок('назад', 16), подпись: 'Отмена' }
+  ]);
+}
+
+function блокировать(надо) {
+  CW.спросить('/block/' + Я.id, { способ: надо ? 'POST' : 'DELETE' })
+    .then(function () {
+      Я.заблокирован = надо;
+      if (надо) Я.подписан = false;
+      CW.сказать(надо ? 'Заблокирован: ни письма, ни подписки'
+                      : 'Разблокирован', 4000);
+      портфолио();
+    })
+    .catch(function (е) { CW.сказать((е && е.message) || 'Не вышло', 5000); });
+}
+
+function позвонитьЕму() {
+  CW.уйти(CW.окно('call') + '?кто=' + encodeURIComponent(Я.id)
+          + '&имя=' + encodeURIComponent(Я.display_name || номерUID()));
+}
+
+function портфолио() {
+  /* Чужое портфолио тоже возвращается после перезагрузки — вместе с
+     тем, чьё оно. Без номера человека окно открылось бы моим. */
+  CW.гдеБыл(ЧУЖОЙ ? { окно: 'портфолио', кто: Я.id } : { окно: 'портфолио' });
+  /* Шапка пустая нарочно: ни лица, ни слова «Портфолио», ни номера.
+     Всё это стоит в самом окне на два пальца ниже — лицо крупным
+     кружком, имя под ним, номер в строке UID. Шапка, повторяющая то,
+     что и так видно, — это полоса высоты ни за что. Остаётся карандаш
+     и крестик. */
+  /* У своего портфолио в шапке карандаш, у чужого — «Написать»: правка
+     чужого невозможна, а написать человеку — первое, зачем к нему
+     заходят. Звонка здесь нет: соединять его пока нечем. */
+  /* ── ЗВЕЗДА: РЕЙТИНГ ЧЕЛОВЕКА ──
+     Та же карточка, что у имени продавца в маркетплейсе
+     (shared/продавец.js): сделки, звёзды, довольные и недовольные,
+     отзывы. В портфолио она нужна не меньше: сюда заходят посмотреть,
+     что за человек, прежде чем иметь с ним дело.
+
+     Наведение на значок показывает короткую карточку, нажатие
+     открывает окно с отзывами. */
+  var номерЧеловека = Number(Я.id || Я.user_id || КТО) || 0;
+  var рядШапки = [{ имя: 'рейтинг', текст: зн('звезда'),
+                    подсказка: 'Рейтинг и отзывы',
+                    делать: function () {
+                      if (CW.продавец && номерЧеловека) CW.продавец.окно(номерЧеловека);
+                    } }];
+  рядШапки.push(ЧУЖОЙ
+    /* Без «горит»: синяя подсветка держалась здесь всегда, хотя
+       «горит» - это состояние (микрофон включён, меню открыто), а не
+       украшение. В шапке рядом стоят звезда и крестик, и карандаш
+       должен выглядеть так же, как они. */
+    ? { имя: 'ещё', текст: зн('точки'),
+        подсказка: 'Что сделать', делать: менюЧужого }
+    : { имя: 'правка', текст: зн('карандаш'),
+        подсказка: 'Редактировать', делать: правкаОкно });
+
+  ОКНО.шапку({ назад: уйтиВМеню, крест: true, кнопки: рядШапки });
+
+  /* Наведение на звезду — короткая карточка, как у имени продавца.
+     Кнопка уже есть в разметке, остаётся привязать. */
+  if (CW.продавец && номерЧеловека && ОКНО.кнопки && ОКНО.кнопки['рейтинг']) {
+    CW.продавец.привязатьЗначок(ОКНО.кнопки['рейтинг'], номерЧеловека);
+  }
+
+  внутри.innerHTML = '';
+  внутри.appendChild(лицо(false));
+
+  /* Имени может не быть — тогда на экране стоит UID, как в работающей
+     программе: «00001212331», а не «#1618». Номер один и тот же, просто
+     показан тем же видом, к которому человек привык. */
+  var имя = ок('div', 'про-имя');
+  имя.textContent = Я.display_name || номерUID();
+  внутри.appendChild(имя);
+
+  if (Я.username) {
+    внутри.appendChild(ок('div', 'про-ник', '@' + CW.безопасно(Я.username)));
+  }
+
+  var т = типПо(типСейчас());
+  var метка = ок('button', 'про-тип');
+  метка.innerHTML = зн(т.зн) + '<span>' + т.подпись + '</span>';
+  метка.style.margin = '14px auto 0';
+  внутри.appendChild(метка);
+
+  /* Статус живёт в личном хранилище. У чужого его не спросить, а
+     написать «В сети» наугад — значит соврать. */
+  if (!ЧУЖОЙ) {
+    var с = статусПо(Я.статус);
+    var строкаСтатуса = ок('div', 'про-статус',
+      '<span class="точка" style="background:' + с.цвет + '"></span>'
+      + '<span>' + с.подпись + '</span>');
+    внутри.appendChild(строкаСтатуса);
+  }
+
+  /* Три числа нажимаются: за ними общее окно со списками — подписки,
+     подписчики и лайки, с поиском по человеку и кнопкой подписки прямо
+     в строке. Прежде это были просто надписи, и посмотреть, кто
+     подписан, было негде. */
+  var счёты = ок('div', 'про-счёты');
+  [[Я.подписки, 'Подписки', 'подписки'],
+   [Я.подписчики, 'Подписчиков', 'подписчики'],
+   [Я.лайки, 'Лайки', 'лайки']]
+    .forEach(function (п) {
+      var б = ок('button', 'про-счёт',
+        '<div class="ч">' + кругло(п[0]) + '</div><div class="п">' + п[1] + '</div>');
+      б.type = 'button';
+      б.onclick = function () {
+        CW.открыть('people', { кто: Я.id, полка: п[2],
+                               имя: Я.display_name || номерUID() });
+      };
+      счёты.appendChild(б);
+    });
+  внутри.appendChild(счёты);
+
+  if (Я.опис) внутри.appendChild(ок('div', 'про-опис', CW.безопасно(Я.опис)));
+
+  /* Ссылки и адрес — часть бизнес-карточки. У публичного и скрытого их
+     быть не должно, даже если остались от прежнего выбора: человек
+     переключил тип, а на экране висит чужой адрес. */
+  var бизнес = (типСейчас() === 'business');
+
+  if (бизнес && Я.ссылки.length) {
+    var где = ок('div', 'про-ссылки');
+    Я.ссылки.forEach(function (а) {
+      var ссылка = document.createElement('a');
+      ссылка.className = 'про-ссылка';
+      ссылка.href = внешний(а);
+      ссылка.target = '_blank'; ссылка.rel = 'noopener';
+      ссылка.innerHTML = CW.значок('звено') + '<span>' + CW.безопасно(а) + '</span>';
+      где.appendChild(ссылка);
+    });
+    внутри.appendChild(где);
+  }
+
+  if (бизнес && Я.адрес) {
+    внутри.appendChild(ок('div', 'про-адрес',
+      зн('место') + '<span>' + CW.безопасно(Я.адрес) + '</span>'));
+  }
+
+  var вкладки = ок('div', 'про-вкладки');
+  [['short', 'Шортс', 'пуск'], ['post', 'Посты', 'клетки']].forEach(function (в) {
+    var б = ок('button', 'про-вкладка' + (вкладка === в[0] ? ' тут' : ''));
+    б.innerHTML = зн(в[2]) + '<span>' + в[1] + '</span>';
+    б.onclick = function () { вкладка = в[0]; портфолио(); };
+    вкладки.appendChild(б);
+  });
+  /* У историй вкладок «Шортс / Посты» нет: история не то и не другое,
+     и выбирать там нечего. */
+  if (фильтр !== 'истории') внутри.appendChild(вкладки);
+
+  var фильтры = ок('div', 'про-фильтры');
+  /* Кнопки «Мои публикации» здесь нет нарочно: свои публикации — это
+     и есть обычный вид портфолио, и отдельная кнопка «показать то, что
+     и так показано» только занимала место первой. Нажатая полка
+     гасится повторным нажатием — так и возвращаются свои.
+
+     Полок всегда три, и у себя, и у чужого. У чужого «Сохранённое»
+     открывается и честно говорит, что чужие закладки не показывает
+     никому: ручка /feed/saved всегда отдаёт список того, кто спросил.
+     Подставлять туда свои закладки нельзя — человек решил бы, что
+     видит чужие. */
+  [['репосты', 'повтор', 'Репосты'],
+   ['сохранённое', 'закладка', 'Сохранённое'],
+   ['истории', 'часы', 'Истории · сутки']].forEach(function (ф) {
+    var б = ок('button', 'про-фильтр' + (фильтр === ф[0] ? ' тут' : ''));
+    б.innerHTML = зн(ф[1]);
+    б.title = ф[2];
+    б.onclick = function () {
+      сменитьФильтр(фильтр === ф[0] ? 'мои' : ф[0]);
+    };
+    фильтры.appendChild(б);
+  });
+  if (фильтры.children.length) внутри.appendChild(фильтры);
+
+  var сетка = ок('div', 'про-сетка');
+  сетка.id = 'про-сетка';
+  внутри.appendChild(сетка);
+  нарисоватьСетку();
+}
+
+function сменитьФильтр(какой) {
+  фильтр = какой;
+
+  /* ── ИСТОРИИ ──
+     Истории лежат не в ленте, а в своей ручке (/stories) и живут сутки.
+     Поэтому спрашиваем их отдельно и только когда на них смотрят. */
+  if (какой === 'истории' && !Я.истории) {
+    портфолио();
+    ждём();
+    CW.спросить('/stories', { тихо: true }).then(function (д) {
+      /* Ручка отдаёт живые истории всех сразу, поэтому в чужом
+         портфолио берём ряд этого человека по номеру, а в своём —
+         помеченный сервером как свой. */
+      var чей = ((д && д.people) || []).filter(function (ч) {
+        return ЧУЖОЙ ? (String(ч.user_id) === String(КТО)) : ч.mine;
+      })[0];
+      Я.истории = (чей && чей.items) || [];
+      if (фильтр === 'истории') нарисоватьСетку();
+    }).catch(function () {
+      Я.истории = [];
+      if (фильтр === 'истории') нарисоватьСетку();
+    });
+    return;
+  }
+
+  /* У чужого закладок не спрашиваем вовсе: ответ был бы про меня. */
+  if (какой !== 'сохранённое' || ЧУЖОЙ || Я.сохранённые) { портфолио(); return; }
+
+  портфолио();
+  ждём();
+  CW.спросить('/feed/saved', { тихо: true }).then(function (д) {
+    Я.сохранённые = Array.isArray(д) ? д : [];
+    if (фильтр === 'сохранённое') нарисоватьСетку();
+  });
+}
+
+function ждём() {
+  var сетка = document.getElementById('про-сетка');
+  if (сетка) CW.ждём(сетка);
+}
+
+function отобранные() {
+  /* История — не шорт и не пост: вкладки к ней не применяются, и
+     сервер отдаёт её своим списком. */
+  if (фильтр === 'истории') return Я.истории || [];
+
+  if (фильтр === 'сохранённое' && ЧУЖОЙ) return [];
+  var ряды = фильтр === 'сохранённое' ? (Я.сохранённые || []) : Я.записи;
+  if (фильтр === 'репосты') {
+    ряды = ряды.filter(function (з) {
+      return з.repost_of || /^Репост от /.test(String(з.description || ''));
+    });
+  } else if (фильтр === 'мои') {
+    ряды = ряды.filter(function (з) { return !з.repost_of; });
+  }
+  return ряды.filter(function (з) {
+    var пост = String(з.post_type || '').toLowerCase();
+    var этоПост = пост !== '' && пост !== 'short';
+    return вкладка === 'post' ? этоПост : !этоПост;
+  });
+}
+
+function нарисоватьСетку() {
+  var сетка = document.getElementById('про-сетка');
+  if (!сетка) return;
+  var ряды = отобранные();
+  сетка.innerHTML = '';
+
+  if (!ряды.length) {
+    сетка.style.display = 'block';
+    сетка.appendChild(пустое());
+    return;
+  }
+  сетка.style.display = 'grid';
+
+  ряды.slice(0, 60).forEach(function (з) {
+    var к = ок('button', 'про-клетка');
+
+    /* Клетка истории: картинку берём прямо с ручки сторис, ролик
+       показываем первым кадром — браузер сам возьмёт его из метаданных,
+       нам остаётся попросить preload. Нажатие открывает её большой. */
+    if (фильтр === 'истории') {
+      var видео = (з.kind === 'video') || /video/.test(з.mime || '');
+      var адрес = CW.адрес + з.url;
+      к.innerHTML = видео
+        ? '<video muted playsinline preload="metadata" src="'
+          + CW.безопасно(адрес) + '#t=0.1"></video>'
+        : '<img loading="lazy" alt="" src="' + CW.безопасно(адрес) + '">';
+      к.innerHTML += '<span class="смотры">' + зн('часы', 11) + ' '
+                   + CW.безопасно(CW.остаток
+                       ? CW.остаток(часыПлюс(з.created_at, 24)) : 'сутки') + '</span>';
+      к.onclick = function () { смотретьИсторию(з); };
+      сетка.appendChild(к);
+      return;
+    }
+
+    var снимок = з.poster_url || з.image_url || з.file_url || '';
+    к.innerHTML = снимок
+      ? '<img loading="lazy" alt="" src="' + CW.безопасно(CW.файл(снимок)) + '">'
+      : '<span class="нет">' + CW.безопасно(
+          (з.title || з.description || 'Без названия').slice(0, 60)) + '</span>';
+    if (з.view_count) {
+      к.innerHTML += '<span class="смотры">' + зн('глазок', 11) + ' '
+                   + кругло(з.view_count) + '</span>';
+    }
+    к.onclick = function () { CW.уйти(CW.раздел('feed') + '?пост=' + з.id); };
+    сетка.appendChild(к);
+  });
+}
+
+/* Когда истории не станет: выложена плюс сутки. Сервер присылает время
+   рождения, а срок жизни один на всю программу. */
+function часыПлюс(когда, часов) {
+  var м = CW.миг(когда);
+  return new Date(м + часов * 3600000).toISOString();
+}
+
+/* Своя история во весь экран. То же окно, что в чатах, только здесь
+   оно открывается из клетки портфолио. */
+/* Историю показывает общее окно (modals/story.js) — то же самое, что
+   открывается из полосы в чатах. Здесь был свой показ в одну
+   картинку: без полосок кадров, без глазка «кто смотрел», без сердца
+   и разговора. Двух разных просмотров одной и той же истории в
+   программе быть не должно. */
+function смотретьИсторию(шт) {
+  var список = Я.истории || [];
+  var н = список.indexOf(шт);
+  CW.открыть('story', {
+    человек: {
+      user_id: ЧУЖОЙ ? КТО : (Я.id || ''),
+      display_name: Я.display_name || номерUID(),
+      avatar_ver: Я.avatar_ver || '',
+      mine: !ЧУЖОЙ,
+      items: список
+    },
+    кадр: н < 0 ? 0 : н
+  });
+}
+
+function пустое() {
+  var шорт = (вкладка === 'short');
+  var у = ок('div', 'про-пусто');
+  if (фильтр === 'истории') {
+    var и = ок('div', 'про-пусто');
+    и.innerHTML = '<div class="круг">' + зн('часы') + '</div>'
+                + '<div class="слово">Историй нет</div>'
+                + '<div class="под">История живёт сутки и пропадает сама.</div>';
+    return и;
+  }
+  if (фильтр === 'сохранённое' && ЧУЖОЙ) {
+    var з = ок('div', 'про-пусто');
+    з.innerHTML = '<div class="круг">' + зн('закладка') + '</div>'
+                + '<div class="слово">Чужие закладки не видны</div>'
+                + '<div class="под">Сохранённое видит только хозяин портфолио.</div>';
+    return з;
+  }
+  var слово = фильтр === 'сохранённое'
+    ? (шорт ? 'Нет сохранённых видео' : 'Нет сохранённых постов')
+    : фильтр === 'репосты'
+      ? (шорт ? 'Нет репостов видео' : 'Нет репостов')
+      : (шорт ? 'Нет коротких видео' : 'Нет постов');
+  /* «Опубликуй первое» — это разговор с собой. В чужом портфолио такая
+     строка советует человеку публиковать за другого. */
+  var под = (фильтр === 'мои' && !ЧУЖОЙ)
+    ? 'Опубликуй первое: оно появится здесь.' : '';
+  у.innerHTML = '<div class="круг">' + зн(шорт ? 'плёнка' : 'клетки') + '</div>'
+              + '<div class="слово">' + слово + '</div>'
+              + (под ? '<div class="под">' + под + '</div>' : '');
+  return у;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ОКНО ВТОРОЕ: РЕДАКТИРОВАТЬ
+   ═══════════════════════════════════════════════════════════════════════ */
+function правкаОкно() {
+  CW.гдеБыл({ окно: 'правка' });
+  var черновик = {
+    тип: типСейчас(),
+    статус: Я.статус,
+    имя: Я.display_name,
+    ник: Я.username,
+    опис: Я.опис,
+    ссылки: Я.ссылки.slice(),
+    адрес: Я.адрес,
+    uidВидно: Я.uidВидно
+  };
+  новоеЛицо = null;
+
+  /* Шапка пустая, как и в портфолио: ни значка, ни слов «Редактировать
+     / Портфолио» — что это правка, видно по полям под ней.
+
+     Выход один, крестиком, и уводит он НАЗАД В ПОРТФОЛИО, откуда сюда
+     и пришли. Отдельной кнопки «Portfolio →» больше нет: когда выход
+     один, он обязан вести туда, откуда пришли, иначе путь к портфолио
+     теряется совсем. */
+  ОКНО.шапку({
+    назад: закрытьПравку,
+    крест: true,
+    кнопки: [
+      { имя: 'сохранить', зн: 'сохранить', подсказка: 'Сохранить',
+        делать: function () { сохранитьТеперь(); } },
+      { имя: 'портфолио', зн: 'вправо', подсказка: 'К портфолио',
+        делать: function () { уйтиИзПравки(портфолио); } }
+    ]
+  });
+
+  внутри.innerHTML = '';
+  внутри.appendChild(лицо(true, черновик));
+
+  /* скрыть / показать UID */
+  var переключить = ок('button', 'пр-переключить');
+  внутри.appendChild(переключить);
+  var строкаUID = ок('div', 'пр-uid');
+  строкаUID.textContent = 'UID · ' + номерUID();
+  внутри.appendChild(строкаUID);
+
+  function нарисоватьUID() {
+    переключить.innerHTML = зн(черновик.uidВидно ? 'глаз' : 'глазнет')
+      + '<span>' + (черновик.uidВидно ? 'Скрыть UID' : 'Показать UID') + '</span>';
+    строкаUID.style.display = черновик.uidВидно ? 'block' : 'none';
+  }
+  переключить.onclick = function () {
+    черновик.uidВидно = !черновик.uidВидно; нарисоватьUID();
+  };
+  нарисоватьUID();
+
+  /* тип аккаунта */
+  внутри.appendChild(ок('div', 'пр-подпись', 'Тип аккаунта'));
+  var типы = ок('div', 'пр-типы');
+  внутри.appendChild(типы);
+
+  /* статус */
+  внутри.appendChild(ок('div', 'пр-подпись', 'Статус'));
+  var кнСтатус = ок('button', 'пр-статус');
+  var списокСтатусов = ок('div', 'пр-список');
+  внутри.appendChild(кнСтатус);
+  внутри.appendChild(списокСтатусов);
+
+  кнСтатус.onclick = function () { списокСтатусов.classList.toggle('видно'); };
+  СТАТУСЫ.forEach(function (с) {
+    var б = ок('button', 'пр-пункт' + (черновик.статус === с.имя ? ' тут' : ''));
+    б.innerHTML = '<span class="точка" style="background:' + с.цвет + '"></span>'
+                + '<span>' + с.подпись + '</span>';
+    б.onclick = function () {
+      черновик.статус = с.имя;
+      списокСтатусов.classList.remove('видно');
+      [].slice.call(списокСтатусов.children).forEach(function (д, и) {
+        д.classList.toggle('тут', СТАТУСЫ[и].имя === с.имя);
+      });
+      нарисоватьСтатус();
+    };
+    списокСтатусов.appendChild(б);
+  });
+
+  function нарисоватьСтатус() {
+    var с = статусПо(черновик.статус);
+    кнСтатус.innerHTML = '<span class="точка" style="background:' + с.цвет + '"></span>'
+      + '<span>' + с.подпись + '</span>'
+      + '<span class="стрелка">' + CW.значок('шеврон') + '</span>';
+    кнСтатус.querySelector('.стрелка svg').style.transform = 'rotate(180deg)';
+  }
+  нарисоватьСтатус();
+
+  /* поля, которые есть не у каждого типа */
+  var гнездоИмени = ок('div');     внутри.appendChild(гнездоИмени);
+  var гнездоНика = ок('div');      внутри.appendChild(гнездоНика);
+  var гнездоОписания = ок('div');  внутри.appendChild(гнездоОписания);
+  var гнездоБизнеса = ок('div');   внутри.appendChild(гнездоБизнеса);
+
+  /* Кнопок внизу нет: «Сохранить» стоит в шапке, где её видно всегда,
+     а «Отмена» потеряла смысл — правка уезжает сама. Остаётся одна
+     строка состояния: она говорит, сохранилось или нет. */
+  var весть = ок('div', 'весть');
+  внутри.appendChild(весть);
+
+  ТИПЫ.forEach(function (т) {
+    var б = ок('button', 'пр-тип' + (черновик.тип === т.имя ? ' тут' : ''));
+    б.innerHTML = зн(т.зн) + '<span>' + т.подпись + '</span>';
+    б.onclick = function () {
+      черновик.тип = т.имя;
+      [].slice.call(типы.children).forEach(function (д, и) {
+        д.classList.toggle('тут', ТИПЫ[и].имя === т.имя);
+      });
+      собратьПоля();
+      лицоВнутрь(черновик);
+    };
+    типы.appendChild(б);
+  });
+
+  собратьПоля();
+
+  /* Скрытому имя и описание не нужны: в том и смысл, что человека не
+     видно. Бизнесу наоборот — ему нужны ссылки и адрес. */
+  function собратьПоля() {
+    var вид = черновик.тип;
+
+    гнездоИмени.innerHTML = '';
+    if (вид !== 'hidden') {
+      гнездоИмени.appendChild(ок('div', 'пр-подпись', 'Имя'));
+      var имя = ок('div', 'пр-поле',
+        '<input id="пр-имя" maxlength="64" placeholder="Как тебя называть?">');
+      гнездоИмени.appendChild(имя);
+      имя.querySelector('input').value = черновик.имя || '';
+      имя.querySelector('input').oninput = function () { черновик.имя = this.value; };
+    }
+
+    гнездоНика.innerHTML = '';
+    гнездоНика.appendChild(ок('div', 'пр-подпись', '@username'));
+    var ник = ок('div', 'пр-поле пр-ник',
+      '<span class="собака">@</span>'
+      + '<input id="пр-ник" maxlength="24" placeholder="твой_ник" '
+      + 'autocomplete="off" spellcheck="false">');
+    гнездоНика.appendChild(ник);
+    ник.querySelector('input').value = черновик.ник || '';
+    ник.querySelector('input').oninput = function () {
+      this.value = this.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+      черновик.ник = this.value;
+    };
+
+    гнездоОписания.innerHTML = '';
+    if (вид !== 'hidden') {
+      var предел = (вид === 'business') ? 1500 : 400;
+      if ((черновик.опис || '').length > предел) {
+        черновик.опис = черновик.опис.slice(0, предел);
+      }
+      var шапка = ок('div', 'пр-подпись',
+        'Описание <span class="тихо">до ' + предел + ' символов</span>');
+      гнездоОписания.appendChild(шапка);
+      var опис = ок('div', 'пр-поле',
+        '<textarea id="пр-опис" maxlength="' + предел + '" placeholder="'
+        + (вид === 'business' ? 'Опишите ваш бизнес'
+                              : 'Пару слов о себе…') + '"></textarea>');
+      гнездоОписания.appendChild(опис);
+      var счётчик = ок('div', 'пр-счётчик');
+      гнездоОписания.appendChild(счётчик);
+
+      var поле = опис.querySelector('textarea');
+      поле.value = черновик.опис || '';
+      var показать = function () {
+        счётчик.textContent = поле.value.length + '/' + предел;
+      };
+      поле.oninput = function () { черновик.опис = поле.value; показать(); };
+      показать();
+    }
+
+    гнездоБизнеса.innerHTML = '';
+    if (вид === 'business') собратьБизнес();
+  }
+
+  function собратьБизнес() {
+    гнездоБизнеса.appendChild(ок('div', 'пр-подпись',
+      CW.значок('звено') + ' Ссылки <span class="тихо">до 5 штук</span>'));
+
+    var где = ок('div');
+    гнездоБизнеса.appendChild(где);
+
+    var добавить = ок('button', 'пр-добавить');
+    добавить.textContent = '＋  Добавить ссылку';
+    добавить.onclick = function () {
+      if (черновик.ссылки.length >= 5) { CW.сказать('Больше пяти ссылок нельзя'); return; }
+      черновик.ссылки.push('');
+      нарисоватьСсылки();
+    };
+    гнездоБизнеса.appendChild(добавить);
+
+    гнездоБизнеса.appendChild(ок('div', 'пр-подпись', зн('место') + ' Адрес'));
+    var адрес = ок('div', 'пр-поле',
+      '<input id="пр-адрес" maxlength="200" placeholder="Город, улица или онлайн">');
+    гнездоБизнеса.appendChild(адрес);
+    адрес.querySelector('input').value = черновик.адрес || '';
+    адрес.querySelector('input').oninput = function () { черновик.адрес = this.value; };
+
+    нарисоватьСсылки();
+
+    function нарисоватьСсылки() {
+      где.innerHTML = '';
+      черновик.ссылки.forEach(function (а, и) {
+        var строка = ок('div', 'пр-ссылка-строка',
+          '<input maxlength="200" placeholder="https://…">'
+          + '<button class="пр-убрать" title="Убрать">✕</button>');
+        var поле = строка.querySelector('input');
+        поле.value = а;
+        поле.oninput = function () { черновик.ссылки[и] = поле.value; };
+        строка.querySelector('button').onclick = function () {
+          черновик.ссылки.splice(и, 1); нарисоватьСсылки();
+        };
+        где.appendChild(строка);
+      });
+      добавить.style.display = черновик.ссылки.length >= 5 ? 'none' : 'block';
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     САМОСОХРАНЕНИЕ
+
+     Человек меняет поле и уходит — правка должна остаться. Поэтому
+     черновик каждые полторы секунды сверяется со слепком того, что уже
+     уехало, и, если разошёлся, уезжает сам.
+
+     Сверяем слепок, а не подписываемся на события полей: событий в этой
+     форме два десятка — тип, статус, имя, ник, описание, адрес, ссылки,
+     UID, снимок, — и каждый следующий пункт пришлось бы не забыть
+     подписать. Забыли бы на третьем, и поле молча перестало бы
+     сохраняться.
+
+     Часы останавливаются сами, когда окно сменилось: признак — строка
+     состояния, вырванная из разметки вместе со всей формой.          */
+  var слепок = слепокПравки();
+  var идёт = false;
+
+  var часы = setInterval(function () {
+    if (!весть.isConnected) { clearInterval(часы); return; }
+    if (идёт) return;
+    var с = слепокПравки();
+    if (с === слепок) return;
+    слепок = с;
+    идёт = true;
+    сохранитьВсё(черновик, весть, null, true)
+      .then(function () { идёт = false; })
+      .catch(function () { идёт = false; слепок = ''; });
+  }, 1500);
+
+  function слепокПравки() {
+    return JSON.stringify(черновик) + '|' + (новоеЛицо || '');
+  }
+
+  /* Нажали «Сохранить» руками — говорим вслух и обновляем экран. */
+  function сохранитьТеперь() {
+    слепок = слепокПравки();
+    return сохранитьВсё(черновик, весть, ОКНО.кнопки['сохранить'], false);
+  }
+
+  /* Уходим — дописываем то, что не успели часы, и только потом уводим:
+     правка, пропавшая при выходе, — худшее, что может сделать форма. */
+  function уйтиИзПравки(куда) {
+    clearInterval(часы);
+    if (слепокПравки() === слепок) { куда(); return; }
+    весть.className = 'весть ждём';
+    весть.textContent = 'Сохраняю…';
+    сохранитьВсё(черновик, весть, null, true).then(куда).catch(куда);
+  }
+
+  function закрытьПравку() { уйтиИзПравки(уйтиВМеню); }
+}
+
+/* Номер на людях выдаёт сервер: четыре нуля и семь цифр вразнобой.
+   Раньше здесь стоял собственный id в нулях — 00000000004, — и по нему
+   было видно, что ты четвёртый человек в мире. Своего номера не
+   придумываем: его единственный хозяин — база. */
+function номерUID() { return Я.uid || '-'; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ЛИЦО
+   ═══════════════════════════════════════════════════════════════════════ */
+function лицо(сПравкой, черновик) {
+  var естьИстория = !сПравкой && (Я.истории || []).length;
+  var у = ок('div', 'лицо-кольцо' + (сПравкой ? ' мал' : '')
+                  + (естьИстория ? ' сИсторией' : ''));
+  у.id = 'лицо-кольцо';
+  у.innerHTML = '<div class="внутри"></div>';
+
+  /* Выложил историю — на кружке лица видно глазок, и он её открывает.
+     Прежде на этой странице о выложенной истории не говорило ничего:
+     человек выкладывал и не понимал, дошло ли. */
+  if (естьИстория) {
+    var г = ок('button', 'глазок');
+    г.type = 'button';
+    г.title = (Я.истории.length > 1)
+      ? ('Смотреть истории · ' + Я.истории.length) : 'Смотреть историю';
+    г.innerHTML = зн('глазок');
+    г.onclick = function (е) {
+      е.stopPropagation();
+      смотретьИсторию(Я.истории[0]);
+    };
+    у.appendChild(г);
+  }
+  if (сПравкой) {
+    var б = ок('button', 'правка');
+    б.innerHTML = зн('карандаш');
+    б.title = 'Сменить фото';
+    б.onclick = выбратьЛицо;
+    у.appendChild(б);
+  }
+  setTimeout(function () { лицоВнутрь(черновик); }, 0);
+  return у;
+}
+
+/* Человек на этой странице сменил снимок — хоть сам, хоть в другом
+   окне, хоть это чужое портфолио и снимок сменил его хозяин. Склад
+   лиц говорит об этом событием, кольцо перерисовывается само. */
+document.addEventListener('cw-лицо', function (е) {
+  var чьё = (е && е.detail && String(е.detail.кто)) || '';
+  if (!чьё || !Я.id || String(Я.id) !== чьё) return;
+  var з = (CW.лица && CW.лица.узнать(чьё)) || null;
+  if (з) Я.avatar_url = з.адрес || Я.avatar_url;
+  лицоВнутрь(null);
+});
+
+/* Один хозяин у кружка: картинка встаёт только загруженной, иначе
+   остаётся значок. Пустого чёрного круга не бывает. */
+function лицоВнутрь(черновик) {
+  var где = document.querySelector('#лицо-кольцо .внутри');
+  if (!где) return;
+  var вид = черновик ? черновик.тип : типСейчас();
+
+  var адрес = новоеЛицо || Я.avatar_url;
+  /* Своего поля не хватило: у чужого портфолио сервер отдаёт короткую
+     метку версии вместо адреса. Куда смотреть за снимком, знает склад
+     лиц — один на всю программу. */
+  if (!адрес && CW.лица && Я.id) {
+    CW.лица.знать(Я.id, Я.avatar_url, Я.avatar_ver);
+    адрес = CW.лица.ссылка(Я.id);
+  }
+
+  /* ── ПОЧЕМУ КОЛЬЦО НЕ ОЧИЩАЕТСЯ СРАЗУ ──
+     Прежде первой строкой сюда клался значок, и только потом грузилась
+     картинка. Из-за этого при выборе нового снимка в кольце на долю
+     секунды мигал прежний значок: сначала стёрли всё, потом ждали
+     картинку. Теперь старое содержимое остаётся на месте до тех пор,
+     пока новое не готово, и подмены не видно. */
+  if (!адрес) { положить(зн(вид === 'hidden' ? 'призрак' : 'человек')); return; }
+
+  /* Картинка это или смайл — решает общая проверка из shared/ui.js:
+     так же её читают полоса разделов, мир и кружок в списках. */
+  if (!CW.картинкаЛи(адрес)) {
+    /* Смайл красим фильтром, как значок куба: цветом текста картинке в
+       шрифте не укажешь. */
+    var ц = новыйЦвет || Я.avatar_color || '';
+    положить('<span style="font-size:2rem'
+           + (ц && CW.тонЗнака ? ';filter:' + CW.тонЗнака(ц) : '')
+           + '">' + CW.безопасно(адрес) + '</span>');
+    return;
+  }
+
+  /* Лицо может быть и роликом: тогда в кольце живое видео — без звука,
+     само собой и по кругу. Признак ролика один на всю программу и
+     лежит в складе лиц (shared/лица.js). */
+  if (CW.видеоЛи && CW.видеоЛи(адрес)) {
+    var в = document.createElement('video');
+    в.muted = true; в.loop = true; в.autoplay = true; в.playsInline = true;
+    в.setAttribute('muted', ''); в.setAttribute('playsinline', '');
+    в.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
+    в.onloadeddata = function () {
+      где.innerHTML = '';
+      где.appendChild(в);
+      var игра = в.play();
+      if (игра && игра.catch) игра.catch(function () {});
+    };
+    в.onerror = function () {
+      if (!где.querySelector('video')) положить(зн(вид === 'hidden' ? 'призрак' : 'человек'));
+    };
+    в.src = CW.файл(адрес);
+    return;
+  }
+
+  var и = new Image();
+  и.onload = function () { где.innerHTML = ''; где.appendChild(и); };
+  /* Не загрузилась — пусть лучше стоит значок, чем пустое кольцо. */
+  и.onerror = function () {
+    if (!где.querySelector('img')) положить(зн(вид === 'hidden' ? 'призрак' : 'человек'));
+  };
+  и.src = CW.файл(адрес);
+  if (и.complete && и.naturalWidth > 0) и.onload();
+
+  function положить(разметка) {
+    if (где.innerHTML === разметка) return;   /* то же самое — не мигаем */
+    где.innerHTML = разметка;
+  }
+}
+
+
+/* Снимок ужимаем до 640 точек прямо в браузере. Сервер принимает
+   512 КБ строкой, и снимок с телефона в неё не влезает — без этого
+   половина попыток сменить фото кончалась отказом. */
+/* Поле выбора снимка стоит в разметке с самого начала и живёт там всё
+   время. Так надёжнее, чем создавать его на каждое нажатие: поле,
+   которого нет в разметке, в части браузеров молча не сообщает о
+   выборе — человек выбирает снимок, а ничего не происходит. */
+var полеЛица = document.createElement('input');
+полеЛица.type = 'file';
+полеЛица.accept = 'image/*';
+полеЛица.id = 'выбор-лица';
+полеЛица.style.cssText =
+  'position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
+document.body.appendChild(полеЛица);
+
+полеЛица.onchange = function () {
+  var ф = полеЛица.files && полеЛица.files[0];
+  полеЛица.value = '';
+  if (!ф) return;
+  ужать(ф, 640).then(function (строка) {
+    новоеЛицо = строка;
+    лицоВнутрь(null);
+    CW.сказать('Фото выбрано. Не забудь «Сохранить»');
+  }).catch(function () { CW.сказать('Эту картинку прочитать не вышло'); });
+};
+
+/* ── ЛИЦО: СМАЙЛ ИЛИ СВОЁ ФОТО ──
+   Карандаш открывает общее окно выбора — shared/выбор-знака.js, то
+   самое, что у иконки куба и значка группы: восемь полок со смайлами,
+   «Картинка» для своего снимка. Раньше карандаш сразу открывал выбор
+   файла, и выбрать смайл было негде, хотя сервер их принимает (лицо
+   лежит строкой: короткая строка — смайл, длинная — картинка).
+
+   Окно то же самое, что у значка куба: полки смайлов, «Картинка» и
+   ряд цветов. Цвет теперь есть куда класть — сервер помнит его у
+   человека полем avatar_color. */
+function выбратьЛицо() {
+  CW.нужен('shared/выбор-знака.js').then(function () {
+    CW.выборЗнака({
+      заголовок: 'Иконка Портфолио',
+      знак: (новоеЛицо && новоеЛицо.length <= 8) ? новоеЛицо : '',
+      цвет: новыйЦвет || Я.avatar_color || '',
+      цвета: true,
+      фото: true,
+      видео: true,
+      сторона: 640,
+      потом: function (о) {
+        if (о.цвет) новыйЦвет = о.цвет;
+        var что = о.фото || о.значок;
+        if (что) новоеЛицо = что;
+        лицоВнутрь(null);
+        CW.сказать('Иконка выбрана. Не забудь «Сохранить»');
+      }
+    });
+  }).catch(function () { полеЛица.click(); });
+}
+
+/* Ужатие картинки живёт в shared/ui.js: одна на профиль, обложку,
+   значок куба и обои. Здесь был свой такой же кусок, и он считал
+   сторону иначе — картинка «лёжа» выходила разного размера в разных
+   окнах. */
+function ужать(файл, сторона) { return CW.ужать(файл, сторона, 0.86); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   СОХРАНЕНИЕ.
+
+   Три разных места, и каждое отвечает за своё:
+     PATCH /me          — имя, лицо, тип (публичный или скрытый);
+     POST /me/username  — @username, у него свой ответ про занятость;
+     POST /me/prefs     — статус, описание, ссылки, адрес, пометка
+                          «бизнес» и «показывать ли UID».
+   ═══════════════════════════════════════════════════════════════════════ */
+/* тихо:true — сохранение само, без голоса и без пересборки экрана:
+   часы самосохранения не должны дёргать поля под руками у человека. */
+function сохранитьВсё(черновик, весть, кнопка, тихо) {
+  var ник = String(черновик.ник || '').trim();
+  if (ник && !/^[a-z0-9_]{4,24}$/.test(ник)) {
+    весть.className = 'весть плохо';
+    весть.textContent = 'Юзернейм: от 4 до 24 знаков, только a-z, цифры и _';
+    return Promise.reject(new Error('ник'));
+  }
+
+  if (кнопка) кнопка.disabled = true;
+  if (!тихо) {
+    весть.className = 'весть ждём';
+    весть.textContent = 'Сохраняю…';
+  }
+
+  var тело = { account_type: черновик.тип === 'hidden' ? 'hidden' : 'public' };
+  if (черновик.тип !== 'hidden') тело.display_name = String(черновик.имя || '').trim();
+  if (новоеЛицо) тело.avatar_url = новоеЛицо;
+  if (новыйЦвет) тело.avatar_color = новыйЦвет;
+
+  var метка = Date.now();
+  var вХранилище = {};
+  вХранилище[КЛЮЧИ.статус]   = { v: черновик.статус, t: метка };
+  вХранилище[КЛЮЧИ.опис]     = { v: черновик.опис || '', t: метка };
+  вХранилище[КЛЮЧИ.адрес]    = { v: черновик.адрес || '', t: метка };
+  вХранилище[КЛЮЧИ.бизнес]   = { v: черновик.тип === 'business' ? 'да' : 'нет', t: метка };
+  вХранилище[КЛЮЧИ.uidвидно] = { v: черновик.uidВидно ? 'да' : 'нет', t: метка };
+  вХранилище[КЛЮЧИ.ссылки]   = {
+    v: JSON.stringify(черновик.ссылки.filter(function (а) { return String(а).trim(); })),
+    t: метка
+  };
+
+  return CW.спросить('/me', { способ: 'PATCH', тело: тело, сроком: 30000 })
+    .then(function () {
+      if (!ник || ник === Я.username) return null;
+      return CW.спросить('/me/username', { способ: 'POST', тело: { username: ник } });
+    })
+    .then(function () {
+      return CW.спросить('/me/prefs', { способ: 'POST', тело: { prefs: вХранилище } });
+    })
+    .then(function () {
+      /* Полоса наверху живёт своей памятью — ей надо сказать, что
+         снимок сменился, иначе прежний кружок висит до перезагрузки. */
+      if (новоеЛицо) CW.обновитьЛицо(новоеЛицо, новыйЦвет || Я.avatar_color);
+      else if (новыйЦвет && Я.avatar_url) CW.обновитьЛицо(Я.avatar_url, новыйЦвет);
+      /* Склад лиц — чтобы кружки в ленте, чатах и группах сменились
+         тем же мгновением, а не после перезагрузки. Другим людям про
+         смену скажет сервер, сам, письмом profile_changed. */
+      if (новоеЛицо && CW.лица) CW.лица.сменилось(Я.id, новоеЛицо, '');
+      if (новыйЦвет) { Я.avatar_color = новыйЦвет; новыйЦвет = null; }
+      новоеЛицо = null;
+      if (кнопка) кнопка.disabled = false;
+      весть.className = 'весть хорошо';
+      весть.textContent = 'Сохранено';
+
+      if (тихо) {
+        /* Что уехало — то и считаем своим, иначе следующее тихое
+           сохранение снова отправит ник, который уже занят нами же. */
+        if (ник) Я.username = ник;
+        if (тело.display_name != null) Я.display_name = тело.display_name;
+        Я.account_type = тело.account_type;
+        return;
+      }
+      CW.сказать('Профиль сохранён');
+      собрать();
+    })
+    .catch(function (е) {
+      if (кнопка) кнопка.disabled = false;
+      весть.className = 'весть плохо';
+      весть.textContent = е && е.сеть ? 'Нет связи с сервером'
+                                      : ((е && е.message) || 'Не сохранилось');
+      throw е;
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   МЕЛОЧЬ
+   ═══════════════════════════════════════════════════════════════════════ */
+/* Выход из профиля — в общее меню. Раньше здесь стоял «шаг назад по
+   истории»: открыл профиль из профиля — и стрелка возвращала в него же.
+   Уходим туда, откуда пришли, а если неизвестно — в ленту.
+   Саму стрелку рисует каркас окна; сюда он приходит за тем, КУДА идти. */
+function уйтиВМеню() {
+  /* Сначала — точный адрес, откуда пришли: переписка с этим человеком,
+     окно группы, лента. Его кладёт CW.вПортфолио (shared/ui.js) в тот
+     же миг, когда уводит сюда. Прежде помнился только раздел, и
+     человек, открывший портфолио из переписки, возвращался в общий
+     список чатов, а то и в маркетплейс — туда, где был до этого. */
+  var точный = CW.откудаПришли ? CW.откудаПришли() : '';
+  if (точный && точный.indexOf('profile.html') < 0) { CW.уйти(точный); return; }
+
+  var куб = CW.какойКуб();
+  var откуда = '';
+  try { откуда = sessionStorage.getItem('cw_откуда') || ''; } catch (е) {}
+  var ладно = /^(feed|chats|groups|signals|market|earn|wallet|stats|refs)$/;
+  var имя = ладно.test(откуда) ? откуда : 'feed';
+  CW.уйти(CW.раздел(имя, куб));
+}
+
+function внешний(а) {
+  а = String(а || '').trim();
+  return /^https?:\/\//i.test(а) ? а : 'https://' + а;
+}
+
+function кругло(ч) {
+  ч = Number(ч) || 0;
+  if (ч >= 1000000) return (ч / 1000000).toFixed(1).replace('.0', '') + 'M';
+  if (ч >= 1000) return (ч / 1000).toFixed(1).replace('.0', '') + 'K';
+  return String(ч);
+}
+
+function ок(тег, класс, внутри) { return CW.элВ(тег, класс, внутри); }
+
+});
+</script>
+</body>
+</html>

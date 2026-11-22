@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Аналитика · CubeWorld</title>
+<meta name="theme-color" content="#01010c">
+<link rel="icon" href="icons/favicon.svg?v=20261122-363">
+<link rel="stylesheet" href="shared/style.css?v=20261122-363">
+<link rel="stylesheet" href="shared/window.css?v=20261122-363">
+<link rel="stylesheet" href="shared/account.css?v=20261122-363">
+<script src="shared/theme.js?v=20261122-363"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261122-363">
+<!--
+  АНАЛИТИКА КУБА.
+
+  Всё с одного запроса: /cubes/{id}/analytics. Оттуда же берутся и
+  подписи под числами — «сегодня новых нет» или «сегодня +3» решает не
+  разметка, а ответ сервера.
+
+  Две вещи, из-за которых этот экран нельзя было взять первым:
+
+  1. Он закрыт тарифом. Сервер отвечает 402 и говорит, каким именно
+     («Аналитика куба — в Сильвер и Голд»). Код 402 выбран на сервере
+     нарочно, чтобы отличать «не хватает тарифа» от «ошиблись»: ловим
+     его отдельно и показываем спокойный экран со ссылкой на тарифы, а
+     не красную ошибку.
+
+  2. На бесплатном ключе его нечем проверить, поэтому проверялся он
+     на стенде, где пределы тарифов выключены.
+
+  Столбики за неделю рисуются из days[] и ничего не выдумывают: нет
+  дней — так и написано, что за неделю ничего не происходило.
+-->
+<style>
+/* ── четыре числа ────────────────────────────────────────────────── */
+/* Четыре числа стоят в один ряд, как в работающей программе. При
+   auto-fit они разваливались на 3+1: рама уже экрана, и четвёртой
+   карточке не хватало 190 точек. */
+/* Ячейки чисел ровно как в боевой: поменьше и поплотнее. Числа там
+   26 точек, подпись 10.5, зазор 11 — глаз охватывает все четыре разом,
+   а не бегает по четырём большим коробкам. */
+.числа{
+  display:grid; gap:11px; margin-bottom:22px;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+}
+@media (max-width:1100px){ .числа{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:560px){ .числа{ grid-template-columns:1fr; } }
+.число{
+  background:var(--окно); border:1px solid var(--край);
+  border-radius:var(--радиус); padding:15px;
+}
+.число .знак{ display:flex; margin-bottom:7px; }
+.число .знак svg{ width:24px; height:24px; }
+.число .значение{
+  font-size:26px; font-weight:800; letter-spacing:-.03em; line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.число .значение.пусто{ color:var(--текст3); }
+.число .подпись{ margin-top:4px; font-size:10.5px; color:var(--текст2); }
+.число .тихо{ margin-top:4px; font-size:10px; font-weight:700; color:var(--текст3); }
+
+/* ── столбики за неделю ──────────────────────────────────────────── */
+.неделя{
+  background:var(--окно); border:1px solid var(--край);
+  border-radius:var(--радиус); padding:20px; margin-bottom:30px;
+}
+.столбики{
+  display:flex; align-items:flex-end; gap:10px; height:132px; margin-bottom:10px;
+}
+.столбик{ flex:1; display:flex; flex-direction:column; justify-content:flex-end;
+  height:100%; gap:6px; }
+.столбик i{
+  display:block; border-radius:5px 5px 2px 2px; min-height:3px;
+  background:linear-gradient(180deg,#60a5fa,#2563eb);
+}
+.столбик .сколько{ font-size:0.7667rem; text-align:center; color:var(--текст2);
+  font-variant-numeric:tabular-nums; }
+.дни{ display:flex; gap:10px; }
+.дни span{ flex:1; text-align:center; font-size:0.7667rem; color:var(--текст3); }
+
+/* ── топ участников ──────────────────────────────────────────────── */
+.топ{ border:1px solid var(--край); border-radius:var(--радиус);
+  overflow:hidden; background:var(--окно); }
+.участник{
+  display:flex; align-items:center; gap:13px;
+  padding:14px 17px; border-bottom:1px solid var(--край);
+}
+.участник:last-child{ border-bottom:none; }
+.участник .место{
+  width:28px; flex:0 0 28px; text-align:center; font-weight:700;
+  font-size:0.8667rem; color:var(--текст3);
+}
+.участник.первый .место{ color:var(--жёлтый); }
+.участник .лицо{
+  width:36px; height:36px; flex:0 0 36px; border-radius:50%;
+  background:linear-gradient(140deg,#2a3356,#1b2340); color:var(--сирень);
+  display:flex; align-items:center; justify-content:center; font-size:0.9333rem;
+}
+.участник .лицо svg{ width:17px; height:17px; }
+.участник .имя{ font-size:0.9667rem; }
+.участник .чем{ font-size:0.8333rem; color:var(--текст3); margin-top:2px; }
+.участник .всего{
+  margin-left:auto; font-weight:700; font-variant-numeric:tabular-nums;
+}
+.участник.я{ background:rgba(0,153,255,.06); }
+.участник.я .имя::after{
+  content:' · это ты'; color:var(--синий); font-size:0.8rem; font-weight:600;
+}
+
+/* ── закрыто тарифом ─────────────────────────────────────────────── */
+.закрыто{
+  background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(251,191,36,.02));
+  border:1px solid rgba(251,191,36,.35);
+  border-radius:16px; padding:30px; text-align:center;
+}
+.закрыто .знак{ display:flex; justify-content:center; color:var(--жёлтый);
+  margin-bottom:16px; }
+.закрыто .знак svg{ width:30px; height:30px; }
+.закрыто h2{ margin:0 0 9px; font-size:1.2667rem; font-weight:700; }
+.закрыто p{ margin:0 0 22px; font-size:0.9333rem; line-height:1.7; color:var(--текст2); }
+</style>
+</head>
+<body>
+
+<script src="shared/api.js?v=20261122-363"></script>
+<script src="shared/ui.js?v=20261122-363"></script>
+<script src="shared/смайлы.js?v=20261122-363"></script>
+<script src="shared/лица.js?v=20261122-363"></script>
+<script src="shared/эфир.js?v=20261122-363"></script>
+<script src="shared/icons.js?v=20261122-363"></script>
+<script src="shared/window.js?v=20261122-363"></script>
+<script src="shared/без-копий.js?v=20261122-363"></script>
+<script src="shared/time.js?v=20261122-363"></script>
+<script src="shared/auth.js?v=20261122-363"></script>
+<script src="shared/account.js?v=20261122-363"></script>
+<script src="shared/shell.js?v=20261122-363"></script>
+<script>
+'use strict';
+
+CW.оболочка('stats').then(function (место) {
+
+var куб = CW.какойКуб();
+
+var шапка = CW.заглавие(место, { имя: 'Аналитика куба' });
+
+var тело = document.createElement('div');
+место.appendChild(тело);
+CW.ждём(тело);
+
+if (!куб) {
+  тело.innerHTML = '<div class="беда">Не понятно, про какой куб считать. '
+                 + 'Зайди в куб из мира.</div>';
+} else {
+  спросить();
+}
+
+function спросить() {
+  CW.спросить('/cubes/' + куб + '/analytics', { сроком: 20000 })
+    .then(показать)
+    .catch(function (е) {
+      тело.innerHTML = '';
+      if (е.код === 402) { тело.appendChild(кускомЗакрыто(е.message)); return; }
+      var б = document.createElement('div');
+      б.className = 'беда';
+      б.textContent = е.сеть ? 'Нет связи с сервером'
+                   : е.код === 403 ? 'Этот куб не твой: аналитика закрыта'
+                   : (е.message || 'Не вышло посчитать');
+      тело.appendChild(б);
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ОТРИСОВКА
+   ═══════════════════════════════════════════════════════════════════════ */
+function кусок(класс, внутри) { return CW.кусок(класс, внутри); }
+
+function показать(д) {
+  д = д || {};
+  тело.innerHTML = '';
+
+  /* Живой огонёк ставим в заглавие только когда данные пришли: иначе он
+     горел бы и на пустом экране. */
+  if (!шапка.querySelector('.об-живое')) {
+    var ж = кусок('об-живое', '<span class="точка"></span>Live');
+    шапка.appendChild(ж);
+  }
+
+  тело.appendChild(кускомЧисла(д));
+  тело.appendChild(кусок('раздел', 'Активность за 7 дней'));
+  тело.appendChild(кускомНеделя(д));
+  тело.appendChild(кусок('раздел',
+      '<span class="знак">' + CW.значок('кубок') + '</span>Топ участников куба'));
+  тело.appendChild(кускомТоп(д));
+}
+
+function кускомЧисла(д) {
+  var сейчас = Number(д.online_now || 0);
+  var всего  = Number(д.members_total || 0);
+  var посты  = Number(д.posts || 0);
+  var сегодня= Number(д.posts_today || 0);
+  var сообщ  = Number(д.messages || 0);
+  var заЧас  = Number(д.messages_hour || 0);
+  var неделя = Number(д.new_week || 0);
+  var новыеЧас = Number(д.new_hour || 0);
+
+  var ряды = [
+    { зн: 'люди', цвет: 'var(--зелёный)', знач: сейчас,
+      имя: 'Участников сейчас',
+      тихо: 'всего ' + всего + ' ' + склонение(всего, 'участник', 'участника', 'участников') },
+    { зн: 'лист', цвет: 'var(--синий)', знач: посты,
+      имя: 'Постов в кубе',
+      тихо: сегодня ? 'сегодня +' + сегодня : 'сегодня новых нет' },
+    { зн: 'речь', цвет: '#22d3ee', знач: сообщ,
+      имя: 'Сообщений всего',
+      тихо: заЧас ? 'за час +' + заЧас : 'за час тихо' },
+    { зн: 'человек', цвет: 'var(--сирень)', знач: неделя,
+      имя: 'Новых за неделю',
+      тихо: новыеЧас ? 'за час +' + новыеЧас : 'за час никто не заходил' }
+  ];
+
+  var где = кусок('числа');
+  ряды.forEach(function (р) {
+    где.appendChild(кусок('число',
+        '<div class="знак" style="color:' + р.цвет + '">' + CW.значок(р.зн) + '</div>'
+      + '<div class="значение' + (р.знач ? '' : ' пусто') + '">'
+      +   р.знач.toLocaleString('ru') + '</div>'
+      + '<div class="подпись">' + р.имя + '</div>'
+      + '<div class="тихо">' + CW.безопасно(р.тихо) + '</div>'));
+  });
+  return где;
+}
+
+function склонение(н, од, дв, мн) {
+  return CW.склонение(н, од, дв, мн);
+}
+
+/* ── столбики за неделю ── */
+function кускомНеделя(д) {
+  /* Сервер присылает только те дни, в которые что-то было. Неделю
+     достраиваем сами: иначе один-единственный день растягивался на всю
+     ширину и выглядел как сплошная заливка, а не как столбик. */
+  var дни = заполнитьНеделю(д.days || []);
+  var было = дни.some(function (т) { return Number(т.n || 0) > 0; });
+
+  if (!дни.length || !было) {
+    return кусок('неделя',
+      '<div class="пусто-строка" style="padding:18px 0">'
+      + 'За неделю в кубе ничего не происходило.</div>');
+  }
+
+  var верх = Math.max.apply(null, дни.map(function (т) { return Number(т.n || 0); })) || 1;
+
+  var столбики = дни.map(function (т) {
+    var н = Number(т.n || 0);
+    var в = Math.round(н * 100 / верх);
+    return '<div class="столбик">'
+         +   '<span class="сколько">' + (н || '') + '</span>'
+         +   '<i style="height:' + Math.max(3, в) + '%"></i>'
+         + '</div>';
+  }).join('');
+
+  var подписи = дни.map(function (т) {
+    return '<span>' + подписьДня(т.d) + '</span>';
+  }).join('');
+
+  return кусок('неделя',
+      '<div class="столбики">' + столбики + '</div>'
+    + '<div class="дни">' + подписи + '</div>');
+}
+
+function заполнитьНеделю(пришли) {
+  var по = {};
+  пришли.forEach(function (т) { по[т.d] = Number(т.n || 0); });
+
+  var ряд = [], сейчас = new Date();
+  for (var и = 6; и >= 0; и--) {
+    var д = new Date(сейчас.getTime() - и * 86400000);
+    var ключ = д.getFullYear() + '-'
+             + ('0' + (д.getMonth() + 1)).slice(-2) + '-'
+             + ('0' + д.getDate()).slice(-2);
+    ряд.push({ d: ключ, n: по[ключ] || 0 });
+  }
+  return ряд;
+}
+
+function подписьДня(с) {
+  var ч = String(с || '').split('-');
+  return ч.length === 3 ? ч[2] + '.' + ч[1] : с;
+}
+
+/* ── топ участников ── */
+function кускомТоп(д) {
+  var люди = д.top || [];
+  var где = кусок('топ');
+
+  if (!люди.length) {
+    где.innerHTML = '<div class="пусто-строка">'
+      + 'В этом кубе ещё никто ничего не написал.<br>'
+      + 'Первый пост или сообщение: и список оживёт.</div>';
+    return где;
+  }
+
+  var ктоЯ = (CW.ясныйЯ() || {}).id;
+
+  люди.forEach(function (ч, и) {
+    var посты = Number(ч.posts || 0), сообщ = Number(ч.messages || 0);
+    var чем = [];
+    if (посты) чем.push(посты + ' ' + склонение(посты, 'пост', 'поста', 'постов'));
+    if (сообщ) чем.push(сообщ + ' ' + склонение(сообщ, 'сообщение', 'сообщения', 'сообщений'));
+
+    где.appendChild(кусок('участник'
+        + (и === 0 ? ' первый' : '')
+        + (ктоЯ && ч.user_id === ктоЯ ? ' я' : ''),
+        '<span class="место">' + (и + 1) + '</span>'
+      + '<span class="лицо">' + CW.значок('человек', 17) + '</span>'
+      + '<span>'
+      +   '<div class="имя">' + CW.безопасно(ч.name || ('#' + ч.user_id)) + '</div>'
+      +   '<div class="чем">' + (чем.join(' · ') || 'заходил') + '</div>'
+      + '</span>'
+      + '<span class="всего">' + (посты + сообщ) + '</span>'));
+  });
+
+  return где;
+}
+
+/* ── закрыто тарифом ── */
+function кускомЗакрыто(почему) {
+  var у = кусок('закрыто',
+      '<div class="знак">' + CW.значок('замок') + '</div>'
+    + '<h2>Аналитика в Сильвер и Голд</h2>'
+    + '<p>' + CW.безопасно(почему || 'На бесплатном ключе аналитика куба закрыта.')
+    + '<br>Остальное в кубе работает как работало.</p>'
+    + '<button class="кнопка главная">Посмотреть тарифы</button>');
+  у.querySelector('button').onclick = function () { CW.уйти('tariff.html?p=silver'); };
+  return у;
+}
+
+});
+</script>
+</body>
+</html>

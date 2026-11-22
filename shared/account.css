@@ -1,0 +1,132 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   МЕНЮ АККАУНТА — ВИД.
+
+   Лежит отдельным файлом по той же причине, что и его код: верхних
+   полос в программе две. Разделы одеваются в shell.css, а мир рисует
+   свою полосу сам и shell.css не подключает — пока правила меню лежали
+   там, в мире меню собиралось без вида: без рамки, без тени и во всю
+   ширину полосы, так что кружок лица выдавливало за край экрана.
+
+       <link rel="stylesheet" href="shared/account.css">
+   ═══════════════════════════════════════════════════════════════════════ */
+/* Гнездо нужно, чтобы меню считало координаты от кружка, а не от
+   всей полосы. */
+.об-лицо-гнездо{ position:relative; flex:0 0 auto; }
+.об-лицо.горит{ border-color:var(--синий-светлее); }
+
+/* Рамка прозрачная: меню висит над миром, и глухой прямоугольник
+   вырезал из неба кусок. Сквозь него видно звёзды и кубы, а буквы
+   держит размытие под меню и ореол на тексте — тот же приём, что у
+   полок в ленте. */
+.об-аккаунт{
+  position:absolute; top:calc(100% + 9px); left:0; z-index:60;
+  display:none; flex-direction:column; gap:2px;
+  min-width:232px; padding:8px;
+  background:var(--полка-цвет); border:1px solid var(--полка-край);
+  backdrop-filter:blur(3px) saturate(1.05);
+  -webkit-backdrop-filter:blur(3px) saturate(1.05);
+  text-shadow:0 1px 2px var(--полка-ореол), 0 0 9px var(--полка-ореол);
+  border-radius:14px; box-shadow:0 10px 36px rgba(0,0,0,.5);
+}
+.об-аккаунт.видно{ display:flex; }
+
+.об-аккаунт-верх{
+  padding:8px 10px 10px; margin-bottom:4px;
+  border-bottom:1px solid var(--край);
+}
+.об-аккаунт-верх b{
+  display:block; font-size:0.8667rem; font-weight:600; color:var(--текст);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+/* Номер моноширинным: его переписывают от руки и диктуют вслух, а в
+   пропорциональном шрифте ноль и буква О неразличимы. */
+.об-аккаунт-верх span{
+  display:block; margin-top:3px;
+  font-family:ui-monospace,Menlo,monospace; font-size:0.7333rem;
+  color:var(--текст3); letter-spacing:.02em;
+}
+
+.об-аккаунт-ряд{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 10px; border:none; border-radius:9px;
+  background:none; color:var(--текст); font:inherit; font-size:0.8667rem;
+  font-weight:500; cursor:pointer; text-align:left;
+  transition:background .14s;
+}
+.об-аккаунт-ряд:hover{ background:var(--поле); }
+.об-аккаунт-ряд .зн{ flex:0 0 18px; display:flex; color:var(--текст3); }
+.об-аккаунт-ряд .зн svg{ width:17px; height:17px; }
+.об-аккаунт-ряд:hover .зн{ color:var(--синий); }
+.об-аккаунт-ряд.опасный{ color:var(--красный); }
+.об-аккаунт-ряд.опасный .зн,
+.об-аккаунт-ряд.опасный:hover .зн{ color:var(--красный); }
+
+/* На телефоне меню прижимается к краю экрана, а не к кружку: кружок
+   стоит у самого угла, и меню шириной в 232 точки уезжало бы вбок. */
+@media (max-width:620px){
+  .об-аккаунт{
+    position:fixed; top:56px; left:8px; right:8px; min-width:0;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ВЕСТИ — меню под колокольчиком (shared/вести.js)
+
+   Устроено тем же гнездом, что меню аккаунта, и берёт от него рамку:
+   прозрачную, с размытием и ореолом на буквах. Отличия только в
+   содержимом — шапка со счётом и строки в две строчки.
+   ═══════════════════════════════════════════════════════════════════════ */
+/* Рамка здесь ПЛОТНАЯ, в отличие от меню аккаунта. То меню висит над
+   миром — над звёздами и кубами, и прозрачность там к месту. Это
+   висит над полосой кубов и лентой: сквозь стекло буквы ложились на
+   чужие надписи, и читать становилось нечего. */
+.об-вести{
+  left:auto; right:0; min-width:330px; max-width:92vw; padding:6px;
+  background:var(--окно); text-shadow:none;
+  backdrop-filter:none; -webkit-backdrop-filter:none;
+  border-color:var(--край);
+}
+
+.вести-шапка{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 10px 10px; margin-bottom:4px;
+  border-bottom:1px solid var(--край);
+}
+.вести-шапка b{ display:flex; align-items:center; gap:8px; font-size:0.9333rem; }
+.вести-шапка .зн{ display:flex; color:var(--синий); }
+.вести-шапка .счёт{ font-style:normal; color:var(--синий); }
+.вести-всё{
+  margin-left:auto; cursor:pointer; font-family:inherit; font-size:0.8rem;
+  padding:5px 11px; border-radius:var(--радиус-круг);
+  border:1px solid var(--край2); background:none; color:var(--текст2);
+}
+.вести-всё:hover:not(:disabled){ color:var(--текст); border-color:var(--синий); }
+.вести-всё:disabled{ opacity:.4; cursor:default; }
+
+.вести-тело{ max-height:52vh; overflow-y:auto; overscroll-behavior:contain;
+  display:flex; flex-direction:column; gap:2px; }
+
+.вести-строка{
+  display:flex; align-items:center; gap:11px; width:100%;
+  padding:9px 10px; border:none; background:none; cursor:pointer;
+  text-align:left; color:var(--текст); font-family:inherit; border-radius:11px;
+}
+.вести-строка:hover{ background:var(--поле); }
+.вести-строка .зн{ flex:0 0 30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--поле); color:var(--синий); }
+.вести-строка .что{ min-width:0; flex:1; }
+.вести-строка .что b{ display:block; font-size:0.8667rem; font-weight:600;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.вести-строка .что span{ display:block; font-size:0.7667rem; color:var(--текст3);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* Точка — единственный признак непрочитанного. У прочитанного её нет,
+   и строка гаснет: искать разницу в оттенках текста человек не должен. */
+.вести-строка .точка{ flex:0 0 7px; width:7px; height:7px; border-radius:50%;
+  background:var(--синий); }
+.вести-строка.прочитано{ opacity:.55; }
+.вести-строка.прочитано .точка{ background:none; }
+
+/* Строки «Открыть все уведомления» внизу меню больше нет — правило
+   убрано вместе с ней, чтобы в файле не оставалось одежды без хозяина. */

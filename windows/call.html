@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Звонок · CubeWorld</title>
+<link rel="icon" href="../icons/favicon.svg?v=20261122-363">
+<link rel="stylesheet" href="../shared/style.css?v=20261122-363">
+<link rel="stylesheet" href="../shared/window.css?v=20261122-363">
+<link rel="stylesheet" href="../shared/account.css?v=20261122-363">
+<script src="../shared/theme.js?v=20261122-363"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261122-363">
+<!--
+  Аудиозвонок — окно поверх программы.
+
+      windows/call.html?кто=7
+
+  Своего кода здесь нет совсем, и это правильно: аудиозвонок отличается от
+  соседнего окна ровно одним — он не просит камеру и показывает лицо вместо картинки. Всё
+  остальное (кто собеседник, время разговора, микрофон, трубка, отпустить
+  устройства при выходе) общее и живёт в shared/call.js.
+
+  Написать это дважды значило бы получить два окна, у которых кнопки
+  разного размера, а трубка в одном отпускает камеру, а в другом нет.
+-->
+</head>
+<body>
+
+<script src="../shared/api.js?v=20261122-363"></script>
+<script src="../shared/ui.js?v=20261122-363"></script>
+<script src="../shared/смайлы.js?v=20261122-363"></script>
+<script src="../shared/лица.js?v=20261122-363"></script>
+<script src="../shared/эфир.js?v=20261122-363"></script>
+<script src="../shared/icons.js?v=20261122-363"></script>
+<script src="../shared/window.js?v=20261122-363"></script>
+<script src="../shared/без-копий.js?v=20261122-363"></script>
+<script src="../shared/time.js?v=20261122-363"></script>
+<script src="../shared/auth.js?v=20261122-363"></script>
+<script src="../shared/account.js?v=20261122-363"></script>
+<script src="../shared/сокет.js?v=20261122-363"></script>
+<script src="../shared/shell.js?v=20261122-363"></script>
+<script src="../shared/call.js?v=20261122-363"></script>
+<script src="../shared/звонки.js?v=20261122-363"></script>
+<script>
+'use strict';
+
+CW.оболочка('chats').then(function (место) {
+
+/* Куда звоним: человеку (?кто=) или группе (?группа=). Остальное —
+   разговор, в который нас позвали: ?разговор=…&принят=1&от=… */
+var А = (function () {
+  var п = {};
+  try { п = new URLSearchParams(location.search); } catch (е) { п = { get: function () { return null; } }; }
+  return {
+    кто:      п.get('кто') ? parseInt(п.get('кто'), 10) : 0,
+    группа:   п.get('группа') ? parseInt(п.get('группа'), 10) : 0,
+    разговор: п.get('разговор') || '',
+    принят:   п.get('принят') === '1',
+    от:       п.get('от') ? parseInt(п.get('от'), 10) : 0
+  };
+})();
+
+место.appendChild(ок('div', 'пусто-строка',
+  'Аудиозвонок открыт отдельным окном. Положи трубку, чтобы вернуться.'));
+
+if (!А.кто && !А.группа) {
+  CW.сказать('Не указано, кому звоним');
+  CW.уйти(CW.раздел('chats', CW.какойКуб()));
+  return;
+}
+
+var НАЗАД = function () { CW.уйти(CW.раздел('chats', CW.какойКуб())); };
+
+if (А.группа) групповой(); else личный();
+
+/* ── личный звонок ───────────────────────────────────────────────── */
+function личный() {
+  var кому = А.принят ? (А.от || А.кто) : А.кто;
+  CW.спросить('/users/' + кому, { тихо: true }).then(повести).catch(function () { повести(null); });
+
+  function повести(ч) {
+    var имя = (ч && CW.имяЧеловека(ч)) || ('Участник #' + кому);
+    var З = CW.звонок({
+      видео: false, кто: кому, имя: имя, лицо: (ч && ч.avatar_url) || '',
+      ждать: А.принят ? 'соединяю…' : 'звоню…',
+      назад: НАЗАД
+    });
+    CW.звонки.вести({
+      окно: З, кому: [кому], видео: false,
+      разговор: А.разговор, принят: А.принят
+    });
+  }
+}
+
+/* ── звонок группе ───────────────────────────────────────────────────
+   Зовём участников — всех, кроме себя. Кого именно, спрашиваем у
+   сервера: список участников в группе меняется, и держать его в
+   адресе страницы значило бы звонить вчерашнему составу. */
+function групповой() {
+  Promise.all([
+    CW.спросить('/groups/' + А.группа + '/info', { тихо: true }),
+    CW.спросить('/groups/' + А.группа + '/members?limit=50', { тихо: true })
+  ]).then(function (о) {
+    var г = о[0] || {};
+    var ряды = о[1];
+    var люди = Array.isArray(ряды) ? ряды
+             : ((ряды && (ряды.members || ряды.items)) || []);
+    var я = (CW.ясныйЯ() || {}).id;
+    var кому = люди.map(function (ч) { return ч.id || ч.user_id; })
+                   .filter(function (и) { return и && Number(и) !== Number(я); });
+
+    var З = CW.звонок({
+      видео: false, кто: 0,
+      имя: г.name || ('Группа #' + А.группа),
+      лицо: '',
+      ждать: А.принят ? 'соединяю…' : 'звоню участникам…',
+      назад: НАЗАД
+    });
+
+    if (!кому.length) {
+      З.состояние('В группе больше никого: звонить некому');
+      return;
+    }
+    CW.звонки.вести({
+      окно: З, кому: кому, видео: false, группа: А.группа,
+      название: г.name || '', разговор: А.разговор, принят: А.принят
+    });
+  }).catch(function () {
+    CW.сказать('Группа не открылась');
+    НАЗАД();
+  });
+}
+
+function ок(тег, класс, текст) { return CW.эл(тег, класс, текст); }
+
+});
+</script>
+</body>
+</html>

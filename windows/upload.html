@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Загрузка видео · CubeWorld</title>
+<link rel="icon" href="../icons/favicon.svg?v=20261122-363">
+<link rel="stylesheet" href="../shared/style.css?v=20261122-363">
+<link rel="stylesheet" href="../shared/window.css?v=20261122-363">
+<link rel="stylesheet" href="../shared/account.css?v=20261122-363">
+<script src="../shared/theme.js?v=20261122-363"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261122-363">
+<!--
+  ЗАГРУЗКА ВИДЕО — окно поверх программы.
+
+  Три шага, и человек всегда видит, на каком он: выбрать → обложка и
+  описание → загрузка. Назад можно с любого.
+
+  Четыре решения, которые стоит помнить.
+
+  1. ОБЛОЖКУ БЕРЁМ ИЗ САМОГО РОЛИКА, а не просим отдельный файл.
+     Ползунок двигает кадр, кадр рисуется в холст, холст становится
+     картинкой. Человеку не нужно ничего готовить заранее.
+
+  2. ПЕРВЫЙ КАДР ЧАСТО ЧЁРНЫЙ — камера ещё не открыла диафрагму.
+     Поэтому по умолчанию берём не нулевую секунду, а десятую долю
+     ролика: там уже что-то есть.
+
+  3. ПРОЦЕНТЫ ОБЯЗАТЕЛЬНЫ. Ролик на сто мегабайт идёт минутами, и без
+     процентов человек решает, что программа повисла, и уходит.
+
+  4. ОТМЕНИТЬ МОЖНО. Передумать посреди загрузки — обычное дело.
+
+  Деление на ШОРТС и ПОСТ — по форме кадра, и это не прихоть: лента
+  шортсов вертикальная, 9:16. Горизонтальный ролик там ляжет чёрной
+  полосой сверху и снизу. Мы это считаем и говорим вслух, но решает
+  всё равно человек.
+-->
+<style>
+
+/* ── шаги ───────────────────────────────────────────────────────── */
+.за-шаги{
+  flex:0 0 auto; display:flex; gap:0; padding:12px 16px;
+  border-bottom:1px solid var(--край);
+}
+.за-шаг{
+  flex:1; display:flex; align-items:center; gap:8px; font-size:0.8333rem;
+  color:var(--текст3);
+}
+.за-шаг .н{
+  width:22px; height:22px; flex:0 0 22px; border-radius:50%;
+  border:1.5px solid var(--край2); display:flex; align-items:center;
+  justify-content:center; font-size:0.7667rem;
+}
+.за-шаг.тут{ color:var(--синий); }
+.за-шаг.тут .н{ border-color:var(--синий); background:rgba(74,158,255,.14); }
+.за-шаг.было{ color:var(--текст2); }
+.за-шаг.было .н{ border-color:var(--зелёный); color:var(--зелёный); }
+
+/* ── выбор файла ────────────────────────────────────────────────── */
+.за-бросок{
+  margin:16px; border:1.5px dashed var(--край2); border-radius:16px;
+  padding:40px 22px; text-align:center; cursor:pointer; color:var(--текст2);
+  background:none;  width:calc(100% - 32px);
+}
+.за-бросок:hover, .за-бросок.ждёт{
+  border-color:var(--синий); background:rgba(74,158,255,.05);
+}
+.за-бросок .зн{ color:var(--синий); display:block; margin-bottom:14px; }
+.за-бросок .зн svg{ width:40px; height:40px; }
+.за-бросок b{ display:block; font-size:1.0667rem; margin-bottom:7px; color:var(--текст); }
+.за-бросок span{ display:block; font-size:0.8333rem; color:var(--текст3); line-height:1.7; }
+
+/* ── обложка ────────────────────────────────────────────────────── */
+.за-кадр{
+  position:relative; margin:0 16px; border-radius:14px; overflow:hidden;
+  background:#000; display:flex; align-items:center; justify-content:center;
+  max-height:260px;
+}
+.за-кадр video{ max-width:100%; max-height:260px; display:block; }
+.за-кадр .форма{
+  position:absolute; left:10px; top:10px; font-size:0.7333rem; padding:4px 9px;
+  border-radius:var(--радиус-круг); background:rgba(0,0,0,.6); color:#fff;
+}
+.за-ползунок{ padding:12px 16px 4px; }
+.за-ползунок input[type=range]{ width:100%; accent-color:var(--синий); }
+.за-ползунок .п{ font-size:0.8rem; color:var(--текст3); margin-top:4px; }
+
+/* ── загрузка ───────────────────────────────────────────────────── */
+.за-ход{ padding:34px 22px; text-align:center; }
+.за-круг{
+  width:120px; height:120px; margin:0 auto 20px; position:relative;
+}
+.за-круг svg{ transform:rotate(-90deg); }
+.за-круг .число{
+  position:absolute; inset:0; display:flex; align-items:center;
+  justify-content:center; font-size:1.6rem; font-weight:650;
+}
+.за-ход .что{ font-size:0.9333rem; color:var(--текст2); }
+.за-ход .сколько{ font-size:0.8rem; color:var(--текст3); margin-top:6px; }
+
+</style>
+</head>
+<body>
+
+<script src="../shared/api.js?v=20261122-363"></script>
+<script src="../shared/ui.js?v=20261122-363"></script>
+<script src="../shared/смайлы.js?v=20261122-363"></script>
+<script src="../shared/лица.js?v=20261122-363"></script>
+<script src="../shared/эфир.js?v=20261122-363"></script>
+<script src="../shared/icons.js?v=20261122-363"></script>
+<script src="../shared/window.js?v=20261122-363"></script>
+<script src="../shared/без-копий.js?v=20261122-363"></script>
+<script src="../shared/time.js?v=20261122-363"></script>
+<script src="../shared/auth.js?v=20261122-363"></script>
+<script src="../shared/account.js?v=20261122-363"></script>
+<script src="../shared/shell.js?v=20261122-363"></script>
+<script>
+'use strict';
+
+CW.оболочка('feed').then(function (место) {
+
+var ПРЕДЕЛ_МБ = 300;          /* больше — сервер просит класть кусками */
+var ДОЛЯ_ОБЛОЖКИ = 0.1;       /* откуда брать кадр по умолчанию */
+
+var С = {
+  шаг: 1,                     /* 1 выбрать · 2 описать · 3 загрузить */
+  файл: null,
+  адресФайла: '',             /* objectURL, чтобы показать ролик до загрузки */
+  ширина: 0, высота: 0, длина: 0,
+  вид: 'short',               /* short | post */
+  обложка: null,              /* Blob выбранного кадра */
+  описание: '', музыка: '', теги: '',
+  процент: 0, отмена: null
+};
+
+место.appendChild(ок('div', 'пусто-строка',
+  'Загрузка открыта отдельным окном. Закрой его, чтобы вернуться.'));
+
+var ОКНО = CW.стойка({
+  имя: 'загрузка',
+  знак: 'камера',
+  заголовок: 'Загрузка видео',
+  подзаголовок: 'шаг 1 из 3: выбрать ролик',
+  назад: уйти,
+  поля: false
+});
+ОКНО.открыть();
+
+var шаги = ок('div', 'за-шаги');
+ОКНО.сверху(шаги);
+
+/* Действия живут в шапке, как во всех окнах программы: «Загрузить» —
+   цветным кругляшом перед выходом, «другой ролик» — кругляшом рядом.
+   Подвала нет: ряд кнопок внизу на шаге с длинной формой уезжает за
+   нижний край ровно тогда, когда до него дошли. */
+
+/* Поле выбора стоит в разметке с самого начала: созданное по нажатию,
+   оно в части браузеров не открывает окно выбора вовсе. */
+var поле = document.createElement('input');
+поле.type = 'file';
+поле.accept = 'video/*';
+поле.style.cssText =
+  'position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
+document.body.appendChild(поле);
+поле.onchange = function () {
+  var ф = поле.files && поле.files[0];
+  поле.value = '';
+  if (ф) взятьФайл(ф);
+};
+
+нарисовать();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ШАГИ
+   ═══════════════════════════════════════════════════════════════════════ */
+function нарисовать() {
+  шаги.innerHTML = '';
+  [[1, 'Ролик'], [2, 'Обложка'], [3, 'Загрузка']].forEach(function (ш) {
+    var у = ок('div', 'за-шаг' + (С.шаг === ш[0] ? ' тут'
+                                : С.шаг > ш[0] ? ' было' : ''));
+    у.innerHTML = '<span class="н">' + (С.шаг > ш[0] ? '✓' : ш[0]) + '</span>'
+                + '<span>' + ш[1] + '</span>';
+    шаги.appendChild(у);
+  });
+
+  if (С.шаг === 1) шагВыбрать();
+  else if (С.шаг === 2) шагОписать();
+  else шагЗагрузить();
+}
+
+/* ── шаг 1: выбрать ──────────────────────────────────────────────── */
+function шагВыбрать() {
+  ОКНО.шапку({ знак: 'камера', заголовок: 'Загрузка видео',
+               подзаголовок: 'шаг 1 из 3: выбрать ролик', назад: уйти });
+
+  var т = ОКНО.тело;
+  т.innerHTML = '';
+
+  var бросок = ок('button', 'за-бросок');
+  бросок.innerHTML = '<span class="зн">' + CW.значок('камера') + '</span>'
+    + '<b>Выбери ролик или брось его сюда</b>'
+    + '<span>MP4, MOV, WebM · до ' + ПРЕДЕЛ_МБ + ' МБ<br>'
+    + 'Вертикальный 9:16 пойдёт в шортсы, горизонтальный, в посты</span>';
+  бросок.onclick = function () { поле.click(); };
+
+  /* Бросок файла мышью. Отменять надо ОБА события — и dragover, и drop:
+     без первого браузер молча откроет файл вместо страницы. */
+  ['dragenter', 'dragover'].forEach(function (с) {
+    бросок.addEventListener(с, function (е) {
+      е.preventDefault(); бросок.classList.add('ждёт');
+    });
+  });
+  ['dragleave', 'drop'].forEach(function (с) {
+    бросок.addEventListener(с, function (е) {
+      е.preventDefault(); бросок.classList.remove('ждёт');
+    });
+  });
+  бросок.addEventListener('drop', function (е) {
+    var ф = е.dataTransfer && е.dataTransfer.files && е.dataTransfer.files[0];
+    if (ф) взятьФайл(ф);
+  });
+
+  т.appendChild(бросок);
+}
+
+function взятьФайл(ф) {
+  if (!/^video\//.test(ф.type)) {
+    CW.сказать('Это не видео: ' + (ф.type || 'непонятный файл'));
+    return;
+  }
+  if (ф.size > ПРЕДЕЛ_МБ * 1024 * 1024) {
+    CW.сказать('Ролик больше ' + ПРЕДЕЛ_МБ + ' МБ: такой пока не возьму');
+    return;
+  }
+
+  освободить();
+  С.файл = ф;
+  С.адресФайла = URL.createObjectURL(ф);
+  С.шаг = 2;
+  нарисовать();
+}
+
+/* ── шаг 2: обложка и описание ───────────────────────────────────── */
+function шагОписать() {
+  ОКНО.шапку({
+    знак: 'картинка',
+    заголовок: 'Обложка и описание',
+    подзаголовок: 'шаг 2 из 3',
+    назад: function () { С.шаг = 1; освободить(); нарисовать(); },
+    кнопки: [{ имя: 'другой', зн: 'повтор', подсказка: 'Другой ролик',
+               делать: function () { С.шаг = 1; освободить(); нарисовать(); } }],
+    главная: { зн: 'вверх', подсказка: 'Загрузить', делать: начать }
+  });
+  /* Пока ролик не прочитался, грузить нечего. */
+  ОКНО.кнопки['главная'].disabled = true;
+
+  var т = ОКНО.тело;
+  т.innerHTML = '';
+
+  /* ролик и кадр */
+  var кадр = ок('div', 'за-кадр');
+  var видео = document.createElement('video');
+  видео.src = С.адресФайла;
+  видео.muted = true;
+  видео.playsInline = true;
+  видео.preload = 'metadata';
+  кадр.appendChild(видео);
+  var форма = ок('span', 'форма', '…');
+  кадр.appendChild(форма);
+  т.appendChild(кадр);
+
+  var ползунок = ок('div', 'за-ползунок');
+  ползунок.innerHTML = '<input type="range" min="0" max="1000" value="'
+                     + Math.round(ДОЛЯ_ОБЛОЖКИ * 1000) + '">'
+                     + '<div class="п">Двигай, чтобы выбрать кадр обложки</div>';
+  т.appendChild(ползунок);
+  var ручка = ползунок.querySelector('input');
+  var подпись = ползунок.querySelector('.п');
+
+  видео.onloadedmetadata = function () {
+    С.ширина = видео.videoWidth;
+    С.высота = видео.videoHeight;
+    С.длина = видео.duration || 0;
+
+    /* Форма кадра решает, куда ролик ложится. Говорим вслух, но
+       выбор оставляем человеку: бывает вертикальный пост. */
+    var отношение = С.высота ? С.ширина / С.высота : 1;
+    С.вид = отношение < 0.85 ? 'short' : 'post';
+    форма.textContent = С.ширина + '×' + С.высота
+                      + ' · ' + (отношение < 0.85 ? 'вертикальный' : 'горизонтальный');
+
+    видео.currentTime = Math.min(С.длина * ДОЛЯ_ОБЛОЖКИ, Math.max(0, С.длина - 0.1));
+    поля();
+  };
+
+  видео.onerror = function () {
+    кадр.innerHTML = '<div class="пусто-строка" style="padding:40px">'
+                   + 'Браузер не смог открыть этот ролик</div>';
+  };
+
+  видео.onseeked = function () {
+    подпись.textContent = 'Кадр на ' + мигом(видео.currentTime)
+                        + ': он станет обложкой';
+    снятьКадр(видео);
+  };
+
+  ручка.oninput = function () {
+    if (!С.длина) return;
+    видео.currentTime = С.длина * (Number(ручка.value) / 1000);
+  };
+
+  /* ── поля ── */
+  function поля() {
+    var гнездо = ок('div');
+    гнездо.style.padding = '14px 16px 4px';
+
+    var вид = ок('div', 'ок-поле');
+    вид.innerHTML = '<label>Куда</label>';
+    var фишки = ок('div', 'ок-фишки');
+    [['short', 'Шортс', 'пуск'], ['post', 'Пост', 'клетки']].forEach(function (в) {
+      var б = ок('button', 'ок-фишка' + (С.вид === в[0] ? ' выбрана' : ''));
+      б.innerHTML = CW.значок(в[2]) + '<span>' + в[1] + '</span>';
+      б.onclick = function () { С.вид = в[0]; шагОписать(); };
+      фишки.appendChild(б);
+    });
+    вид.appendChild(фишки);
+    if (С.вид === 'short' && С.ширина && С.ширина / С.высота >= 0.85) {
+      var п = ок('div', 'подсказ',
+        'Ролик горизонтальный. В шортсах он ляжет с чёрными полосами сверху и снизу.');
+      вид.appendChild(п);
+    }
+    гнездо.appendChild(вид);
+
+    гнездо.appendChild(поляТекст('Описание', 'описание',
+      'О чём ролик…', true));
+    гнездо.appendChild(поляТекст('Музыка', 'музыка',
+      'Исполнитель: название', false));
+    гнездо.appendChild(поляТекст('Теги', 'теги',
+      'через запятую: котики, обзор, 2026', false));
+
+    т.appendChild(гнездо);
+
+    var хвост = ок('div'); хвост.style.height = '12px';
+    т.appendChild(хвост);
+
+    ОКНО.кнопки['главная'].disabled = false;
+  }
+
+  function поляТекст(подпись2, ключ, намёк, многострочное) {
+    var п = ок('div', 'ок-поле');
+    п.innerHTML = '<label>' + подпись2 + '</label>'
+                + (многострочное ? '<textarea></textarea>' : '<input type="text">');
+    var у = п.querySelector('textarea, input');
+    у.placeholder = намёк;
+    у.value = С[ключ] || '';
+    у.oninput = function () { С[ключ] = this.value; };
+    return п;
+  }
+
+}
+
+/* Кадр из ролика в картинку. Холст того же размера, что и кадр: меньше
+   сделаешь — обложка будет мыльной на большом экране. */
+function снятьКадр(видео) {
+  try {
+    var холст = document.createElement('canvas');
+    холст.width = видео.videoWidth;
+    холст.height = видео.videoHeight;
+    холст.getContext('2d').drawImage(видео, 0, 0, холст.width, холст.height);
+    холст.toBlob(function (капля) { С.обложка = капля; }, 'image/jpeg', 0.86);
+  } catch (е) {
+    /* Ролик из другого источника холст не отдаст. Обложки не будет —
+       и это законный вид, а не поломка. */
+    С.обложка = null;
+  }
+}
+
+/* ── шаг 3: загрузка ─────────────────────────────────────────────── */
+function шагЗагрузить() {
+  ОКНО.шапку({ знак: 'камера', заголовок: 'Загружаю',
+               подзаголовок: С.файл ? С.файл.name : '',
+               назад: null });
+
+  var т = ОКНО.тело;
+  т.innerHTML = '';
+
+  var ход = ок('div', 'за-ход');
+  ход.innerHTML =
+      '<div class="за-круг">'
+    +   '<svg width="120" height="120" viewBox="0 0 120 120">'
+    +     '<circle cx="60" cy="60" r="52" fill="none" stroke="var(--край)" stroke-width="8"/>'
+    +     '<circle class="дуга" cx="60" cy="60" r="52" fill="none" '
+    +       'stroke="var(--синий)" stroke-width="8" stroke-linecap="round" '
+    +       'stroke-dasharray="327" stroke-dashoffset="327"/>'
+    +   '</svg>'
+    +   '<div class="число">0%</div>'
+    + '</div>'
+    + '<div class="что">Готовлю…</div>'
+    + '<div class="сколько"></div>';
+  т.appendChild(ход);
+
+  var отмена = ок('button', 'кнопка опасная');
+  отмена.textContent = 'Отменить';
+  отмена.style.marginTop = '18px';
+  отмена.onclick = function () {
+    if (С.отмена) С.отмена();
+    CW.сказать('Загрузка отменена');
+    С.шаг = 2; нарисовать();
+  };
+  ход.appendChild(отмена);
+
+  var дуга = ход.querySelector('.дуга');
+  var число = ход.querySelector('.число');
+  var что = ход.querySelector('.что');
+  var сколько = ход.querySelector('.сколько');
+
+  function показатьПроцент(п, было, всего) {
+    дуга.style.strokeDashoffset = String(327 - 327 * (п / 100));
+    число.textContent = п + '%';
+    if (всего) сколько.textContent = вес(было) + ' из ' + вес(всего);
+  }
+
+  /* ── поехали ──
+     Сперва обложка (она маленькая и быстрая), потом ролик, потом
+     запись в ленте. Обложка первой нарочно: если она не ушла, незачем
+     гнать сто мегабайт, чтобы узнать об этом в конце. */
+  var обложкаАдрес = '';
+
+  Promise.resolve()
+    .then(function () {
+      if (!С.обложка) return null;
+      что.textContent = 'Кладу обложку…';
+      var ф = new File([С.обложка], 'обложка.jpg', { type: 'image/jpeg' });
+      return CW.залить(ф, 'image').then(function (о) { обложкаАдрес = о.адрес; });
+    })
+    .then(function () {
+      что.textContent = 'Кладу ролик…';
+      var наПроцент = function (п, б, в) { показатьПроцент(п, б, в); };
+      var обещание = CW.залить(С.файл, С.вид === 'short' ? 'clip' : 'movie', наПроцент);
+      С.отмена = function () { if (наПроцент.отменить) наПроцент.отменить(); };
+      return обещание;
+    })
+    .then(function (о) {
+      С.отмена = null;
+      что.textContent = 'Завожу запись…';
+      return CW.спросить('/feed/post', {
+        способ: 'POST', сроком: 30000,
+        тело: {
+          cube_id: CW.какойКуб() || null,
+          post_type: С.вид,
+          video_url: о.адрес,
+          image_url: обложкаАдрес || null,
+          description: С.описание || '',
+          music: С.музыка || '',
+          tags: С.теги || ''
+        }
+      });
+    })
+    .then(function () {
+      CW.сказать('Готово: ролик в ленте');
+      освободить();
+      CW.уйти(CW.раздел('feed', CW.какойКуб()));
+    })
+    .catch(function (е) {
+      С.отмена = null;
+      ОКНО.тело.innerHTML = '';
+      ОКНО.пусто({
+        знак: 'внимание',
+        заголовок: 'Не загрузилось',
+        текст: (е && е.сеть) ? 'Нет связи с сервером'
+                             : ((е && е.message) || 'Что-то пошло не так'),
+        кнопка: { подпись: 'Попробовать ещё раз',
+                  делать: function () { С.шаг = 2; нарисовать(); } }
+      });
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   МЕЛОЧЬ
+   ═══════════════════════════════════════════════════════════════════════ */
+function начать() { С.шаг = 3; нарисовать(); }
+
+/* objectURL держит файл в памяти, пока его не отпустишь. Выбрал пять
+   роликов подряд — пять файлов висят, и браузер на телефоне падает. */
+function освободить() {
+  if (С.адресФайла) { try { URL.revokeObjectURL(С.адресФайла); } catch (е) {} }
+  С.адресФайла = '';
+}
+
+function вес(б) {
+  б = Number(б) || 0;
+  if (б < 1024) return б + ' Б';
+  if (б < 1048576) return (б / 1024).toFixed(0) + ' КБ';
+  return (б / 1048576).toFixed(1) + ' МБ';
+}
+
+function мигом(сек) {
+  сек = Math.max(0, Number(сек) || 0);
+  var м = Math.floor(сек / 60), с = Math.floor(сек % 60);
+  return м + ':' + (с < 10 ? '0' : '') + с;
+}
+
+function уйти() {
+  освободить();
+  var откуда = '';
+  try { откуда = sessionStorage.getItem('cw_откуда') || ''; } catch (е) {}
+  var ладно = /^(feed|chats|groups|signals|market|earn|wallet|stats|refs)$/;
+  CW.уйти(CW.раздел(ладно.test(откуда) ? откуда : 'feed', CW.какойКуб()));
+}
+
+function ок(тег, класс, текст) { return CW.эл(тег, класс, текст); }
+
+});
+</script>
+</body>
+</html>
