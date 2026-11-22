@@ -5,12 +5,17 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Мир · CubeWorld</title>
 <meta name="theme-color" content="#050518">
-<link rel="icon" href="icons/favicon.svg?v=20261123-379">
+<link rel="icon" href="icons/favicon.svg?v=20261123-380">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261123-379">
-<link rel="stylesheet" href="shared/window.css?v=20261123-379">
-<link rel="stylesheet" href="shared/account.css?v=20261123-379">
-<script src="shared/theme.js?v=20261123-379"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261123-380">
+<link rel="stylesheet" href="shared/window.css?v=20261123-380">
+<link rel="stylesheet" href="shared/account.css?v=20261123-380">
+<!-- Мир тёмный всегда: небо светлым не бывает, а всё, что лежит поверх
+     него - меню аккаунта, вопрос о выходе, надпись в шапке, - на светлой
+     теме становилось нечитаемым. Слово сказано ДО theme.js, чтобы оно
+     успело к первой краске. Подробности там же, в theme.js. -->
+<script>window.CW_ВСЕГДА_ТЁМНО = true;</script>
+<script src="shared/theme.js?v=20261123-380"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -354,20 +359,20 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261123-379"></script>
-<script src="shared/ui.js?v=20261123-379"></script>
-<script src="shared/смайлы.js?v=20261123-379"></script>
-<script src="shared/лица.js?v=20261123-379"></script>
-<script src="shared/эфир.js?v=20261123-379"></script>
-<script src="shared/icons.js?v=20261123-379"></script>
-<script src="shared/window.js?v=20261123-379"></script>
-<script src="shared/без-копий.js?v=20261123-379"></script>
-<script src="shared/time.js?v=20261123-379"></script>
-<script src="shared/auth.js?v=20261123-379"></script>
-<script src="shared/account.js?v=20261123-379"></script>
-<script src="shared/формы.js?v=20261123-379"></script>
-<script src="shared/игра.js?v=20261123-379"></script>
-<script src="shared/персонаж.js?v=20261123-379"></script>
+<script src="shared/api.js?v=20261123-380"></script>
+<script src="shared/ui.js?v=20261123-380"></script>
+<script src="shared/смайлы.js?v=20261123-380"></script>
+<script src="shared/лица.js?v=20261123-380"></script>
+<script src="shared/эфир.js?v=20261123-380"></script>
+<script src="shared/icons.js?v=20261123-380"></script>
+<script src="shared/window.js?v=20261123-380"></script>
+<script src="shared/без-копий.js?v=20261123-380"></script>
+<script src="shared/time.js?v=20261123-380"></script>
+<script src="shared/auth.js?v=20261123-380"></script>
+<script src="shared/account.js?v=20261123-380"></script>
+<script src="shared/формы.js?v=20261123-380"></script>
+<script src="shared/игра.js?v=20261123-380"></script>
+<script src="shared/персонаж.js?v=20261123-380"></script>
 <script>
 'use strict';
 
