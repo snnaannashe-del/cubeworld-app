@@ -368,6 +368,9 @@ body{ background:var(--вне-рамы); }
    на телефоне. На настольном экране меню стоит столбцом у края, и ни
    ручки, ни заголовка ему не нужно. */
 .об-ручка, .об-шапка-меню{ display:none; }
+/* Нижняя полоса - только для телефона. На настольном экране есть меню
+   слева, и дублировать его полосой внизу незачем. */
+.об-низ{ display:none; }
 
 @media (max-width:980px){
   /* На телефоне полей по краям нет: там дорог каждый пиксель. */
@@ -376,12 +379,48 @@ body{ background:var(--вне-рамы); }
     border-radius:0;
   }
 
-  .об-ящик-кнопка{
-    display:flex; width:38px; height:38px; flex:0 0 38px; border-radius:12px;
-    border:1px solid var(--край); background:var(--поле); color:var(--текст2);
-    align-items:center; justify-content:center; cursor:pointer; padding:0;
+  /* Гамбургера в углу нет: вход в меню переехал вниз, в полосу, под
+     большой палец. Кнопку оставляем в разметке - её зовут с клавиши
+     и из старых страниц, - но не показываем. */
+  .об-ящик-кнопка{ display:none; }
+
+  /* ── НИЖНЯЯ ПОЛОСА ──
+     Пять мест: три раздела, большой плюс посередине и «Ещё». Полоса
+     лежит внутри рамы, поэтому её не накрывает подложка меню. */
+  .об-низ{
+    display:flex; align-items:center; justify-content:space-around;
+    flex:0 0 auto; z-index:58; gap:2px;
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+    border-top:1px solid var(--край); background:var(--полоса-цвет);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   }
-  .об-ящик-кнопка svg{ width:19px; height:19px; }
+  .об-низ-кн{
+    flex:1 1 0; min-width:0; border:none; background:none; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    padding:6px 2px 4px; color:var(--текст3); font-size:0.6667rem;
+    border-radius:12px;
+  }
+  .об-низ-кн .зн{ display:flex; align-items:center; justify-content:center; }
+  .об-низ-кн .зн svg{ width:21px; height:21px; }
+  .об-низ-кн .нм{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    max-width:100%; }
+  /* Где стоишь - то и горит. Кроме цвета ничего не меняем: подпрыгнувший
+     значок или подчёркивание дёргали бы полосу при каждом переходе. */
+  .об-низ-кн.тут{ color:var(--синий); }
+  .об-низ-кн.тут .зн{ color:var(--синий); }
+  .об-низ-кн:active{ background:var(--поле); }
+  /* Полка открыта - «Ещё» горит тем же синим: кнопка показывает своё
+     состояние, а не только раздел. */
+  .об-низ-кн.открыт{ color:var(--синий); }
+
+  .об-низ-плюс{
+    flex:0 0 auto; width:52px; height:52px; border-radius:50%;
+    border:none; cursor:pointer; margin:-14px 2px 0;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; background:linear-gradient(140deg, #c050d8, #7a5cf0);
+    box-shadow:0 8px 22px rgba(150,80,220,.45);
+  }
+  .об-низ-плюс:active{ transform:scale(.94); }
 
   /* ── МЕНЮ ВЫЕЗЖАЕТ СНИЗУ ПОЛКОЙ ──
      Так было в прежней программе, и так правильно: большой палец
@@ -404,6 +443,14 @@ body{ background:var(--вне-рамы); }
     align-content:start;
   }
   .об-меню.открыто{ transform:none; }
+  /* Полка выезжает НАД нижней полосой: полоса остаётся видна, и из
+     неё же полку закрывают тем же «Ещё». */
+  .об-меню{ bottom:calc(63px + env(safe-area-inset-bottom)); }
+  /* Лента, Чаты и Группы стоят в полосе внизу - на полке они были бы
+     вторым экземпляром той же кнопки. */
+  .об-меню .об-пункт[data-имя="feed"],
+  .об-меню .об-пункт[data-имя="chats"],
+  .об-меню .об-пункт[data-имя="groups"]{ display:none; }
 
   .об-ручка{
     display:block; grid-column:1 / -1;
