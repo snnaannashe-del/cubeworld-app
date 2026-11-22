@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Мир · CubeWorld</title>
 <meta name="theme-color" content="#050518">
-<link rel="icon" href="icons/favicon.svg?v=20261123-370">
+<link rel="icon" href="icons/favicon.svg?v=20261123-371">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261123-370">
-<link rel="stylesheet" href="shared/window.css?v=20261123-370">
-<link rel="stylesheet" href="shared/account.css?v=20261123-370">
-<script src="shared/theme.js?v=20261123-370"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261123-371">
+<link rel="stylesheet" href="shared/window.css?v=20261123-371">
+<link rel="stylesheet" href="shared/account.css?v=20261123-371">
+<script src="shared/theme.js?v=20261123-371"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -265,26 +265,33 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 }
 .состояние.прячется{ opacity:0; }
 
-/* ── ТЕЛЕФОН: ПОЛОСА МИРА В ДВЕ СТРОКИ ────────────────────────────
-   Было так: курсы прятались совсем. Выходило нечестно - в мире это
-   единственное место, где видно, что почём, и на телефоне его просто
-   не было.
+/* ── ТЕЛЕФОН: ПОЛОСА МИРА В ОДНУ СТРОКУ ───────────────────────────
+   Курсы остаются в той же строке, что и на компьютере, в промежутке
+   между лицом и кнопками. Промежуток небольшой - на телефоне в 390
+   точек это около 64, - но одного курса в нём и правда видно.
 
-   Стало: полоса переносится. Первой строкой знак, лицо и кнопки,
-   прижатые к правому краю; второй - бегущая строка курсов во всю
-   ширину. Высоту отпускаем: при переносе 54 точки держать нельзя,
-   вторая строка не поместится. */
+   Второй строкой они стояли полдня и не прижились: полоса мира от
+   этого становилась в полтора раза выше и отъедала небо.
+
+   ── ПОЧЕМУ ПРОСВЕТ ПО КРАЯМ СТАЛ УЖЕ ──
+   У ленты по краям растушёвка, чтобы курсы не обрывались ножом. На
+   широкой полосе она 24 точки с каждой стороны и незаметна. В окошке
+   шириной 64 точки две такие растушёвки съедали почти всё: курс
+   выезжал уже полупрозрачным, бледнел и пропадал, не успев дойти до
+   середины. Отсюда и «мигает». На узком экране растушёвка 8 точек. */
 @media (max-width:760px){
-  .верх{ flex-wrap:wrap; height:auto; padding-top:calc(7px + env(safe-area-inset-top));
-    padding-bottom:5px; row-gap:2px; }
-  /* Кнопки в правый угол. На широком экране их туда толкают курсы
-     (они между лицом и полкой и тянутся), а при переносе курсы уходят
-     на свою строку, и толкать становится некому. */
   .полка{ margin-left:auto; }
-  .курсы{ flex:1 0 100%; order:2; min-width:0; }
+  .курсы{
+    mask-image:linear-gradient(90deg,transparent,#000 8px,#000 calc(100% - 8px),transparent);
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 8px,#000 calc(100% - 8px),transparent);
+  }
   .пилюля .слово{ display:none; }
   .пилюля{ padding:7px 11px; }
-  .водяной{ bottom:96px; }
+  /* Знак внизу опущен: было девяносто шесть точек от края, и под ним
+     висела пустота в треть экрана. Пятьдесят четыре - ниже, но выше
+     строки состояния, которая живёт на двадцати: сойдись они, буквы
+     легли бы друг на друга. */
+  .водяной{ bottom:54px; }
 }
 
 /* ── УЗКИЙ ТЕЛЕФОН: ПЕРВАЯ СТРОКА ВЛЕЗАЕТ ЦЕЛИКОМ ──
@@ -339,20 +346,20 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261123-370"></script>
-<script src="shared/ui.js?v=20261123-370"></script>
-<script src="shared/смайлы.js?v=20261123-370"></script>
-<script src="shared/лица.js?v=20261123-370"></script>
-<script src="shared/эфир.js?v=20261123-370"></script>
-<script src="shared/icons.js?v=20261123-370"></script>
-<script src="shared/window.js?v=20261123-370"></script>
-<script src="shared/без-копий.js?v=20261123-370"></script>
-<script src="shared/time.js?v=20261123-370"></script>
-<script src="shared/auth.js?v=20261123-370"></script>
-<script src="shared/account.js?v=20261123-370"></script>
-<script src="shared/формы.js?v=20261123-370"></script>
-<script src="shared/игра.js?v=20261123-370"></script>
-<script src="shared/персонаж.js?v=20261123-370"></script>
+<script src="shared/api.js?v=20261123-371"></script>
+<script src="shared/ui.js?v=20261123-371"></script>
+<script src="shared/смайлы.js?v=20261123-371"></script>
+<script src="shared/лица.js?v=20261123-371"></script>
+<script src="shared/эфир.js?v=20261123-371"></script>
+<script src="shared/icons.js?v=20261123-371"></script>
+<script src="shared/window.js?v=20261123-371"></script>
+<script src="shared/без-копий.js?v=20261123-371"></script>
+<script src="shared/time.js?v=20261123-371"></script>
+<script src="shared/auth.js?v=20261123-371"></script>
+<script src="shared/account.js?v=20261123-371"></script>
+<script src="shared/формы.js?v=20261123-371"></script>
+<script src="shared/игра.js?v=20261123-371"></script>
+<script src="shared/персонаж.js?v=20261123-371"></script>
 <script>
 'use strict';
 
@@ -1555,8 +1562,59 @@ function курсы() {
       if (акции && куски.length) {
         куски.push('<div class="курс"><span class="сим">цены с задержкой ~15 мин</span></div>');
       }
-      if (куски.length) $('курсы-лента').innerHTML = куски.join('') + куски.join('');
+      if (!куски.length) return;
+      поставить(куски);
     });
+}
+
+/* ── ЛЕНТА НЕ НАЧИНАЕТСЯ ЗАНОВО КАЖДЫЕ ПОЛМИНУТЫ ──────────────────
+   Цены спрашиваются раз в тридцать секунд. Раньше ответ каждый раз
+   переписывал всю ленту целиком (innerHTML), а это для браузера новые
+   узлы - значит, и поездка начинается с нуля. Со стороны человека
+   выглядело так, будто строка дёргается и курс пропадает на середине.
+
+   Теперь узлы переписываются только если изменился их СОСТАВ: пришла
+   новая монета, пропала старая, сменился вид ленты. Пока состав тот
+   же, меняем лишь цифры внутри - поездка не прерывается, потому что
+   для браузера это те же самые узлы.
+
+   Лента склеена из двух одинаковых половин: так круг замыкается без
+   рывка (едем до -50% и начинаем сначала). Значит, и обновлять надо
+   обе половины. */
+var СОСТАВ = '';
+
+function поставить(куски) {
+  var лента = $('курсы-лента');
+  if (!лента) return;
+  var состав = куски.map(function (к) {
+    return (к.match(/class="сим">([^<]*)/) || [])[1] || '';
+  }).join('|');
+
+  var курсы = лента.querySelectorAll('.курс');
+  if (состав !== СОСТАВ || курсы.length !== куски.length * 2) {
+    СОСТАВ = состав;
+    лента.innerHTML = куски.join('') + куски.join('');
+    return;
+  }
+
+  /* Состав прежний - меняем только цифры. */
+  var клетка = document.createElement('div');
+  клетка.innerHTML = куски.join('');
+  var свежие = клетка.querySelectorAll('.курс');
+  for (var и = 0; и < курсы.length; и++) {
+    var н = свежие[и % свежие.length];
+    if (!н) continue;
+    var было = курсы[и].children, стало = н.children;
+    for (var к = 0; к < стало.length; к++) {
+      if (!было[к]) continue;
+      if (было[к].textContent !== стало[к].textContent) {
+        было[к].textContent = стало[к].textContent;
+      }
+      if (было[к].className !== стало[к].className) {
+        было[к].className = стало[к].className;
+      }
+    }
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

@@ -30,10 +30,27 @@
 }
 .об-аккаунт.видно{ display:flex; }
 
+/* Шапка в две части: слева имя с номером, справа три кружка-двери.
+   Имя сжимается первым (min-width:0), кружки не сжимаются никогда:
+   лучше обрезать длинное имя многоточием, чем сплющить кнопку. */
 .об-аккаунт-верх{
-  padding:8px 10px 10px; margin-bottom:4px;
+  display:flex; align-items:center; gap:8px;
+  padding:8px 8px 10px; margin-bottom:4px;
   border-bottom:1px solid var(--край);
 }
+.об-аккаунт-кто{ min-width:0; flex:1 1 auto; }
+.об-аккаунт-значки{ display:flex; gap:2px; flex:0 0 auto; }
+.об-аккаунт-значок{
+  width:30px; height:30px; flex:0 0 30px; border-radius:50%;
+  border:1px solid transparent; background:none; padding:0; cursor:pointer;
+  color:var(--текст3);
+  display:flex; align-items:center; justify-content:center;
+  transition:background .13s ease, color .13s ease, transform .1s ease;
+}
+.об-аккаунт-значок svg{ width:17px; height:17px; }
+.об-аккаунт-значок:hover{ color:var(--синий); background:var(--поле); }
+.об-аккаунт-значок:active{ transform:scale(.9); }
+
 .об-аккаунт-верх b{
   display:block; font-size:0.8667rem; font-weight:600; color:var(--текст);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
@@ -44,6 +61,10 @@
   display:block; margin-top:3px;
   font-family:ui-monospace,Menlo,monospace; font-size:0.7333rem;
   color:var(--текст3); letter-spacing:.02em;
+  /* В одну строку. Рядом теперь три кружка, места слева стало меньше,
+     и номер переносился после слова UID - выходило две строки вместо
+     одной и окно на двадцать точек выше без всякой пользы. */
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 
 .об-аккаунт-ряд{
@@ -61,11 +82,23 @@
 .об-аккаунт-ряд.опасный .зн,
 .об-аккаунт-ряд.опасный:hover .зн{ color:var(--красный); }
 
-/* На телефоне меню прижимается к краю экрана, а не к кружку: кружок
-   стоит у самого угла, и меню шириной в 232 точки уезжало бы вбок. */
+/* На телефоне меню висит под кружком лица, у левого края, и НЕ
+   растягивается на всю ширину экрана.
+
+   Раньше стояло left:8px right:8px - окно во всю ширину. Для шести
+   строк это было хоть как-то оправдано, а теперь строк три и три
+   кружка в шапке: такая рамка закрывала полнеба, и за ней не было
+   видно, куда ты вернёшься, закрыв её.
+
+   Ширина 240 точек. Меньше нельзя: в строке номера одиннадцать цифр
+   моноширинным шрифтом, и при 232 последняя уже пряталась в
+   многоточие. Номер диктуют вслух и переписывают от руки - обрезать
+   его нельзя, лучше отдать окну восемь точек. 92vw - страховка для
+   совсем узких телефонов (старый SE - 320 точек). */
 @media (max-width:620px){
   .об-аккаунт{
-    position:fixed; top:56px; left:8px; right:8px; min-width:0;
+    position:fixed; top:56px; left:8px; right:auto;
+    width:min(240px, 92vw); min-width:0;
   }
 }
 
