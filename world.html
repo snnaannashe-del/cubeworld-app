@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Мир · CubeWorld</title>
 <meta name="theme-color" content="#050518">
-<link rel="icon" href="icons/favicon.svg?v=20261123-374">
+<link rel="icon" href="icons/favicon.svg?v=20261123-375">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261123-374">
-<link rel="stylesheet" href="shared/window.css?v=20261123-374">
-<link rel="stylesheet" href="shared/account.css?v=20261123-374">
-<script src="shared/theme.js?v=20261123-374"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261123-375">
+<link rel="stylesheet" href="shared/window.css?v=20261123-375">
+<link rel="stylesheet" href="shared/account.css?v=20261123-375">
+<script src="shared/theme.js?v=20261123-375"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -346,20 +346,20 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261123-374"></script>
-<script src="shared/ui.js?v=20261123-374"></script>
-<script src="shared/смайлы.js?v=20261123-374"></script>
-<script src="shared/лица.js?v=20261123-374"></script>
-<script src="shared/эфир.js?v=20261123-374"></script>
-<script src="shared/icons.js?v=20261123-374"></script>
-<script src="shared/window.js?v=20261123-374"></script>
-<script src="shared/без-копий.js?v=20261123-374"></script>
-<script src="shared/time.js?v=20261123-374"></script>
-<script src="shared/auth.js?v=20261123-374"></script>
-<script src="shared/account.js?v=20261123-374"></script>
-<script src="shared/формы.js?v=20261123-374"></script>
-<script src="shared/игра.js?v=20261123-374"></script>
-<script src="shared/персонаж.js?v=20261123-374"></script>
+<script src="shared/api.js?v=20261123-375"></script>
+<script src="shared/ui.js?v=20261123-375"></script>
+<script src="shared/смайлы.js?v=20261123-375"></script>
+<script src="shared/лица.js?v=20261123-375"></script>
+<script src="shared/эфир.js?v=20261123-375"></script>
+<script src="shared/icons.js?v=20261123-375"></script>
+<script src="shared/window.js?v=20261123-375"></script>
+<script src="shared/без-копий.js?v=20261123-375"></script>
+<script src="shared/time.js?v=20261123-375"></script>
+<script src="shared/auth.js?v=20261123-375"></script>
+<script src="shared/account.js?v=20261123-375"></script>
+<script src="shared/формы.js?v=20261123-375"></script>
+<script src="shared/игра.js?v=20261123-375"></script>
+<script src="shared/персонаж.js?v=20261123-375"></script>
 <script>
 'use strict';
 
@@ -655,6 +655,64 @@ function нарисоватьЗнак(имя, x, y, сторона, цвет) {
   К.restore();
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   СМАЙЛ НА ТАБЛИЧКЕ - В ЦВЕТЕ КУБА, А НЕ В СВОЁМ.
+
+   Смайл рисует система, и рисует его цветным: палитра разноцветная,
+   яблоко зелёное, замок золотой. На табличке куба это выбивается -
+   рядом стоят наши значки одной линией, в цвете куба.
+
+   Красили фильтром холста (ctx.filter). На компьютере он работает, и
+   Анна видела ровно то, что задумано. На её айфоне - нет: Сафари
+   выучил фильтр у холста совсем недавно, а до того молча его
+   пропускал. Поэтому в мире на телефоне смайлы стояли в своих родных
+   цветах, а на компьютере - в цвете куба. Одна программа, два вида.
+
+   Запасной путь работает везде и без фильтров: рисуем смайл на
+   отдельном маленьком холсте, заливаем этот холст цветом в режиме
+   source-in - краска ложится только туда, где смайл, - и переносим
+   готовое на табличку. Выходит силуэт смайла в цвете куба.
+
+   Поддержку спрашиваем один раз: присвоили фильтр и прочли обратно.
+   Не умеет - вернётся пустое.
+   ═══════════════════════════════════════════════════════════════════════ */
+var ФИЛЬТРХОЛСТА = (function () {
+  try {
+    var к = document.createElement('canvas').getContext('2d');
+    к.filter = 'grayscale(1)';
+    return к.filter === 'grayscale(1)';
+  } catch (е) { return false; }
+})();
+
+var ХОЛСТИК = null;
+
+function смайлВЦвете(смайл, x, y, цвет) {
+  if (!смайл) return;
+  if (ФИЛЬТРХОЛСТА && CW.тонЗнака) {
+    К.filter = CW.тонЗнака(цвет);
+    К.fillText(смайл, x, y);
+    К.filter = 'none';
+    return;
+  }
+  var ш = Math.ceil(К.measureText(смайл).width) + 4;
+  var в = 22, низ = 15;              /* где у смайла основание строки */
+  var густо = Math.min(window.devicePixelRatio || 1, 3);
+  if (!ХОЛСТИК) ХОЛСТИК = document.createElement('canvas');
+  ХОЛСТИК.width = Math.max(1, Math.ceil(ш * густо));
+  ХОЛСТИК.height = Math.max(1, Math.ceil(в * густо));
+  var м = ХОЛСТИК.getContext('2d');
+  м.setTransform(густо, 0, 0, густо, 0, 0);
+  м.clearRect(0, 0, ш, в);
+  м.font = К.font;
+  м.textAlign = 'left';
+  м.textBaseline = 'alphabetic';
+  м.fillText(смайл, 0, низ);
+  м.globalCompositeOperation = 'source-in';
+  м.fillStyle = цвет;
+  м.fillRect(0, 0, ш, в);
+  К.drawImage(ХОЛСТИК, x, y - низ, ш, в);
+}
+
 /* Подпись над кубом: рамка, значок с именем, часы, «★ МОЙ ★». */
 function подписать(т, куб) {
   /* У персонажа подписи нет: табличка вставала ему ровно на глаза. */
@@ -730,9 +788,7 @@ function подписать(т, куб) {
        куба. Раньше фильтр ставился только при своём цвете, и смайл у
        кубов без него оставался жёлтым, хотя в списке «Юниверс» тот же
        куб стоял в цвете. Красится значок, не куб. */
-    if (CW.тонЗнака) К.filter = CW.тонЗнака(цветЗнака);
-    К.fillText(смайл, слева2, y + 15);
-    К.filter = 'none';
+    смайлВЦвете(смайл, слева2, y + 15, цветЗнака);
     К.fillText(имя, слева2 + шС, y + 15);
     К.textAlign = 'center';
   } else {
@@ -1602,6 +1658,7 @@ function показатьКурсы(куски) {
   if (состав !== СОСТАВ || курсы.length !== куски.length * 2) {
     СОСТАВ = состав;
     лента.innerHTML = куски.join('') + куски.join('');
+    поехали(лента);
     return;
   }
 
@@ -1623,6 +1680,30 @@ function показатьКурсы(куски) {
       }
     }
   }
+}
+
+/* ── ПОЕЗДКА НАЧИНАЕТСЯ, КОГДА ЕСТЬ ЧТО ВЕЗТИ ─────────────────────
+   Лента едет на -50% СВОЕЙ ширины. Проценты считаются от ширины, а
+   ширина до прихода цен равна нулю: ноль процентов от нуля - это ноль.
+   Хром пересчитывает шаг, как только лента наполнилась, и поездка идёт.
+   Сафари на айфоне - нет: он берёт то, что посчитал в начале, и лента
+   стоит на месте, пока что-нибудь не заставит её пересчитаться. У Анны
+   это случалось через тридцать-пятьдесят секунд, когда приходили
+   следующие цены.
+
+   Поэтому поездку заводим ЗАНОВО сразу после того, как лента
+   наполнилась: снимаем движение, трогаем offsetWidth (это заставляет
+   браузер пересчитать размеры прямо сейчас) и возвращаем. Проценты
+   считаются уже от настоящей ширины, и лента едет с первой секунды.
+
+   Делаем это только при смене состава, не при обновлении цифр: иначе
+   каждые полминуты лента прыгала бы в начало. */
+function поехали(лента) {
+  try {
+    лента.style.animation = 'none';
+    void лента.offsetWidth;
+    лента.style.animation = '';
+  } catch (е) {}
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
