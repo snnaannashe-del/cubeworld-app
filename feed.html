@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Лента · CubeWorld</title>
 <meta name="theme-color" content="#01010c">
-<link rel="icon" href="icons/favicon.svg?v=20261123-385">
-<link rel="stylesheet" href="shared/style.css?v=20261123-385">
-<link rel="stylesheet" href="shared/window.css?v=20261123-385">
-<link rel="stylesheet" href="shared/account.css?v=20261123-385">
-<script src="shared/theme.js?v=20261123-385"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-385">
+<link rel="icon" href="icons/favicon.svg?v=20261123-386">
+<link rel="stylesheet" href="shared/style.css?v=20261123-386">
+<link rel="stylesheet" href="shared/window.css?v=20261123-386">
+<link rel="stylesheet" href="shared/account.css?v=20261123-386">
+<script src="shared/theme.js?v=20261123-386"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-386">
 <!--
   ЛЕНТА.
 
@@ -345,7 +345,13 @@
   .об-место:has(.две-колонки){ overflow:hidden; }
   .две-колонки{ height:100%; }
   .правая{ display:none; }
-  .левая{ flex:1 1 auto; margin:0; padding:0; }
+  /* Пишем «.две-колонки > .левая», а не просто «.левая»: двумя
+     десятками строк выше стоит ровно такой же двойной отбор с полем
+     в 21 точку, и он весомее одиночного - медиазапрос этого не
+     меняет. Из-за этого лента на телефоне до сих пор не доходила до
+     краёв: сверху и снизу у неё оставалась полоса в 21 точку, а
+     ролик должен занимать экран целиком. */
+  .две-колонки > .левая{ flex:1 1 auto; margin:0; padding:0; }
   .столб{ width:100%; height:100%; max-height:none; aspect-ratio:auto;
     margin:0; border:none; border-radius:0; }
 }
@@ -354,19 +360,19 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-385"></script>
-<script src="shared/ui.js?v=20261123-385"></script>
-<script src="shared/смайлы.js?v=20261123-385"></script>
-<script src="shared/лица.js?v=20261123-385"></script>
-<script src="shared/эфир.js?v=20261123-385"></script>
-<script src="shared/icons.js?v=20261123-385"></script>
-<script src="shared/window.js?v=20261123-385"></script>
-<script src="shared/без-копий.js?v=20261123-385"></script>
-<script src="shared/time.js?v=20261123-385"></script>
-<script src="shared/auth.js?v=20261123-385"></script>
-<script src="shared/account.js?v=20261123-385"></script>
-<script src="shared/shell.js?v=20261123-385"></script>
-<script src="shared/shelf.js?v=20261123-385"></script>
+<script src="shared/api.js?v=20261123-386"></script>
+<script src="shared/ui.js?v=20261123-386"></script>
+<script src="shared/смайлы.js?v=20261123-386"></script>
+<script src="shared/лица.js?v=20261123-386"></script>
+<script src="shared/эфир.js?v=20261123-386"></script>
+<script src="shared/icons.js?v=20261123-386"></script>
+<script src="shared/window.js?v=20261123-386"></script>
+<script src="shared/без-копий.js?v=20261123-386"></script>
+<script src="shared/time.js?v=20261123-386"></script>
+<script src="shared/auth.js?v=20261123-386"></script>
+<script src="shared/account.js?v=20261123-386"></script>
+<script src="shared/shell.js?v=20261123-386"></script>
+<script src="shared/shelf.js?v=20261123-386"></script>
 <script>
 'use strict';
 
