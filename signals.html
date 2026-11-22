@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Сигналы · CubeWorld</title>
 <meta name="theme-color" content="#01010c">
-<link rel="icon" href="icons/favicon.svg?v=20261123-384">
-<link rel="stylesheet" href="shared/style.css?v=20261123-384">
-<link rel="stylesheet" href="shared/window.css?v=20261123-384">
-<link rel="stylesheet" href="shared/account.css?v=20261123-384">
-<script src="shared/theme.js?v=20261123-384"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-384">
+<link rel="icon" href="icons/favicon.svg?v=20261123-385">
+<link rel="stylesheet" href="shared/style.css?v=20261123-385">
+<link rel="stylesheet" href="shared/window.css?v=20261123-385">
+<link rel="stylesheet" href="shared/account.css?v=20261123-385">
+<script src="shared/theme.js?v=20261123-385"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-385">
 <!--
   СИГНАЛЫ КУБА.
 
@@ -182,9 +182,40 @@
 .цена.цель .знач{ color:var(--зелёный); }
 .цена.стоп .знач{ color:var(--красный); }
 @media (max-width:620px){
-  .цены{ grid-template-columns:1fr; }
+  /* ── ТРИ ЦЕНЫ ОДНОЙ ПЛАШКОЙ С РАЗДЕЛИТЕЛЯМИ ──
+     Столбиком три отдельные плашки читались как три разные вещи, а
+     это одна: вход, цель и стоп одного сигнала. Собираем их в одну
+     плашку, а между строками проводим черту - ровно так Анна и
+     нарисовала на снимке 23 ноября. */
+  .цены{
+    grid-template-columns:1fr; gap:0;
+    background:rgba(255,255,255,.04); border-radius:9px; overflow:hidden;
+  }
+  .цена{ background:none; border-radius:0; padding:8px 10px; }
+  .цена + .цена{ border-top:1px solid var(--край); }
+
   .сигнал .ряд{ flex-wrap:wrap; }
   .кто{ margin-left:0; }
+
+  /* ── ШЕСТЬ ОТБОРОВ В ОДИН РЯД ──
+     «Все, Открытые, Лонг, Шорт, Мои, Авторы» переносились вторым
+     этажом, и шапка занимала два ряда из трёх видимых. Ужимаем поля,
+     буквы и зазор, а значки у трёх отборов прячем: в покое они всё
+     равно серые, а выбранный виден подложкой. На 390 точках ряд
+     складывается в 318 - с запасом. */
+  .вкладки{ flex-wrap:nowrap; gap:3px; margin-bottom:10px; }
+  .вкладка{
+    padding:7px 9px; font-size:0.8rem; border-radius:9px;
+    white-space:nowrap; gap:0;
+  }
+  .вкладка svg{ display:none; }
+
+  /* Плюс и восклицательный знак стояли в двенадцати точках друг от
+     друга - на телефоне это выглядело как две случайные кнопки по
+     разным углам. Ставим их рядом, а воздух оставляем только после
+     заголовка. */
+  .верх-сигналов{ gap:2px; }
+  .верх-сигналов h1{ margin-right:6px; font-size:1.25rem; }
 }
 
 /* Низ карточки: заметка слева, кнопка справа, одной строкой. На
@@ -234,18 +265,18 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-384"></script>
-<script src="shared/ui.js?v=20261123-384"></script>
-<script src="shared/смайлы.js?v=20261123-384"></script>
-<script src="shared/лица.js?v=20261123-384"></script>
-<script src="shared/эфир.js?v=20261123-384"></script>
-<script src="shared/icons.js?v=20261123-384"></script>
-<script src="shared/window.js?v=20261123-384"></script>
-<script src="shared/без-копий.js?v=20261123-384"></script>
-<script src="shared/time.js?v=20261123-384"></script>
-<script src="shared/auth.js?v=20261123-384"></script>
-<script src="shared/account.js?v=20261123-384"></script>
-<script src="shared/shell.js?v=20261123-384"></script>
+<script src="shared/api.js?v=20261123-385"></script>
+<script src="shared/ui.js?v=20261123-385"></script>
+<script src="shared/смайлы.js?v=20261123-385"></script>
+<script src="shared/лица.js?v=20261123-385"></script>
+<script src="shared/эфир.js?v=20261123-385"></script>
+<script src="shared/icons.js?v=20261123-385"></script>
+<script src="shared/window.js?v=20261123-385"></script>
+<script src="shared/без-копий.js?v=20261123-385"></script>
+<script src="shared/time.js?v=20261123-385"></script>
+<script src="shared/auth.js?v=20261123-385"></script>
+<script src="shared/account.js?v=20261123-385"></script>
+<script src="shared/shell.js?v=20261123-385"></script>
 <script>
 'use strict';
 

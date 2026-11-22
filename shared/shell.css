@@ -740,7 +740,17 @@ body{ background:var(--вне-рамы); }
   display:grid; gap:9px; margin-bottom:14px;
   grid-template-columns:repeat(3,minmax(0,1fr));
 }
-@media (max-width:560px){ .сетка-кошельков{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+/* На телефоне тоже три в ряд, как в боевой: по два девять кошельков
+   вытягивались в пять рядов, и нижние уходили за экран. Три плитки на
+   390 точках дают по 118 на каждую - значку в 40 точек и короткому
+   имени этого хватает с запасом. */
+@media (max-width:560px){
+  .сетка-кошельков{ gap:7px; }
+  .кошелёк{ padding:10px 2px 7px; gap:5px; }
+  .кошелёк .плитка{ width:34px; height:34px; }
+  .кошелёк .плитка svg{ width:20px; height:20px; }
+  .кошелёк .имя{ font-size:0.6667rem; }
+}
 .кошелёк{
   background:rgba(255,255,255,.03);
   border:1px solid var(--кош-край, var(--край)); border-radius:12px;
@@ -795,10 +805,8 @@ body{ background:var(--вне-рамы); }
   font-size:0.9333rem; font-weight:700; color:var(--текст);
   text-align:center; margin-bottom:6px;
 }
-.кош-слова{
-  font-size:0.8rem; color:var(--текст2); line-height:1.5;
-  text-align:center; margin-bottom:12px;
-}
+/* Правила для «кош-слова» здесь больше нет: строчку-объяснение под
+   заголовком окна с адресом убрали совсем (shared/wallets.js). */
 .кош-поле{
   width:100%; box-sizing:border-box; padding:9px 11px; border-radius:10px;
   background:var(--поле); border:1px solid var(--край); color:var(--текст);

@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Заработать · CubeWorld</title>
 <meta name="theme-color" content="#01010c">
-<link rel="icon" href="icons/favicon.svg?v=20261123-384">
-<link rel="stylesheet" href="shared/style.css?v=20261123-384">
-<link rel="stylesheet" href="shared/window.css?v=20261123-384">
-<link rel="stylesheet" href="shared/account.css?v=20261123-384">
-<script src="shared/theme.js?v=20261123-384"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-384">
+<link rel="icon" href="icons/favicon.svg?v=20261123-385">
+<link rel="stylesheet" href="shared/style.css?v=20261123-385">
+<link rel="stylesheet" href="shared/window.css?v=20261123-385">
+<link rel="stylesheet" href="shared/account.css?v=20261123-385">
+<script src="shared/theme.js?v=20261123-385"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-385">
 <!--
   ЗАРАБОТАТЬ.
 
@@ -233,7 +233,15 @@
 .месяц .подпись{ margin-top:3px; font-size:10px; color:var(--текст3); }
 
 @media (max-width:560px){
-  .тройка{ grid-template-columns:1fr; }
+  /* ── ТРИ ЧИСЛА ОСТАЮТСЯ В ОДИН РЯД ──
+     Столбиком три одинаковые плашки занимали треть экрана, и чтобы
+     увидеть третье число, приходилось крутить. Ряд из трёх на 390
+     точках даёт каждой ячейке по 122 - этого хватает и числу, и
+     короткой подписи. Ужимаем поля и буквы, а не ломаем ряд. */
+  .тройка{ gap:6px; }
+  .тройка .ячейка{ padding:9px 4px; }
+  .тройка .значение{ font-size:15px; }
+  .тройка .подпись{ font-size:9px; line-height:1.25; }
   .месяц{ grid-template-columns:repeat(2,1fr); }
 }
 
@@ -254,19 +262,19 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-384"></script>
-<script src="shared/ui.js?v=20261123-384"></script>
-<script src="shared/смайлы.js?v=20261123-384"></script>
-<script src="shared/лица.js?v=20261123-384"></script>
-<script src="shared/эфир.js?v=20261123-384"></script>
-<script src="shared/icons.js?v=20261123-384"></script>
-<script src="shared/window.js?v=20261123-384"></script>
-<script src="shared/без-копий.js?v=20261123-384"></script>
-<script src="shared/time.js?v=20261123-384"></script>
-<script src="shared/auth.js?v=20261123-384"></script>
-<script src="shared/account.js?v=20261123-384"></script>
-<script src="shared/shell.js?v=20261123-384"></script>
-<script src="shared/wallets.js?v=20261123-384"></script>
+<script src="shared/api.js?v=20261123-385"></script>
+<script src="shared/ui.js?v=20261123-385"></script>
+<script src="shared/смайлы.js?v=20261123-385"></script>
+<script src="shared/лица.js?v=20261123-385"></script>
+<script src="shared/эфир.js?v=20261123-385"></script>
+<script src="shared/icons.js?v=20261123-385"></script>
+<script src="shared/window.js?v=20261123-385"></script>
+<script src="shared/без-копий.js?v=20261123-385"></script>
+<script src="shared/time.js?v=20261123-385"></script>
+<script src="shared/auth.js?v=20261123-385"></script>
+<script src="shared/account.js?v=20261123-385"></script>
+<script src="shared/shell.js?v=20261123-385"></script>
+<script src="shared/wallets.js?v=20261123-385"></script>
 <script>
 'use strict';
 
