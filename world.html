@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Мир · CubeWorld</title>
 <meta name="theme-color" content="#050518">
-<link rel="icon" href="icons/favicon.svg?v=20261122-369">
+<link rel="icon" href="icons/favicon.svg?v=20261123-370">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261122-369">
-<link rel="stylesheet" href="shared/window.css?v=20261122-369">
-<link rel="stylesheet" href="shared/account.css?v=20261122-369">
-<script src="shared/theme.js?v=20261122-369"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261123-370">
+<link rel="stylesheet" href="shared/window.css?v=20261123-370">
+<link rel="stylesheet" href="shared/account.css?v=20261123-370">
+<script src="shared/theme.js?v=20261123-370"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -73,8 +73,9 @@
    рисунок внутри приходилось разглядывать. */
 .столбик button svg{ width:27px; height:27px; }
 
-.счёт-мира{ display:flex; align-items:center; gap:7px; font-size:0.8rem;
-  color:var(--текст2); white-space:nowrap; }
+/* Правил для .счёт-мира здесь больше нет: счётчика «N онлайн · N
+   кубов» нет в разметке. Зелёная точка .точка осталась - её берут
+   подписи кубов на небе. */
 .точка{ width:6px; height:6px; border-radius:50%; background:var(--зелёный);
   box-shadow:0 0 7px var(--зелёный); flex:0 0 6px; }
 
@@ -91,13 +92,20 @@
 .курс .вверх{ color:var(--зелёный); } .курс .вниз{ color:var(--красный); }
 
 .полка{ display:flex; align-items:center; gap:8px; flex:0 0 auto; }
+/* Микрофон и «домой» стоят без обводки и без заливки - как значки в
+   шапке разделов (.об-круг в shell.css). Серый кружок вокруг каждого
+   делал из двух значков две плашки, и полоса мира читалась набором
+   кнопок, а не рядом знаков. Обводка появляется под пальцем и под
+   мышью: тогда она к месту, она показывает отклик. */
 .круг-верх{
   width:32px; height:32px; flex:0 0 32px; border-radius:50%;
-  border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04);
+  border:1px solid transparent; background:none;
   color:var(--текст2); cursor:pointer; font-size:0.9rem;
   display:flex; align-items:center; justify-content:center;
+  transition:background .13s ease, color .13s ease, transform .1s ease;
 }
-.круг-верх:hover{ color:var(--текст); border-color:rgba(255,255,255,.22); }
+.круг-верх:hover{ color:var(--текст); background:rgba(255,255,255,.07); }
+.круг-верх:active{ background:rgba(255,255,255,.14); transform:scale(.9); }
 
 .пилюля{
   display:flex; align-items:center; gap:7px; border-radius:var(--радиус-круг);
@@ -257,22 +265,34 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 }
 .состояние.прячется{ opacity:0; }
 
+/* ── ТЕЛЕФОН: ПОЛОСА МИРА В ДВЕ СТРОКИ ────────────────────────────
+   Было так: курсы прятались совсем. Выходило нечестно - в мире это
+   единственное место, где видно, что почём, и на телефоне его просто
+   не было.
+
+   Стало: полоса переносится. Первой строкой знак, лицо и кнопки,
+   прижатые к правому краю; второй - бегущая строка курсов во всю
+   ширину. Высоту отпускаем: при переносе 54 точки держать нельзя,
+   вторая строка не поместится. */
 @media (max-width:760px){
-  .курсы{ display:none; }
-  .счёт-мира .кубов{ display:none; }
+  .верх{ flex-wrap:wrap; height:auto; padding-top:calc(7px + env(safe-area-inset-top));
+    padding-bottom:5px; row-gap:2px; }
+  /* Кнопки в правый угол. На широком экране их туда толкают курсы
+     (они между лицом и полкой и тянутся), а при переносе курсы уходят
+     на свою строку, и толкать становится некому. */
+  .полка{ margin-left:auto; }
+  .курсы{ flex:1 0 100%; order:2; min-width:0; }
   .пилюля .слово{ display:none; }
   .пилюля{ padding:7px 11px; }
   .водяной{ bottom:96px; }
 }
 
-/* ── УЗКИЙ ТЕЛЕФОН: ВЕРХНЯЯ ПОЛОСА МИРА ВЛЕЗАЕТ ЦЕЛИКОМ ──
+/* ── УЗКИЙ ТЕЛЕФОН: ПЕРВАЯ СТРОКА ВЛЕЗАЕТ ЦЕЛИКОМ ──
    На экране в 390 точек правая полка уезжала за край: баланс был
-   виден наполовину. Подпись «1 онлайн» в мире не главное - на узком
-   экране её прячем, а зазоры ужимаем. */
+   виден наполовину. Ужимаем зазоры и поля. */
 @media (max-width:430px){
   .верх{ gap:8px; padding-left:10px; padding-right:10px; }
-  .полка{ gap:6px; }
-  .счёт-мира{ display:none; }
+  .полка{ gap:4px; }
   .круг-верх{ width:31px; height:31px; flex:0 0 31px; }
   .пилюля{ padding:6px 9px; }
 }
@@ -284,10 +304,11 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 <div class="верх">
   <div class="знак-мира">Cube<span>World</span></div>
   <button id="лицо-кнопка" title="Аккаунт"></button>
-  <div class="счёт-мира">
-    <span class="точка"></span><span id="онлайн">1 онлайн</span>
-    <span class="кубов" id="сколько-кубов"></span>
-  </div>
+  <!-- Счётчика «N онлайн · N кубов» здесь больше нет. Он занимал место
+       в полосе, а сказать мог только то, что и так видно: кубы на небе
+       можно пересчитать глазами, а число людей рядом ни на что не
+       влияет. На телефоне он и вовсе прятался - значит, без него
+       обходились и раньше. -->
   <div class="курсы"><div class="курсы-лента" id="курсы-лента"></div></div>
   <div class="полка">
     <button class="круг-верх" id="кн-микрофон" title="Голосовые команды"></button>
@@ -318,20 +339,20 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261122-369"></script>
-<script src="shared/ui.js?v=20261122-369"></script>
-<script src="shared/смайлы.js?v=20261122-369"></script>
-<script src="shared/лица.js?v=20261122-369"></script>
-<script src="shared/эфир.js?v=20261122-369"></script>
-<script src="shared/icons.js?v=20261122-369"></script>
-<script src="shared/window.js?v=20261122-369"></script>
-<script src="shared/без-копий.js?v=20261122-369"></script>
-<script src="shared/time.js?v=20261122-369"></script>
-<script src="shared/auth.js?v=20261122-369"></script>
-<script src="shared/account.js?v=20261122-369"></script>
-<script src="shared/формы.js?v=20261122-369"></script>
-<script src="shared/игра.js?v=20261122-369"></script>
-<script src="shared/персонаж.js?v=20261122-369"></script>
+<script src="shared/api.js?v=20261123-370"></script>
+<script src="shared/ui.js?v=20261123-370"></script>
+<script src="shared/смайлы.js?v=20261123-370"></script>
+<script src="shared/лица.js?v=20261123-370"></script>
+<script src="shared/эфир.js?v=20261123-370"></script>
+<script src="shared/icons.js?v=20261123-370"></script>
+<script src="shared/window.js?v=20261123-370"></script>
+<script src="shared/без-копий.js?v=20261123-370"></script>
+<script src="shared/time.js?v=20261123-370"></script>
+<script src="shared/auth.js?v=20261123-370"></script>
+<script src="shared/account.js?v=20261123-370"></script>
+<script src="shared/формы.js?v=20261123-370"></script>
+<script src="shared/игра.js?v=20261123-370"></script>
+<script src="shared/персонаж.js?v=20261123-370"></script>
 <script>
 'use strict';
 
@@ -905,7 +926,6 @@ function пересобрать() {
     else поставить(куб, и, видные.length);
   });
 
-  $('сколько-кубов').textContent = М.тела.length + ' ' + склонение(М.тела.length);
   состояние(М.тела.length
     ? ''
     : (М.кубы.length ? 'Ни один куб не отмечен в Юниверсе' : 'Кубов пока нет'),
@@ -925,13 +945,9 @@ function площадкин(куб) {
   return !!куб && куб.owner_id == null;
 }
 
-function склонение(н) {
-  var о = н % 10, д = н % 100;
-  if (д >= 11 && д <= 14) return 'кубов';
-  if (о === 1) return 'куб';
-  if (о >= 2 && о <= 4) return 'куба';
-  return 'кубов';
-}
+/* Функции «склонение» здесь больше нет: её звала одна-единственная
+   надпись «N кубов», а надписи не стало. Код, который никто не зовёт,
+   со временем начинает врать, и никто этого не замечает. */
 
 function состояние(текст, спрятать) {
   var с = $('состояние');
@@ -1452,12 +1468,9 @@ function показатьМеня(я) {
    одета через него (CW.лица.одеть), и свой слушатель «cw-лицо» здесь
    был вторым описанием той же работы. */
 
-CW.спросить('/stats', { тихо: true, сроком: 8000 }).then(function (д) {
-  if (!д) return;
-  /* Поле называется online_users. Раньше тут читали «online» — такого
-     поля сервер не отдаёт, и счётчик всегда молчал. */
-  if (д.online_users != null) $('онлайн').textContent = д.online_users + ' онлайн';
-});
+/* Запроса /stats здесь больше нет: он приезжал ради одной надписи
+   «N онлайн», а надписи не стало. Лишний запрос на каждом заходе в мир
+   ради того, что никто не читает, - это и расход, и лишнее ожидание. */
 
 /* ═══════════════════════════════════════════════════════════════════════
    КУРСЫ. Сперва спрашиваем свой сервер и только потом биржу: биржа
