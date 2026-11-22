@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Мир · CubeWorld</title>
 <meta name="theme-color" content="#050518">
-<link rel="icon" href="icons/favicon.svg?v=20261123-373">
+<link rel="icon" href="icons/favicon.svg?v=20261123-374">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261123-373">
-<link rel="stylesheet" href="shared/window.css?v=20261123-373">
-<link rel="stylesheet" href="shared/account.css?v=20261123-373">
-<script src="shared/theme.js?v=20261123-373"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261123-374">
+<link rel="stylesheet" href="shared/window.css?v=20261123-374">
+<link rel="stylesheet" href="shared/account.css?v=20261123-374">
+<script src="shared/theme.js?v=20261123-374"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -346,20 +346,20 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261123-373"></script>
-<script src="shared/ui.js?v=20261123-373"></script>
-<script src="shared/смайлы.js?v=20261123-373"></script>
-<script src="shared/лица.js?v=20261123-373"></script>
-<script src="shared/эфир.js?v=20261123-373"></script>
-<script src="shared/icons.js?v=20261123-373"></script>
-<script src="shared/window.js?v=20261123-373"></script>
-<script src="shared/без-копий.js?v=20261123-373"></script>
-<script src="shared/time.js?v=20261123-373"></script>
-<script src="shared/auth.js?v=20261123-373"></script>
-<script src="shared/account.js?v=20261123-373"></script>
-<script src="shared/формы.js?v=20261123-373"></script>
-<script src="shared/игра.js?v=20261123-373"></script>
-<script src="shared/персонаж.js?v=20261123-373"></script>
+<script src="shared/api.js?v=20261123-374"></script>
+<script src="shared/ui.js?v=20261123-374"></script>
+<script src="shared/смайлы.js?v=20261123-374"></script>
+<script src="shared/лица.js?v=20261123-374"></script>
+<script src="shared/эфир.js?v=20261123-374"></script>
+<script src="shared/icons.js?v=20261123-374"></script>
+<script src="shared/window.js?v=20261123-374"></script>
+<script src="shared/без-копий.js?v=20261123-374"></script>
+<script src="shared/time.js?v=20261123-374"></script>
+<script src="shared/auth.js?v=20261123-374"></script>
+<script src="shared/account.js?v=20261123-374"></script>
+<script src="shared/формы.js?v=20261123-374"></script>
+<script src="shared/игра.js?v=20261123-374"></script>
+<script src="shared/персонаж.js?v=20261123-374"></script>
 <script>
 'use strict';
 
@@ -1563,7 +1563,7 @@ function курсы() {
         куски.push('<div class="курс"><span class="сим">цены с задержкой ~15 мин</span></div>');
       }
       if (!куски.length) return;
-      поставить(куски);
+      показатьКурсы(куски);
     });
 }
 
@@ -1583,7 +1583,15 @@ function курсы() {
    обе половины. */
 var СОСТАВ = '';
 
-function поставить(куски) {
+/* Имя у неё своё, не «поставить»: такая функция в этом файле уже
+   есть - она ставит кубы по кольцу. Две функции с одним именем в
+   одном файле не спорят и не ругаются: вторая молча заменяет первую,
+   и расстановка кубов начинает звать ленту курсов. Так мир и перестал
+   собираться 23 ноября: вместо неба выходило «Не вышло собрать мир»,
+   потому что ошибку ловил общий catch и показывал её одной строчкой.
+   Урок простой: новой функции - новое имя, и проверять надо не только
+   то, что чинил. */
+function показатьКурсы(куски) {
   var лента = $('курсы-лента');
   if (!лента) return;
   var состав = куски.map(function (к) {
