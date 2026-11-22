@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Мир · CubeWorld</title>
 <meta name="theme-color" content="#050518">
-<link rel="icon" href="icons/favicon.svg?v=20261123-375">
+<link rel="icon" href="icons/favicon.svg?v=20261123-376">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261123-375">
-<link rel="stylesheet" href="shared/window.css?v=20261123-375">
-<link rel="stylesheet" href="shared/account.css?v=20261123-375">
-<script src="shared/theme.js?v=20261123-375"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261123-376">
+<link rel="stylesheet" href="shared/window.css?v=20261123-376">
+<link rel="stylesheet" href="shared/account.css?v=20261123-376">
+<script src="shared/theme.js?v=20261123-376"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -299,9 +299,17 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
    виден наполовину. Ужимаем зазоры и поля. */
 @media (max-width:430px){
   .верх{ gap:8px; padding-left:10px; padding-right:10px; }
-  .полка{ gap:4px; }
-  .круг-верх{ width:31px; height:31px; flex:0 0 31px; }
+  /* Правый ряд стоит вплотную - как в шапке разделов. Зазор между
+     кнопками не нужен: воздух у каждой уже внутри, кружок на
+     тринадцать точек больше своего значка. Четыре точки между ними
+     были ничьи, и ряд выглядел разреженным, а не собранным. */
+  .полка{ gap:0; }
+  .круг-верх{ width:30px; height:30px; flex:0 0 30px; }
   .пилюля{ padding:6px 9px; }
+  /* Пилюли «Игры» и баланс - с рамкой, и вплотную к кружкам они бы
+     слиплись. Им хватает двух точек. */
+  .полка .пилюля + .пилюля{ margin-left:2px; }
+  .полка .круг-верх + .пилюля{ margin-left:3px; }
 }
 </style>
 </head>
@@ -346,20 +354,20 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261123-375"></script>
-<script src="shared/ui.js?v=20261123-375"></script>
-<script src="shared/смайлы.js?v=20261123-375"></script>
-<script src="shared/лица.js?v=20261123-375"></script>
-<script src="shared/эфир.js?v=20261123-375"></script>
-<script src="shared/icons.js?v=20261123-375"></script>
-<script src="shared/window.js?v=20261123-375"></script>
-<script src="shared/без-копий.js?v=20261123-375"></script>
-<script src="shared/time.js?v=20261123-375"></script>
-<script src="shared/auth.js?v=20261123-375"></script>
-<script src="shared/account.js?v=20261123-375"></script>
-<script src="shared/формы.js?v=20261123-375"></script>
-<script src="shared/игра.js?v=20261123-375"></script>
-<script src="shared/персонаж.js?v=20261123-375"></script>
+<script src="shared/api.js?v=20261123-376"></script>
+<script src="shared/ui.js?v=20261123-376"></script>
+<script src="shared/смайлы.js?v=20261123-376"></script>
+<script src="shared/лица.js?v=20261123-376"></script>
+<script src="shared/эфир.js?v=20261123-376"></script>
+<script src="shared/icons.js?v=20261123-376"></script>
+<script src="shared/window.js?v=20261123-376"></script>
+<script src="shared/без-копий.js?v=20261123-376"></script>
+<script src="shared/time.js?v=20261123-376"></script>
+<script src="shared/auth.js?v=20261123-376"></script>
+<script src="shared/account.js?v=20261123-376"></script>
+<script src="shared/формы.js?v=20261123-376"></script>
+<script src="shared/игра.js?v=20261123-376"></script>
+<script src="shared/персонаж.js?v=20261123-376"></script>
 <script>
 'use strict';
 
@@ -673,14 +681,28 @@ function нарисоватьЗнак(имя, x, y, сторона, цвет) {
    source-in - краска ложится только туда, где смайл, - и переносим
    готовое на табличку. Выходит силуэт смайла в цвете куба.
 
-   Поддержку спрашиваем один раз: присвоили фильтр и прочли обратно.
-   Не умеет - вернётся пустое.
+   ── ПОЧЕМУ ПРОВЕРЯЕМ КРАСКОЙ, А НЕ ВОПРОСОМ ──
+   Сперва я спрашивала просто: присвоила фильтр и прочла обратно.
+   Этого мало. Сафари у Анны ОТВЕЧАЕТ, что фильтр понял, а краску не
+   кладёт - и мы шли «рабочим» путём, который на её телефоне ничего не
+   красит. Снимок после той сборки пришёл ровно такой же.
+
+   Поэтому проверка делом: кладём серую точку под тем самым набором
+   фильтров, что и у значков, и смотрим, что вышло. Посерела и осталась
+   серой - фильтра нет, как бы браузер ни отвечал. Окрасилась - есть.
+   Одна точка, один раз за посещение.
    ═══════════════════════════════════════════════════════════════════════ */
 var ФИЛЬТРХОЛСТА = (function () {
   try {
-    var к = document.createElement('canvas').getContext('2d');
-    к.filter = 'grayscale(1)';
-    return к.filter === 'grayscale(1)';
+    var х = document.createElement('canvas');
+    х.width = х.height = 1;
+    var к = х.getContext('2d');
+    к.filter = 'grayscale(1) sepia(1) hue-rotate(90deg) saturate(4)';
+    к.fillStyle = '#808080';
+    к.fillRect(0, 0, 1, 1);
+    var д = к.getImageData(0, 0, 1, 1).data;
+    if (д[3] < 200) return false;
+    return (Math.max(д[0], д[1], д[2]) - Math.min(д[0], д[1], д[2])) > 30;
   } catch (е) { return false; }
 })();
 
