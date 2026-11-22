@@ -158,7 +158,9 @@
     }
 
     номера(); счёт();
-    setTimeout(function () { try { поле.focus(); } catch (е) {} }, 60);
+    /* Курсор ставим только мышью: на телефоне клавиатура, выехавшая
+       сама по себе, закрывает пол-окна (shared/ui.js, CW.встать). */
+    setTimeout(function () { CW.встать(поле); }, 60);
     return { тело: function () { return поле.value; } };
   }
 

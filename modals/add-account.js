@@ -89,7 +89,7 @@ CW.модаль('add-account', function (данные) {
   };
 
   М.открыть();
-  setTimeout(function () { поле.focus(); }, 60);
+  setTimeout(function () { CW.встать(поле); }, 60);
 
   function сказатьБеду(текст) {
     беда.textContent = текст;

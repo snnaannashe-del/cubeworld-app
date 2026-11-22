@@ -930,6 +930,26 @@
       var видимая = (окно.visualViewport && окно.visualViewport.height)
                  || окно.innerHeight || 0;
       if (р.top >= 0 && р.bottom <= видимая) return;
+
+      /* ── ДВИГАЕМ НУТРО ОКНА, А НЕ ВЕСЬ ЭКРАН ──
+         scrollIntoView, даже когда поле и правда не видно, двигает
+         ВСЕ прокручиваемые слои над ним: тело окна, лист раздела,
+         страницу. Со стороны это «окно прыгает по всему экрану» -
+         так Анна и сказала.
+
+         Если поле лежит в теле окна, двигаем только тело: окно
+         остаётся там, где стояло, а строка подъезжает к середине его
+         видимой части. Снаружи окна (поле в самой странице) остаётся
+         прежний путь. */
+      var своёОкно = у.closest ? у.closest('.ок-окно') : null;
+      var нутро = своёОкно ? своёОкно.querySelector('.ок-тело') : null;
+      if (нутро && нутро.contains(у) && нутро.scrollHeight > нутро.clientHeight) {
+        var рн = нутро.getBoundingClientRect();
+        var надо = (р.top - рн.top) - (нутро.clientHeight - р.height) / 2;
+        try { нутро.scrollTo({ top: нутро.scrollTop + надо, behavior: 'smooth' }); }
+        catch (о) { нутро.scrollTop += надо; }
+        return;
+      }
       try { у.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (о) {}
     }, 320);
   });
