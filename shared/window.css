@@ -3501,15 +3501,33 @@ select.кб-строка{ cursor:pointer; }
   padding:14px 16px; font:inherit; font-size:0.9333rem; line-height:1.6;
   color:var(--текст); background:transparent;
 }
+/* ── КОД И ЕГО НОМЕРА СТРОК МЕРЯЮТСЯ ОДНИМ ЧИСЛОМ ──
+   Номера слева - это отдельный столбик рядом с полем, и стоят они
+   против строк только пока у обоих один кегль и одна высота строки.
+   Числа были написаны дважды, и на телефоне это разъехалось: правило
+   «на устройствах с пальцем поле ввода не мельче шестнадцати точек»
+   (shared/style.css) подняло кегль ПОЛЯ до 16, а номера остались на
+   10,8. Шаг строки стал 24 против 16,25 - к десятой строке номер
+   оказывался против седьмой. Анна прислала это снимком 23 ноября.
+
+   Теперь кегль и высота строки записаны один раз, здесь, и оба берут
+   их отсюда. Поднимается кегль на телефоне - поднимается у обоих. */
+.фл-ряд{ --код-кегль:0.8667rem; --код-строка:1.5; }
+@media (pointer: coarse){
+  /* Ровно то же число, что стоит в запрете на приближение. Меньше
+     нельзя: Сафари приблизит страницу, как только человек станет в
+     поле. */
+  .фл-ряд{ --код-кегль:16px; }
+}
 .фл-поле.фл-код{
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  font-size:0.8667rem; line-height:1.5; white-space:pre;
+  font-size:var(--код-кегль); line-height:var(--код-строка); white-space:pre;
 }
 .фл-строки{
   flex:0 0 auto; overflow:hidden; text-align:right; user-select:none;
   padding:14px 8px 14px 14px; white-space:pre;
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  font-size:0.8667rem; line-height:1.5; color:var(--текст3);
+  font-size:var(--код-кегль); line-height:var(--код-строка); color:var(--текст3);
   border-right:1px solid var(--край);
 }
 
