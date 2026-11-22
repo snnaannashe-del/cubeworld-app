@@ -1415,7 +1415,7 @@
     if(!м || document.getElementById('cw-map-row')) return;
     var р = document.createElement('div');
     р.className = 'wb-acct-row'; р.id = 'cw-map-row';
-    р.innerHTML = '<i class="ti ti-world"></i> Живая карта';
+    р.innerHTML = '<i class="ti ti-world"></i> Карта';
     р.onclick = function(e){
       e.stopPropagation(); м.classList.remove('open'); window.cwOpenMap();
     };
