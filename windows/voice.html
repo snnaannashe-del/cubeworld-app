@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Голосовые команды · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-376">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-376">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-376">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-376">
-<script src="../shared/theme.js?v=20261123-376"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-376">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-377">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-377">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-377">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-377">
+<script src="../shared/theme.js?v=20261123-377"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-377">
 <!--
   ГОЛОСОВЫЕ КОМАНДЫ — окно поверх программы.
 
@@ -72,25 +72,31 @@
   color:var(--текст2); font:inherit; font-size:0.8333rem;
   padding:9px 10px; outline:none;
 }
-/* Кнопка звука. Выключено — обычная тихая кнопка, как все: гореть
-   золотом тому, что сейчас НЕ работает, незачем. Включили — вот тогда
-   золотая рамка и золотые буквы; та самая краска, которой раньше была
-   залита полоса-объяснение над списком. */
+/* ── КНОПКА ЗВУКА: ОДИН ЗНАЧОК, БЕЗ СЛОВА ─────────────────────────
+   Была кнопка со словом «Без звука». Слово длинное, и втроём - поиск,
+   язык, кнопка - они в строку не влезали: кнопка переносилась на
+   вторую строку, и под полосой оставалась пустая полоска во всю
+   ширину окна.
+
+   Теперь это квадратный значок рядом с языком. Что он значит, видно и
+   без слова: перечёркнутый динамик - молчит, обычный - говорит, и
+   включённый горит золотом. Слово не потеряно: оно в подсказке и в
+   метке для читалки, и его же говорит сам значок.
+
+   Выключено - обычная тихая кнопка, как все: гореть золотом тому, что
+   сейчас НЕ работает, незачем. */
 .гл-вслух{
-  flex:0 0 auto; display:flex; align-items:center; gap:7px; cursor:pointer;
-  padding:9px 13px; border-radius:11px;
-  border:1px solid var(--край); background:none;
-  color:var(--текст3); font:inherit; font-size:0.8333rem;
+  flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+  width:36px; height:36px; padding:0; cursor:pointer;
+  border-radius:11px; border:1px solid var(--край); background:none;
+  color:var(--текст3); font:inherit;
 }
 .гл-вслух:hover{ color:var(--текст2); border-color:var(--край2); }
-/* Значок стоит на одной линии с надписью, а не на две точки выше:
-   у svg своя базовая линия, и без line-height:0 он приподнимается
-   над строчными буквами. То же правило, что у «.зн» в полосе мира. */
+/* Значок стоит ровно по середине кнопки: у svg своя базовая линия, и
+   без line-height:0 он приподнимается. */
 .гл-вслух .зн{ display:inline-flex; align-items:center; line-height:0; }
-.гл-вслух svg{ width:16px; height:16px; display:block; }
-.гл-вслух.вкл{
-  border-color:rgba(255,176,32,.9); color:#ffb020; font-weight:600;
-}
+.гл-вслух svg{ width:17px; height:17px; display:block; }
+.гл-вслух.вкл{ border-color:rgba(255,176,32,.9); color:#ffb020; }
 
 /* ── отступы по краям ──
    Окно идёт без полей (поля:false), чтобы верхняя полоса стояла во всю
@@ -100,6 +106,19 @@
 @media (max-width:620px){
   .гл-список{ padding:0 12px 14px; }
   .гл-верх, .гл-весть{ margin-left:12px; margin-right:12px; }
+  /* ── ВСЁ ТРОЕ В ОДНУ СТРОКУ ──
+     Перенос в гибкой строке случается ДО сжатия: браузер сперва
+     пробует поставить всех в ряд по их основной ширине и, если не
+     вышло, уносит последнего вниз. У поиска основная ширина была 180
+     точек, и вместе с языком и кнопкой они в 366 точек не влезали -
+     кнопка звука уезжала на вторую строку, а под полосой оставалась
+     пустая полоска.
+
+     Шестьдесят точек у поиска - та разница, которой хватает: поиск
+     всё равно забирает всё, что останется, и на деле он шире своей
+     основной ширины. */
+  .гл-поиск{ flex:1 1 120px; }
+  .гл-верх select{ max-width:36%; }
 }
 
 .гл-раздел{
@@ -135,25 +154,25 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-376"></script>
-<script src="../shared/ui.js?v=20261123-376"></script>
-<script src="../shared/смайлы.js?v=20261123-376"></script>
-<script src="../shared/лица.js?v=20261123-376"></script>
-<script src="../shared/эфир.js?v=20261123-376"></script>
-<script src="../shared/icons.js?v=20261123-376"></script>
-<script src="../shared/window.js?v=20261123-376"></script>
-<script src="../shared/без-копий.js?v=20261123-376"></script>
-<script src="../shared/time.js?v=20261123-376"></script>
-<script src="../shared/auth.js?v=20261123-376"></script>
-<script src="../shared/account.js?v=20261123-376"></script>
-<script src="../shared/shell.js?v=20261123-376"></script>
+<script src="../shared/api.js?v=20261123-377"></script>
+<script src="../shared/ui.js?v=20261123-377"></script>
+<script src="../shared/смайлы.js?v=20261123-377"></script>
+<script src="../shared/лица.js?v=20261123-377"></script>
+<script src="../shared/эфир.js?v=20261123-377"></script>
+<script src="../shared/icons.js?v=20261123-377"></script>
+<script src="../shared/window.js?v=20261123-377"></script>
+<script src="../shared/без-копий.js?v=20261123-377"></script>
+<script src="../shared/time.js?v=20261123-377"></script>
+<script src="../shared/auth.js?v=20261123-377"></script>
+<script src="../shared/account.js?v=20261123-377"></script>
+<script src="../shared/shell.js?v=20261123-377"></script>
 <!-- Игра, формы и персонаж — ради их команд: список должен быть полным
      и здесь, а не только в мире. Сами они тут ничего не двигают, кубов на
      этой странице нет; команда из этих разделов уводит в мир. -->
-<script src="../shared/игра.js?v=20261123-376"></script>
-<script src="../shared/формы.js?v=20261123-376"></script>
-<script src="../shared/персонаж.js?v=20261123-376"></script>
-<script src="../shared/голос.js?v=20261123-376"></script>
+<script src="../shared/игра.js?v=20261123-377"></script>
+<script src="../shared/формы.js?v=20261123-377"></script>
+<script src="../shared/персонаж.js?v=20261123-377"></script>
+<script src="../shared/голос.js?v=20261123-377"></script>
 <script>
 'use strict';
 
@@ -193,8 +212,7 @@ var верх = ок('div', 'гл-верх');
         return '<option value="' + я.код + '">' + CW.безопасно(я.имя) + '</option>';
       }).join('')
   + '</select>'
-  + '<button type="button" class="гл-вслух"><span class="зн"></span>'
-  +   '<span class="сл"></span></button>';
+  + '<button type="button" class="гл-вслух"><span class="зн"></span></button>';
 ОКНО.сверху(верх);
 
 var поле = верх.querySelector('.гл-поиск input');
@@ -215,14 +233,17 @@ CW.голос.следить(отметить);
 нарисовать();
 
 function отметить() {
-  /* Кнопка говорит, что СЕЙЧАС, а не что будет по нажатию: «Со звуком»
-     значит, что помощник отвечает вслух, «Без звука» — что молчит.
-     Значок меняется вместе с надписью, иначе они расходятся. */
+  /* Кнопка говорит, что СЕЙЧАС, а не что будет по нажатию: обычный
+     динамик значит, что помощник отвечает вслух, перечёркнутый — что
+     молчит. Слова на кнопке нет, поэтому оно в подсказке и в метке:
+     подсказка для мыши, метка для читалки. */
   var звучит = CW.голос.вслух();
   кнВслух.classList.toggle('вкл', звучит);
   кнВслух.querySelector('.зн').innerHTML = CW.значок(звучит ? 'звук' : 'тихо');
-  кнВслух.querySelector('.сл').textContent = звучит ? 'Со звуком' : 'Без звука';
-  кнВслух.title = звучит ? 'Выключить ответ вслух' : 'Включить ответ вслух';
+  кнВслух.title = звучит ? 'Со звуком. Выключить ответ вслух'
+                         : 'Без звука. Включить ответ вслух';
+  кнВслух.setAttribute('aria-label', кнВслух.title);
+  кнВслух.setAttribute('aria-pressed', звучит ? 'true' : 'false');
 
   /* Микрофон — то же самое: пока слушает, кнопка горит и называется
      «Выключить микрофон». */
