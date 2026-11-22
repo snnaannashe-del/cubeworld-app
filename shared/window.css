@@ -2891,9 +2891,8 @@ select.кб-строка{ cursor:pointer; }
 }
 .иг-низ{ padding:0 12px 14px; display:flex; flex-direction:column;
   gap:9px; align-items:center; }
-.иг-подск{
-  font-size:0.7333rem; color:var(--текст3); text-align:center; line-height:1.5;
-}
+/* Правила .иг-подск здесь больше нет: строчка-подсказка под полем
+   убрана из всех восьми игр, и одежда ей ни к чему. */
 .иг-ряд{ display:flex; gap:7px; flex-wrap:wrap; justify-content:center; }
 /* Кнопки зала игр зовутся «зи-кн», а не «иг-кн», и это важно: «иг-кн» —
    плитки действий в «Играх с кубами», и пока имя было общим, эти правила
