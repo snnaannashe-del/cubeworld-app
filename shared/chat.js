@@ -2174,60 +2174,25 @@
        она красива ровно до первого раза, когда человек смотрит на неё
        вместо того, чтобы говорить.
 
-       Формат спрашиваем у браузера (shared/вложения.js): MediaRecorder
-       с незнакомым типом не ошибается, а молча пишет пустой файл, и
-       голосовое уходило нулевого размера. */
-    var писарь = null;
+       Сама запись живёт в shared/запись-голоса.js и одна на всю
+       программу. Здесь остаётся только то, что в чатах своё: куда
+       уходит готовый файл. Прежде запись была написана и здесь, и в
+       избранном, и две копии разошлись: в избранном не спрашивали
+       формат и всегда звали файл «.webm», а Сафари пишет mp4. */
     function голосом(поле2, готово) {
-      if (писарь) { try { писарь.stop(); } catch (е) { писарь = null; } return; }
-      if (!окно.navigator.mediaDevices || typeof окно.MediaRecorder !== 'function') {
-        CW.сказать('Этот браузер не умеет записывать голос');
+      if (!CW.записьГолоса) {
+        CW.сказать('Запись голоса не приехала');
         if (готово) готово();
         return;
       }
-      var пошло = 0;
-      окно.navigator.mediaDevices.getUserMedia({ audio: true }).then(function (поток) {
-        var куски = [];
-        var п = голосовойПисарь(поток, куски);
-        if (!п) { поток.getTracks().forEach(function (д) { д.stop(); });
-                  if (готово) готово(); return; }
-        п.onstop = function () {
-          поток.getTracks().forEach(function (д) { д.stop(); });
-          писарь = null;
-          if (готово) готово();
-          var капля = new Blob(куски, { type: п.mimeType || 'audio/webm' });
-          if (!капля.size) { CW.сказать('Записи не вышло: браузер отдал пустой файл'); return; }
-          var секунд = Math.max(1, Math.round((Date.now() - пошло) / 1000));
-          var имя = /mp4/.test(п.mimeType || '') ? 'голос.m4a' : 'голос.webm';
-          CW.вложения.отправить([new File([капля], имя, { type: капля.type })],
-                                'audio', 'voice', function (о) {
-            о.длительность = секунд;
-            return вложением(о).then(function () { П.обновить(); });
-          });
-        };
-        п.start();
-        пошло = Date.now();
-        писарь = п;
-        CW.сказать('Пишу… нажми микрофон ещё раз, чтобы отправить', 60000);
-      }).catch(function () {
-        CW.сказать('Микрофон не дали');
+      CW.записьГолоса.нажали(function (о) {
         if (готово) готово();
+        if (!о || о.беда) { if (о && о.беда) CW.сказать(о.беда); return; }
+        CW.вложения.отправить([о.файл], 'audio', 'voice', function (д) {
+          д.длительность = о.секунд;
+          return вложением(д).then(function () { П.обновить(); });
+        });
       });
-    }
-
-    function голосовойПисарь(поток, куда) {
-      var форматы = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'];
-      var тип = '';
-      for (var i = 0; i < форматы.length; i++) {
-        if (окно.MediaRecorder.isTypeSupported
-            && окно.MediaRecorder.isTypeSupported(форматы[i])) { тип = форматы[i]; break; }
-      }
-      var п;
-      try { п = тип ? new окно.MediaRecorder(поток, { mimeType: тип })
-                    : new окно.MediaRecorder(поток); }
-      catch (е) { CW.сказать('Запись не завелась'); return null; }
-      п.ondataavailable = function (е) { if (е.data && е.data.size) куда.push(е.data); };
-      return п;
     }
 
     var П = {

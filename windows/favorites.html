@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Избранное · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-426">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-426">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-426">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-426">
-<script src="../shared/theme.js?v=20261123-426"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-426">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-427">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-427">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-427">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-427">
+<script src="../shared/theme.js?v=20261123-427"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-427">
 <!--
   ИЗБРАННОЕ — стоячее окно шириной 10 см, как портфолио и правка профиля.
 
@@ -58,22 +58,23 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-426"></script>
-<script src="../shared/ui.js?v=20261123-426"></script>
-<script src="../shared/смайлы.js?v=20261123-426"></script>
-<script src="../shared/лица.js?v=20261123-426"></script>
-<script src="../shared/эфир.js?v=20261123-426"></script>
-<script src="../shared/icons.js?v=20261123-426"></script>
-<script src="../shared/window.js?v=20261123-426"></script>
-<script src="../shared/без-копий.js?v=20261123-426"></script>
-<script src="../shared/time.js?v=20261123-426"></script>
-<script src="../shared/auth.js?v=20261123-426"></script>
-<script src="../shared/account.js?v=20261123-426"></script>
-<script src="../shared/shell.js?v=20261123-426"></script>
-<script src="../shared/вложения.js?v=20261123-426"></script>
-<script src="../shared/кнопки-сообщения.js?v=20261123-426"></script>
-<script src="../shared/кадр-ролика.js?v=20261123-426"></script>
-<script src="../shared/chat.js?v=20261123-426"></script>
+<script src="../shared/api.js?v=20261123-427"></script>
+<script src="../shared/ui.js?v=20261123-427"></script>
+<script src="../shared/смайлы.js?v=20261123-427"></script>
+<script src="../shared/лица.js?v=20261123-427"></script>
+<script src="../shared/эфир.js?v=20261123-427"></script>
+<script src="../shared/icons.js?v=20261123-427"></script>
+<script src="../shared/window.js?v=20261123-427"></script>
+<script src="../shared/без-копий.js?v=20261123-427"></script>
+<script src="../shared/time.js?v=20261123-427"></script>
+<script src="../shared/auth.js?v=20261123-427"></script>
+<script src="../shared/account.js?v=20261123-427"></script>
+<script src="../shared/shell.js?v=20261123-427"></script>
+<script src="../shared/вложения.js?v=20261123-427"></script>
+<script src="../shared/запись-голоса.js?v=20261123-427"></script>
+<script src="../shared/кнопки-сообщения.js?v=20261123-427"></script>
+<script src="../shared/кадр-ролика.js?v=20261123-427"></script>
+<script src="../shared/chat.js?v=20261123-427"></script>
 <script>
 'use strict';
 
@@ -492,9 +493,14 @@ function видЗаписи(з) {
   if (!з.fileUrl) return '';
   /* Отложено «файлом» - значит строкой файла, как в чатах. */
   if (з.какФайл) return '';
+  /* Голос - первым делом и по своей пометке. По имени его не узнать:
+     «голос.webm» разбирается как ролик, и запись ложилась видом
+     «video» - проигрыватель ролика, в котором нечего показывать. */
+  if (з.голос) return 'voice';
   var род = CW.родФайла(з.fileName || '', '', '');
   if (род === 'фото')  return 'image';
   if (род === 'видео') return 'video';
+  if (род === 'аудио') return 'audio';
   return '';
 }
 
@@ -545,6 +551,13 @@ function добавить(текст, вложение, срок) {
     з.fileName = вложение.имя;
     з.fileSize = вложение.размер;
     if (вложение.адрес) з.fileUrl = вложение.адрес;
+    /* Голос помечаем прямо, а не угадываем по имени файла: «webm»
+       бывает и роликом, и записью голоса, и по хвосту их не различить.
+       Отсюда же берётся длительность под полоской проигрывателя. */
+    if (вложение.голос) {
+      з.голос = true;
+      if (вложение.длительность) з.длительность = вложение.длительность;
+    }
     /* Кадр ролика снят при выборе файла: без него отложенный себе
        ролик остался бы пустым прямоугольником. */
     if (вложение.кадр) з.кадр = вложение.кадр;
@@ -837,64 +850,46 @@ function кружком() {
 /* ═══════════════════════════════════════════════════════════════════════
    ГОЛОСОМ.
 
-   Пишем прямо в браузере и кладём в запись тем же куском data: что и
-   файл. Разрешение спрашиваем в тот момент, когда человек нажал на
-   микрофон, — не раньше: окно «разрешить доступ» без причины пугает.
+   Сама запись - общая, shared/запись-голоса.js, та же, что в чатах и
+   группах. Своей здесь больше нет, и вот почему.
+
+   Было две записи одного дела, и они разошлись. В чатах формат
+   спрашивали у браузера, здесь писали «new MediaRecorder(поток)» без
+   формата и всегда называли файл «голос N с.webm». Сафари на айфоне
+   пишет mp4 - имя не сходилось с содержимым. А хуже того, «.webm»
+   разбирается как РОЛИК (webm бывает и видео), и запись ложилась в
+   заметку видом «video»: пузырь честно рисовал проигрыватель ролика,
+   а играть в нём было нечего. Анна прислала это как «отправка
+   аудиосообщения во всех местах»: в личке и в группе голос уходил, в
+   избранном оставалась пустая заметка с одним временем.
+
+   А кладём мы голос не строкой data:, как остальное в избранном, а на
+   сервер - тем же путём, что видеокружок. Внутри заметки строка data:
+   упирается в 900 КБ, то есть примерно в минуту разговора, и всё, что
+   длиннее, пропадало со словами «не влезет». Голос такого предела
+   знать не должен.
+
+   Отсюда та же честная разница, что у кружка: голос в избранном
+   требует связи с сервером. Не ушёл - так и скажем.
    ═══════════════════════════════════════════════════════════════════════ */
-var запись = null;
-
 function голосом(поле, готово) {
-  if (запись) { остановитьЗапись(); if (готово) готово(); return; }
-
-  if (!navigator.mediaDevices || !окноЕстьЗапись()) {
-    CW.сказать('Этот браузер не умеет записывать голос');
+  if (!CW.записьГолоса) {
+    CW.сказать('Запись голоса не приехала, обнови страницу');
     if (готово) готово();
     return;
   }
-
-  navigator.mediaDevices.getUserMedia({ audio: true }).then(function (поток) {
-    var писарь = new window.MediaRecorder(поток);
-    var куски = [];
-    писарь.ondataavailable = function (е) { if (е.data.size) куски.push(е.data); };
-    писарь.onstop = function () {
-      поток.getTracks().forEach(function (д) { д.stop(); });
-      var капля = new Blob(куски, { type: писарь.mimeType || 'audio/webm' });
-      запись = null;
-      CW.сказать('');
-      if (!капля.size) { if (готово) готово(); return; }
-      if (капля.size > 900 * 1024) {
-        CW.сказать('Голос длиннее минуты в избранное не влезет');
-        if (готово) готово();
-        return;
-      }
-      var чтец = new FileReader();
-      чтец.onload = function () {
-        var сек = Math.round((Date.now() - запискоГда) / 1000);
-        добавить('', { имя: 'голос ' + сек + ' с.webm', размер: капля.size,
-                       адрес: String(чтец.result || '') }, срокВвода());
-        CW.сказать('Голос в избранном');
-        if (готово) готово();
-      };
-      чтец.readAsDataURL(капля);
-    };
-    запискоГда = Date.now();
-    писарь.start();
-    запись = писарь;
-    CW.сказать('Пишу… нажми микрофон ещё раз, чтобы остановить', 60000);
-  }).catch(function () {
-    CW.сказать('Микрофон не дали');
+  CW.записьГолоса.нажали(function (о) {
     if (готово) готово();
+    if (!о || о.беда) { if (о && о.беда) CW.сказать(о.беда, 6000); return; }
+    var срок = срокВвода();
+    CW.вложения.отправить([о.файл], 'audio', 'voice', function (д) {
+      добавить('', { имя: д.имя || о.файл.name,
+                     размер: д.размер || о.файл.size || 0,
+                     адрес: д.адрес,
+                     голос: true, длительность: о.секунд }, срок);
+      CW.сказать('Голос в избранном');
+    });
   });
-}
-
-var запискоГда = 0;
-
-function остановитьЗапись() {
-  try { запись.stop(); } catch (е) { запись = null; }
-}
-
-function окноЕстьЗапись() {
-  return typeof window.MediaRecorder === 'function';
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
