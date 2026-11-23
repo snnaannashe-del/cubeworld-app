@@ -4293,12 +4293,20 @@ canvas.фл-клетка{
   position:absolute; left:10px; right:10px; bottom:12px; z-index:3;
   display:flex; align-items:center; gap:8px;
 }
-.ст-низ .щель{ flex:1; }
+/* Щель между счётчиками и кнопками - постоянная: место в ряду
+   делят две кнопки со словами, а не пустота. */
+.ст-низ .щель{ flex:0 0 6px; }
 .ст-кн{
   display:flex; align-items:center; gap:6px; padding:7px 12px;
   border-radius:var(--радиус-круг); border:none; cursor:pointer;
   background:rgba(255,255,255,.14); color:#fff; font-size:0.8333rem;
 }
+/* Кнопка со словом - такая же, как под эфиром: значок и подпись, и
+   обе делят нижний ряд поровну. Кругляш с одним значком оставлен для
+   счётчиков слева. */
+.ст-кн.словом{ flex:1 1 0; justify-content:center; min-width:0; }
+.ст-кн.словом svg{ width:15px; height:15px; flex:0 0 15px; }
+.ст-кн.словом span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .ст-кн.кругом{ padding:9px; }
 .ст-кн:hover{ background:rgba(255,255,255,.22); }
 .ст-кн.горит{ background:var(--красный); }

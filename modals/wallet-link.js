@@ -26,7 +26,7 @@ CW.модаль('wallet-link', function (данные) {
 
   /* Кусок кошельков живёт в shared/wallets.js и стоит на двух экранах.
      Лента его не грузит — значит, подтягиваем сами. */
-  М.тело.innerHTML = '<div class="пусто-строка">Смотрю кошельки…</div>';
+  М.тело.innerHTML = '<div class="пусто-строка">Загрузка…</div>';
   CW.нужен('shared/wallets.js').then(function () {
     М.тело.innerHTML = '';
     М.тело.appendChild(CW.кусокКошельков());

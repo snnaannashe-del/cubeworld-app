@@ -122,7 +122,7 @@ CW.модаль('author-signals', function (данные) {
      сразу нужная полка — «Сигналы», а не товары. */
   function отзывнаяСтрока() {
     var ряд = CW.кусок('авт-строка авт-отзывы');
-    ряд.textContent = 'Смотрю отзывы…';
+    ряд.textContent = 'Загрузка…';
     М.тело.appendChild(ряд);
 
     CW.нужен('shared/продавец.js').then(function () {
