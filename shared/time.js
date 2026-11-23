@@ -21,6 +21,14 @@
     return т.replace(' ', 'T') + 'Z';
   };
 
+  /* ── НА КАКОМ ЯЗЫКЕ ПИСАТЬ ДАТЫ ──
+     Месяцы, порядок чисел и двенадцатичасовые часы браузер знает сам -
+     надо только сказать ему язык. Прежде здесь всюду стояло 'ru', и на
+     английской программе даты оставались русскими: «17 ноября».
+
+     Нет shared/lang.js - остаётся русский, как было. */
+  function наЯзыке() { return (CW.язык && CW.язык()) || 'ru'; }
+
   CW.миг = function (с) {
     var д = new Date(CW.кГринвичу(с));
     var ч = д.getTime();
@@ -31,7 +39,7 @@
   CW.часы = function (с) {
     var д = new Date(CW.кГринвичу(с));
     if (isNaN(д.getTime())) return '';
-    return д.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' });
+    return д.toLocaleTimeString(наЯзыке(), { hour: '2-digit', minute: '2-digit' });
   };
 
   /* Для списка: сегодня — часы, вчера — «вчера», раньше — дата. */
@@ -41,9 +49,9 @@
     var сейчас = new Date();
     if (д.toDateString() === сейчас.toDateString()) return CW.часы(с);
     var вчера = new Date(сейчас.getTime() - 86400000);
-    if (д.toDateString() === вчера.toDateString()) return 'вчера';
+    if (д.toDateString() === вчера.toDateString()) return Т('вчера');
     var тотЖеГод = д.getFullYear() === сейчас.getFullYear();
-    return д.toLocaleDateString('ru', тотЖеГод
+    return д.toLocaleDateString(наЯзыке(), тотЖеГод
       ? { day: '2-digit', month: '2-digit' }
       : { day: '2-digit', month: '2-digit', year: '2-digit' });
   };
@@ -69,25 +77,27 @@
     if (isNaN(д.getTime())) return '';
     var часы = CW.часы(с);
     var сейчас = new Date();
-    if (д.toDateString() === сейчас.toDateString()) return 'сегодня в ' + часы;
+    if (д.toDateString() === сейчас.toDateString()) return Т.с('сегодня в {часы}', { часы: часы });
     var вчера = new Date(сейчас.getTime() - 86400000);
-    if (д.toDateString() === вчера.toDateString()) return 'вчера в ' + часы;
+    if (д.toDateString() === вчера.toDateString()) return Т.с('вчера в {часы}', { часы: часы });
     var тотЖеГод = д.getFullYear() === сейчас.getFullYear();
-    var день = д.toLocaleDateString('ru', тотЖеГод
+    var день = д.toLocaleDateString(наЯзыке(), тотЖеГод
       ? { day: 'numeric', month: 'long' }
       : { day: 'numeric', month: 'long', year: 'numeric' });
-    return день + ' в ' + часы;
+    /* Порядок слов в языках разный, поэтому день и часы не склеиваем
+       плюсом, а отдаём переводу целой строкой. */
+    return Т.с('{день} в {часы}', { день: день, часы: часы });
   };
 
   /* Сколько осталось: «5м», «3ч», «2д». Для записей со сроком. */
   CW.остаток = function (когдаИстечёт) {
     var мс = CW.миг(когдаИстечёт) - Date.now();
-    if (мс <= 0) return '0м';
+    if (мс <= 0) return Т.с('{н}м', { н: 0 });
     var м = Math.floor(мс / 60000);
-    if (м < 60) return м + 'м';
+    if (м < 60) return Т.с('{н}м', { н: м });
     var ч = Math.floor(м / 60);
-    if (ч < 24) return ч + 'ч';
-    return Math.floor(ч / 24) + 'д';
+    if (ч < 24) return Т.с('{н}ч', { н: ч });
+    return Т.с('{н}д', { н: Math.floor(ч / 24) });
   };
 
   /* Сколько прошло: «только что», «5 мин назад», «вчера». */
@@ -95,10 +105,10 @@
     var мс = Date.now() - CW.миг(с);
     if (мс < 0 || !CW.миг(с)) return '';
     var м = Math.floor(мс / 60000);
-    if (м < 1) return 'только что';
-    if (м < 60) return м + ' мин назад';
+    if (м < 1) return Т('только что');
+    if (м < 60) return Т.с('{н} мин назад', { н: м });
     var ч = Math.floor(м / 60);
-    if (ч < 24) return ч + ' ч назад';
+    if (ч < 24) return Т.с('{н} ч назад', { н: ч });
     return CW.когда(с);
   };
 

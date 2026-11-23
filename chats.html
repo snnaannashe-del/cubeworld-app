@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Чаты · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-431">
-<link rel="stylesheet" href="shared/style.css?v=20261123-431">
-<link rel="stylesheet" href="shared/window.css?v=20261123-431">
-<link rel="stylesheet" href="shared/account.css?v=20261123-431">
-<script src="shared/theme.js?v=20261123-431"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-431">
+<link rel="icon" href="icons/favicon.svg?v=20261123-432">
+<link rel="stylesheet" href="shared/style.css?v=20261123-432">
+<link rel="stylesheet" href="shared/window.css?v=20261123-432">
+<link rel="stylesheet" href="shared/account.css?v=20261123-432">
+<script src="shared/theme.js?v=20261123-432"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-432">
 <!--
   ЧАТЫ.
 
@@ -186,25 +186,25 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-431"></script>
-<script src="shared/ui.js?v=20261123-431"></script>
-<script src="shared/смайлы.js?v=20261123-431"></script>
-<script src="shared/лица.js?v=20261123-431"></script>
-<script src="shared/эфир.js?v=20261123-431"></script>
-<script src="shared/icons.js?v=20261123-431"></script>
-<script src="shared/window.js?v=20261123-431"></script>
-<script src="shared/без-копий.js?v=20261123-431"></script>
-<script src="shared/time.js?v=20261123-431"></script>
-<script src="shared/auth.js?v=20261123-431"></script>
-<script src="shared/lang.js?v=20261123-431"></script>
-<script src="shared/account.js?v=20261123-431"></script>
-<script src="shared/shell.js?v=20261123-431"></script>
-<script src="shared/вложения.js?v=20261123-431"></script>
-<script src="shared/запись-голоса.js?v=20261123-431"></script>
-<script src="shared/кнопки-сообщения.js?v=20261123-431"></script>
-<script src="shared/chat.js?v=20261123-431"></script>
-<script src="shared/shelf.js?v=20261123-431"></script>
-<script src="shared/архив.js?v=20261123-431"></script>
+<script src="shared/api.js?v=20261123-432"></script>
+<script src="shared/ui.js?v=20261123-432"></script>
+<script src="shared/смайлы.js?v=20261123-432"></script>
+<script src="shared/лица.js?v=20261123-432"></script>
+<script src="shared/эфир.js?v=20261123-432"></script>
+<script src="shared/icons.js?v=20261123-432"></script>
+<script src="shared/window.js?v=20261123-432"></script>
+<script src="shared/без-копий.js?v=20261123-432"></script>
+<script src="shared/time.js?v=20261123-432"></script>
+<script src="shared/auth.js?v=20261123-432"></script>
+<script src="shared/lang.js?v=20261123-432"></script>
+<script src="shared/account.js?v=20261123-432"></script>
+<script src="shared/shell.js?v=20261123-432"></script>
+<script src="shared/вложения.js?v=20261123-432"></script>
+<script src="shared/запись-голоса.js?v=20261123-432"></script>
+<script src="shared/кнопки-сообщения.js?v=20261123-432"></script>
+<script src="shared/chat.js?v=20261123-432"></script>
+<script src="shared/shelf.js?v=20261123-432"></script>
+<script src="shared/архив.js?v=20261123-432"></script>
 <script>
 'use strict';
 
@@ -251,7 +251,7 @@ function загрузить() {
       левая.innerHTML = '';
       var б = document.createElement('div');
       б.className = 'беда';
-      б.textContent = е.сеть ? 'Нет связи с сервером' : (е.message || 'Не вышло открыть чаты');
+      б.textContent = е.сеть ? Т('Нет связи с сервером') : (е.message || Т('Не вышло открыть чаты'));
       левая.appendChild(б);
     });
 }
@@ -266,21 +266,22 @@ function показатьСписок() {
 
   /* шапка */
   var шапка = кусок('раздел-верх',
-      '<h1>Чаты</h1>'
-    + '<button class="кругляш голый" data-что="избранное" title="Избранные">'
+      '<h1>' + CW.безопасно(Т('Чаты')) + '</h1>'
+    + '<button class="кругляш голый" data-что="избранное" title="' + CW.безопасно(Т('Избранные')) + '">'
     +   CW.значок('звезда') + '</button>'
-    + '<button class="кругляш голый" data-что="папки" title="Папки">'
+    + '<button class="кругляш голый" data-что="папки" title="' + CW.безопасно(Т('Папки')) + '">'
     +   CW.значок('папка') + '</button>'
-    + '<button class="кругляш голый" data-что="архив" title="Архив">'
+    + '<button class="кругляш голый" data-что="архив" title="' + CW.безопасно(Т('Архив')) + '">'
     +   CW.значок('архив') + '</button>'
-    + '<button class="кругляш голый" data-что="звуки" title="Звуки">'
+    + '<button class="кругляш голый" data-что="звуки" title="' + CW.безопасно(Т('Звуки')) + '">'
     +   CW.значок('нота') + '</button>'
     + '<button class="сторис-кн" data-что="сторис">'
-    +   (С.сторис ? '✕ Закрыть' : CW.значок('люди') + 'Сторис') + '</button>'
+    +   (С.сторис ? ('✕ ' + CW.безопасно(Т('Закрыть')))
+                  : (CW.значок('люди') + CW.безопасно(Т('Сторис')))) + '</button>'
     /* Кнопка поиска — такая же, как в группах: обычный кругляш с
        лупой, и синим он не загорается. Работает так же: нажал —
        строка поиска открылась, нажал ещё раз — закрылась. */
-    + '<button class="кругляш лупа" data-что="поиск" title="Поиск">'
+    + '<button class="кругляш лупа" data-что="поиск" title="' + CW.безопасно(Т('Поиск')) + '">'
     +   CW.значок('лупа') + '</button>');
 
   шапка.querySelectorAll('[data-что]').forEach(function (б) {
@@ -317,7 +318,7 @@ function показатьСписок() {
       /* Звуки — полка музыки со своим проигрывателем. Музыка не
          обрывается на закрытии окна: звук живёт на странице. */
       if (что === 'звуки') { CW.открыть('sounds'); return; }
-      CW.сказать(имяРаздела(что) + ': отдельное окно, его ещё нет');
+      CW.сказать(Т.с('{имя}: отдельное окно, его ещё нет', { имя: имяРаздела(что) }));
     };
   });
   левая.appendChild(шапка);
@@ -339,7 +340,7 @@ function показатьСписок() {
   найдены.style.display = 'none';
 
   var поиск = CW.строкаПоиска({
-    подпись: 'Поиск или новый чат…',
+    подпись: Т('Поиск или новый чат…'),
     значение: С.ищем,
     спрятан: !С.искать,
     стереть: true,
@@ -384,7 +385,7 @@ function показатьСписок() {
          понятно по названию раздела. */
       список.appendChild(кусок('пусто-чаты',
         '<div class="слова">'
-        + (С.ищем ? 'Ничего не нашлось' : 'Диалогов нет') + '</div>'));
+        + Т(С.ищем ? 'Ничего не нашлось' : 'Диалогов нет') + '</div>'));
       return;
     }
     список.classList.remove('пусто');
@@ -454,14 +455,14 @@ function убратьПоДолгому(узел, п) {
   function спросить() {
     if (!CW.архив) return;
     CW.архив.положить(п.peer_id, CW.имяЧеловека(п));
-    CW.сказать('Убрано в архив');
+    CW.сказать(Т('Убрано в архив'));
     показатьСписок();
   }
 }
 
 function имяРаздела(что) {
-  return { избранное: 'Избранные', папки: 'Папки', архив: 'Архив',
-           звуки: 'Звуки', сторис: 'Сторис' }[что] || что;
+  return Т({ избранное: 'Избранные', папки: 'Папки', архив: 'Архив',
+             звуки: 'Звуки', сторис: 'Сторис' }[что] || что);
 }
 
 /* ── ГАЛОЧКИ В СПИСКЕ ──
@@ -499,10 +500,12 @@ function последнее(п) {
      нельзя: человек видел строку «/uploads/clip/2026/11/19/acaad1b…»
      вместо «Видео» и не понимал, что ему прислали. Названия те же, что
      в боевой, и для новых видов — кружка, места — тоже. */
-  return { image: 'Снимок', photo: 'Снимок', video: 'Видео',
-           voice: 'Голосовое сообщение', audio: 'Аудиозапись',
-           circle: 'Видеокружок', geo: 'Геопозиция',
-           file: 'Файл' }[вид] || (/^\//.test(текст) ? 'Вложение' : текст);
+  var имя = { image: 'Снимок', photo: 'Снимок', video: 'Видео',
+              voice: 'Голосовое сообщение', audio: 'Аудиозапись',
+              circle: 'Видеокружок', geo: 'Геопозиция',
+              file: 'Файл' }[вид];
+  if (имя) return Т(имя);
+  return /^\//.test(текст) ? Т('Вложение') : текст;
 }
 
 function когдаБыло(п) {
@@ -573,10 +576,10 @@ function нарисоватьСторис(куда) {
   кругСвой.innerHTML = CW.значок('плюс', 16);
   кругСвой.onclick = function () { полеСторис().click(); };
   своя.appendChild(кругСвой);
-  своя.appendChild(CW.эл('span', 'имя', 'Моя'));
+  своя.appendChild(CW.эл('span', 'имя', Т('Моя')));
   куда.appendChild(своя);
 
-  var ждём = кусок('сторис-пусто', 'Загрузка…');
+  var ждём = кусок('сторис-пусто', Т('Загрузка…'));
   куда.appendChild(ждём);
 
   CW.спросить('/stories', { тихо: true }).then(function (д) {
@@ -590,20 +593,20 @@ function нарисоватьСторис(куда) {
     if (моё && (моё.items || []).length) {
       своя.classList.add('есть-своя');
       кругСвой.onclick = function () { смотретьСторис(моё); };
-      кругСвой.title = 'Смотреть свою сторис';
+      кругСвой.title = Т('Смотреть свою сторис');
       картинкуВКруг(кругСвой, моё.items[0]);
 
       var ещё = document.createElement('button');
       ещё.type = 'button';
       ещё.className = 'добавить';
-      ещё.title = 'Добавить ещё';
+      ещё.title = Т('Добавить ещё');
       ещё.innerHTML = CW.значок('плюс', 11);
       ещё.onclick = function () { полеСторис().click(); };
       своя.appendChild(ещё);
     }
 
     if (!чужие.length) {
-      куда.appendChild(кусок('сторис-пусто', 'Чужих сторис пока нет'));
+      куда.appendChild(кусок('сторис-пусто', Т('Чужих сторис пока нет')));
       return;
     }
 
@@ -619,7 +622,7 @@ function нарисоватьСторис(куда) {
       картинкуВКруг(б.querySelector('.круг'), (ч.items || [])[0]);
     });
   }).catch(function () {
-    if (ждём.parentNode) ждём.textContent = 'Сторис не ответили';
+    if (ждём.parentNode) ждём.textContent = Т('Сторис не ответили');
   });
 }
 
@@ -663,7 +666,7 @@ function полеСторис() {
    чужую страницу ради одного окна. */
 function смотретьСторис(человек, кадр) {
   if (!((человек.items || []).length)) {
-    CW.сказать('У ' + (CW.имяЧеловека(человек) || 'него') + ' нечего смотреть');
+    CW.сказать(Т.с('У {кто} нечего смотреть', { кто: CW.имяЧеловека(человек) || Т('него') }));
     return;
   }
   CW.открыть('story', {

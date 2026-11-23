@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Группы · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-431">
-<link rel="stylesheet" href="shared/style.css?v=20261123-431">
-<link rel="stylesheet" href="shared/window.css?v=20261123-431">
-<link rel="stylesheet" href="shared/account.css?v=20261123-431">
-<script src="shared/theme.js?v=20261123-431"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-431">
+<link rel="icon" href="icons/favicon.svg?v=20261123-432">
+<link rel="stylesheet" href="shared/style.css?v=20261123-432">
+<link rel="stylesheet" href="shared/window.css?v=20261123-432">
+<link rel="stylesheet" href="shared/account.css?v=20261123-432">
+<script src="shared/theme.js?v=20261123-432"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-432">
 <!--
   ГРУППЫ.
 
@@ -173,23 +173,23 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-431"></script>
-<script src="shared/ui.js?v=20261123-431"></script>
-<script src="shared/смайлы.js?v=20261123-431"></script>
-<script src="shared/лица.js?v=20261123-431"></script>
-<script src="shared/эфир.js?v=20261123-431"></script>
-<script src="shared/icons.js?v=20261123-431"></script>
-<script src="shared/window.js?v=20261123-431"></script>
-<script src="shared/без-копий.js?v=20261123-431"></script>
-<script src="shared/time.js?v=20261123-431"></script>
-<script src="shared/auth.js?v=20261123-431"></script>
-<script src="shared/lang.js?v=20261123-431"></script>
-<script src="shared/account.js?v=20261123-431"></script>
-<script src="shared/shell.js?v=20261123-431"></script>
-<script src="shared/вложения.js?v=20261123-431"></script>
-<script src="shared/запись-голоса.js?v=20261123-431"></script>
-<script src="shared/chat.js?v=20261123-431"></script>
-<script src="shared/shelf.js?v=20261123-431"></script>
+<script src="shared/api.js?v=20261123-432"></script>
+<script src="shared/ui.js?v=20261123-432"></script>
+<script src="shared/смайлы.js?v=20261123-432"></script>
+<script src="shared/лица.js?v=20261123-432"></script>
+<script src="shared/эфир.js?v=20261123-432"></script>
+<script src="shared/icons.js?v=20261123-432"></script>
+<script src="shared/window.js?v=20261123-432"></script>
+<script src="shared/без-копий.js?v=20261123-432"></script>
+<script src="shared/time.js?v=20261123-432"></script>
+<script src="shared/auth.js?v=20261123-432"></script>
+<script src="shared/lang.js?v=20261123-432"></script>
+<script src="shared/account.js?v=20261123-432"></script>
+<script src="shared/shell.js?v=20261123-432"></script>
+<script src="shared/вложения.js?v=20261123-432"></script>
+<script src="shared/запись-голоса.js?v=20261123-432"></script>
+<script src="shared/chat.js?v=20261123-432"></script>
+<script src="shared/shelf.js?v=20261123-432"></script>
 <script>
 'use strict';
 
@@ -237,7 +237,7 @@ function загрузить() {
     левая.innerHTML = '';
     var б = document.createElement('div');
     б.className = 'беда';
-    б.textContent = е.сеть ? 'Нет связи с сервером' : (е.message || 'Не вышло получить группы');
+    б.textContent = е.сеть ? Т('Нет связи с сервером') : (е.message || Т('Не вышло получить группы'));
     левая.appendChild(б);
   });
 }
@@ -262,13 +262,13 @@ function показатьСписок() {
      названием. Черты под ними тоже нет: выбранную вкладку видно по
      цвету и по синей чёрточке под самим словом. */
   var шапка = кусок('раздел-верх вкладки-групп',
-      '<h1>Группы</h1>'
-    + '<button class="кругляш" id="кн-новая" title="Создать группу">'
+      '<h1>' + CW.безопасно(Т('Группы')) + '</h1>'
+    + '<button class="кругляш" id="кн-новая" title="' + CW.безопасно(Т('Создать группу')) + '">'
     +   CW.значок('плюс') + '</button>'
     + '<span class="вк-ряд">'
-    +   '<button class="вкладка-г" data-в="все">Все группы</button>'
-    +   '<button class="вкладка-г" data-в="мои">Мои группы</button>'
-    +   '<button class="кругляш лупа" id="кн-искать" title="Поиск">'
+    +   '<button class="вкладка-г" data-в="все">' + CW.безопасно(Т('Все группы')) + '</button>'
+    +   '<button class="вкладка-г" data-в="мои">' + CW.безопасно(Т('Мои группы')) + '</button>'
+    +   '<button class="кругляш лупа" id="кн-искать" title="' + CW.безопасно(Т('Поиск')) + '">'
     +     CW.значок('лупа') + '</button>'
     + '</span>');
   шапка.querySelector('#кн-новая').onclick = function(){ CW.открыть('create-group', { потом: function(){ С.вкладка='мои'; загрузить(); } }); };
@@ -294,7 +294,7 @@ function показатьСписок() {
   где.id = 'список-групп';
 
   var поиск = CW.строкаПоиска({
-    подпись: 'Название группы…',
+    подпись: Т('Название группы…'),
     значение: С.ищем,
     спрятан: !С.искать,
     стереть: true,
@@ -371,14 +371,14 @@ function нарисовать(где) {
        а видит каждый раз, когда групп нет; а что делать - написано на
        кнопке ＋ прямо над списком. */
     где.appendChild(кусок('пусто-строка',
-      С.ищем ? 'Ничего не нашлось' : 'Групп нет'));
+      Т(С.ищем ? 'Ничего не нашлось' : 'Групп нет')));
     return;
   }
 
   свои.forEach(function (г) { где.appendChild(строка(г)); });
 
   if (чужие.length) {
-    где.appendChild(кусок('раздел-поиска', 'Ещё на площадке'));
+    где.appendChild(кусок('раздел-поиска', Т('Ещё на площадке')));
     чужие.forEach(function (г) { где.appendChild(строка(г)); });
   }
 }
@@ -401,15 +401,15 @@ function строка(г) {
   var у = кусок('группа',
       '<span class="картинка">' + лицоГруппы(г) + '</span>'
     + '<span class="про">'
-    +   '<div class="имя">' + CW.безопасно(г.name || 'Без названия') + '</div>'
+    +   '<div class="имя">' + CW.безопасно(г.name || Т('Без названия')) + '</div>'
     +   '<div class="под">' + CW.значок('люди') + '<span>'
     +     (г.description ? CW.безопасно(г.description)
                          : (сколько + ' ' + склонение(сколько))) + '</span></div>'
     + '</span>'
     + '<span class="справа">'
-    +   '<div class="сколько">' + сколько + ' уч.</div>'
+    +   '<div class="сколько">' + Т.с('{н} уч.', { н: сколько }) + '</div>'
     +   '<button class="кн-открыть' + (свой ? '' : ' войти') + '">'
-    +     (свой ? 'Открыть' : 'Войти') + '</button>'
+    +     CW.безопасно(Т(свой ? 'Открыть' : 'Войти')) + '</button>'
     + '</span>');
 
   if (CW.лица) CW.лица.группа(у.querySelector('.картинка'), г.id, г.avatar_ver);
@@ -439,7 +439,7 @@ function войтиИлиОткрыть(г, кнопка) {
   if (свой) { открыть(г); return; }
 
   кнопка.disabled = true;
-  кнопка.textContent = 'Вхожу…';
+  кнопка.textContent = Т('Вхожу…');
   CW.спросить('/groups/' + г.id + '/join', { способ: 'POST', сроком: 20000 })
     .then(function () {
       г.is_member = 1;
@@ -448,8 +448,8 @@ function войтиИлиОткрыть(г, кнопка) {
     })
     .catch(function (е) {
       кнопка.disabled = false;
-      кнопка.textContent = 'Войти';
-      CW.сказать(е.сеть ? 'Нет связи с сервером' : (е.message || 'Не вышло войти'));
+      кнопка.textContent = Т('Войти');
+      CW.сказать(е.сеть ? Т('Нет связи с сервером') : (е.message || Т('Не вышло войти')));
     });
 }
 
