@@ -1675,7 +1675,7 @@ textarea.нп-строка{ resize:vertical; min-height:92px; line-height:1.5; }
 /* Сам значок сидит внутри квадратика отдельной буквой: перекраска это
    фильтр, а фильтр на квадратике выкрасил бы и его подложку. */
 .юн-лицо i{ font-style:normal; display:block; line-height:1; }
-.юн-лицо svg{ width:17px; height:17px; }
+/* Размер значка общий (shared/style.css). */
 .юн-про{ flex:1; min-width:0; display:block; }
 .юн-имя{
   display:block; font-size:0.9rem; font-weight:600; color:var(--текст);
@@ -2943,7 +2943,7 @@ select.кб-строка{ cursor:pointer; }
 .гр-намёк{
   margin:9px 0 0; font-size:0.7667rem; line-height:1.5; color:var(--текст3);
 }
-.гр-лицо svg{ width:20px; height:20px; color:var(--текст2); }
+.гр-лицо svg{ color:var(--текст2); }   /* размер общий (style.css) */
 .гр-лицо-ролик{ background:rgba(74,158,255,.14); }
 
 .гр-снимки{ display:flex; flex-wrap:wrap; gap:8px; margin-top:9px; }
