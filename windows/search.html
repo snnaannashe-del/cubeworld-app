@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Поиск · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-394">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-394">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-394">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-394">
-<script src="../shared/theme.js?v=20261123-394"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-394">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-395">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-395">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-395">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-395">
+<script src="../shared/theme.js?v=20261123-395"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-395">
 <!--
   ПОИСК — окно поверх программы.
 
@@ -150,12 +150,6 @@
 }
 .пм-все:hover{ background:rgba(var(--синий-ргб),.24); }
 
-.пм-искать{
-  width:100%; margin:10px 0 2px; padding:9px 13px; font:0.8667rem var(--шрифт);
-  color:var(--текст); background:var(--поле); border:1px solid var(--край);
-  border-radius:var(--радиус-мал); outline:none;
-}
-.пм-искать:focus{ border-color:var(--синий); }
 .пм-группа{
   font-size:0.7333rem; letter-spacing:.09em; text-transform:uppercase;
   color:var(--синий); margin:14px 2px 7px;
@@ -185,19 +179,19 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-394"></script>
-<script src="../shared/ui.js?v=20261123-394"></script>
-<script src="../shared/смайлы.js?v=20261123-394"></script>
-<script src="../shared/лица.js?v=20261123-394"></script>
-<script src="../shared/эфир.js?v=20261123-394"></script>
-<script src="../shared/icons.js?v=20261123-394"></script>
-<script src="../shared/window.js?v=20261123-394"></script>
-<script src="../shared/без-копий.js?v=20261123-394"></script>
-<script src="../shared/time.js?v=20261123-394"></script>
-<script src="../shared/auth.js?v=20261123-394"></script>
-<script src="../shared/account.js?v=20261123-394"></script>
-<script src="../shared/помощник.js?v=20261123-394"></script>
-<script src="../shared/shell.js?v=20261123-394"></script>
+<script src="../shared/api.js?v=20261123-395"></script>
+<script src="../shared/ui.js?v=20261123-395"></script>
+<script src="../shared/смайлы.js?v=20261123-395"></script>
+<script src="../shared/лица.js?v=20261123-395"></script>
+<script src="../shared/эфир.js?v=20261123-395"></script>
+<script src="../shared/icons.js?v=20261123-395"></script>
+<script src="../shared/window.js?v=20261123-395"></script>
+<script src="../shared/без-копий.js?v=20261123-395"></script>
+<script src="../shared/time.js?v=20261123-395"></script>
+<script src="../shared/auth.js?v=20261123-395"></script>
+<script src="../shared/account.js?v=20261123-395"></script>
+<script src="../shared/помощник.js?v=20261123-395"></script>
+<script src="../shared/shell.js?v=20261123-395"></script>
 <script>
 'use strict';
 
@@ -230,7 +224,7 @@ var С = { ищем: '', ответы: {}, раскрыт: '', номер: 0, п
 
 /* Разговор с помощником: что спросили и что ответили. Живёт, пока окно
    открыто, — переписки с ним мы не храним ни у себя, ни на сервере. */
-var П = { разговор: [], каталог: false, отбор: '', думает: false, кВнизу: false };
+var П = { разговор: [], каталог: false, думает: false, кВнизу: false };
 
 место.appendChild(ок('div', 'пусто-строка',
   'Поиск открыт отдельным окном. Закрой его, чтобы вернуться.'));
@@ -467,17 +461,16 @@ function помощник() {
   }
 
   var все = ок('button', 'пм-все', П.каталог ? 'Свернуть список' : 'Все вопросы');
-  все.onclick = function () { П.каталог = !П.каталог; П.отбор = ''; показать(); };
+  все.onclick = function () { П.каталог = !П.каталог; показать(); };
   лист.appendChild(все);
 
   if (П.каталог) {
-    var отбор = ок('input', 'пм-искать');
-    отбор.type = 'text';
-    отбор.placeholder = 'Искать вопрос…';
-    отбор.value = П.отбор;
-    отбор.oninput = function () { П.отбор = отбор.value; нарисоватьКаталог(); };
-    лист.appendChild(отбор);
-
+    /* Своего поля «Искать вопрос…» здесь больше нет. В окне и так есть
+       строка запроса, одна на всё: набрал в ней слово - подходящие
+       вопросы встают сверху отдельным разделом. Два поля в одном окне,
+       одно под другим, человек читает как поломку, и каждый раз надо
+       гадать, какое из них про что. Каталог теперь показывается
+       целиком, списком, как список и есть. */
     каталогГде = ок('div', 'пм-каталог');
     лист.appendChild(каталогГде);
     нарисоватьКаталог();
@@ -494,7 +487,7 @@ var каталогГде = null;
 function нарисоватьКаталог() {
   if (!каталогГде) return;
   каталогГде.innerHTML = '';
-  var группы = CW.помощник.каталог(П.отбор);
+  var группы = CW.помощник.каталог('');
   if (!группы.length) {
     каталогГде.appendChild(ок('div', 'пм-группа', 'Ничего не нашлось'));
     return;

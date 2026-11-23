@@ -122,7 +122,7 @@
     сколько = Math.max(0, Math.min(5, Number(сколько) || 0));
     var ряд = '';
     for (var i = 0; i < 5; i++) ряд += звезда(размер);
-    return '<span class="пр-звёзды" style="--кегль:' + размер + 'px">'
+    return '<span class="оц-звёзды" style="--кегль:' + размер + 'px">'
          + '<span class="пусто">' + ряд + '</span>'
          + '<span class="полно" style="width:' + (сколько / 5 * 100) + '%">'
          + ряд + '</span></span>';
@@ -178,8 +178,8 @@
   function карточка(узел, номер) {
     убрать();
     var к = документ.createElement('div');
-    к.className = 'пр-карточка';
-    к.innerHTML = '<div class="пр-ждём">Смотрю…</div>';
+    к.className = 'оц-карточка';
+    к.innerHTML = '<div class="оц-ждём">Смотрю…</div>';
     документ.body.appendChild(к);
     КАРТОЧКА = к;
     поставить(к, узел);
@@ -190,15 +190,15 @@
 
     сводка(номер).then(function (с) {
       if (КАРТОЧКА !== к) return;
-      if (!с) { к.innerHTML = '<div class="пр-ждём">О продавце пока нечего сказать</div>';
+      if (!с) { к.innerHTML = '<div class="оц-ждём">О продавце пока нечего сказать</div>';
                 поставить(к, узел); return; }
       к.innerHTML = нутро(с);
-      var б = к.querySelector('.пр-кн');
+      var б = к.querySelector('.оц-кн');
       if (б) б.onclick = function () { убрать(); окноПродавца(номер); };
       поставить(к, узел);
     }).catch(function (е) {
       if (КАРТОЧКА !== к) return;
-      к.innerHTML = '<div class="пр-ждём">' + CW.безопасно(почему(е)) + '</div>';
+      к.innerHTML = '<div class="оц-ждём">' + CW.безопасно(почему(е)) + '</div>';
       поставить(к, узел);
     });
     return к;
@@ -221,13 +221,13 @@
       if (р.точность != null) числа.push(Number(р.точность) + '%');
       else if (Number(р.сигналов)) числа.push(Number(р.сигналов) + ' сигн.');
     }
-    return '<div class="пр-раздел">'
-      + '<span class="пр-ярлык">' + CW.значок(в.знак, 13)
+    return '<div class="оц-раздел">'
+      + '<span class="оц-ярлык">' + CW.значок(в.знак, 13)
       +   '<b>' + в.имя + '</b></span>'
-      + '<span class="пр-оц">' + звёзды(р.звёзд, 12)
-      +   '<span class="пр-число">' + (отзывов ? Number(р.звёзд).toFixed(1) : '-')
+      + '<span class="оц-оц">' + звёзды(р.звёзд, 12)
+      +   '<span class="оц-число">' + (отзывов ? Number(р.звёзд).toFixed(1) : '-')
       +   '</span></span>'
-      + '<span class="пр-мелко">' + CW.безопасно(числа.join(' · ')) + '</span>'
+      + '<span class="оц-мелко">' + CW.безопасно(числа.join(' · ')) + '</span>'
       + '</div>';
   }
 
@@ -243,29 +243,29 @@
     });
     /* Ни товаров, ни сигналов: честно говорим это одной строкой, а не
        рисуем два нуля в красивых рамках. */
-    if (!было) строки = '<div class="пр-мелко">Сделок пока не было</div>';
+    if (!было) строки = '<div class="оц-мелко">Сделок пока не было</div>';
 
     return ''
-      + '<div class="пр-верх">'
-      +   '<span class="пр-лицо">' + лицом(с) + '</span>'
-      +   '<span class="пр-имя">' + CW.безопасно(с.имя || ('Человек #' + с.user_id))
+      + '<div class="оц-верх">'
+      +   '<span class="оц-лицо">' + лицом(с) + '</span>'
+      +   '<span class="оц-имя">' + CW.безопасно(с.имя || ('Человек #' + с.user_id))
       +     '</span>'
       + '</div>'
-      + '<div class="пр-оценка">' + звёзды(с.звёзд, 15)
-      +   '<span class="пр-число">' + (отзывов ? (Number(с.звёзд).toFixed(1)) : '-')
+      + '<div class="оц-оценка">' + звёзды(с.звёзд, 15)
+      +   '<span class="оц-число">' + (отзывов ? (Number(с.звёзд).toFixed(1)) : '-')
       +   '</span>'
-      +   '<span class="пр-мелко">' + отзывов
+      +   '<span class="оц-мелко">' + отзывов
       +     словом(отзывов, 'отзыв', 'отзыва', 'отзывов') + ' всего</span>'
       + '</div>'
       + строки
-      + (с.с_нами ? '<div class="пр-мелко">На площадке с ' + датой(с.с_нами) + '</div>' : '')
-      + '<button type="button" class="пр-кн">'
+      + (с.с_нами ? '<div class="оц-мелко">На площадке с ' + датой(с.с_нами) + '</div>' : '')
+      + '<button type="button" class="оц-кн">'
       +   (отзывов ? 'Отзывы и оценка' : 'Оценить продавца') + '</button>';
   }
 
   function лицом(с) {
     var л = String(с.лицо || '');
-    if (!л) return '<i class="пр-пусто">' + CW.значок('человек', 15) + '</i>';
+    if (!л) return '<i class="оц-пусто">' + CW.значок('человек', 15) + '</i>';
     if (CW.картинкаЛи && CW.картинкаЛи(л)) {
       return '<img alt="" src="' + CW.безопасно(CW.файл(л)) + '">';
     }
@@ -316,7 +316,7 @@
     узел.setAttribute('data-продавец', String(номер));
 
     if (!о.значок) {
-      узел.classList.add('пр-дверь');
+      узел.classList.add('оц-дверь');
       узел.addEventListener('click', function (е) {
         е.preventDefault();
         е.stopPropagation();
@@ -367,7 +367,7 @@
       подзаголовок: 'рейтинг и отзывы'
     });
 
-    М.тело.innerHTML = '<div class="пр-ждём">Смотрю…</div>';
+    М.тело.innerHTML = '<div class="оц-ждём">Смотрю…</div>';
     М.открыть();
 
     var ГДЕ = видом(о.раздел === 'signals' || о.раздел === 'сигналы'
@@ -386,7 +386,7 @@
       сводка(номер, свежо).then(function (с) {
         СВОДКА = с;
         if (!СВОДКА) {
-          М.тело.innerHTML = '<div class="пр-ждём">' + CW.безопасно(почему(null))
+          М.тело.innerHTML = '<div class="оц-ждём">' + CW.безопасно(почему(null))
                            + '</div>';
           return;
         }
@@ -406,7 +406,7 @@
         каркас();
         полкой();
       }).catch(function (е) {
-        М.тело.innerHTML = '<div class="пр-ждём">' + CW.безопасно(почему(е)) + '</div>';
+        М.тело.innerHTML = '<div class="оц-ждём">' + CW.безопасно(почему(е)) + '</div>';
       });
     }
 
@@ -418,22 +418,22 @@
       ВИДЫ.forEach(function (в) {
         var р = разделом(СВОДКА, в.ключ);
         var отзывов = Number(р.отзывов) || 0;
-        кнопки += '<button type="button" class="пр-вкладка'
+        кнопки += '<button type="button" class="оц-вкладка'
           + (в.ключ === ГДЕ ? ' тут' : '') + '" data-раздел="' + в.ключ + '">'
           + CW.значок(в.знак, 14) + '<span>' + в.имя + '</span>'
-          + '<i class="пр-счётчик">' + (отзывов || '·') + '</i>'
+          + '<i class="оц-счётчик">' + (отзывов || '·') + '</i>'
           + '</button>';
       });
-      М.тело.innerHTML = '<div class="пр-полка">' + кнопки + '</div>'
-                       + '<div class="пр-место"></div>';
+      М.тело.innerHTML = '<div class="оц-полка">' + кнопки + '</div>'
+                       + '<div class="оц-место"></div>';
 
-      Array.prototype.forEach.call(М.тело.querySelectorAll('.пр-вкладка'),
+      Array.prototype.forEach.call(М.тело.querySelectorAll('.оц-вкладка'),
         function (б) {
           б.onclick = function () {
             var ключ = б.getAttribute('data-раздел');
             if (ключ === ГДЕ) return;
             ГДЕ = ключ;
-            Array.prototype.forEach.call(М.тело.querySelectorAll('.пр-вкладка'),
+            Array.prototype.forEach.call(М.тело.querySelectorAll('.оц-вкладка'),
               function (д) {
                 д.classList.toggle('тут', д.getAttribute('data-раздел') === ГДЕ);
               });
@@ -446,7 +446,7 @@
        Числа этого раздела, его отзывы и своя оценка. Отзывы спрашиваем
        по разделу: «section=signals» приносит только сигнальные. */
     function полкой() {
-      var место = М.тело.querySelector('.пр-место');
+      var место = М.тело.querySelector('.оц-место');
       if (!место) return;
       var ключ = ГДЕ;
       var в = видом(ключ);
@@ -456,9 +456,9 @@
          || 0;
 
       место.innerHTML = шапкаРаздела(в, р) + числаРаздела(в, р)
-                      + '<div class="пр-отзывы"><div class="пр-ждём">Смотрю…</div></div>'
-                      + '<div class="пр-моё"></div>';
-      моёМесто(место.querySelector('.пр-моё'), в, р);
+                      + '<div class="оц-отзывы"><div class="оц-ждём">Смотрю…</div></div>'
+                      + '<div class="оц-моё"></div>';
+      моёМесто(место.querySelector('.оц-моё'), в, р);
 
       if (ОТЗЫВЫ[ключ]) { положить(место, ОТЗЫВЫ[ключ], в); return; }
       CW.спросить('/sellers/' + номер + '/reviews?section=' + ключ, { тихо: true })
@@ -483,18 +483,18 @@
 
     function шапкаРаздела(в, р) {
       var отзывов = Number(р.отзывов) || 0;
-      return '<div class="пр-шапка">'
-        + '<div class="пр-крупно' + (отзывов ? '' : ' пусто') + '">'
+      return '<div class="оц-шапка">'
+        + '<div class="оц-крупно' + (отзывов ? '' : ' пусто') + '">'
         +   (отзывов ? Number(р['звёзд']).toFixed(1) : '-') + '</div>'
         + '<div>' + звёзды(р['звёзд'], 18)
-        +   '<div class="пр-мелко">' + отзывов
+        +   '<div class="оц-мелко">' + отзывов
         +     словом(отзывов, 'отзыв', 'отзыва', 'отзывов')
         +     ' о разделе «' + в.имя + '»</div>'
         + '</div>'
-        + '<div class="пр-итоги">'
-        +   '<span class="пр-плюс">' + CW.значок('галка', 14)
+        + '<div class="оц-итоги">'
+        +   '<span class="оц-плюс">' + CW.значок('галка', 14)
         +     (Number(р.плюсов) || 0) + '</span>'
-        +   '<span class="пр-минус">' + CW.значок('крест', 14)
+        +   '<span class="оц-минус">' + CW.значок('крест', 14)
         +     (Number(р.минусов) || 0) + '</span>'
         + '</div>'
         + '</div>';
@@ -518,34 +518,34 @@
         else if (Number(р.закрыто)) счёты.push([Number(р.закрыто), 'закрыто']);
       }
       if (!счёты.length || !Number(счёты[0][0])) {
-        return '<div class="пр-мелко пр-низ">' + в.пусто + '</div>';
+        return '<div class="оц-мелко оц-низ">' + в.пусто + '</div>';
       }
       var полотно = '';
       счёты.forEach(function (с) {
-        полотно += '<div class="пр-счёт"><b>' + CW.безопасно(String(с[0])) + '</b>'
+        полотно += '<div class="оц-счёт"><b>' + CW.безопасно(String(с[0])) + '</b>'
                  + '<span>' + с[1] + '</span></div>';
       });
-      return '<div class="пр-счёты">' + полотно + '</div>';
+      return '<div class="оц-счёты">' + полотно + '</div>';
     }
 
     function положить(место, отзывы, в) {
-      var где = место.querySelector('.пр-отзывы');
+      var где = место.querySelector('.оц-отзывы');
       if (!где) return;
       где.innerHTML = '';
       if (!отзывы.length) {
-        где.innerHTML = '<div class="пр-ждём">Отзывов в разделе «' + в.имя
+        где.innerHTML = '<div class="оц-ждём">Отзывов в разделе «' + в.имя
                       + '» пока нет. Первый оставит тот, кто там купит.</div>';
         return;
       }
       отзывы.forEach(function (о) {
         var у = документ.createElement('div');
-        у.className = 'пр-отзыв';
-        у.innerHTML = '<div class="пр-кто">'
+        у.className = 'оц-отзыв';
+        у.innerHTML = '<div class="оц-кто">'
           + '<b>' + CW.безопасно(о.имя || '') + '</b>'
           + звёзды(о['звёзд'], 12)
-          + '<span class="пр-мелко">' + (CW.когда ? CW.когда(о.когда) : '') + '</span>'
+          + '<span class="оц-мелко">' + (CW.когда ? CW.когда(о.когда) : '') + '</span>'
           + '</div>'
-          + (о.текст ? '<div class="пр-текст">' + CW.безопасно(о.текст) + '</div>' : '');
+          + (о.текст ? '<div class="оц-текст">' + CW.безопасно(о.текст) + '</div>' : '');
         где.appendChild(у);
       });
     }
@@ -557,27 +557,27 @@
     function моёМесто(где, в, р) {
       if (!где) return;
       if (!р.могу) {
-        где.innerHTML = '<div class="пр-мелко пр-низ">' + в.право + '</div>';
+        где.innerHTML = '<div class="оц-мелко оц-низ">' + в.право + '</div>';
         return;
       }
       var моё = р['моё'] || (в.ключ === 'market' ? СВОДКА['мой_отзыв'] : null);
 
-      где.innerHTML = '<div class="пр-подзаг">'
+      где.innerHTML = '<div class="оц-подзаг">'
         + (моё ? ('Твоя оценка: ' + в.имя) : в.оцени) + '</div>'
-        + '<div class="пр-выбор"></div>'
+        + '<div class="оц-выбор"></div>'
         + '<textarea class="оц-поле" rows="2" maxlength="1000" '
         +   'placeholder="Как прошла сделка? (необязательно)"></textarea>'
-        + '<div class="пр-ряд2">'
-        +   '<button type="button" class="кнопка главная пр-слать">'
+        + '<div class="оц-ряд2">'
+        +   '<button type="button" class="кнопка главная оц-слать">'
         +     (моё ? 'Изменить отзыв' : 'Оставить отзыв') + '</button>'
-        +   (моё ? '<button type="button" class="кнопка опасная пр-снять">'
+        +   (моё ? '<button type="button" class="кнопка опасная оц-снять">'
         +     'Убрать</button>' : '')
         + '</div>';
 
       var поле = где.querySelector('.оц-поле');
       поле.value = (моё && моё.текст) || '';
 
-      var выбор = где.querySelector('.пр-выбор');
+      var выбор = где.querySelector('.оц-выбор');
       нарисоватьВыбор();
 
       function нарисоватьВыбор() {
@@ -585,7 +585,7 @@
         for (var i = 1; i <= 5; i++) (function (н) {
           var б = документ.createElement('button');
           б.type = 'button';
-          б.className = 'пр-выбор-звезда' + (н <= МОИ ? ' горит' : '');
+          б.className = 'оц-выбор-звезда' + (н <= МОИ ? ' горит' : '');
           б.innerHTML = звезда(22);
           б.title = н + ' из 5';
           б.onclick = function () { МОИ = н; нарисоватьВыбор(); };
@@ -593,7 +593,7 @@
         })(i);
       }
 
-      где.querySelector('.пр-слать').onclick = function () {
+      где.querySelector('.оц-слать').onclick = function () {
         if (!МОИ) { CW.сказать('Поставь оценку от одной до пяти звёзд'); return; }
         М.занят(true);
         CW.спросить('/sellers/' + номер + '/reviews', {
@@ -610,7 +610,7 @@
         });
       };
 
-      var снять = где.querySelector('.пр-снять');
+      var снять = где.querySelector('.оц-снять');
       if (снять) снять.onclick = function () {
         М.занят(true);
         CW.спросить('/sellers/' + номер + '/reviews?section=' + в.ключ,

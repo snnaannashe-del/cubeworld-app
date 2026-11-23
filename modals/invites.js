@@ -64,13 +64,13 @@ CW.модаль('invites', function (данные) {
 
     /* ── что вышло ── */
     var счёты = document.createElement('div');
-    счёты.className = 'пр-счёты';
+    счёты.className = 'оц-счёты';
     [[д.invited || 0, 'приглашено'],
      [д.active || 0, 'прижилось'],
      [Math.round(Number(д.earned || 0)), 'CUBE заработано']
     ].forEach(function (п) {
       var к = document.createElement('div');
-      к.className = 'пр-счёт';
+      к.className = 'оц-счёт';
       к.innerHTML = '<b>' + п[0] + '</b><span>' + п[1] + '</span>';
       счёты.appendChild(к);
     });

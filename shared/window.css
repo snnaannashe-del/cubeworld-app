@@ -1401,13 +1401,13 @@ textarea.нп-строка{ resize:vertical; min-height:92px; line-height:1.5; }
   background:var(--поле); border:1px dashed var(--край2); color:var(--текст);
   word-break:break-all;
 }
-.пр-счёты{ display:flex; gap:10px; margin-top:14px; }
-.пр-счёт{
+.оц-счёты{ display:flex; gap:10px; margin-top:14px; }
+.оц-счёт{
   flex:1; text-align:center; padding:12px 6px; border-radius:12px;
   background:var(--поле); border:1px solid var(--край);
 }
-.пр-счёт b{ display:block; font-size:1.3333rem; font-weight:650; }
-.пр-счёт span{ display:block; font-size:0.7667rem; color:var(--текст3);
+.оц-счёт b{ display:block; font-size:1.3333rem; font-weight:650; }
+.оц-счёт span{ display:block; font-size:0.7667rem; color:var(--текст3);
   margin-top:4px; }
 
 /* ── комментарии (modals/comments.js) ─────────────────────────────
@@ -2394,14 +2394,59 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
   pointer-events:none; align-items:flex-end; justify-content:flex-end;
   padding:14px;
 }
+/* На телефоне внизу стоит полоса разделов (60 точек плюс полоса
+   жестов), и кубик, поставленный в угол по умолчанию, садился прямо на
+   неё. Приподнимаем: утащить его человек всё равно может куда угодно,
+   но с первого раза он не должен закрывать кнопки. */
+@media (max-width:1000px){
+  .ок-подложка.свёрнут{
+    padding:14px 14px calc(74px + env(safe-area-inset-bottom));
+  }
+}
+/* ── СВЁРНУТЫЙ ЭФИР — КУБИК ──
+   Прежде это была широкая полоса во всю шапку: лицо, имя, название,
+   метка, три счётчика и четыре кнопки. На телефоне она занимала весь
+   нижний край и закрывала собой то, ради чего эфир и сворачивают.
+
+   Теперь кубик: лицо, красная точка «идёт» и число зрителей. Его
+   видно, его можно утащить в любой угол, он переживает переход на
+   другую страницу, а нажатие по нему разворачивает эфир обратно. */
 .ок-подложка.свёрнут .ок-окно{
-  pointer-events:auto; width:auto; max-width:min(560px, 94vw);
-  max-height:none; border-radius:16px;
+  pointer-events:auto; width:auto; max-width:none;
+  max-height:none; border-radius:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
 }
 .ок-подложка.свёрнут .эф-окно{ height:auto; }
 .ок-подложка.свёрнут .эф-тело,
 .ок-подложка.свёрнут .эф-полка{ display:none; }
-.ок-подложка.свёрнут .эф-шапка{ border-bottom:none; cursor:grab; }
+.ок-подложка.свёрнут .эф-шапка{
+  border-bottom:none; cursor:grab; position:static;
+  flex-direction:column; align-items:center; gap:5px;
+  width:92px; padding:12px 8px 10px; background:none;
+}
+/* В кубике остаётся только то, что отвечает на вопрос «я ещё в
+   эфире?»: лицо, красная точка и сколько человек смотрит. */
+.ок-подложка.свёрнут .эф-про,
+.ок-подложка.свёрнут .эф-счёт.сердце,
+.ок-подложка.свёрнут .эф-жесты,
+.ок-подложка.свёрнут .эф-воВесь,
+.ок-подложка.свёрнут .эф-кончить{ display:none; }
+.ок-подложка.свёрнут .эф-лицо{ width:38px; height:38px; flex:0 0 38px; }
+.ок-подложка.свёрнут .эф-метка{
+  padding:0; width:9px; height:9px; border-radius:50%;
+  background:#ff6b6b; font-size:0; gap:0;
+  position:absolute; right:14px; top:14px;
+}
+.ок-подложка.свёрнут .эф-метка::before{ display:none; }
+.ок-подложка.свёрнут .эф-метка.погас{ background:var(--текст3); }
+.ок-подложка.свёрнут .эф-счёт.глаз{
+  padding:2px 8px; font-size:0.7333rem; background:var(--поле);
+}
+.ок-подложка.свёрнут .эф-свернуть{
+  width:26px; height:26px; flex:0 0 26px;
+  position:absolute; left:10px; top:10px; background:none;
+}
+.ок-подложка.свёрнут .эф-окно{ position:relative; }
 .ок-подложка.свёрнут .ок-окно.тащим{ cursor:grabbing; }
 /* Человек перетащил полоску — она стоит там, куда поставили, а не у
    угла. Место помнится и переживает переход на другую страницу. */
@@ -2446,11 +2491,150 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
 /* Окно эфира — точка отсчёта для полки. */
 .эф-окно{ position:relative; }
 
+/* Реакций стало двадцать четыре, и столбиком в боковой колонке они
+   занимали бы пол-окна. Держим их в своей коробке с прокруткой: три
+   ряда видно, остальные прокручиваются. */
+.эф-реакции{ max-height:104px; overflow-y:auto; overscroll-behavior:contain; }
+
+/* ═════════════════════════════════════════════════════════════════════
+   ЭФИР НА ТЕЛЕФОНЕ: КАДР - ВЕСЬ ЭКРАН, ОСТАЛЬНОЕ ПОВЕРХ НЕГО
+
+   На узком экране окно эфира стояло как обычный лист: снизу, не доходя
+   до верха, а под кадром столбиком - разговор, реакции, строка и две
+   кнопки. Кадру от экрана доставалось чуть больше трети, сверху
+   просвечивала страница, а нижний блок жил отдельной белой коробкой.
+
+   Теперь так, как это устроено в работающих программах: окно во весь
+   экран, кадр во всё окно, а шапка и нижний блок лежат НА кадре
+   полупрозрачными полосами. Место под картинку от этого не отнимается
+   вовсе, и всё остаётся на виду.
+   ═════════════════════════════════════════════════════════════════════ */
 @media (max-width:900px){
-  .эф-тело{ flex-direction:column; }
-  .эф-бок{ width:100%; flex:1 1 auto; border-left:none;
-           border-top:1px solid var(--край); }
-  .эф-кадр{ flex:0 0 42%; }
+  /* Окно во весь экран. Правило метит в развёрнутый эфир: свёрнутый -
+     это кубик поверх страницы, и его размеры ниже, свои. */
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут){ padding:0; }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .ок-окно{
+    width:100%; max-width:none; height:100%; max-height:none;
+    margin:0; border:none; border-radius:0;
+  }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-окно{ height:100%; }
+
+  /* Кадр - всё окно, остальное лежит на нём. */
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-тело{
+    display:block; position:relative; height:100%;
+  }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-кадр{
+    position:absolute; inset:0; flex:none;
+  }
+
+  /* ── ВЕРХНЯЯ ПОЛОСА ──
+     Та же мерка, что у полосы вкладок в ленте: лежит на картинке,
+     тёмная сверху и прозрачная книзу, кнопки справа кругляшами.
+     Название эфира ужимается, кнопки не ужимаются никогда - прежде
+     красная «Закончить эфир» уезжала за правый край. */
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-шапка{
+    position:absolute; left:0; right:0; top:0; z-index:6;
+    gap:7px; border-bottom:none; flex-wrap:nowrap;
+    padding:calc(9px + env(safe-area-inset-top)) 10px 22px;
+    background:linear-gradient(rgba(3,4,10,.78), rgba(3,4,10,0));
+  }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-про{ min-width:0; }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-про b,
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-назв{
+    color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-назв{ color:rgba(255,255,255,.7); }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-лицо{
+    width:30px; height:30px; flex:0 0 30px;
+  }
+  /* Метка и счётчики - мельче и теснее: на 390 точках ширины рядом с
+     ними стоят ещё три кнопки. Метка держится одной строкой: разбитая
+     на две, она растягивала шапку и съедала имя. Счётчики остаются без
+     подложки - значок и число, этого довольно. */
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-метка{
+    padding:4px 8px; font-size:0.6333rem; letter-spacing:.04em;
+    white-space:nowrap; flex:0 0 auto; gap:5px;
+    background:rgba(248,113,113,.26);
+  }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-счёт{
+    padding:0; gap:4px; font-size:0.7333rem;
+    background:none; color:#fff; flex:0 0 auto;
+  }
+  /* Кадр на телефоне заполняет экран целиком: «вписать» оставляло
+     чёрные поля сверху и снизу, а эфир снимают стоя, в рост экрана. */
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-кадр video{
+    object-fit:cover;
+  }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-жесты,
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-свернуть{
+    width:30px; height:30px; flex:0 0 30px;
+    background:rgba(255,255,255,.14); color:#fff;
+  }
+  /* «Закончить эфир» на телефоне - красный кругляш со знаком: слова
+     рядом с тремя другими кнопками не умещаются, а само действие
+     остаётся тем же, и подсказка у кнопки та же. */
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-кончить{
+    width:30px; height:30px; flex:0 0 30px; padding:0;
+    border-radius:50%; justify-content:center;
+  }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-кончить span{ display:none; }
+
+  /* ── НИЖНИЙ БЛОК НА КАРТИНКЕ ──
+     Разговор, реакции, строка ввода и две кнопки лежат на кадре одной
+     полосой, которая книзу темнеет. Всё читается, а кадр остаётся
+     кадром. Выше двух третей экрана блок не растёт: лицо в эфире
+     важнее переписки. */
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-бок{
+    position:absolute; left:0; right:0; bottom:0; z-index:5;
+    width:auto; flex:none; max-height:66%;
+    border-left:none; border-top:none;
+    padding-bottom:env(safe-area-inset-bottom);
+    background:linear-gradient(rgba(3,4,10,0), rgba(3,4,10,.62) 22%, rgba(3,4,10,.93));
+  }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-лента{
+    flex:0 1 auto; max-height:26vh; padding:10px 12px 4px;
+  }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-строка{ color:#fff; }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-строка b{
+    color:rgba(255,255,255,.72);
+  }
+  /* Реакции - одним рядом вдоль картинки, с прокруткой вбок: их
+     двадцать четыре, и в два ряда они съедали бы кадр. */
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-реакции{
+    flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden; max-height:none;
+    border-top:none; padding:4px 10px; gap:7px;
+    scrollbar-width:none;
+  }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-реакции::-webkit-scrollbar{
+    display:none;
+  }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-реакция{
+    width:34px; height:34px; flex:0 0 34px;
+    background:rgba(255,255,255,.16);
+  }
+  /* Строка ввода и две кнопки - прозрачные поверх кадра, светлыми
+     буквами: своя белая коробка под ними закрывала картинку. */
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-ввод{ padding:2px 10px; }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-ввод textarea{
+    background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.18);
+    color:#fff;
+  }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-ввод textarea::placeholder{
+    color:rgba(255,255,255,.6);
+  }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-низ{ padding:4px 10px 10px; }
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-низ .кнопка{
+    background:rgba(255,255,255,.14); border-color:transparent; color:#fff;
+  }
+  /* Полка подарков выезжает поверх всего этого. */
+  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-полка{ z-index:7; max-height:70%; }
+}
+
+/* Кнопки «во весь экран» на телефоне нет вовсе: окно и так во весь
+   экран, а место в шапке она занимала. Прячем по способу ввода, а не
+   по ширине: мышь на узком окне - это всё-таки настольный браузер. */
+@media (pointer: coarse){
+  .эф-воВесь{ display:none; }
 }
 
 /* ── создать куб ── */
@@ -4413,14 +4597,14 @@ canvas.фл-клетка{
    довольные и недовольные. Компактная нарочно — она отвечает на один
    вопрос «кто продаёт» и уходит, когда мышь ушла.
    ═════════════════════════════════════════════════════════════════ */
-.пр-дверь{
+.оц-дверь{
   cursor:pointer; border-bottom:1px dashed var(--край2);
   /* Подчёркивание пунктиром — знакомая метка «тут что-то есть».
      Сплошная линия читалась бы как ссылка на другую страницу. */
 }
-.пр-дверь:hover{ color:var(--текст); border-bottom-color:var(--синий); }
+.оц-дверь:hover{ color:var(--текст); border-bottom-color:var(--синий); }
 
-.пр-карточка{
+.оц-карточка{
   /* 286, а не 248: со строками разделов в прежнюю ширину не влезали
      числа сигналов, и «точность 61%» обрезалась многоточием. */
   position:fixed; z-index:9500; width:286px; padding:12px 13px;
@@ -4428,140 +4612,146 @@ canvas.фл-клетка{
   background:var(--окно); color:var(--текст);
   box-shadow:0 14px 34px rgba(0,0,0,.45);
   font-size:0.8333rem; line-height:1.45;
-  animation:пр-вплыл .14s ease-out;
+  animation:оц-вплыл .14s ease-out;
 }
-@keyframes пр-вплыл{ from{ opacity:0; transform:translateY(-4px) } to{ opacity:1 } }
-@media (prefers-reduced-motion: reduce){ .пр-карточка{ animation:none } }
+@keyframes оц-вплыл{ from{ opacity:0; transform:translateY(-4px) } to{ opacity:1 } }
+@media (prefers-reduced-motion: reduce){ .оц-карточка{ animation:none } }
 
-.пр-верх{ display:flex; align-items:center; gap:9px; margin-bottom:8px; }
-.пр-лицо{
+.оц-верх{ display:flex; align-items:center; gap:9px; margin-bottom:8px; }
+.оц-лицо{
   width:30px; height:30px; flex:0 0 30px; border-radius:50%; overflow:hidden;
   display:grid; place-items:center; background:var(--поле); font-size:1rem;
 }
-.пр-лицо img{ width:100%; height:100%; object-fit:cover; }
-.пр-лицо .пр-пусто{ color:var(--текст3); display:flex; }
-.пр-имя{ font-weight:600; font-size:0.9333rem; overflow:hidden;
+.оц-лицо img{ width:100%; height:100%; object-fit:cover; }
+.оц-лицо .оц-пусто{ color:var(--текст3); display:flex; }
+.оц-имя{ font-weight:600; font-size:0.9333rem; overflow:hidden;
   text-overflow:ellipsis; white-space:nowrap; }
 
 /* Звёзды: серые снизу, золотые сверху, обрезанные по доле. Так видно
    и 4,5, и 3,8 — а не «четыре с чем-то». */
-.пр-звёзды{ position:relative; display:inline-block; vertical-align:middle;
+.оц-звёзды{ position:relative; display:inline-block; vertical-align:middle;
   line-height:0; white-space:nowrap; }
-.пр-звёзды .пусто{ color:var(--край2); display:inline-block; }
-.пр-звёзды .полно{
+.оц-звёзды .пусто{ color:var(--край2); display:inline-block; }
+.оц-звёзды .полно{
   position:absolute; left:0; top:0; overflow:hidden; color:#f5b942;
   display:inline-block; white-space:nowrap;
 }
-.пр-звёзды svg{ display:inline-block; }
+.оц-звёзды svg{ display:inline-block; }
 
-.пр-оценка{ display:flex; align-items:center; gap:7px; margin-bottom:7px; }
-.пр-число{ font-weight:700; font-size:0.9333rem; }
-.пр-мелко{ font-size:0.75rem; color:var(--текст3); }
-.пр-ряд{ display:flex; align-items:center; gap:10px; margin-bottom:6px;
+.оц-оценка{ display:flex; align-items:center; gap:7px; margin-bottom:7px; }
+.оц-число{ font-weight:700; font-size:0.9333rem; }
+.оц-мелко{ font-size:0.75rem; color:var(--текст3); }
+.оц-ряд{ display:flex; align-items:center; gap:10px; margin-bottom:6px;
   font-size:0.8rem; color:var(--текст2); }
-.пр-ряд b{ color:var(--текст); }
-.пр-плюс, .пр-минус{ display:inline-flex; align-items:center; gap:3px; }
-.пр-плюс{ color:var(--зелёный); }
-.пр-минус{ color:var(--красный); }
-.пр-плюс svg, .пр-минус svg{ width:13px; height:13px; }
+.оц-ряд b{ color:var(--текст); }
+.оц-плюс, .оц-минус{ display:inline-flex; align-items:center; gap:3px; }
+.оц-плюс{ color:var(--зелёный); }
+.оц-минус{ color:var(--красный); }
+.оц-плюс svg, .оц-минус svg{ width:13px; height:13px; }
 
-.пр-кн{
+.оц-кн{
   width:100%; margin-top:9px; padding:7px 10px; cursor:pointer;
   border:1px solid var(--край2); border-radius:10px;
   background:rgba(var(--синий-ргб), .14); color:var(--текст);
   font-size:0.8rem;
 }
-.пр-кн:hover{ border-color:var(--синий); background:rgba(var(--синий-ргб), .24); }
-.пр-ждём{ font-size:0.8rem; color:var(--текст3); padding:4px 0; }
+.оц-кн:hover{ border-color:var(--синий); background:rgba(var(--синий-ргб), .24); }
+.оц-ждём{ font-size:0.8rem; color:var(--текст3); padding:4px 0; }
 
 /* ── две строки в карточке: товары и сигналы ──
    Ярлык слева, звёзды в середине, числа справа. Три сетки одной
    меркой, чтобы строки стояли столбиком, а не вразнобой. */
-.пр-раздел{
+.оц-раздел{
   display:grid; grid-template-columns:78px auto 1fr; align-items:center;
   gap:7px; margin-bottom:5px; font-size:0.775rem; color:var(--текст2);
 }
-.пр-ярлык{ display:inline-flex; align-items:center; gap:4px; color:var(--текст3); }
-.пр-ярлык b{ color:var(--текст2); font-weight:600; }
-.пр-ярлык svg{ width:13px; height:13px; }
-.пр-оц{ display:inline-flex; align-items:center; gap:5px; }
-.пр-оц .пр-число{ font-size:0.8rem; }
-.пр-раздел .пр-мелко{ text-align:right; white-space:nowrap; overflow:hidden;
+.оц-ярлык{ display:inline-flex; align-items:center; gap:4px; color:var(--текст3); }
+.оц-ярлык b{ color:var(--текст2); font-weight:600; }
+.оц-ярлык svg{ width:13px; height:13px; }
+.оц-оц{ display:inline-flex; align-items:center; gap:5px; }
+.оц-оц .оц-число{ font-size:0.8rem; }
+.оц-раздел .оц-мелко{ text-align:right; white-space:nowrap; overflow:hidden;
   text-overflow:ellipsis; }
 
 /* ── полка разделов в окне ── */
-.пр-полка{
+.оц-полка{
   display:flex; gap:6px; margin:0 0 14px;
   padding:4px; border-radius:12px; background:var(--поле);
   border:1px solid var(--край);
 }
-.пр-вкладка{
+.оц-вкладка{
   flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px;
   padding:7px 9px; cursor:pointer; border:0; border-radius:9px;
   background:transparent; color:var(--текст3); font-size:0.8333rem;
 }
-.пр-вкладка svg{ width:14px; height:14px; }
-.пр-вкладка:hover{ color:var(--текст2); background:rgba(var(--синий-ргб), .1); }
+.оц-вкладка svg{ width:14px; height:14px; }
+.оц-вкладка:hover{ color:var(--текст2); background:rgba(var(--синий-ргб), .1); }
 /* Выбранная полка — ровной заливкой, без синего кольца внутри: одно
    правило на все выбранные места в программе. */
-.пр-вкладка.тут{
+.оц-вкладка.тут{
   background:rgba(var(--синий-ргб), .18); color:var(--текст);
 }
-.пр-счётчик{
+.оц-счётчик{
   font-style:normal; font-size:0.7rem; min-width:17px; padding:0 4px;
   border-radius:7px; background:var(--край); color:var(--текст3);
 }
-.пр-вкладка.тут .пр-счётчик{ background:rgba(var(--синий-ргб), .3); color:var(--текст); }
+.оц-вкладка.тут .оц-счётчик{ background:rgba(var(--синий-ргб), .3); color:var(--текст); }
 
 /* Клетки чисел в окне продавца те же, что у приглашений, только их
    бывает четыре: на 8,5 см в один ряд они не влезают и переносятся. */
-.пр-место .пр-счёты{ flex-wrap:wrap; gap:8px; }
-.пр-место .пр-счёт{ flex:1 1 86px; }
-.пр-место .пр-счёт b{ font-size:1.1667rem; }
+.оц-место .оц-счёты{ flex-wrap:wrap; gap:8px; }
+.оц-место .оц-счёт{ flex:1 1 86px; }
+.оц-место .оц-счёт b{ font-size:1.1667rem; }
 
 /* ── полное окно ── */
-.пр-шапка{
+.оц-шапка{
   display:flex; align-items:center; gap:12px; padding:12px;
   border:1px solid var(--край); border-radius:13px; background:var(--поле);
   margin-bottom:12px;
 }
-.пр-крупно{ font-size:2rem; font-weight:700; line-height:1; }
+.оц-крупно{ font-size:2rem; font-weight:700; line-height:1; }
 /* Оценок нет — прочерк. Крупным кеглем он читался как длинная палка,
    а не как «пока нечего показать». */
-.пр-крупно.пусто{ font-size:1.3333rem; color:var(--текст3); font-weight:600; }
-.пр-итоги{ margin-left:auto; display:flex; flex-direction:column; gap:3px;
+.оц-крупно.пусто{ font-size:1.3333rem; color:var(--текст3); font-weight:600; }
+.оц-итоги{ margin-left:auto; display:flex; flex-direction:column; gap:3px;
   font-size:0.8333rem; }
-.пр-отзывы{ display:flex; flex-direction:column; gap:8px; }
-.пр-отзыв{ padding:10px 11px; border:1px solid var(--край); border-radius:12px; }
-.пр-кто{ display:flex; align-items:center; gap:8px; font-size:0.8333rem; }
-.пр-кто .пр-мелко{ margin-left:auto; }
-.пр-текст{ margin-top:5px; font-size:0.8667rem; line-height:1.5;
+.оц-отзывы{ display:flex; flex-direction:column; gap:8px; }
+.оц-отзыв{ padding:10px 11px; border:1px solid var(--край); border-radius:12px; }
+.оц-кто{ display:flex; align-items:center; gap:8px; font-size:0.8333rem; }
+.оц-кто .оц-мелко{ margin-left:auto; }
+.оц-текст{ margin-top:5px; font-size:0.8667rem; line-height:1.5;
   word-break:break-word; }
-.пр-моё{ margin-top:14px; }
-.пр-подзаг{ font-size:0.7rem; letter-spacing:.04em; text-transform:uppercase;
+.оц-моё{ margin-top:14px; }
+.оц-подзаг{ font-size:0.7rem; letter-spacing:.04em; text-transform:uppercase;
   color:var(--текст3); margin-bottom:7px; }
-.пр-выбор{ display:flex; gap:4px; margin-bottom:9px; }
-.пр-выбор-звезда{
+.оц-выбор{ display:flex; gap:4px; margin-bottom:9px; }
+.оц-выбор-звезда{
   padding:2px; border:none; background:none; cursor:pointer;
   color:var(--край2); line-height:0;
 }
-.пр-выбор-звезда.горит{ color:#f5b942; }
-.пр-выбор-звезда:hover{ color:#f5b942; }
+.оц-выбор-звезда.горит{ color:#f5b942; }
+.оц-выбор-звезда:hover{ color:#f5b942; }
 /* Поле отзыва в окне оценки продавца. Звалось «пр-поле» - тем же
    именем, каким в портфолио (windows/profile.html) названа ОБЁРТКА
    вокруг поля ввода. Два разных предмета под одним именем: правило
    отсюда доставалось и обёртке, и человек видел двойную рамку - поле
    в рамке внутри рамки. Анна прислала это снимком 23 ноября.
 
-   Имя теперь своё: «оц-» - оценка. */
+   Через день тем же способом вылезла серая полоса под «Описанием»:
+   «пр-счётчик» в портфолио - это строка «0/400», а здесь так звался
+   маленький значок с числом отзывов, с заливкой и скруглением. Чинить
+   по одному имени, когда их двадцать с лишним, бессмысленно: окно
+   оценки продавца, его карточка и числа приглашений переименованы
+   целиком, одной меркой - «оц-» (оценка). Приставка «пр-» осталась
+   только за портфолио, и столкнуться им больше негде. */
 .оц-поле{
   width:100%; padding:9px 11px; border:1px solid var(--край);
   border-radius:11px; background:var(--окно); color:var(--текст);
   font-size:0.8667rem; resize:vertical;
 }
-.пр-ряд2{ display:flex; gap:7px; margin-top:9px; }
-.пр-ряд2 .кнопка{ padding:7px 13px; font-size:0.8333rem; }
-.пр-низ{ padding-top:4px; }
+.оц-ряд2{ display:flex; gap:7px; margin-top:9px; }
+.оц-ряд2 .кнопка{ padding:7px 13px; font-size:0.8333rem; }
+.оц-низ{ padding-top:4px; }
 
 /* ── КОРЗИНА: СТРОКИ В ОКНЕ ОПЛАТЫ ─────────────────────────────────
    Товар в корзине - это строка, а не карточка: человек смотрит на
