@@ -559,7 +559,7 @@
     border-radius:20px 20px 0 0;
     /* Под полосой жестов айфона окно продолжается своей краской: иначе
        между его нижним краем и краем экрана оставалась тёмная щель. */
-    padding-bottom:env(safe-area-inset-bottom);
+    padding-bottom:var(--низ-край);
   }
   /* На телефоне лежачее приклеено к низу — там его достаёт большой
      палец. margin-top:auto прижимает окно вниз, пока оно короче
@@ -2527,7 +2527,7 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
    но с первого раза он не должен закрывать кнопки. */
 @media (max-width:1000px){
   .ок-подложка.свёрнут{
-    padding:14px 14px calc(74px + env(safe-area-inset-bottom));
+    padding:14px 14px calc(74px + var(--низ-край));
   }
 }
 /* ── СВЁРНУТЫЙ ЭФИР — КУБИК ──
@@ -2754,7 +2754,7 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
     position:absolute; left:0; right:0; bottom:0; z-index:5;
     width:auto; flex:none; max-height:66%;
     border-left:none; border-top:none;
-    padding-bottom:env(safe-area-inset-bottom);
+    padding-bottom:var(--низ-край);
     background:linear-gradient(rgba(3,4,10,0), rgba(3,4,10,.62) 22%, rgba(3,4,10,.93));
   }
   .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-лента{
