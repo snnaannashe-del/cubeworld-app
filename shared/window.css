@@ -1474,20 +1474,27 @@ textarea.нп-строка{ resize:vertical; min-height:92px; line-height:1.5; }
    Полка прокручивается внутри, а цифра не уезжает: она приклеена к
    самому окну, а не к ленте комментариев. */
 .ок-окно:has(> .км-счёт){ position:relative; }
+/* ── КРЕСТИК В УГЛУ, СЧЁТ ПОД НИМ ──
+   Стояли рядом в одну строку, и глаз читал их как одну кнопку с
+   цифрой. Анна: «поставь крестик в угол, а количество комментов под
+   ним, только в другом цвете, светлей, чтобы отличались».
+
+   Теперь крестик в самом углу, счёт ровно под ним, и цвета у них
+   разные: крестик приглушённый (это выход, его не ищут), счёт
+   светлый (это сведения, их читают). */
 .км-счёт{
-  position:absolute; top:7px; right:10px; z-index:2;
-  font-size:0.8rem; font-weight:600; color:var(--текст3);
+  position:absolute; top:39px; right:9px; z-index:2;
+  min-width:28px; text-align:center;
+  font-size:0.8rem; font-weight:700; color:var(--текст);
   padding:2px 8px; border-radius:9px; background:var(--окно);
   pointer-events:none;
 }
 .км-счёт:empty{ display:none; }
-/* Крестик стоит слева от счёта: счёт у края, как и был, а крестик
-   рядом с ним. Трогать его пальцем удобно - 30 точек в поперечнике,
-   это больше пальца младенца и ровно столько, сколько у кружков в
-   шапке. */
+/* Крестик - в самом углу. Тридцать точек в поперечнике: больше
+   подушечки пальца и ровно столько, сколько у кружков в шапке. */
 .ок-окно:has(> .км-закрыть){ position:relative; }
 .км-закрыть{
-  position:absolute; top:5px; right:46px; z-index:3;
+  position:absolute; top:5px; right:8px; z-index:3;
   width:30px; height:30px; padding:0; cursor:pointer;
   display:flex; align-items:center; justify-content:center;
   border:none; border-radius:50%;
