@@ -2433,7 +2433,12 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
   flex:1; min-width:0; position:relative; background:#000;
   display:flex; align-items:center; justify-content:center;
 }
-.эф-кадр video{ width:100%; height:100%; object-fit:contain; display:block; }
+/* Кадр заполняет рамку целиком, а не вписывается в неё. «Вписать»
+   оставляло по краям пустые поля, и в них проглядывала накладка с
+   кубами - со стороны это выглядело как вторая, меньшая картинка
+   внутри большой. Анна: «с двух складывается кадр, надо только
+   большой оставить». */
+.эф-кадр video{ width:100%; height:100%; object-fit:cover; display:block; }
 .эф-бок{
   width:330px; flex:0 0 330px; display:flex; flex-direction:column;
   border-left:1px solid var(--край); min-height:0;
@@ -2726,11 +2731,7 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
     padding:0; gap:4px; font-size:0.7333rem;
     background:none; color:#fff; flex:0 0 auto;
   }
-  /* Кадр на телефоне заполняет экран целиком: «вписать» оставляло
-     чёрные поля сверху и снизу, а эфир снимают стоя, в рост экрана. */
-  .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-кадр video{
-    object-fit:cover;
-  }
+  /* Кадр заполняет рамку и здесь: правило одно, выше по файлу. */
   .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-жесты,
   .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-свернуть{
     width:30px; height:30px; flex:0 0 30px;
