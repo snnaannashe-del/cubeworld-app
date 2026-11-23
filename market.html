@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Маркетплейс · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-396">
-<link rel="stylesheet" href="shared/style.css?v=20261123-396">
-<link rel="stylesheet" href="shared/window.css?v=20261123-396">
-<link rel="stylesheet" href="shared/account.css?v=20261123-396">
-<script src="shared/theme.js?v=20261123-396"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-396">
+<link rel="icon" href="icons/favicon.svg?v=20261123-397">
+<link rel="stylesheet" href="shared/style.css?v=20261123-397">
+<link rel="stylesheet" href="shared/window.css?v=20261123-397">
+<link rel="stylesheet" href="shared/account.css?v=20261123-397">
+<script src="shared/theme.js?v=20261123-397"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-397">
 <!--
   МАРКЕТПЛЕЙС.
 
@@ -92,8 +92,17 @@
 .подраздел.тут{ color:var(--текст); background:rgba(0,153,255,.18); }
 
 /* ── вкладки витрины ─────────────────────────────────────────────── */
-.виды{ display:flex; gap:18px; margin:4px 0 14px; flex-wrap:wrap; }
+/* Вкладки витрины - ОДНИМ рядом, как разделы над ними. Пять слов
+   («Витрина · Корзина · Мои товары · Мои покупки · Мои продажи») на
+   телефоне переносились на вторую строку, и ряд съедал два сантиметра
+   экрана. Теперь они едут вбок, а полосы прокрутки не видно. */
+.виды{
+  display:flex; gap:16px; margin:4px 0 14px; flex-wrap:nowrap;
+  overflow-x:auto; overflow-y:hidden; scrollbar-width:none;
+}
+.виды::-webkit-scrollbar{ display:none; }
 .вид{
+  flex:0 0 auto; white-space:nowrap;
   display:flex; align-items:center; gap:7px; cursor:pointer; padding:0 0 3px;
   background:none; border:none; border-bottom:1.5px solid transparent;
   color:var(--текст3); font-family:inherit; font-size:0.9rem; font-weight:600;
@@ -146,7 +155,11 @@
 .метка-угол{
   position:absolute; top:8px; left:8px; font-size:0.6333rem; font-weight:700;
   padding:3px 9px; border-radius:var(--радиус-круг);
-  background:rgba(2,2,17,.68); color:var(--текст);
+  /* Подложка тёмная ВСЕГДА: ярлык лежит на снимке товара, а снимок
+     бывает любым. Значит и буквы на нём всегда светлые. Стояло
+     var(--текст), и в светлом оформлении слово «Обувь» выходило тёмным
+     на тёмном - Анна прислала это снимком. */
+  background:rgba(2,2,17,.72); color:#fff;
   display:flex; align-items:center; gap:5px; max-width:calc(100% - 16px);
 }
 .метка-угол .зн{ display:flex; }
@@ -166,19 +179,25 @@
 /* Фигура вещи — в нижнем правом углу снимка, как в боевой: кружок с
    самой фигурой и надпись рядом. Холст рисуем вдвое крупнее, чем он
    стоит на экране, иначе на хорошем экране грани лохматятся. */
+/* Значок фигуры - ОДИН предмет, а не два. Прежде это были кружок с
+   фигурой и отдельная тёмная плашка с надписью рядом: на карточке они
+   читались как две разные метки, и Анна так и сказала - «распадается
+   на две части». Теперь это одна капсула: в ней фигура и её надпись,
+   одна подложка, одно скругление - как табличка на кубе в мире. */
 .метка-фигура{
   position:absolute; right:7px; bottom:7px;
-  display:flex; align-items:center; gap:5px;
+  display:flex; align-items:center; gap:6px;
   max-width:calc(100% - 14px); pointer-events:none;
+  padding:3px 9px 3px 3px; border-radius:var(--радиус-круг);
+  background:rgba(2,2,17,.72);
 }
+/* Надписи нет - капсула превращается в кружок вокруг одной фигуры. */
+.метка-фигура.без-слова{ padding:3px; }
 .метка-фигура canvas{
-  width:34px; height:34px; flex:0 0 34px; display:block;
-  border-radius:50%; background:rgba(2,2,17,.55);
+  width:30px; height:30px; flex:0 0 30px; display:block;
 }
 .метка-фигура .слово{
-  font-size:0.6333rem; font-weight:700; color:var(--текст);
-  padding:3px 8px; border-radius:var(--радиус-круг);
-  background:rgba(2,2,17,.68);
+  font-size:0.6333rem; font-weight:700; color:#fff;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 
@@ -207,7 +226,7 @@
   .режимы{ gap:6px; }
   .режим{ padding:8px 11px; font-size:0.8rem; }
   .режим em{ display:none; }
-  .метка-фигура canvas{ width:28px; height:28px; flex:0 0 28px; }
+  .метка-фигура canvas{ width:26px; height:26px; flex:0 0 26px; }
 }
 
 /* ── карточка товара ─────────────────────────────────────────────── */
@@ -237,8 +256,9 @@
 /* На раскрытой карточке фигура крупнее: снимок во всю ширину окна, и
    значок с витрины на нём потерялся бы. */
 .большой .метка-фигура{ right:12px; bottom:12px; }
-.большой .метка-фигура canvas{ width:58px; height:58px; flex:0 0 58px; }
-.большой .метка-фигура .слово{ font-size:0.8rem; padding:4px 11px; }
+.большой .метка-фигура{ padding:5px 14px 5px 5px; gap:9px; }
+.большой .метка-фигура canvas{ width:54px; height:54px; flex:0 0 54px; }
+.большой .метка-фигура .слово{ font-size:0.8rem; }
 .большой img,.большой video{ width:100%; height:100%; object-fit:cover; display:block; }
 .большой .зн{ display:flex; opacity:.7; }
 .большой .зн svg{ width:64px; height:64px; }
@@ -399,20 +419,20 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-396"></script>
-<script src="shared/ui.js?v=20261123-396"></script>
-<script src="shared/смайлы.js?v=20261123-396"></script>
-<script src="shared/лица.js?v=20261123-396"></script>
-<script src="shared/эфир.js?v=20261123-396"></script>
-<script src="shared/icons.js?v=20261123-396"></script>
-<script src="shared/window.js?v=20261123-396"></script>
-<script src="shared/продавец.js?v=20261123-396"></script>
-<script src="shared/корзина.js?v=20261123-396"></script>
-<script src="shared/без-копий.js?v=20261123-396"></script>
-<script src="shared/time.js?v=20261123-396"></script>
-<script src="shared/auth.js?v=20261123-396"></script>
-<script src="shared/account.js?v=20261123-396"></script>
-<script src="shared/shell.js?v=20261123-396"></script>
+<script src="shared/api.js?v=20261123-397"></script>
+<script src="shared/ui.js?v=20261123-397"></script>
+<script src="shared/смайлы.js?v=20261123-397"></script>
+<script src="shared/лица.js?v=20261123-397"></script>
+<script src="shared/эфир.js?v=20261123-397"></script>
+<script src="shared/icons.js?v=20261123-397"></script>
+<script src="shared/window.js?v=20261123-397"></script>
+<script src="shared/продавец.js?v=20261123-397"></script>
+<script src="shared/корзина.js?v=20261123-397"></script>
+<script src="shared/без-копий.js?v=20261123-397"></script>
+<script src="shared/time.js?v=20261123-397"></script>
+<script src="shared/auth.js?v=20261123-397"></script>
+<script src="shared/account.js?v=20261123-397"></script>
+<script src="shared/shell.js?v=20261123-397"></script>
 <script>
 'use strict';
 
@@ -827,7 +847,7 @@ function карта(т) {
 function значокФигуры(т) {
   if (!т.shape) return '';
   var подпись = String(т.shape_text || '').trim();
-  return '<span class="метка-фигура">'
+  return '<span class="метка-фигура' + (подпись ? '' : ' без-слова') + '">'
        + '<canvas width="68" height="68" data-ф="' + CW.безопасно(т.shape) + '"'
        + ' data-к="' + CW.безопасно(т.shape_color || '') + '"></canvas>'
        + (подпись ? '<span class="слово">' + CW.безопасно(подпись) + '</span>' : '')

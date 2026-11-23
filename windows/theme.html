@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Оформление · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-396">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-396">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-396">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-396">
-<script src="../shared/theme.js?v=20261123-396"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-396">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-397">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-397">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-397">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-397">
+<script src="../shared/theme.js?v=20261123-397"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-397">
 <!--
   ОФОРМЛЕНИЕ — окно поверх программы.
   /home/claude/новое/cubeworld-app/windows/theme.html
@@ -109,39 +109,10 @@
 }
 .оф-вид.камера svg{ width:20px; height:20px; color:rgba(255,255,255,.75); }
 
-/* ── цвета ──────────────────────────────────────────────────────── */
-.оф-цвета{ display:flex; flex-wrap:wrap; gap:11px; padding:0 16px; }
-.оф-цвет{
-  width:38px; height:38px; border-radius:50%; cursor:pointer; padding:0;
-  /* background:none обязателен: без него кнопка берёт серо-белый цвет
-     системы, и вокруг каждого кружка появляется светлое кольцо. */
-  border:2px solid transparent; background:none; position:relative;
-}
-.оф-цвет::after{
-  content:''; position:absolute; inset:3px; border-radius:50%;
-  background:var(--он);
-}
-.оф-цвет.радуга::after{
-  background:conic-gradient(#ff4757,#fbbf24,#34d399,#22d3ee,#4a9eff,#8b7cf6,#f472b6,#ff4757);
-}
-.оф-цвет.пусто::after{
-  background:var(--поле); border:1px solid var(--край2); box-sizing:border-box;
-}
-/* Обводка есть всегда, а не только у выбранного: на тёмном фоне
-   тёмно-синий кружок без неё сливается с окном. У выбранного она
-   светлая и толще. */
-.оф-цвет{ border-color:var(--край2); }
-.оф-цвет.выбран{ border-color:var(--текст); }
-.оф-цвет .галка, .оф-цвет .буква{
-  position:absolute; inset:0; display:flex; align-items:center;
-  justify-content:center; color:#fff; font-size:0.8rem; font-weight:700;
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,.55));
-}
-.оф-цвет .галка{ display:none; }
-.оф-цвет .галка svg{ width:16px; height:16px; }
-.оф-цвет.выбран .галка{ display:flex; }
-.оф-цвет.пусто .буква{ color:var(--текст2); }
-.оф-цвет.пусто.выбран .галка{ color:var(--текст); }
+/* Вид ряда красок («оф-цвета» / «оф-цвет») переехал в общий
+   shared/window.css: тот же ряд теперь стоит в «Цвете куба», в цвете
+   фигуры товара и в выборе значка. Один ряд красок на всю программу —
+   одно его описание. */
 
 /* ── семь зон окон ──────────────────────────────────────────────── */
 .оф-зоны{ padding:0 16px; }
@@ -412,20 +383,20 @@ html[data-цена-цвет="свой"] .оф-курс .цена{ color:var(--ц
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-396"></script>
-<script src="../shared/ui.js?v=20261123-396"></script>
-<script src="../shared/смайлы.js?v=20261123-396"></script>
-<script src="../shared/лица.js?v=20261123-396"></script>
-<script src="../shared/эфир.js?v=20261123-396"></script>
-<script src="../shared/icons.js?v=20261123-396"></script>
-<script src="../shared/window.js?v=20261123-396"></script>
-<script src="../shared/без-копий.js?v=20261123-396"></script>
-<script src="../shared/time.js?v=20261123-396"></script>
-<script src="../shared/auth.js?v=20261123-396"></script>
-<script src="../shared/account.js?v=20261123-396"></script>
-<script src="../shared/shell.js?v=20261123-396"></script>
-<script src="../shared/words.js?v=20261123-396"></script>
-<script src="../shared/голос.js?v=20261123-396"></script>
+<script src="../shared/api.js?v=20261123-397"></script>
+<script src="../shared/ui.js?v=20261123-397"></script>
+<script src="../shared/смайлы.js?v=20261123-397"></script>
+<script src="../shared/лица.js?v=20261123-397"></script>
+<script src="../shared/эфир.js?v=20261123-397"></script>
+<script src="../shared/icons.js?v=20261123-397"></script>
+<script src="../shared/window.js?v=20261123-397"></script>
+<script src="../shared/без-копий.js?v=20261123-397"></script>
+<script src="../shared/time.js?v=20261123-397"></script>
+<script src="../shared/auth.js?v=20261123-397"></script>
+<script src="../shared/account.js?v=20261123-397"></script>
+<script src="../shared/shell.js?v=20261123-397"></script>
+<script src="../shared/words.js?v=20261123-397"></script>
+<script src="../shared/голос.js?v=20261123-397"></script>
 <script>
 'use strict';
 

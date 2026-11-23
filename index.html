@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>CubeWorld</title>
 <meta name="description" content="Временные зашифрованные пространства в трёхмерном мире. Без почты, без телефона, только ключ.">
-<link rel="icon" href="icons/favicon.svg?v=20261123-396">
+<link rel="icon" href="icons/favicon.svg?v=20261123-397">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261123-396">
-<link rel="stylesheet" href="shared/window.css?v=20261123-396">
-<link rel="stylesheet" href="shared/язык.css?v=20261123-396">
-<link rel="stylesheet" href="shared/ключ-окно.css?v=20261123-396">
-<script src="shared/theme.js?v=20261123-396"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261123-397">
+<link rel="stylesheet" href="shared/window.css?v=20261123-397">
+<link rel="stylesheet" href="shared/язык.css?v=20261123-397">
+<link rel="stylesheet" href="shared/ключ-окно.css?v=20261123-397">
+<script src="shared/theme.js?v=20261123-397"></script>
 <!--
   ТИТУЛКА. Та же, что на сайте: звёздное небо, знак с крутящимся кубом,
   выбор языка, заголовок, вход по ключу, три тарифа, счётчики.
@@ -488,20 +488,20 @@
 </div>
 </div>
 
-<script src="shared/api.js?v=20261123-396"></script>
-<script src="shared/ui.js?v=20261123-396"></script>
-<script src="shared/смайлы.js?v=20261123-396"></script>
-<script src="shared/лица.js?v=20261123-396"></script>
-<script src="shared/эфир.js?v=20261123-396"></script>
-<script src="shared/icons.js?v=20261123-396"></script>
-<script src="shared/window.js?v=20261123-396"></script>
-<script src="shared/без-копий.js?v=20261123-396"></script>
-<script src="shared/time.js?v=20261123-396"></script>
-<script src="shared/auth.js?v=20261123-396"></script>
-<script src="shared/words.js?v=20261123-396"></script>
-<script src="shared/небо.js?v=20261123-396"></script>
-<script src="shared/язык.js?v=20261123-396"></script>
-<script src="shared/ключ-окно.js?v=20261123-396"></script>
+<script src="shared/api.js?v=20261123-397"></script>
+<script src="shared/ui.js?v=20261123-397"></script>
+<script src="shared/смайлы.js?v=20261123-397"></script>
+<script src="shared/лица.js?v=20261123-397"></script>
+<script src="shared/эфир.js?v=20261123-397"></script>
+<script src="shared/icons.js?v=20261123-397"></script>
+<script src="shared/window.js?v=20261123-397"></script>
+<script src="shared/без-копий.js?v=20261123-397"></script>
+<script src="shared/time.js?v=20261123-397"></script>
+<script src="shared/auth.js?v=20261123-397"></script>
+<script src="shared/words.js?v=20261123-397"></script>
+<script src="shared/небо.js?v=20261123-397"></script>
+<script src="shared/язык.js?v=20261123-397"></script>
+<script src="shared/ключ-окно.js?v=20261123-397"></script>
 <script>
 'use strict';
 
@@ -721,13 +721,17 @@ document.querySelectorAll('.тариф').forEach(function (к) {
   var реф = п.get('ref');
   if (реф) CW.положить('cw_ref_code', реф);
 
-  /* ── ПРИГЛАШЕНИЕ В КУБ: index.html?куб=CK-… ──
+  /* ── ПРИГЛАШЕНИЕ В КУБ: index.html?cubes=CK-… ──
      Ключ куба (Key 2) — не ключ входа, и в поле «ключ» ему нельзя:
      там ждут CUBE-XXXX-XXXX-XXXX и отказали бы. Поэтому ключ куба мы
      запоминаем, а открывает им куб уже мир — сразу после входа.
      Кто уже вошёл — уходит туда немедленно: он пришёл по ссылке в
      куб, а не читать титулку. */
-  var куб = п.get('куб') || п.get('cube');
+  /* Имя довода латиницей - «cubes»: русское «куб» в пересланной
+     ссылке превращалось в «%D0%BA%D1%83%D0%B1». Старые написания
+     понимаем по-прежнему: ссылки, разосланные раньше, должны
+     работать. */
+  var куб = п.get('cubes') || п.get('куб') || п.get('cube');
   if (куб) {
     CW.положить('cw_ключ_куба', куб.trim());
     if (ВОШЛИ) { CW.уйти('world.html'); return; }
