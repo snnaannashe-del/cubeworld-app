@@ -169,7 +169,7 @@
 
     /* ── полоса: форма, цвет, толщина ободка ── */
     var форма = эл('select');
-    форма.title = 'Форма';
+    форма.title = Т('Форма');
     ФОРМЫ.forEach(function (о) {
       var э = document.createElement('option');
       э.value = о.к; э.textContent = о.имя;
@@ -182,7 +182,7 @@
     var палитра = null;
     var цвет = эл('button', 'фл-цвет');
     цвет.type = 'button';
-    цвет.title = 'Цвет оттиска';
+    цвет.title = Т('Цвет оттиска');
     цвет.style.setProperty('--цвет', п.цвет);
     цвет.onclick = function () {
       if (палитра) { палитра.убрать(); палитра = null; return; }
@@ -203,7 +203,7 @@
     полоса.appendChild(цвет);
 
     var толщина = эл('select');
-    толщина.title = 'Толщина ободка';
+    толщина.title = Т('Толщина ободка');
     сНашим([4, 6, 9, 13], п.толщина).forEach(function (т) {
       var о = document.createElement('option');
       о.value = т; о.textContent = т;

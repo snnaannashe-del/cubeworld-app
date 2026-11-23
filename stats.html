@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Аналитика · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-432">
-<link rel="stylesheet" href="shared/style.css?v=20261123-432">
-<link rel="stylesheet" href="shared/window.css?v=20261123-432">
-<link rel="stylesheet" href="shared/account.css?v=20261123-432">
-<script src="shared/theme.js?v=20261123-432"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-432">
+<link rel="icon" href="icons/favicon.svg?v=20261123-433">
+<link rel="stylesheet" href="shared/style.css?v=20261123-433">
+<link rel="stylesheet" href="shared/window.css?v=20261123-433">
+<link rel="stylesheet" href="shared/account.css?v=20261123-433">
+<script src="shared/theme.js?v=20261123-433"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-433">
 <!--
   АНАЛИТИКА КУБА.
 
@@ -132,19 +132,19 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-432"></script>
-<script src="shared/ui.js?v=20261123-432"></script>
-<script src="shared/смайлы.js?v=20261123-432"></script>
-<script src="shared/лица.js?v=20261123-432"></script>
-<script src="shared/эфир.js?v=20261123-432"></script>
-<script src="shared/icons.js?v=20261123-432"></script>
-<script src="shared/window.js?v=20261123-432"></script>
-<script src="shared/без-копий.js?v=20261123-432"></script>
-<script src="shared/time.js?v=20261123-432"></script>
-<script src="shared/auth.js?v=20261123-432"></script>
-<script src="shared/lang.js?v=20261123-432"></script>
-<script src="shared/account.js?v=20261123-432"></script>
-<script src="shared/shell.js?v=20261123-432"></script>
+<script src="shared/api.js?v=20261123-433"></script>
+<script src="shared/ui.js?v=20261123-433"></script>
+<script src="shared/смайлы.js?v=20261123-433"></script>
+<script src="shared/лица.js?v=20261123-433"></script>
+<script src="shared/эфир.js?v=20261123-433"></script>
+<script src="shared/icons.js?v=20261123-433"></script>
+<script src="shared/window.js?v=20261123-433"></script>
+<script src="shared/без-копий.js?v=20261123-433"></script>
+<script src="shared/time.js?v=20261123-433"></script>
+<script src="shared/auth.js?v=20261123-433"></script>
+<script src="shared/lang.js?v=20261123-433"></script>
+<script src="shared/account.js?v=20261123-433"></script>
+<script src="shared/shell.js?v=20261123-433"></script>
 <script>
 'use strict';
 
@@ -159,8 +159,8 @@ var тело = document.createElement('div');
 CW.ждём(тело);
 
 if (!куб) {
-  тело.innerHTML = '<div class="беда">Не понятно, про какой куб считать. '
-                 + 'Зайди в куб из мира.</div>';
+  тело.innerHTML = '<div class="беда">' + CW.безопасно(Т('Не понятно, про какой куб считать.')) + ' '
+                 + '' + CW.безопасно(Т('Зайди в куб из мира.')) + '</div>';
 } else {
   спросить();
 }
@@ -200,7 +200,7 @@ function показать(д) {
   тело.appendChild(кусок('раздел', 'Активность за 7 дней'));
   тело.appendChild(кускомНеделя(д));
   тело.appendChild(кусок('раздел',
-      '<span class="знак">' + CW.значок('кубок') + '</span>Топ участников куба'));
+      '<span class="знак">' + CW.значок('кубок') + '</span>' + CW.безопасно(Т('Топ участников куба')) + ''));
   тело.appendChild(кускомТоп(д));
 }
 
@@ -256,7 +256,7 @@ function кускомНеделя(д) {
   if (!дни.length || !было) {
     return кусок('неделя',
       '<div class="пусто-строка" style="padding:18px 0">'
-      + 'За неделю в кубе ничего не происходило.</div>');
+      + '' + CW.безопасно(Т('За неделю в кубе ничего не происходило.')) + '</div>');
   }
 
   var верх = Math.max.apply(null, дни.map(function (т) { return Number(т.n || 0); })) || 1;
@@ -306,8 +306,8 @@ function кускомТоп(д) {
 
   if (!люди.length) {
     где.innerHTML = '<div class="пусто-строка">'
-      + 'В этом кубе ещё никто ничего не написал.<br>'
-      + 'Первый пост или сообщение: и список оживёт.</div>';
+      + '' + CW.безопасно(Т('В этом кубе ещё никто ничего не написал.')) + '<br>'
+      + '' + CW.безопасно(Т('Первый пост или сообщение: и список оживёт.')) + '</div>';
     return где;
   }
 
@@ -338,10 +338,10 @@ function кускомТоп(д) {
 function кускомЗакрыто(почему) {
   var у = кусок('закрыто',
       '<div class="знак">' + CW.значок('замок') + '</div>'
-    + '<h2>Аналитика в Сильвер и Голд</h2>'
+    + '<h2>' + CW.безопасно(Т('Аналитика в Сильвер и Голд')) + '</h2>'
     + '<p>' + CW.безопасно(почему || 'На бесплатном ключе аналитика куба закрыта.')
-    + '<br>Остальное в кубе работает как работало.</p>'
-    + '<button class="кнопка главная">Посмотреть тарифы</button>');
+    + '<br>' + CW.безопасно(Т('Остальное в кубе работает как работало.')) + '</p>'
+    + '<button class="кнопка главная">' + CW.безопасно(Т('Посмотреть тарифы')) + '</button>');
   у.querySelector('button').onclick = function () { CW.уйти('tariff.html?p=silver'); };
   return у;
 }

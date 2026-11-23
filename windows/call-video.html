@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Видеозвонок · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-432">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-432">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-432">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-432">
-<script src="../shared/theme.js?v=20261123-432"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-432">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-433">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-433">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-433">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-433">
+<script src="../shared/theme.js?v=20261123-433"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-433">
 <!--
   Видеозвонок — окно поверх программы.
 
@@ -27,22 +27,22 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-432"></script>
-<script src="../shared/ui.js?v=20261123-432"></script>
-<script src="../shared/смайлы.js?v=20261123-432"></script>
-<script src="../shared/лица.js?v=20261123-432"></script>
-<script src="../shared/эфир.js?v=20261123-432"></script>
-<script src="../shared/icons.js?v=20261123-432"></script>
-<script src="../shared/window.js?v=20261123-432"></script>
-<script src="../shared/без-копий.js?v=20261123-432"></script>
-<script src="../shared/time.js?v=20261123-432"></script>
-<script src="../shared/auth.js?v=20261123-432"></script>
-<script src="../shared/lang.js?v=20261123-432"></script>
-<script src="../shared/account.js?v=20261123-432"></script>
-<script src="../shared/сокет.js?v=20261123-432"></script>
-<script src="../shared/shell.js?v=20261123-432"></script>
-<script src="../shared/call.js?v=20261123-432"></script>
-<script src="../shared/звонки.js?v=20261123-432"></script>
+<script src="../shared/api.js?v=20261123-433"></script>
+<script src="../shared/ui.js?v=20261123-433"></script>
+<script src="../shared/смайлы.js?v=20261123-433"></script>
+<script src="../shared/лица.js?v=20261123-433"></script>
+<script src="../shared/эфир.js?v=20261123-433"></script>
+<script src="../shared/icons.js?v=20261123-433"></script>
+<script src="../shared/window.js?v=20261123-433"></script>
+<script src="../shared/без-копий.js?v=20261123-433"></script>
+<script src="../shared/time.js?v=20261123-433"></script>
+<script src="../shared/auth.js?v=20261123-433"></script>
+<script src="../shared/lang.js?v=20261123-433"></script>
+<script src="../shared/account.js?v=20261123-433"></script>
+<script src="../shared/сокет.js?v=20261123-433"></script>
+<script src="../shared/shell.js?v=20261123-433"></script>
+<script src="../shared/call.js?v=20261123-433"></script>
+<script src="../shared/звонки.js?v=20261123-433"></script>
 <script>
 'use strict';
 
@@ -68,10 +68,10 @@ var А = (function () {
 })();
 
 место.appendChild(ок('div', 'пусто-строка',
-  'Видеозвонок открыт отдельным окном. Положи трубку, чтобы вернуться.'));
+  Т('Видеозвонок открыт отдельным окном. Положи трубку, чтобы вернуться.')));
 
 if (!А.кто && !А.группа) {
-  CW.сказать('Не указано, кому звоним');
+  CW.сказать(Т('Не указано, кому звоним'));
   CW.уйти(CW.раздел('chats', CW.какойКуб()));
   return;
 }
@@ -133,7 +133,7 @@ function групповой() {
       название: г.name || '', разговор: А.разговор, принят: А.принят
     });
   }).catch(function () {
-    CW.сказать('Группа не открылась');
+    CW.сказать(Т('Группа не открылась'));
     НАЗАД();
   });
 }

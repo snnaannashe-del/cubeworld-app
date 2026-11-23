@@ -570,7 +570,7 @@
       э.className = 'гл-слышу';
       документ.body.appendChild(э);
     }
-    э.innerHTML = (ответ ? '' : '<b>слышу:</b> ') + CW.безопасно(текст);
+    э.innerHTML = (ответ ? '' : '<b>' + CW.безопасно(Т('слышу:')) + '</b> ') + CW.безопасно(текст);
     э.classList.add('видно');
     clearTimeout(часыСтроки);
     часыСтроки = setTimeout(function () { э.classList.remove('видно'); },

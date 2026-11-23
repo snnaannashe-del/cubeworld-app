@@ -49,7 +49,7 @@ CW.модаль('delete', function (данные) {
     + (данные.навсегда === false
         ? 'Это можно будет вернуть.'
         : '<b style="color:var(--красный);font-size:0.9rem;display:block;'
-          + 'margin-bottom:0">Вернуть будет нельзя.</b>');
+          + 'margin-bottom:0">' + CW.безопасно(Т('Вернуть будет нельзя.')) + '</b>');
   М.тело.appendChild(текст);
 
 

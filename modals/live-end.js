@@ -45,15 +45,15 @@ CW.модаль('live-end', function (данные) {
 
   var конец = CW.эл('button', 'кэ-кнопка кэ-конец');
   конец.type = 'button';
-  конец.title = 'Закончить эфир';
-  конец.setAttribute('aria-label', 'Закончить эфир');
+  конец.title = Т('Закончить эфир');
+  конец.setAttribute('aria-label', Т('Закончить эфир'));
   конец.innerHTML = CW.значок('пауза', 16);
   конец.onclick = кончить;
 
   var мимо = CW.эл('button', 'кэ-кнопка кэ-мимо');
   мимо.type = 'button';
-  мимо.title = 'Остаться в эфире';
-  мимо.setAttribute('aria-label', 'Остаться в эфире');
+  мимо.title = Т('Остаться в эфире');
+  мимо.setAttribute('aria-label', Т('Остаться в эфире'));
   мимо.innerHTML = CW.значок('крест', 15);
   мимо.onclick = function () { М.закрыть(); };
 

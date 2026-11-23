@@ -638,7 +638,7 @@
   /* ── приём файла ── */
   CW.формы.принять = function (файл) {
     return new Promise(function (готово, беда) {
-      if (!файл) { беда(new Error('нет файла')); return; }
+      if (!файл) { беда(new Error(Т('нет файла'))); return; }
       var тип = файл.type || '';
 
       if (/^video\//.test(тип)) {
@@ -648,9 +648,9 @@
         в.onloadedmetadata = function () {
           var д = в.duration;
           URL.revokeObjectURL(адрес);
-          if (!isFinite(д)) { беда(new Error('не понял длину ролика')); return; }
+          if (!isFinite(д)) { беда(new Error(Т('не понял длину ролика'))); return; }
           if (д > ПРЕДЕЛ_СЕК + 0.4) {
-            беда(new Error('ролик ' + Math.round(д) + ' с: не длиннее '
+            беда(new Error(Т('ролик ') + Math.round(д) + ' с: не длиннее '
                            + ПРЕДЕЛ_СЕК)); return;
           }
           положитьФайл('своё-видео', файл).catch(function () {});
@@ -660,14 +660,14 @@
           готово('видео');
         };
         в.onerror = function () {
-          URL.revokeObjectURL(адрес); беда(new Error('не читается'));
+          URL.revokeObjectURL(адрес); беда(new Error(Т('не читается')));
         };
         в.src = адрес;
         return;
       }
 
       if (!/^image\//.test(тип)) {
-        беда(new Error('это не картинка и не ролик')); return;
+        беда(new Error(Т('это не картинка и не ролик'))); return;
       }
       остановить();
       стеретьФайл('своё-видео');
@@ -703,7 +703,7 @@
         };
         гот.src = данные;
       };
-      и.onerror = function () { URL.revokeObjectURL(адрес); беда(new Error('не читается')); };
+      и.onerror = function () { URL.revokeObjectURL(адрес); беда(new Error(Т('не читается'))); };
       и.src = адрес;
     });
   }

@@ -164,7 +164,7 @@
       return new Promise(function (готово, беда) {
         var видео = /^video\//.test(файл.type || '');
         var фото  = /^image\//.test(файл.type || '');
-        if (!видео && !фото) { беда(new Error('Это не видео и не фото')); return; }
+        if (!видео && !фото) { беда(new Error(Т('Это не видео и не фото'))); return; }
 
         var адрес = окно.URL.createObjectURL(файл);
         if (фото) {
@@ -176,7 +176,7 @@
               от: 0, до: ФОТОДЛИТ
             }));
           };
-          кар.onerror = function () { беда(new Error('Снимок не открылся')); };
+          кар.onerror = function () { беда(new Error(Т('Снимок не открылся'))); };
           кар.src = адрес;
           return;
         }
@@ -187,13 +187,13 @@
         в.crossOrigin = 'anonymous';
         в.onloadedmetadata = function () {
           var д = isFinite(в.duration) ? в.duration : 0;
-          if (!д) { беда(new Error('Браузер не прочитал длину ролика')); return; }
+          if (!д) { беда(new Error(Т('Браузер не прочитал длину ролика'))); return; }
           готово(положить({
             род: 'видео', имя: файл.name || 'видео', файл: файл,
             адрес: адрес, узел: в, длит: д, от: 0, до: д
           }));
         };
-        в.onerror = function () { беда(new Error('Ролик не открылся')); };
+        в.onerror = function () { беда(new Error(Т('Ролик не открылся'))); };
         в.src = адрес;
       });
     };
@@ -236,7 +236,7 @@
       var к = стол.клипы[номер];
       if (!к) return;
       if (своё <= к.от + 0.15 || своё >= к.до - 0.15) {
-        if (CW.сказать) CW.сказать('Слишком близко к краю куска');
+        if (CW.сказать) CW.сказать(Т('Слишком близко к краю куска'));
         return;
       }
       var второй = {
@@ -297,7 +297,7 @@
            (duration = Infinity): ждать её вечно нельзя, кладём как
            есть и считаем длину по дорожке. */
         окно.setTimeout(function () { if (!стол[куда]) положили(); }, 1500);
-        з.onerror = function () { беда(new Error('Запись не открылась')); };
+        з.onerror = function () { беда(new Error(Т('Запись не открылась'))); };
       });
     }
 
@@ -974,9 +974,9 @@
     стол.вывести = function (н) {
       н = н || {};
       return new Promise(function (готово, беда) {
-        if (!стол.клипы.length) { беда(new Error('На дорожке пусто')); return; }
+        if (!стол.клипы.length) { беда(new Error(Т('На дорожке пусто'))); return; }
         if (typeof окно.MediaRecorder !== 'function') {
-          беда(new Error('Этот браузер не умеет записывать видео'));
+          беда(new Error(Т('Этот браузер не умеет записывать видео')));
           return;
         }
 
@@ -1011,7 +1011,7 @@
                файл вместо ролика. Молча класть в пост пустоту нельзя,
                поэтому спящий звук мы просто не берём: ролик выйдет
                немым, зато настоящим. */
-            if (звук.state !== 'running') throw new Error('звук спит');
+            if (звук.state !== 'running') throw new Error(Т('звук спит'));
             сведение = звук.createMediaStreamDestination();
             стол.клипы.forEach(function (к) {
               if (к.род !== 'видео') return;
@@ -1043,19 +1043,19 @@
         var писарь;
         try {
           писарь = new окно.MediaRecorder(поток, вид ? { mimeType: вид } : undefined);
-        } catch (е) { беда(new Error('Браузер отказался писать: ' + е.message)); return; }
+        } catch (е) { беда(new Error(Т('Браузер отказался писать: ') + е.message)); return; }
 
         var куски = [];
         писарь.ondataavailable = function (е) { if (е.data && е.data.size) куски.push(е.data); };
-        писарь.onerror = function () { остановиться(new Error('Запись оборвалась')); };
+        писарь.onerror = function () { остановиться(new Error(Т('Запись оборвалась'))); };
         писарь.onstop = function () {
           чисто();
           /* Прервали руками — отдавать обрезок нельзя: он уехал бы в
              пост как готовый ролик. Честный отказ, и человек правит
              дальше. */
-          if (оборвали) { беда(new Error('Сборка прекращена')); return; }
+          if (оборвали) { беда(new Error(Т('Сборка прекращена'))); return; }
           var капля = new Blob(куски, { type: вид || 'video/webm' });
-          if (!капля.size) { беда(new Error('Запись вышла пустой')); return; }
+          if (!капля.size) { беда(new Error(Т('Запись вышла пустой'))); return; }
           var имя = 'ролик-' + Date.now() + (/mp4/.test(вид || '') ? '.mp4' : '.webm');
           var длилось = Math.min(всего, место || всего);
           /* Длину дописываем в сам файл: без неё плеер показывает
@@ -1172,7 +1172,7 @@
        ═══════════════════════════════════════════════════════════════ */
     стол.писатьГолос = function () {
       if (!окно.navigator.mediaDevices || typeof окно.MediaRecorder !== 'function') {
-        return Promise.reject(new Error('Этот браузер не умеет записывать звук'));
+        return Promise.reject(new Error(Т('Этот браузер не умеет записывать звук')));
       }
       /* Чистку просим у самого браузера: его подавление шума и эха
          работает до записи, на живом потоке, и сделает больше, чем
@@ -1200,7 +1200,7 @@
                 писарь.onstop = function () {
                   поток.getTracks().forEach(function (д) { д.stop(); });
                   var капля = new Blob(куски, { type: писарь.mimeType || 'audio/webm' });
-                  if (!капля.size) { беда(new Error('Запись вышла пустой')); return; }
+                  if (!капля.size) { беда(new Error(Т('Запись вышла пустой'))); return; }
                   var имя = 'озвучка' + (/mp4/.test(капля.type) ? '.m4a' : '.webm');
                   готово(new File([капля], имя, { type: капля.type }));
                 };

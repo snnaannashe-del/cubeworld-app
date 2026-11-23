@@ -34,7 +34,7 @@ CW.модаль('new-file', function (данные) {
   var М = CW.модалка({
     имя: 'новый-файл',
     знак: 'лист',
-    заголовок: 'Создать файл',
+    заголовок: Т('Создать файл'),
     подзаголовок: ПАПКА.name || ''
   });
   М.открыть();
@@ -99,11 +99,11 @@ CW.модаль('new-file', function (данные) {
     гнездо.className = 'пп-ввод';
     гнездо.innerHTML =
         '<label></label>'
-      + '<button type="button" class="пп-отмена" title="Отменить">✕</button>'
+      + '<button type="button" class="пп-отмена" title="' + CW.безопасно(Т('Отменить')) + '">✕</button>'
       + '<div class="ряд"><input type="text" maxlength="64" spellcheck="false">'
-      + '<button type="button" class="кнопка главная">Создать</button></div>'
+      + '<button type="button" class="кнопка главная">' + CW.безопасно(Т('Создать')) + '</button></div>'
       + '<div class="беда"></div>';
-    гнездо.querySelector('label').textContent = 'Имя файла · ' + в.имя;
+    гнездо.querySelector('label').textContent = Т('Имя файла · ') + в.имя;
     М.тело.insertBefore(гнездо, М.тело.firstChild);
 
     var поле = гнездо.querySelector('input');
@@ -126,7 +126,7 @@ CW.модаль('new-file', function (данные) {
 
     function создать() {
       var имя = поле.value.trim();
-      if (!имя) { беда.textContent = 'Имя пустое'; return; }
+      if (!имя) { беда.textContent = Т('Имя пустое'); return; }
       кн.disabled = true;
       беда.textContent = '';
 
@@ -142,7 +142,7 @@ CW.модаль('new-file', function (данные) {
           CW.открыть('file', { файл: о.file, папка: ПАПКА,
                                правится: true, потом: данные.потом });
         } else {
-          CW.сказать('Файл создан. Открыть его можно будет, когда приедет '
+          CW.сказать(Т('Файл создан. Открыть его можно будет, когда приедет ')
                    + 'редактор вида «' + в.имя + '»');
         }
       }).catch(function (е) {
@@ -158,7 +158,7 @@ CW.модаль('new-file', function (данные) {
   function заготовка(вид) {
     if (вид === 'md')   return '# Заголовок\n\nТекст.\n';
     if (вид === 'json') return '{\n  "имя": "значение"\n}\n';
-    if (вид === 'html') return '<!doctype html>\n<meta charset="utf-8">\n<h1>Привет</h1>\n';
+    if (вид === 'html') return '<!doctype html>\n<meta charset="utf-8">\n<h1>' + CW.безопасно(Т('Привет')) + '</h1>\n';
     if (вид === 'py')   return '# -*- coding: utf-8 -*-\nprint("привет")\n';
     if (вид === 'csv')  return 'столбец,столбец\nзначение,значение\n';
     if (вид === 'svg')  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">\n'

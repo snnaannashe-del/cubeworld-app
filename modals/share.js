@@ -50,16 +50,16 @@ CW.модаль('share', function (данные) {
     var М = CW.модалка({
       имя: 'поделиться',
       знак: 'поделиться',
-      заголовок: 'Поделиться',
+      заголовок: Т('Поделиться'),
       подзаголовок: подпись || ссылка.replace(/^https?:\/\//, ''),
       подвал: [
-        { имя: 'закрыть', подпись: 'Закрыть', делать: function () { М.закрыть(); } }
+        { имя: 'закрыть', подпись: Т('Закрыть'), делать: function () { М.закрыть(); } }
       ]
     });
 
     var поле = document.createElement('div');
     поле.className = 'ок-поле';
-    поле.innerHTML = '<label>Ссылка</label>';
+    поле.innerHTML = '<label>' + CW.безопасно(Т('Ссылка')) + '</label>';
     var ряд = document.createElement('div');
     ряд.style.cssText = 'display:flex;gap:8px';
     var вход = document.createElement('input');
@@ -71,7 +71,7 @@ CW.модаль('share', function (данные) {
     var кн = document.createElement('button');
     кн.className = 'кнопка главная';
     кн.style.flex = '0 0 auto';
-    кн.textContent = 'Копировать';
+    кн.textContent = Т('Копировать');
     кн.onclick = function () { скопировать(ссылка); };
     ряд.appendChild(кн);
     поле.appendChild(ряд);
@@ -90,8 +90,8 @@ CW.модаль('share', function (данные) {
     внутри.appendChild(зн);
     var т = document.createElement('div');
     т.className = 'текст';
-    т.innerHTML = '<b>Переслать в переписку</b>'
-                + '<span>Выбрать, кому: и ссылка уйдёт сообщением</span>';
+    т.innerHTML = '<b>' + CW.безопасно(Т('Переслать в переписку')) + '</b>'
+                + '<span>' + CW.безопасно(Т('Выбрать, кому: и ссылка уйдёт сообщением')) + '</span>';
     внутри.appendChild(т);
     внутри.onclick = function () {
       М.закрыть();
@@ -102,7 +102,7 @@ CW.модаль('share', function (данные) {
     var п = document.createElement('div');
     п.className = 'подсказ';
     п.style.cssText = 'margin-top:12px;line-height:1.65';
-    п.textContent = 'По ссылке откроется ровно это место. Если оно закрытое, '
+    п.textContent = Т('По ссылке откроется ровно это место. Если оно закрытое, ')
       + 'тот, кому ты её дашь, увидит просьбу войти.';
     М.тело.appendChild(п);
 
@@ -111,6 +111,6 @@ CW.модаль('share', function (данные) {
   }
 
   function скопировать(текст) {
-    CW.вбуфер(текст, 'Ссылка скопирована');
+    CW.вбуфер(текст, Т('Ссылка скопирована'));
   }
 });

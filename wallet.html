@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Кошелёк · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-432">
-<link rel="stylesheet" href="shared/style.css?v=20261123-432">
-<link rel="stylesheet" href="shared/window.css?v=20261123-432">
-<link rel="stylesheet" href="shared/account.css?v=20261123-432">
-<script src="shared/theme.js?v=20261123-432"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-432">
+<link rel="icon" href="icons/favicon.svg?v=20261123-433">
+<link rel="stylesheet" href="shared/style.css?v=20261123-433">
+<link rel="stylesheet" href="shared/window.css?v=20261123-433">
+<link rel="stylesheet" href="shared/account.css?v=20261123-433">
+<script src="shared/theme.js?v=20261123-433"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-433">
 <!--
   КОШЕЛЁК.
 
@@ -156,20 +156,20 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-432"></script>
-<script src="shared/ui.js?v=20261123-432"></script>
-<script src="shared/смайлы.js?v=20261123-432"></script>
-<script src="shared/лица.js?v=20261123-432"></script>
-<script src="shared/эфир.js?v=20261123-432"></script>
-<script src="shared/icons.js?v=20261123-432"></script>
-<script src="shared/window.js?v=20261123-432"></script>
-<script src="shared/без-копий.js?v=20261123-432"></script>
-<script src="shared/time.js?v=20261123-432"></script>
-<script src="shared/auth.js?v=20261123-432"></script>
-<script src="shared/lang.js?v=20261123-432"></script>
-<script src="shared/account.js?v=20261123-432"></script>
-<script src="shared/shell.js?v=20261123-432"></script>
-<script src="shared/wallets.js?v=20261123-432"></script>
+<script src="shared/api.js?v=20261123-433"></script>
+<script src="shared/ui.js?v=20261123-433"></script>
+<script src="shared/смайлы.js?v=20261123-433"></script>
+<script src="shared/лица.js?v=20261123-433"></script>
+<script src="shared/эфир.js?v=20261123-433"></script>
+<script src="shared/icons.js?v=20261123-433"></script>
+<script src="shared/window.js?v=20261123-433"></script>
+<script src="shared/без-копий.js?v=20261123-433"></script>
+<script src="shared/time.js?v=20261123-433"></script>
+<script src="shared/auth.js?v=20261123-433"></script>
+<script src="shared/lang.js?v=20261123-433"></script>
+<script src="shared/account.js?v=20261123-433"></script>
+<script src="shared/shell.js?v=20261123-433"></script>
+<script src="shared/wallets.js?v=20261123-433"></script>
 <script>
 'use strict';
 
@@ -235,9 +235,9 @@ function деньги(ч) {
 /* ── баланс ── */
 function кускомБаланс(с) {
   return кусок('баланс',
-      '<div class="над">Баланс кошелька</div>'
+      '<div class="над">' + CW.безопасно(Т('Баланс кошелька')) + '</div>'
     + '<div class="сумма">' + деньги(с.balance) + '</div>'
-    + '<div class="под">CUBE Token · Уровень ' + (с.level || 1)
+    + '<div class="под">' + CW.безопасно(Т('CUBE Token · Уровень')) + ' ' + (с.level || 1)
     + ' · ' + (с.xp || 0) + ' XP</div>');
 }
 
@@ -247,7 +247,7 @@ function кускомУровень(с) {
   var у = кусок('уровень',
       '<div class="ряд">'
     +   '<span class="знак">' + CW.значок('кубок') + '</span>'
-    +   '<span class="имя">Уровень ' + (с.level || 1) + '</span>'
+    +   '<span class="имя">' + CW.безопасно(Т('Уровень')) + ' ' + (с.level || 1) + '</span>'
     +   '<span class="xp">' + (с.xp_in_level || 0) + ' / '
     +     ((с.xp_next_level || 0) - (с.xp_level_start || 0)) + ' XP</span>'
     + '</div>'
@@ -278,7 +278,7 @@ function кускомГрафик() {
     + '<canvas class="полотно"></canvas>'
     + '<div class="края">'
     +   '<span>' + (было ? день(было.day) + ' · ' + деньги(было.balance) : '') + '</span>'
-    +   '<span><b>сейчас ' + (стало ? деньги(стало.balance) : 0) + ' CUBE</b></span>'
+    +   '<span><b>' + CW.безопасно(Т('сейчас')) + ' ' + (стало ? деньги(стало.balance) : 0) + ' CUBE</b></span>'
     + '</div>');
 
   /* Рисуем после того, как блок встанет на страницу: до этого у полотна
@@ -365,7 +365,7 @@ function кускомПеревод() {
      когда спросит кошелёк. */
   var у = кусок('перевод',
       '<div class="раздел">'
-    +   '<span class="знак">' + CW.значок('рост') + '</span>Отправить CUBE'
+    +   '<span class="знак">' + CW.значок('рост') + '</span>' + CW.безопасно(Т('Отправить CUBE')) + ''
     + '</div>');
 
   var ряд = кусок('поля');
@@ -378,7 +378,7 @@ function кускомПеревод() {
      именем («UID · 00005686969»). Прежняя строка предлагала «CUBE-…»
      - это входной ключ, искать по нему нельзя и показывать его
      соседям тоже. */
-  кому.placeholder = 'Имя, Ник, UID';
+  кому.placeholder = Т('Имя, Ник, UID');
   кому.autocomplete = 'off';
   /* Браузер принимает пару «строка + число» за платёжную форму и вешает
      сверху свою плашку про автозаполнение. Называем поля их настоящими
@@ -398,7 +398,7 @@ function кускомПеревод() {
   var б = document.createElement('button');
   б.type = 'button';
   б.className = 'кнопка главная';
-  б.textContent = '→ Отправить';
+  б.textContent = Т('→ Отправить');
 
   ряд.appendChild(кому);
   ряд.appendChild(сколько);
@@ -506,7 +506,7 @@ function кускомИстория() {
   var список = кусок('история');
   if (!С.движения.length) {
     список.innerHTML = '<div class="пусто-строка">'
-      + 'Движений по счёту ещё не было.<br>Начисления закрываются раз в сутки.'
+      + '' + CW.безопасно(Т('Движений по счёту ещё не было.')) + '<br>' + CW.безопасно(Т('Начисления закрываются раз в сутки.')) + ''
       + '</div>';
   } else {
     С.движения.forEach(function (д) {

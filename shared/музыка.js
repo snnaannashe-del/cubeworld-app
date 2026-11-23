@@ -176,7 +176,7 @@
     звук.addEventListener('pause', function () { закладкуПисать(true); сказать(); });
     звук.addEventListener('ended', function () { CW.музыка.дальше(); });
     звук.addEventListener('error', function () {
-      CW.сказать && CW.сказать('Эта песня не открылась');
+      CW.сказать && CW.сказать(Т('Эта песня не открылась'));
       сейчас = null; закладкуСтереть(); сказать();
     });
 

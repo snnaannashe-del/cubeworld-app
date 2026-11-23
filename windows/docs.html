@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Документы · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-432">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-432">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-432">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-432">
-<script src="../shared/theme.js?v=20261123-432"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-432">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-433">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-433">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-433">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-433">
+<script src="../shared/theme.js?v=20261123-433"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-433">
 <!--
   ДОКУМЕНТЫ — окно поверх программы, со своим адресом.
 
@@ -151,20 +151,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-432"></script>
-<script src="../shared/ui.js?v=20261123-432"></script>
-<script src="../shared/смайлы.js?v=20261123-432"></script>
-<script src="../shared/лица.js?v=20261123-432"></script>
-<script src="../shared/эфир.js?v=20261123-432"></script>
-<script src="../shared/icons.js?v=20261123-432"></script>
-<script src="../shared/window.js?v=20261123-432"></script>
-<script src="../shared/без-копий.js?v=20261123-432"></script>
-<script src="../shared/time.js?v=20261123-432"></script>
-<script src="../shared/auth.js?v=20261123-432"></script>
-<script src="../shared/lang.js?v=20261123-432"></script>
-<script src="../shared/account.js?v=20261123-432"></script>
-<script src="../shared/shell.js?v=20261123-432"></script>
-<script src="../shared/docs.js?v=20261123-432"></script>
+<script src="../shared/api.js?v=20261123-433"></script>
+<script src="../shared/ui.js?v=20261123-433"></script>
+<script src="../shared/смайлы.js?v=20261123-433"></script>
+<script src="../shared/лица.js?v=20261123-433"></script>
+<script src="../shared/эфир.js?v=20261123-433"></script>
+<script src="../shared/icons.js?v=20261123-433"></script>
+<script src="../shared/window.js?v=20261123-433"></script>
+<script src="../shared/без-копий.js?v=20261123-433"></script>
+<script src="../shared/time.js?v=20261123-433"></script>
+<script src="../shared/auth.js?v=20261123-433"></script>
+<script src="../shared/lang.js?v=20261123-433"></script>
+<script src="../shared/account.js?v=20261123-433"></script>
+<script src="../shared/shell.js?v=20261123-433"></script>
+<script src="../shared/docs.js?v=20261123-433"></script>
 <script>
 'use strict';
 
@@ -182,7 +182,7 @@ var текущий = (function () {
 })();
 
 место.appendChild(ок('div', 'пусто-строка',
-  'Документы открыты отдельным окном. Закрой его, чтобы вернуться.'));
+  Т('Документы открыты отдельным окном. Закрой его, чтобы вернуться.')));
 
 /* Свой цвет у каждого документа. Семь строк с одинаковым синим значком
    читаются как одна; цвет — это метка, по которой нужную строку находят
@@ -201,7 +201,7 @@ var ОКНО = CW.стойка({
   имя: 'документы',
   знак: 'лист',
   знакЦвет: '#4a9eff',
-  заголовок: 'Документы',
+  заголовок: Т('Документы'),
   /* Выход — крестик: документы открыты отдельным окном поверх
      программы, и отсюда именно закрывают, а не идут на шаг назад. */
   назад: уйти,
@@ -216,13 +216,13 @@ var ОКНО = CW.стойка({
 var список = null, бумага = null;
 
 if (!ДОКИ.length) {
-  ОКНО.пусто({ знак: 'внимание', заголовок: 'Документов нет',
+  ОКНО.пусто({ знак: 'внимание', заголовок: Т('Документов нет'),
                текст: 'Файл с текстами не приехал. Обнови страницу.' });
 } else {
   var два = ок('div', 'дк-два');
   список = ок('div', 'дк-полка');
   бумага = ок('div', 'дк-бумага');
-  список.appendChild(ок('div', 'дк-шапочка', 'Документы'));
+  список.appendChild(ок('div', 'дк-шапочка', Т('Документы')));
   два.appendChild(список);
   два.appendChild(бумага);
   ОКНО.тело.appendChild(два);
@@ -233,7 +233,7 @@ if (!ДОКИ.length) {
 function нарисоватьСписок() {
   /* Шапочку столбца оставляем на месте, перерисовываем только строки. */
   список.innerHTML = '';
-  список.appendChild(ок('div', 'дк-шапочка', 'Документы'));
+  список.appendChild(ок('div', 'дк-шапочка', Т('Документы')));
   ДОКИ.forEach(function (д, н) {
     var б = document.createElement('button');
     б.type = 'button';
@@ -268,7 +268,7 @@ function показать() {
      обрезанная. */
   бумага.innerHTML =
       '<div class="дк-страница">'
-    +   '<div class="дк-дата">Редакция от '
+    +   '<div class="дк-дата">' + CW.безопасно(Т('Редакция от')) + ' '
     +     CW.безопасно(CW.документыДата || '-') + '</div>'
     +   '<div class="дк-текст">' + разметка(д.текст) + '</div>'
     + '</div>';

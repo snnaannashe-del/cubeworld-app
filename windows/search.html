@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Поиск · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-432">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-432">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-432">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-432">
-<script src="../shared/theme.js?v=20261123-432"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-432">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-433">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-433">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-433">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-433">
+<script src="../shared/theme.js?v=20261123-433"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-433">
 <!--
   ПОИСК — окно поверх программы.
 
@@ -179,20 +179,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-432"></script>
-<script src="../shared/ui.js?v=20261123-432"></script>
-<script src="../shared/смайлы.js?v=20261123-432"></script>
-<script src="../shared/лица.js?v=20261123-432"></script>
-<script src="../shared/эфир.js?v=20261123-432"></script>
-<script src="../shared/icons.js?v=20261123-432"></script>
-<script src="../shared/window.js?v=20261123-432"></script>
-<script src="../shared/без-копий.js?v=20261123-432"></script>
-<script src="../shared/time.js?v=20261123-432"></script>
-<script src="../shared/auth.js?v=20261123-432"></script>
-<script src="../shared/lang.js?v=20261123-432"></script>
-<script src="../shared/account.js?v=20261123-432"></script>
-<script src="../shared/помощник.js?v=20261123-432"></script>
-<script src="../shared/shell.js?v=20261123-432"></script>
+<script src="../shared/api.js?v=20261123-433"></script>
+<script src="../shared/ui.js?v=20261123-433"></script>
+<script src="../shared/смайлы.js?v=20261123-433"></script>
+<script src="../shared/лица.js?v=20261123-433"></script>
+<script src="../shared/эфир.js?v=20261123-433"></script>
+<script src="../shared/icons.js?v=20261123-433"></script>
+<script src="../shared/window.js?v=20261123-433"></script>
+<script src="../shared/без-копий.js?v=20261123-433"></script>
+<script src="../shared/time.js?v=20261123-433"></script>
+<script src="../shared/auth.js?v=20261123-433"></script>
+<script src="../shared/lang.js?v=20261123-433"></script>
+<script src="../shared/account.js?v=20261123-433"></script>
+<script src="../shared/помощник.js?v=20261123-433"></script>
+<script src="../shared/shell.js?v=20261123-433"></script>
 <script>
 'use strict';
 
@@ -206,13 +206,13 @@ CW.оболочка('feed').then(function (место) {
    новый род — он добавляется сюда, и работает сразу в обоих местах.
    ═══════════════════════════════════════════════════════════════════════ */
 var ГДЕ = [
-  { имя: 'люди',   подпись: 'Люди',   зн: 'человек', адрес: '/users/search',
+  { имя: 'люди',   подпись: Т('Люди'),   зн: 'человек', адрес: '/users/search',
     строка: строкаЧеловек },
-  { имя: 'группы', подпись: 'Группы', зн: 'люди',    адрес: '/groups/search',
+  { имя: 'группы', подпись: Т('Группы'), зн: 'люди',    адрес: '/groups/search',
     строка: строкаГруппа },
-  { имя: 'кубы',   подпись: 'Кубы',   зн: 'ромб',    адрес: '/cubes/search',
+  { имя: 'кубы',   подпись: Т('Кубы'),   зн: 'ромб',    адрес: '/cubes/search',
     строка: строкаКуб },
-  { имя: 'эфиры',  подпись: 'Эфиры',  зн: 'камера',  адрес: '/streams',
+  { имя: 'эфиры',  подпись: Т('Эфиры'),  зн: 'камера',  адрес: '/streams',
     строка: строкаЭфир }
 ];
 
@@ -228,7 +228,7 @@ var С = { ищем: '', ответы: {}, раскрыт: '', номер: 0, п
 var П = { разговор: [], каталог: false, думает: false, кВнизу: false };
 
 место.appendChild(ок('div', 'пусто-строка',
-  'Поиск открыт отдельным окном. Закрой его, чтобы вернуться.'));
+  Т('Поиск открыт отдельным окном. Закрой его, чтобы вернуться.')));
 
 /* ═══════════════════════════════════════════════════════════════════════
    ОКНО
@@ -242,7 +242,7 @@ var П = { разговор: [], каталог: false, думает: false, к�
    до низа и под шестью подсказками оставалось полтора пустых экрана. */
 var ОКНО = CW.стойка({
   имя: 'поиск',
-  заголовок: 'Поиск Cube',
+  заголовок: Т('Поиск Cube'),
   назад: уйти,
   крест: true,
   поРосту: true,
@@ -254,8 +254,8 @@ var ОКНО = CW.стойка({
 var строка = ок('div', 'по-строка');
 строка.innerHTML = '<span class="лупа">' + CW.значок('лупа') + '</span>'
                  + '<input type="text" spellcheck="false" autocomplete="off"'
-                 + ' placeholder="Кого или что ищем?">'
-                 + '<button class="стереть" title="Очистить">✕</button>';
+                 + ' placeholder="' + CW.безопасно(Т('Кого или что ищем?')) + '">'
+                 + '<button class="стереть" title="' + CW.безопасно(Т('Очистить')) + '">✕</button>';
 ОКНО.сверху(строка);
 
 var поле = строка.querySelector('input');
@@ -378,7 +378,7 @@ function показать() {
   /* Сперва наши вопросы: ответ на них у нас есть, и он точный. */
   var вопросы = вопросыПохожие(С.ищем);
   if (вопросы.length) {
-    тело.appendChild(ок('div', 'по-раздел', 'Вопросы'));
+    тело.appendChild(ок('div', 'по-раздел', Т('Вопросы')));
     var ряд = ок('div', 'пм-подсказки');
     вопросы.forEach(function (в) {
       var ч = ок('button', 'пм-чип', в);
@@ -409,7 +409,7 @@ function показать() {
 
     if (!раскрыт && ряды.length > ВО_ВСЁМ) {
       var ещё = ок('button', 'по-ещё',
-                   'Ещё ' + (ряды.length - ВО_ВСЁМ) + ' в разделе «' + г.подпись + '»');
+                   Т('Ещё ') + (ряды.length - ВО_ВСЁМ) + ' в разделе «' + г.подпись + '»');
       /* Раскрываем раздел на месте: вкладок, куда можно было бы
          перейти, больше нет. */
       ещё.onclick = function () { С.раскрыт = г.имя; показать(); };
@@ -418,14 +418,14 @@ function показать() {
   });
 
   if (ждём) {
-    тело.appendChild(ок('div', 'пусто-строка', 'Ищу…'));
+    тело.appendChild(ок('div', 'пусто-строка', Т('Ищу…')));
     return;
   }
 
   if (!всего && !вопросы.length) {
     ОКНО.пусто({
       знак: 'лупа',
-      заголовок: 'Ничего не нашлось',
+      заголовок: Т('Ничего не нашлось'),
       текст: 'По запросу «' + С.ищем + '» ни вопроса, ни людей, ни групп, ни '
            + 'кубов, ни эфиров. Попробуй короче, поиск ищет по началу слова.'
     });
@@ -490,7 +490,7 @@ function нарисоватьКаталог() {
   каталогГде.innerHTML = '';
   var группы = CW.помощник.каталог('');
   if (!группы.length) {
-    каталогГде.appendChild(ок('div', 'пм-группа', 'Ничего не нашлось'));
+    каталогГде.appendChild(ок('div', 'пм-группа', Т('Ничего не нашлось')));
     return;
   }
   группы.forEach(function (г) {
@@ -518,7 +518,7 @@ function пузырь(м) {
     var р = CW.помощник.раздел(м.раздел);
     if (р) {
       var у = ок('button', 'пм-уйти');
-      у.innerHTML = CW.значок(р.зн) + '<span>Открыть «' + CW.безопасно(р.имя) + '»</span>';
+      у.innerHTML = CW.значок(р.зн) + '<span>' + CW.безопасно(Т('Открыть «')) + '' + CW.безопасно(р.имя) + '»</span>';
       у.onclick = function () { CW.уйти(CW.раздел(р.к, CW.какойКуб())); };
       б.appendChild(у);
     }
@@ -641,7 +641,7 @@ function строкаЭфир(э) {
     э.title || э.name || ('Эфир #' + э.id),
     э.display_name || '',
     'в эфире',
-    function () { CW.сказать('Окно эфира ещё не готово'); });
+    function () { CW.сказать(Т('Окно эфира ещё не готово')); });
 }
 
 /* Подсветка найденного куска. Через безопасный текст, а не через

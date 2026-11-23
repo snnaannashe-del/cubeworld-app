@@ -70,14 +70,14 @@
 
   function сделать(текст, язык) {
     var т = String(текст == null ? '' : текст).trim();
-    if (!т) return Promise.reject(new Error('Переводить нечего'));
+    if (!т) return Promise.reject(new Error(Т('Переводить нечего')));
     if (!переводчикЕсть()) {
-      return Promise.reject(new Error('Этот браузер не умеет переводить сам. '
+      return Promise.reject(new Error(Т('Этот браузер не умеет переводить сам. ')
         + 'В Chrome это есть; слать переписку на чужой сервер мы не будем.'));
     }
     return откуда(т).then(function (из) {
       if (из === язык) {
-        throw new Error('Это уже ' + имяЯзыка(язык).toLowerCase());
+        throw new Error(Т('Это уже ') + имяЯзыка(язык).toLowerCase());
       }
       return завести(из, язык);
     }).then(function (п) {

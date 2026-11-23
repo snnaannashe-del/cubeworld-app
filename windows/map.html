@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Карта · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-432">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-432">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-432">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-432">
-<script src="../shared/theme.js?v=20261123-432"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-432">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-433">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-433">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-433">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-433">
+<script src="../shared/theme.js?v=20261123-433"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-433">
 <!--
   ЖИВАЯ КАРТА — окно поверх программы, со своим адресом.
 
@@ -176,26 +176,26 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-432"></script>
-<script src="../shared/ui.js?v=20261123-432"></script>
-<script src="../shared/смайлы.js?v=20261123-432"></script>
-<script src="../shared/лица.js?v=20261123-432"></script>
-<script src="../shared/эфир.js?v=20261123-432"></script>
-<script src="../shared/icons.js?v=20261123-432"></script>
-<script src="../shared/window.js?v=20261123-432"></script>
-<script src="../shared/без-копий.js?v=20261123-432"></script>
-<script src="../shared/time.js?v=20261123-432"></script>
-<script src="../shared/auth.js?v=20261123-432"></script>
-<script src="../shared/lang.js?v=20261123-432"></script>
-<script src="../shared/account.js?v=20261123-432"></script>
-<script src="../shared/shell.js?v=20261123-432"></script>
+<script src="../shared/api.js?v=20261123-433"></script>
+<script src="../shared/ui.js?v=20261123-433"></script>
+<script src="../shared/смайлы.js?v=20261123-433"></script>
+<script src="../shared/лица.js?v=20261123-433"></script>
+<script src="../shared/эфир.js?v=20261123-433"></script>
+<script src="../shared/icons.js?v=20261123-433"></script>
+<script src="../shared/window.js?v=20261123-433"></script>
+<script src="../shared/без-копий.js?v=20261123-433"></script>
+<script src="../shared/time.js?v=20261123-433"></script>
+<script src="../shared/auth.js?v=20261123-433"></script>
+<script src="../shared/lang.js?v=20261123-433"></script>
+<script src="../shared/account.js?v=20261123-433"></script>
+<script src="../shared/shell.js?v=20261123-433"></script>
 <script>
 'use strict';
 
 CW.оболочка('feed').then(function (место) {
 
 место.appendChild(ок('div', 'пусто-строка',
-  'Карта открыта отдельным окном. Закрой его, чтобы вернуться.'));
+  Т('Карта открыта отдельным окном. Закрой его, чтобы вернуться.')));
 
 var ОКНО = CW.стойка({
   имя: 'карта',
@@ -203,7 +203,7 @@ var ОКНО = CW.стойка({
      слово. «Живая карта» и подпись «шар, ночная сторона и огни
      городов» рассказывали о том, что и так видно на шаре. */
   знак: 'глобус',
-  заголовок: 'Карта',
+  заголовок: Т('Карта'),
   /* Крестик, а не стрелка: карта открыта отдельным окном поверх
      программы, и выход отсюда — именно закрытие, а не шаг назад. */
   назад: уйти,
@@ -273,7 +273,7 @@ CW.нужен('shared/карта-данные.js')
        причины одинаково выглядит и когда нет сети, и когда файл сломан,
        а чинить это две разные вещи. */
     ОКНО.тело.innerHTML = '';
-    ОКНО.пусто({ знак: 'внимание', заголовок: 'Карта не приехала',
+    ОКНО.пусто({ знак: 'внимание', заголовок: Т('Карта не приехала'),
                  текст: ((е && е.message) ? е.message + '. ' : '')
                       + 'Проверь связь и открой карту ещё раз.' });
   });

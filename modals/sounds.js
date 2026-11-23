@@ -31,9 +31,9 @@ CW.модаль('sounds', function (данные) {
   var М = CW.модалка({
     имя: 'звуки',
     знак: 'нота',
-    заголовок: 'Звуки',
-    подзаголовок: 'спрашиваю…',
-    кнопки: [{ имя: 'залить', зн: 'скрепка', подсказка: 'Добавить песню',
+    заголовок: Т('Звуки'),
+    подзаголовок: Т('спрашиваю…'),
+    кнопки: [{ имя: 'залить', зн: 'скрепка', подсказка: Т('Добавить песню'),
                делать: залить }]
   });
   М.открыть();
@@ -78,15 +78,15 @@ CW.модаль('sounds', function (данные) {
     var корпус = document.createElement('div');
     корпус.className = 'му-плеер';
     корпус.innerHTML =
-        '<button type="button" class="закрыть" title="Закрыть плеер"></button>'
-      + '<div class="имя">Ничего не играет</div>'
+        '<button type="button" class="закрыть" title="' + CW.безопасно(Т('Закрыть плеер')) + '"></button>'
+      + '<div class="имя">' + CW.безопасно(Т('Ничего не играет')) + '</div>'
       + '<div class="полоса"><div class="залито"></div><div class="точка"></div></div>'
       + '<div class="время"><span class="сейчас">0:00</span>'
       + '<span class="всего">0:00</span></div>'
       + '<div class="ряд">'
-      +   '<button type="button" class="кн назад" title="Предыдущая"></button>'
-      +   '<button type="button" class="кн пуск главная" title="Играть"></button>'
-      +   '<button type="button" class="кн дальше" title="Следующая"></button>'
+      +   '<button type="button" class="кн назад" title="' + CW.безопасно(Т('Предыдущая')) + '"></button>'
+      +   '<button type="button" class="кн пуск главная" title="' + CW.безопасно(Т('Играть')) + '"></button>'
+      +   '<button type="button" class="кн дальше" title="' + CW.безопасно(Т('Следующая')) + '"></button>'
       + '</div>';
 
     var полоса = корпус.querySelector('.полоса');
@@ -201,7 +201,7 @@ CW.модаль('sounds', function (данные) {
     if (!полка.length) {
       var п = document.createElement('div');
       п.className = 'пусто-строка';
-      п.textContent = 'Пока нет аудиофайлов.';
+      п.textContent = Т('Пока нет аудиофайлов.');
       узлы.полка.appendChild(п);
       return;
     }
@@ -281,7 +281,7 @@ CW.модаль('sounds', function (данные) {
         М.занят(false);
         нарисоватьПолку();
         обновить(CW.музыка.что());
-        CW.сказать('Песня на полке');
+        CW.сказать(Т('Песня на полке'));
       })
       .catch(function (е) {
         М.занят(false);

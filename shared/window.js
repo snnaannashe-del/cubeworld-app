@@ -295,7 +295,7 @@
     if (!естьШапка && н.крестУгол) {
       var крестик = э('button', 'ок-крестик');
       крестик.type = 'button';
-      крестик.title = 'Закрыть';
+      крестик.title = Т('Закрыть');
       крестик.innerHTML = CW.рисунок('M6 6 18 18M18 6 6 18', 15);
       крестик.onclick = function () { он.закрыть(); };
       окноУзел.appendChild(крестик);
@@ -892,7 +892,7 @@
       var с = документ.createElement('script');
       с.src = CW.свежий(CW.путь(путь));
       с.onload = function () { готово(); };
-      с.onerror = function () { беда(new Error('не приехал ' + путь)); };
+      с.onerror = function () { беда(new Error(Т('не приехал ') + путь)); };
       документ.head.appendChild(с);
     });
     return ПРИЕХАЛО[путь];
@@ -912,9 +912,9 @@
         с.src = CW.свежий(CW.путь('modals/' + имя + '.js'));
         с.onload = function () {
           if (ЕСТЬ[имя]) готово();
-          else беда(new Error('модалка ' + имя + ' не назвалась'));
+          else беда(new Error(Т('модалка ') + имя + ' не назвалась'));
         };
-        с.onerror = function () { беда(new Error('не приехала модалка ' + имя)); };
+        с.onerror = function () { беда(new Error(Т('не приехала модалка ') + имя)); };
         документ.head.appendChild(с);
       });
     }

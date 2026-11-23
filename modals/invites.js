@@ -17,8 +17,8 @@ CW.модаль('invites', function (данные) {
   var М = CW.модалка({
     имя: 'приглашения',
     знак: 'звено',
-    заголовок: 'Приглашения',
-    подзаголовок: 'спрашиваю…'
+    заголовок: Т('Приглашения'),
+    подзаголовок: Т('спрашиваю…')
   });
   М.открыть();
   CW.ждём(М.тело);
@@ -26,7 +26,7 @@ CW.модаль('invites', function (данные) {
   CW.спросить('/me/referral', { тихо: true })
     .then(нарисовать)
     .catch(function (е) {
-      М.пусто({ знак: 'внимание', заголовок: 'Не открылось',
+      М.пусто({ знак: 'внимание', заголовок: Т('Не открылось'),
                 текст: (е && е.сеть) ? 'Нет связи с сервером'
                                      : ((е && е.message) || 'Сервер не ответил') });
     });
@@ -44,7 +44,7 @@ CW.модаль('invites', function (данные) {
     /* ── ссылка ── */
     var поле = document.createElement('div');
     поле.className = 'ок-поле';
-    поле.innerHTML = '<label>Твоя ссылка</label>';
+    поле.innerHTML = '<label>' + CW.безопасно(Т('Твоя ссылка')) + '</label>';
     var ряд = document.createElement('div');
     ряд.style.cssText = 'display:flex;gap:8px';
     var вход = document.createElement('input');
@@ -56,7 +56,7 @@ CW.модаль('invites', function (данные) {
     var кн = document.createElement('button');
     кн.className = 'кнопка главная';
     кн.style.flex = '0 0 auto';
-    кн.textContent = 'Копировать';
+    кн.textContent = Т('Копировать');
     кн.onclick = function () { скопировать(ссылка); };
     ряд.appendChild(кн);
     поле.appendChild(ряд);
@@ -80,7 +80,7 @@ CW.модаль('invites', function (данные) {
       var п = document.createElement('div');
       п.className = 'подсказ';
       п.style.cssText = 'margin-top:12px;line-height:1.65';
-      п.textContent = 'За каждого, кто придёт по ссылке и останется: тебе '
+      п.textContent = Т('За каждого, кто придёт по ссылке и останется: тебе ')
         + Math.round(Number(д.bonus_inviter || 0)) + ' CUBE, ему '
         + Math.round(Number(д.bonus_friend || 0)) + ' CUBE.';
       М.тело.appendChild(п);
@@ -92,7 +92,7 @@ CW.модаль('invites', function (данные) {
       var зг = document.createElement('div');
       зг.className = 'по-раздел';
       зг.style.padding = '18px 0 6px';
-      зг.textContent = 'Пришли по ссылке';
+      зг.textContent = Т('Пришли по ссылке');
       М.тело.appendChild(зг);
 
       друзья.slice(0, 20).forEach(function (ч) {
@@ -112,7 +112,7 @@ CW.модаль('invites', function (данные) {
   }
 
   function скопировать(текст) {
-    CW.вбуфер(текст, 'Ссылка скопирована');
+    CW.вбуфер(текст, Т('Ссылка скопирована'));
   }
 
   return М;

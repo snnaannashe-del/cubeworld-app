@@ -87,7 +87,7 @@
   /* Раздувает сам браузер: своего разжатия мы не пишем. */
   function раздуть(сырое) {
     if (typeof DecompressionStream === 'undefined') {
-      return Promise.reject(new Error('Браузер не умеет распаковывать'));
+      return Promise.reject(new Error(Т('Браузер не умеет распаковывать')));
     }
     var поток = new Blob([сырое]).stream()
       .pipeThrough(new DecompressionStream('deflate-raw'));

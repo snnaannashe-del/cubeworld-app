@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Сигналы · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-432">
-<link rel="stylesheet" href="shared/style.css?v=20261123-432">
-<link rel="stylesheet" href="shared/window.css?v=20261123-432">
-<link rel="stylesheet" href="shared/account.css?v=20261123-432">
-<script src="shared/theme.js?v=20261123-432"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-432">
+<link rel="icon" href="icons/favicon.svg?v=20261123-433">
+<link rel="stylesheet" href="shared/style.css?v=20261123-433">
+<link rel="stylesheet" href="shared/window.css?v=20261123-433">
+<link rel="stylesheet" href="shared/account.css?v=20261123-433">
+<script src="shared/theme.js?v=20261123-433"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-433">
 <!--
   СИГНАЛЫ КУБА.
 
@@ -277,19 +277,19 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-432"></script>
-<script src="shared/ui.js?v=20261123-432"></script>
-<script src="shared/смайлы.js?v=20261123-432"></script>
-<script src="shared/лица.js?v=20261123-432"></script>
-<script src="shared/эфир.js?v=20261123-432"></script>
-<script src="shared/icons.js?v=20261123-432"></script>
-<script src="shared/window.js?v=20261123-432"></script>
-<script src="shared/без-копий.js?v=20261123-432"></script>
-<script src="shared/time.js?v=20261123-432"></script>
-<script src="shared/auth.js?v=20261123-432"></script>
-<script src="shared/lang.js?v=20261123-432"></script>
-<script src="shared/account.js?v=20261123-432"></script>
-<script src="shared/shell.js?v=20261123-432"></script>
+<script src="shared/api.js?v=20261123-433"></script>
+<script src="shared/ui.js?v=20261123-433"></script>
+<script src="shared/смайлы.js?v=20261123-433"></script>
+<script src="shared/лица.js?v=20261123-433"></script>
+<script src="shared/эфир.js?v=20261123-433"></script>
+<script src="shared/icons.js?v=20261123-433"></script>
+<script src="shared/window.js?v=20261123-433"></script>
+<script src="shared/без-копий.js?v=20261123-433"></script>
+<script src="shared/time.js?v=20261123-433"></script>
+<script src="shared/auth.js?v=20261123-433"></script>
+<script src="shared/lang.js?v=20261123-433"></script>
+<script src="shared/account.js?v=20261123-433"></script>
+<script src="shared/shell.js?v=20261123-433"></script>
 <script>
 'use strict';
 
@@ -303,12 +303,12 @@ var С = { все: [], отбор: 'все', пары: [], направлени�
 var шапка = document.createElement('div');
 шапка.className = 'верх-сигналов';
 шапка.innerHTML =
-    '<h1>Сигналы</h1>'
-  + '<button class="кругляш" id="кн-новый" title="Новый сигнал">＋</button>'
-  + '<button class="кругляш" id="кн-правила" title="О сигналах">'
+    '<h1>' + CW.безопасно(Т('Сигналы')) + '</h1>'
+  + '<button class="кругляш" id="кн-новый" title="' + CW.безопасно(Т('Новый сигнал')) + '">＋</button>'
+  + '<button class="кругляш" id="кн-правила" title="' + CW.безопасно(Т('О сигналах')) + '">'
   +   CW.значок('внимание') + '</button>'
   + '<div class="поиск-угол">'
-  +   '<button class="кругляш" id="кн-искать" title="Поиск">'
+  +   '<button class="кругляш" id="кн-искать" title="' + CW.безопасно(Т('Поиск')) + '">'
   +     CW.значок('лупа') + '</button>'
   + '</div>';
 место.appendChild(шапка);
@@ -332,7 +332,7 @@ var строкаПоиска = document.createElement('div');
 строкаПоиска.innerHTML =
     '<span class="зн">' + CW.значок('лупа') + '</span>'
   + '<input id="поиск-сигналов" type="text" spellcheck="false" autocomplete="off"'
-  + ' placeholder="Пара, Автор">';
+  + ' placeholder="' + CW.безопасно(Т('Пара, Автор')) + '">';
 шапка.querySelector('.поиск-угол')
      .insertBefore(строкаПоиска, шапка.querySelector('#кн-искать'));
 
@@ -363,7 +363,7 @@ function загрузить() {
   CW.спросить('/signals?limit=120', { сроком: 20000 })
     .then(принять)
     .catch(function () {
-      if (!куб) throw new Error('нет куба');
+      if (!куб) throw new Error(Т('нет куба'));
       return CW.спросить('/cubes/' + куб + '/signals', { сроком: 20000 })
                .then(принять);
     })
@@ -388,12 +388,12 @@ function показатьБеду(е) {
    ОТРИСОВКА
    ═══════════════════════════════════════════════════════════════════════ */
 var ОТБОРЫ = [
-  { имя: 'все',      подпись: 'Все' },
-  { имя: 'открытые', подпись: 'Открытые' },
-  { имя: 'лонг',     подпись: 'Лонг',   зн: 'рост',  класс: 'лонг' },
-  { имя: 'шорт',     подпись: 'Шорт',   зн: 'спад',  класс: 'шорт' },
-  { имя: 'мои',      подпись: 'Мои' },
-  { имя: 'авторы',   подпись: 'Авторы', зн: 'звезда', класс: 'авторы' }
+  { имя: 'все',      подпись: Т('Все') },
+  { имя: 'открытые', подпись: Т('Открытые') },
+  { имя: 'лонг',     подпись: Т('Лонг'),   зн: 'рост',  класс: 'лонг' },
+  { имя: 'шорт',     подпись: Т('Шорт'),   зн: 'спад',  класс: 'шорт' },
+  { имя: 'мои',      подпись: Т('Мои') },
+  { имя: 'авторы',   подпись: Т('Авторы'), зн: 'звезда', класс: 'авторы' }
 ];
 
 function кусок(класс, внутри) { return CW.кусок(класс, внутри); }
@@ -451,7 +451,7 @@ function показать() {
       С.ищем ? ('Ничего не нашлось по запросу «' + CW.безопасно(С.ищем) + '».')
              : (С.все.length
                  ? 'В этом отборе сигналов нет.'
-                 : 'В этом кубе ещё не было сигналов.<br>Нажми ＋ и опубликуй первый.')));
+                 : '' + CW.безопасно(Т('В этом кубе ещё не было сигналов.')) + '<br>' + CW.безопасно(Т('Нажми ＋ и опубликуй первый.')) + '')));
     return;
   }
   список.forEach(function (с) { тело.appendChild(карточка(с)); });
@@ -502,7 +502,7 @@ function карточка(с) {
   var УРОВНИ = { novice: 'новичок', author: 'автор', global: 'в общей витрине' };
 
   var чипы = '';
-  if (с.mine) чипы += '<span class="чип ты">ты</span>';
+  if (с.mine) чипы += '<span class="чип ты">' + CW.безопасно(Т('ты')) + '</span>';
   чипы += '<span class="чип">' + (УРОВНИ[ст.level] || УРОВНИ.novice) + '</span>';
 
   /* Автор и его опыт стоят в том же верхнем ряду, в пустоте между
@@ -523,8 +523,8 @@ function карточка(с) {
   var верх = кусок('ряд');
   if (с.locked) {
     верх.innerHTML =
-        '<span class="бирка-сост платный">платный</span>'
-      + '<span class="пара">скрыт до раскрытия</span>'
+        '<span class="бирка-сост платный">' + CW.безопасно(Т('платный')) + '</span>'
+      + '<span class="пара">' + CW.безопасно(Т('скрыт до раскрытия')) + '</span>'
       + кто;
   } else {
     верх.innerHTML =
@@ -558,7 +558,7 @@ function карточка(с) {
      сразу под верхний ряд, а автор с опытом уходят под них. */
   if (!с.locked) {
     у.appendChild(кусок('цены',
-        '<div class="цена"><span class="над">Вход</span>'
+        '<div class="цена"><span class="над">' + CW.безопасно(Т('Вход')) + '</span>'
       +   '<span class="знач">' + цена(с.entry) + '</span></div>'
       + '<div class="цена цель"><span class="над">Take profit</span>'
       +   '<span class="знач">' + цена(с.tp) + '</span></div>'
@@ -570,8 +570,8 @@ function карточка(с) {
   if (с.locked) {
     у.appendChild(кусок('замок-строка',
         CW.значок('замок')
-      + '<span>Платный сигнал. Цены откроются ' + когдаОткроется(с.reveal_at)
-      + ' или сразу по подписке на автора.</span>'));
+      + '<span>' + CW.безопасно(Т('Платный сигнал. Цены откроются')) + ' ' + когдаОткроется(с.reveal_at)
+      + ' ' + CW.безопасно(Т('или сразу по подписке на автора.')) + '</span>'));
     return у;
   }
 
@@ -588,7 +588,7 @@ function карточка(с) {
     if (естьКнопка) {
       var б = document.createElement('button');
       б.className = 'кн-закрыть';
-      б.textContent = 'Закрыть сейчас';
+      б.textContent = Т('Закрыть сейчас');
       б.onclick = function () { спроситьЗакрытие(с, б); };
       низ.appendChild(б);
     }
@@ -626,23 +626,23 @@ function когдаОткроется(с) {
    ═══════════════════════════════════════════════════════════════════════ */
 function спроситьЗакрытие(с, кнопка) {
   CW.лист([
-    { заголовок: 'Закрыть ' + (с.pair || 'сигнал') + ' по рынку?' },
-    { зн: CW.значок('галка', 16), подпись: 'Закрыть', опасная: true, делать: function () {
+    { заголовок: Т('Закрыть ') + (с.pair || 'сигнал') + ' по рынку?' },
+    { зн: CW.значок('галка', 16), подпись: Т('Закрыть'), опасная: true, делать: function () {
         кнопка.disabled = true;
-        кнопка.textContent = 'Закрываю…';
+        кнопка.textContent = Т('Закрываю…');
         CW.спросить('/signals/' + с.id + '/close', { способ: 'POST', сроком: 25000 })
           .then(function (о) {
-            CW.сказать('Закрыт' + (о && о.result_pct != null
+            CW.сказать(Т('Закрыт') + (о && о.result_pct != null
               ? ' · ' + процент(о.result_pct) : ''));
             загрузить();
           })
           .catch(function (е) {
             кнопка.disabled = false;
-            кнопка.textContent = 'Закрыть сейчас';
+            кнопка.textContent = Т('Закрыть сейчас');
             CW.сказать(е.сеть ? 'Нет связи с сервером' : (е.message || 'Не вышло закрыть'));
           });
       } },
-    { зн: CW.рисунок('M6 6 18 18M18 6 6 18', 15), подпись: 'Отмена' }
+    { зн: CW.рисунок('M6 6 18 18M18 6 6 18', 15), подпись: Т('Отмена') }
   ]);
 }
 
@@ -656,7 +656,7 @@ document.getElementById('кн-новый').onclick = function () {
   /* Смотреть сигналы можно откуда угодно, а выложить свой — только из
      куба: сигнал где-то должен родиться, и это решает не экран. */
   if (!куб) {
-    CW.сказать('Чтобы выложить сигнал, зайди в куб');
+    CW.сказать(Т('Чтобы выложить сигнал, зайди в куб'));
     return;
   }
   CW.открыть('create-signal', { куб: куб, пары: С.пары, потом: загрузить });

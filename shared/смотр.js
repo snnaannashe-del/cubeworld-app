@@ -108,14 +108,14 @@
     скачать.download = н.имя || '';
     скачать.target = '_blank';
     скачать.rel = 'noopener';
-    скачать.title = 'Сохранить себе';
+    скачать.title = Т('Сохранить себе');
     скачать.innerHTML = CW.значок('скачать', 17) || '';
     скачать.onclick = function (е) { е.stopPropagation(); };
     верх.appendChild(скачать);
 
     var крест = э('button', 'см-кн');
     крест.type = 'button';
-    крест.title = 'Закрыть';
+    крест.title = Т('Закрыть');
     крест.innerHTML = CW.рисунок
       ? CW.рисунок('M6 6 18 18M18 6 6 18')
       : CW.значок('крест', 17);

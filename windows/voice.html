@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Голосовые команды · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-432">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-432">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-432">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-432">
-<script src="../shared/theme.js?v=20261123-432"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-432">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-433">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-433">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-433">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-433">
+<script src="../shared/theme.js?v=20261123-433"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-433">
 <!--
   ГОЛОСОВЫЕ КОМАНДЫ — окно поверх программы.
 
@@ -119,39 +119,39 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-432"></script>
-<script src="../shared/ui.js?v=20261123-432"></script>
-<script src="../shared/смайлы.js?v=20261123-432"></script>
-<script src="../shared/лица.js?v=20261123-432"></script>
-<script src="../shared/эфир.js?v=20261123-432"></script>
-<script src="../shared/icons.js?v=20261123-432"></script>
-<script src="../shared/window.js?v=20261123-432"></script>
-<script src="../shared/без-копий.js?v=20261123-432"></script>
-<script src="../shared/time.js?v=20261123-432"></script>
-<script src="../shared/auth.js?v=20261123-432"></script>
-<script src="../shared/lang.js?v=20261123-432"></script>
-<script src="../shared/account.js?v=20261123-432"></script>
-<script src="../shared/shell.js?v=20261123-432"></script>
+<script src="../shared/api.js?v=20261123-433"></script>
+<script src="../shared/ui.js?v=20261123-433"></script>
+<script src="../shared/смайлы.js?v=20261123-433"></script>
+<script src="../shared/лица.js?v=20261123-433"></script>
+<script src="../shared/эфир.js?v=20261123-433"></script>
+<script src="../shared/icons.js?v=20261123-433"></script>
+<script src="../shared/window.js?v=20261123-433"></script>
+<script src="../shared/без-копий.js?v=20261123-433"></script>
+<script src="../shared/time.js?v=20261123-433"></script>
+<script src="../shared/auth.js?v=20261123-433"></script>
+<script src="../shared/lang.js?v=20261123-433"></script>
+<script src="../shared/account.js?v=20261123-433"></script>
+<script src="../shared/shell.js?v=20261123-433"></script>
 <!-- Игра, формы и персонаж — ради их команд: список должен быть полным
      и здесь, а не только в мире. Сами они тут ничего не двигают, кубов на
      этой странице нет; команда из этих разделов уводит в мир. -->
-<script src="../shared/игра.js?v=20261123-432"></script>
-<script src="../shared/формы.js?v=20261123-432"></script>
-<script src="../shared/персонаж.js?v=20261123-432"></script>
-<script src="../shared/голос.js?v=20261123-432"></script>
+<script src="../shared/игра.js?v=20261123-433"></script>
+<script src="../shared/формы.js?v=20261123-433"></script>
+<script src="../shared/персонаж.js?v=20261123-433"></script>
+<script src="../shared/голос.js?v=20261123-433"></script>
 <script>
 'use strict';
 
 CW.оболочка('feed').then(function (место) {
 
 место.appendChild(ок('div', 'пусто-строка',
-  'Голосовые команды открыты отдельным окном. Закрой его, чтобы вернуться.'));
+  Т('Голосовые команды открыты отдельным окном. Закрой его, чтобы вернуться.')));
 
 var ОКНО = CW.стойка({
   имя: 'голос',
   /* Ни значка, ни подписи «скажи, что делать»: название окна и так
      говорит, что это. Выход — крестик: окно открыто поверх программы. */
-  заголовок: 'Голосовые команды',
+  заголовок: Т('Голосовые команды'),
   назад: уйти,
   крест: true,
   поля: false,
@@ -171,10 +171,10 @@ var ОКНО = CW.стойка({
      ищут - все переключатели окна живут в шапке. Полоса поиска от
      этого стала на строку короче и вдвое ниже. */
   кнопки: [
-    { имя: 'звук', зн: 'тихо', подсказка: 'Без звука. Включить ответ вслух',
+    { имя: 'звук', зн: 'тихо', подсказка: Т('Без звука. Включить ответ вслух'),
       делать: function () { CW.голос.вслух(!CW.голос.вслух()); } }
   ],
-  главная: { зн: 'микрофон', подсказка: 'Включить микрофон',
+  главная: { зн: 'микрофон', подсказка: Т('Включить микрофон'),
              делать: function () { CW.голос.переключить(); } }
 });
 ОКНО.открыть();
@@ -186,7 +186,7 @@ var верх = ок('div', 'гл-верх');
 верх.innerHTML =
     '<span class="гл-поиск"><span class="зн">' + CW.значок('лупа') + '</span>'
   +   '<input type="text" spellcheck="false" autocomplete="off"'
-  +   ' placeholder="Найти команду…"></span>'
+  +   ' placeholder="' + CW.безопасно(Т('Найти команду…')) + '"></span>'
   + '<select class="гл-язык">'
   +   CW.голос.ЯЗЫКИ.map(function (я) {
         return '<option value="' + я.код + '">' + CW.безопасно(я.имя) + '</option>';
@@ -261,7 +261,7 @@ function нарисовать() {
   var беда = CW.голос.беда();
   if (беда) {
     var весть = ок('div', 'гл-весть');
-    весть.innerHTML = '<b>Микрофона здесь не будет.</b> ' + CW.безопасно(беда)
+    весть.innerHTML = '<b>' + CW.безопасно(Т('Микрофона здесь не будет.')) + '</b> ' + CW.безопасно(беда)
       + ' Команды из списка всё равно делаются руками.';
     ОКНО.тело.appendChild(весть);
   }
@@ -297,7 +297,7 @@ function нарисовать() {
 
   if (!подходят.length) {
     короб.appendChild(ок('div', 'пусто-строка',
-      'Такой команды нет. Поищи по части слова.'));
+      Т('Такой команды нет. Поищи по части слова.')));
   }
 
   ОКНО.имя('Голосовые команды',

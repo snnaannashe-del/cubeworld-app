@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Уведомления · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-432">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-432">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-432">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-432">
-<script src="../shared/theme.js?v=20261123-432"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-432">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-433">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-433">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-433">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-433">
+<script src="../shared/theme.js?v=20261123-433"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-433">
 <!--
   УВЕДОМЛЕНИЯ — окно поверх программы. То же, что в меню под
   колокольчиком, но целым списком и с объяснением внизу.
@@ -80,39 +80,39 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-432"></script>
-<script src="../shared/ui.js?v=20261123-432"></script>
-<script src="../shared/смайлы.js?v=20261123-432"></script>
-<script src="../shared/лица.js?v=20261123-432"></script>
-<script src="../shared/эфир.js?v=20261123-432"></script>
-<script src="../shared/icons.js?v=20261123-432"></script>
-<script src="../shared/window.js?v=20261123-432"></script>
-<script src="../shared/без-копий.js?v=20261123-432"></script>
-<script src="../shared/time.js?v=20261123-432"></script>
-<script src="../shared/auth.js?v=20261123-432"></script>
-<script src="../shared/lang.js?v=20261123-432"></script>
-<script src="../shared/account.js?v=20261123-432"></script>
-<script src="../shared/вести.js?v=20261123-432"></script>
-<script src="../shared/shell.js?v=20261123-432"></script>
+<script src="../shared/api.js?v=20261123-433"></script>
+<script src="../shared/ui.js?v=20261123-433"></script>
+<script src="../shared/смайлы.js?v=20261123-433"></script>
+<script src="../shared/лица.js?v=20261123-433"></script>
+<script src="../shared/эфир.js?v=20261123-433"></script>
+<script src="../shared/icons.js?v=20261123-433"></script>
+<script src="../shared/window.js?v=20261123-433"></script>
+<script src="../shared/без-копий.js?v=20261123-433"></script>
+<script src="../shared/time.js?v=20261123-433"></script>
+<script src="../shared/auth.js?v=20261123-433"></script>
+<script src="../shared/lang.js?v=20261123-433"></script>
+<script src="../shared/account.js?v=20261123-433"></script>
+<script src="../shared/вести.js?v=20261123-433"></script>
+<script src="../shared/shell.js?v=20261123-433"></script>
 <script>
 'use strict';
 
 CW.оболочка('feed').then(function (место) {
 
 место.appendChild(ок('div', 'пусто-строка',
-  'Уведомления открыты отдельным окном. Закрой его, чтобы вернуться.'));
+  Т('Уведомления открыты отдельным окном. Закрой его, чтобы вернуться.')));
 
 var ОКНО = CW.стойка({
   имя: 'уведомления',
   знак: 'колокол',
-  заголовок: 'Уведомления',
-  подзаголовок: 'спрашиваю…',
+  заголовок: Т('Уведомления'),
+  подзаголовок: Т('спрашиваю…'),
   назад: уйти,
   поля: false,
   кнопки: [
-    { имя: 'прочитано', зн: 'галка', подсказка: 'Отметить всё прочитанным',
+    { имя: 'прочитано', зн: 'галка', подсказка: Т('Отметить всё прочитанным'),
       делать: всёПрочитано },
-    { имя: 'обновить', зн: 'повтор', подсказка: 'Обновить', делать: собрать }
+    { имя: 'обновить', зн: 'повтор', подсказка: Т('Обновить'), делать: собрать }
   ]
 });
 ОКНО.открыть();
@@ -130,7 +130,7 @@ var СОБЫТИЯ = [];
    ═══════════════════════════════════════════════════════════════════════ */
 function собрать() {
   ОКНО.имя('Уведомления', 'спрашиваю…');
-  ОКНО.тело.innerHTML = '<div class="пусто-строка">Загрузка…</div>';
+  ОКНО.тело.innerHTML = '<div class="пусто-строка">' + CW.безопасно(Т('Загрузка…')) + '</div>';
   CW.вести.собрать().then(function (список) {
     СОБЫТИЯ = список;
     показать();
@@ -149,7 +149,7 @@ function показать() {
   if (!СОБЫТИЯ.length) {
     ОКНО.пусто({
       знак: 'колокол',
-      заголовок: 'Пока тихо',
+      заголовок: Т('Пока тихо'),
       текст: 'Новых событий в кубах и наград нет.'
     });
     хвост();
@@ -196,9 +196,9 @@ function строка(с) {
 function хвост() {
   var х = ок('div', 'ув-хвост');
   х.innerHTML =
-      'Здесь системные события: <b>входы в кубы</b>, <b>движения CUBE</b> '
-    + '(награды, переводы), <b>выплаты</b>, <b>новые подписчики</b> и '
-    + '<b>пределы ключа</b>, которые вот-вот кончатся.<br><br>'
+      '' + CW.безопасно(Т('Здесь системные события:')) + ' <b>' + CW.безопасно(Т('входы в кубы')) + '</b>, <b>' + CW.безопасно(Т('движения CUBE')) + '</b> '
+    + '' + CW.безопасно(Т('(награды, переводы),')) + ' <b>' + CW.безопасно(Т('выплаты')) + '</b>, <b>' + CW.безопасно(Т('новые подписчики')) + '</b> и '
+    + '<b>' + CW.безопасно(Т('пределы ключа')) + '</b>' + CW.безопасно(Т(', которые вот-вот кончатся.')) + '<br><br>'
     + 'Переписки здесь нет намеренно: кто что написал, видно в чатах. '
     + 'Лайков, комментариев и ответов пока нет: сервер их не записывает. '
     + 'Как начнёт: они появятся здесь сами, отдельно делать ничего '
@@ -209,7 +209,7 @@ function хвост() {
 function всёПрочитано() {
   CW.вести.всёПрочитано(СОБЫТИЯ);
   показать();
-  CW.сказать('Отмечено прочитанным');
+  CW.сказать(Т('Отмечено прочитанным'));
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

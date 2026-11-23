@@ -23,8 +23,15 @@
    ═══════════════════════════════════════════════════════════════════════ */
 (function(){
   /* Те же шимы, что в движке: словарь боевой сюда не переехал. */
-  function cwСлово0(т){ return т == null ? '' : String(т); }
-  function cwШаб0(т, з){ return String(т == null ? '' : т).replace('{1}', з); }
+  /* ── ОДНО МЕСТО, ГДЕ КАРТА ГОВОРИТ СЛОВАМИ ──
+     Через эти две руки проходят ВСЕ подписи карты: названия видов,
+     строка внизу, ответы голосу. Поэтому перевод стоит здесь, а не в
+     двух сотнях мест по файлу. */
+  function cwСлово0(т){
+    if (т == null) return '';
+    return window.Т ? window.Т(String(т)) : String(т);
+  }
+  function cwШаб0(т, з){ return cwСлово0(т).replace('{1}', з); }
   function escHtml(т){ return (window.CW && CW.безопасно) ? CW.безопасно(т)
                               : String(т == null ? '' : т); }
 
@@ -786,10 +793,10 @@
         д1.toFixed(5) + ',' + ш1.toFixed(5) + ';' + д2.toFixed(5) + ',' + ш2.toFixed(5) +
         '?overview=full&geometries=geojson';
       var о = await fetch(у);
-      if(!о.ok) throw new Error('нет ответа');
+      if(!о.ok) throw new Error(Т('нет ответа'));
       var д = await о.json();
       var м = д.routes && д.routes[0];
-      if(!м) throw new Error('нет пути');
+      if(!м) throw new Error(Т('нет пути'));
       return {точки:м.geometry.coordinates.map(function(к){ return [к[1], к[0]]; }),
               км:м.distance / 1000, мин:м.duration / 60};
     }catch(_){
@@ -816,14 +823,14 @@
       + '<div class="mp-note" id="mp-view-note"></div>';
     тело('путь').innerHTML =
         '<div class="mp-togs" style="margin-bottom:8px">'
-      +   '<button class="mp-tog on" id="mp-pt-a">Начало: нажми по карте</button>'
-      +   '<button class="mp-tog" id="mp-pt-b">Конец: нажми по карте</button>'
-      +   '<button class="mp-tog" id="mp-pt-me">Начало: я</button>'
-      +   '<button class="mp-tog" id="mp-pt-clr">Стереть</button>'
+      +   '<button class="mp-tog on" id="mp-pt-a">' + CW.безопасно(Т('Начало: нажми по карте')) + '</button>'
+      +   '<button class="mp-tog" id="mp-pt-b">' + CW.безопасно(Т('Конец: нажми по карте')) + '</button>'
+      +   '<button class="mp-tog" id="mp-pt-me">' + CW.безопасно(Т('Начало: я')) + '</button>'
+      +   '<button class="mp-tog" id="mp-pt-clr">' + CW.безопасно(Т('Стереть')) + '</button>'
       + '</div>'
       + '<div class="mp-grid" id="mp-routes"></div>'
-      + '<div class="mp-note" id="mp-route-note">Нажми по карте начало, потом конец, '
-      + 'и выбери, каким путём идти.</div>';
+      + '<div class="mp-note" id="mp-route-note">' + CW.безопасно(Т('Нажми по карте начало, потом конец,')) + ' '
+      + '' + CW.безопасно(Т('и выбери, каким путём идти.')) + '</div>';
     тело('слои').innerHTML = '<div class="mp-togs" id="mp-layers"></div>';
     /* Строки-пояснения под метками больше нет. То, что метка «я» живёт
        полчаса, написано прямо на её кнопке, а остальное — правила
@@ -910,7 +917,7 @@
       if(e.target.closest('#mp-pt-me')){ начатьССебя(); return; }
       if(e.target.closest('#mp-pt-clr')){
         A = B = null; МАРШРУТ = null; отметитьТочки();
-        el('mp-route-note').textContent = 'Стёрли. Нажми по карте начало и конец.';
+        el('mp-route-note').textContent = Т('Стёрли. Нажми по карте начало и конец.');
         window.cwMapRedraw();
         return;
       }
@@ -1132,7 +1139,7 @@
       }
       if(вид === 'stream'){
         тело.ref_id = Number(window.cwStreamSid || 0) || null;
-        тело.title = 'Мой эфир';
+        тело.title = Т('Мой эфир');
         if(!тело.ref_id){
           window.cwMapSay('Эфир не идёт: сначала начни его', 3000); return;
         }
@@ -1415,7 +1422,7 @@
     if(!м || document.getElementById('cw-map-row')) return;
     var р = document.createElement('div');
     р.className = 'wb-acct-row'; р.id = 'cw-map-row';
-    р.innerHTML = '<i class="ti ti-world"></i> Карта';
+    р.innerHTML = '<i class="ti ti-world"></i> ' + CW.безопасно(Т('Карта')) + '';
     р.onclick = function(e){
       e.stopPropagation(); м.classList.remove('open'); window.cwOpenMap();
     };

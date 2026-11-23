@@ -47,7 +47,7 @@
   function завестиКамеру() {
     return new Promise(function (готово, беда) {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        беда(new Error('нет камеры')); return;
+        беда(new Error(Т('нет камеры'))); return;
       }
       navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: { ideal: 320 }, height: { ideal: 240 } },
@@ -253,11 +253,11 @@
       /* Двадцать кадров в секунду: глазу этого хватает, а считать надо
          вдвое меньше, чем при полной частоте экрана. */
       часы = setInterval(тик, 50);
-      if (CW.сказать) CW.сказать('Жесты включены');
+      if (CW.сказать) CW.сказать(Т('Жесты включены'));
       return true;
     }).catch(function () {
       идут = false;
-      CW.сказать('Без камеры жесты не работают, играй нажатиями');
+      CW.сказать(Т('Без камеры жесты не работают, играй нажатиями'));
       return false;
     });
   };

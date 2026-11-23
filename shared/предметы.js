@@ -81,10 +81,10 @@
       э.setAttribute('contenteditable', 'false');
 
       var уг = эл('div', 'фл-уг');
-      уг.title = 'Потяни за уголок';
+      уг.title = Т('Потяни за уголок');
       var кр = эл('button', 'фл-убрать');
       кр.type = 'button';
-      кр.title = 'Убрать';
+      кр.title = Т('Убрать');
       кр.textContent = '✕';
       э.appendChild(уг);
       э.appendChild(кр);
