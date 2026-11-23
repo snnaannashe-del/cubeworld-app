@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Переписка · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-429">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-429">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-429">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-429">
-<script src="../shared/theme.js?v=20261123-429"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-429">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-430">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-430">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-430">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-430">
+<script src="../shared/theme.js?v=20261123-430"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-430">
 <!--
   ЛИЧНАЯ ПЕРЕПИСКА — окно поверх программы, со своим адресом.
 
@@ -30,23 +30,23 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-429"></script>
-<script src="../shared/ui.js?v=20261123-429"></script>
-<script src="../shared/смайлы.js?v=20261123-429"></script>
-<script src="../shared/лица.js?v=20261123-429"></script>
-<script src="../shared/эфир.js?v=20261123-429"></script>
-<script src="../shared/icons.js?v=20261123-429"></script>
-<script src="../shared/window.js?v=20261123-429"></script>
-<script src="../shared/без-копий.js?v=20261123-429"></script>
-<script src="../shared/time.js?v=20261123-429"></script>
-<script src="../shared/auth.js?v=20261123-429"></script>
-<script src="../shared/account.js?v=20261123-429"></script>
-<script src="../shared/shell.js?v=20261123-429"></script>
-<script src="../shared/вложения.js?v=20261123-429"></script>
-<script src="../shared/запись-голоса.js?v=20261123-429"></script>
-<script src="../shared/кнопки-сообщения.js?v=20261123-429"></script>
-<script src="../shared/кадр-ролика.js?v=20261123-429"></script>
-<script src="../shared/chat.js?v=20261123-429"></script>
+<script src="../shared/api.js?v=20261123-430"></script>
+<script src="../shared/ui.js?v=20261123-430"></script>
+<script src="../shared/смайлы.js?v=20261123-430"></script>
+<script src="../shared/лица.js?v=20261123-430"></script>
+<script src="../shared/эфир.js?v=20261123-430"></script>
+<script src="../shared/icons.js?v=20261123-430"></script>
+<script src="../shared/window.js?v=20261123-430"></script>
+<script src="../shared/без-копий.js?v=20261123-430"></script>
+<script src="../shared/time.js?v=20261123-430"></script>
+<script src="../shared/auth.js?v=20261123-430"></script>
+<script src="../shared/account.js?v=20261123-430"></script>
+<script src="../shared/shell.js?v=20261123-430"></script>
+<script src="../shared/вложения.js?v=20261123-430"></script>
+<script src="../shared/запись-голоса.js?v=20261123-430"></script>
+<script src="../shared/кнопки-сообщения.js?v=20261123-430"></script>
+<script src="../shared/кадр-ролика.js?v=20261123-430"></script>
+<script src="../shared/chat.js?v=20261123-430"></script>
 <script>
 'use strict';
 
@@ -125,7 +125,8 @@ var П = CW.перепискаОкно({
        (shared/кадр-ролика.js). Снимать его надо так же, как кнопки, и
        до того, как из сообщения возьмут адрес файла. */
     var рам = CW.кадрРолика.разобрать(раз.текст);
-    var адрес = вид && вид !== 'geo' ? адресомФайла(рам.текст, м.file_url) : '';
+    var адрес = вид && вид !== 'geo' && вид !== 'call'
+      ? адресомФайла(рам.текст, м.file_url) : '';
     return {
       своё: Number(м.from_user_id) === Number(я),
       вид: вид,
@@ -319,10 +320,14 @@ function менюСообщения(м, своё, x, y) {
        остаётся текстом или адресом. */
     var раз = CW.кнопкиСообщения.разобрать(м.content || '');
     var рам = CW.кадрРолика.разобрать(раз.текст);
-    var адрес = вид && вид !== 'geo' ? адресомФайла(рам.текст, м.file_url) : '';
+    var адрес = вид && вид !== 'geo' && вид !== 'call'
+      ? адресомФайла(рам.текст, м.file_url) : '';
     var имя = м.file_name || (адрес ? имяИзАдреса(адрес) : '');
     var род = CW.родСообщения(вид, имя, адрес);
-    var текст = вид ? (м.caption || '') : рам.текст;
+    /* У звонка «скопировать» даёт человеческие слова, а не служебную
+       строку «call:аудио:состоялся:6». */
+    var текст = вид === 'call' ? CW.звонокСловами(рам.текст, своё).строкой
+              : (вид ? (м.caption || '') : рам.текст);
     /* Правка сообщения пересобирает его content заново. Привью при
        этом обязано остаться на месте: иначе первое же «Изменить»
        стирало бы кадр, и ролик становился пустым прямоугольником. */

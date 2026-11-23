@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Группа · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-429">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-429">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-429">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-429">
-<script src="../shared/theme.js?v=20261123-429"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-429">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-430">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-430">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-430">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-430">
+<script src="../shared/theme.js?v=20261123-430"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-430">
 <!--
   ПЕРЕПИСКА ГРУППЫ — окно поверх программы, со своим адресом.
 
@@ -31,23 +31,23 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-429"></script>
-<script src="../shared/ui.js?v=20261123-429"></script>
-<script src="../shared/смайлы.js?v=20261123-429"></script>
-<script src="../shared/лица.js?v=20261123-429"></script>
-<script src="../shared/эфир.js?v=20261123-429"></script>
-<script src="../shared/icons.js?v=20261123-429"></script>
-<script src="../shared/window.js?v=20261123-429"></script>
-<script src="../shared/без-копий.js?v=20261123-429"></script>
-<script src="../shared/time.js?v=20261123-429"></script>
-<script src="../shared/auth.js?v=20261123-429"></script>
-<script src="../shared/account.js?v=20261123-429"></script>
-<script src="../shared/shell.js?v=20261123-429"></script>
-<script src="../shared/вложения.js?v=20261123-429"></script>
-<script src="../shared/запись-голоса.js?v=20261123-429"></script>
-<script src="../shared/кнопки-сообщения.js?v=20261123-429"></script>
-<script src="../shared/кадр-ролика.js?v=20261123-429"></script>
-<script src="../shared/chat.js?v=20261123-429"></script>
+<script src="../shared/api.js?v=20261123-430"></script>
+<script src="../shared/ui.js?v=20261123-430"></script>
+<script src="../shared/смайлы.js?v=20261123-430"></script>
+<script src="../shared/лица.js?v=20261123-430"></script>
+<script src="../shared/эфир.js?v=20261123-430"></script>
+<script src="../shared/icons.js?v=20261123-430"></script>
+<script src="../shared/window.js?v=20261123-430"></script>
+<script src="../shared/без-копий.js?v=20261123-430"></script>
+<script src="../shared/time.js?v=20261123-430"></script>
+<script src="../shared/auth.js?v=20261123-430"></script>
+<script src="../shared/account.js?v=20261123-430"></script>
+<script src="../shared/shell.js?v=20261123-430"></script>
+<script src="../shared/вложения.js?v=20261123-430"></script>
+<script src="../shared/запись-голоса.js?v=20261123-430"></script>
+<script src="../shared/кнопки-сообщения.js?v=20261123-430"></script>
+<script src="../shared/кадр-ролика.js?v=20261123-430"></script>
+<script src="../shared/chat.js?v=20261123-430"></script>
 <script>
 'use strict';
 
@@ -113,7 +113,8 @@ var П = CW.перепискаОкно({
     /* Привью ролика едет своей служебной строкой, следом за адресом
        (shared/кадр-ролика.js): снимаем её так же, как кнопки. */
     var рам = CW.кадрРолика.разобрать(раз.текст);
-    var адрес = вид && вид !== 'geo' ? (м.file_url || рам.текст || '') : '';
+    var адрес = вид && вид !== 'geo' && вид !== 'call'
+      ? (м.file_url || рам.текст || '') : '';
     return {
       своё: своё,
       кадр: рам.кадр,
@@ -130,7 +131,11 @@ var П = CW.перепискаОкно({
       автор: м.user_id || м.from_user_id || '',
       вид: вид,
       адрес: адрес,
-      текст: вид ? (вид === 'geo' ? рам.текст : '') : рам.текст,
+      /* Строку «call:…» и «geo:…» пузырь разбирает сам и показывает
+         карточкой. Пока звонок сюда не попадал, карточка в группе
+         выходила пустой: без времени разговора и всегда со значком
+         микрофона, даже если звонок был видео. */
+      текст: вид ? ((вид === 'geo' || вид === 'call') ? рам.текст : '') : рам.текст,
       когда: CW.часы(м.created_at),
       метка: Date.parse(м.created_at) || 0,
       /* Метка «изменено» в группе была потеряна: сервер её отдаёт
@@ -225,10 +230,14 @@ function менюСообщения(м, своё, x, y) {
     var вид = м.msg_type && м.msg_type !== 'text' ? м.msg_type : '';
     var раз = CW.кнопкиСообщения.разобрать(м.content || '');
     var рам = CW.кадрРолика.разобрать(раз.текст);
-    var адрес = вид && вид !== 'geo' ? (м.file_url || рам.текст || '') : '';
+    var адрес = вид && вид !== 'geo' && вид !== 'call'
+      ? (м.file_url || рам.текст || '') : '';
     var имя = м.file_name || (адрес ? имяИзАдреса(адрес) : '');
     var род = CW.родСообщения(вид, имя, адрес);
-    var текст = вид ? '' : рам.текст;
+    /* У звонка «скопировать» должно давать человеческие слова, а не
+       служебную строку «call:аудио:состоялся:6». */
+    var текст = вид === 'call' ? CW.звонокСловами(рам.текст, своё).строкой
+              : (вид ? '' : рам.текст);
     /* Правка пересобирает content заново, и привью обязано остаться:
        иначе первое же «Изменить» стирало бы кадр ролика. */
     function основой(что) { return CW.кадрРолика.вшить(что, рам.кадр); }
