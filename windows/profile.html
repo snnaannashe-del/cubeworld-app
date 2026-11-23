@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Портфолио · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-407">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-407">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-407">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-407">
-<script src="../shared/theme.js?v=20261123-407"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-407">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-408">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-408">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-408">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-408">
+<script src="../shared/theme.js?v=20261123-408"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-408">
 <!--
   ПРОФИЛЬ: два окна.
 
@@ -304,19 +304,19 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-407"></script>
-<script src="../shared/ui.js?v=20261123-407"></script>
-<script src="../shared/смайлы.js?v=20261123-407"></script>
-<script src="../shared/лица.js?v=20261123-407"></script>
-<script src="../shared/эфир.js?v=20261123-407"></script>
-<script src="../shared/icons.js?v=20261123-407"></script>
-<script src="../shared/window.js?v=20261123-407"></script>
-<script src="../shared/продавец.js?v=20261123-407"></script>
-<script src="../shared/без-копий.js?v=20261123-407"></script>
-<script src="../shared/time.js?v=20261123-407"></script>
-<script src="../shared/auth.js?v=20261123-407"></script>
-<script src="../shared/account.js?v=20261123-407"></script>
-<script src="../shared/shell.js?v=20261123-407"></script>
+<script src="../shared/api.js?v=20261123-408"></script>
+<script src="../shared/ui.js?v=20261123-408"></script>
+<script src="../shared/смайлы.js?v=20261123-408"></script>
+<script src="../shared/лица.js?v=20261123-408"></script>
+<script src="../shared/эфир.js?v=20261123-408"></script>
+<script src="../shared/icons.js?v=20261123-408"></script>
+<script src="../shared/window.js?v=20261123-408"></script>
+<script src="../shared/продавец.js?v=20261123-408"></script>
+<script src="../shared/без-копий.js?v=20261123-408"></script>
+<script src="../shared/time.js?v=20261123-408"></script>
+<script src="../shared/auth.js?v=20261123-408"></script>
+<script src="../shared/account.js?v=20261123-408"></script>
+<script src="../shared/shell.js?v=20261123-408"></script>
 <script>
 'use strict';
 
@@ -1370,7 +1370,11 @@ function лицоВнутрь(черновик) {
      секунды мигал прежний значок: сначала стёрли всё, потом ждали
      картинку. Теперь старое содержимое остаётся на месте до тех пор,
      пока новое не готово, и подмены не видно. */
-  if (!адрес) { положить(зн(вид === 'hidden' ? 'призрак' : 'человек')); return; }
+  /* Заглушка одна на всю программу - человечек. Призрака у скрытого
+     аккаунта здесь больше нет: Анна сказала «удалить эту аватарку,
+     поставить такую же, как и у всех». Скрытость видна по самому
+     выбору «Скрытый», а не по чужому значку в кольце. */
+  if (!адрес) { положить(зн('человек')); return; }
 
   /* Картинка это или смайл — решает общая проверка из shared/ui.js:
      так же её читают полоса разделов, мир и кружок в списках. */
@@ -1399,7 +1403,7 @@ function лицоВнутрь(черновик) {
       if (игра && игра.catch) игра.catch(function () {});
     };
     в.onerror = function () {
-      if (!где.querySelector('video')) положить(зн(вид === 'hidden' ? 'призрак' : 'человек'));
+      if (!где.querySelector('video')) положить(зн('человек'));
     };
     в.src = CW.файл(адрес);
     return;
@@ -1409,7 +1413,7 @@ function лицоВнутрь(черновик) {
   и.onload = function () { где.innerHTML = ''; где.appendChild(и); };
   /* Не загрузилась — пусть лучше стоит значок, чем пустое кольцо. */
   и.onerror = function () {
-    if (!где.querySelector('img')) положить(зн(вид === 'hidden' ? 'призрак' : 'человек'));
+    if (!где.querySelector('img')) положить(зн('человек'));
   };
   и.src = CW.файл(адрес);
   if (и.complete && и.naturalWidth > 0) и.onload();
@@ -1543,6 +1547,11 @@ function сохранитьВсё(черновик, весть, кнопка, т
          тем же мгновением, а не после перезагрузки. Другим людям про
          смену скажет сервер, сам, письмом profile_changed. */
       if (новоеЛицо && CW.лица) CW.лица.сменилось(Я.id, новоеЛицо, '');
+      /* Своё же лицо запоминаем здесь, у себя. Иначе следующая правка
+         (сменили только цвет значка) послала бы наверх прежний адрес:
+         новоеЛицо к тому времени уже сброшено, а Я.avatar_url всё ещё
+         помнил то, что было до сохранения. */
+      if (новоеЛицо) Я.avatar_url = новоеЛицо;
       if (новыйЦвет) { Я.avatar_color = новыйЦвет; новыйЦвет = null; }
       новоеЛицо = null;
       if (кнопка) кнопка.disabled = false;

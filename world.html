@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Мир · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-407">
+<link rel="icon" href="icons/favicon.svg?v=20261123-408">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261123-407">
-<link rel="stylesheet" href="shared/window.css?v=20261123-407">
-<link rel="stylesheet" href="shared/account.css?v=20261123-407">
-<script src="shared/theme.js?v=20261123-407"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261123-408">
+<link rel="stylesheet" href="shared/window.css?v=20261123-408">
+<link rel="stylesheet" href="shared/account.css?v=20261123-408">
+<script src="shared/theme.js?v=20261123-408"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -51,20 +51,22 @@
 .знак-мира{ font-weight:800; font-size:1.0667rem; letter-spacing:-.4px; white-space:nowrap; }
 .знак-мира span{ color:var(--синий); }
 
-/* Кружок лица — ровно такой же, как в разделах: синяя обводка и то же
-   тёмное нутро. Он был без обводки и залит синим, и один и тот же
-   человек выглядел в мире и в ленте двумя разными кружками. Вид взят
-   из shell.css (.об-лицо) — там он живёт для всех прочих страниц. */
+/* Кружок лица — ровно такой же, как в разделах и в списках. Своей
+   рамки и своего цвета знака здесь больше нет: кольцо переливом и
+   сиреневый человечек приходят из общего правила (shared/style.css).
+   Из-за своей рамки вокруг одного лица выходило два кольца, а с
+   открытым меню - три; Анна прислала это снимком. */
 #лицо-кнопка{
   width:32px; height:32px; flex:0 0 32px; border-radius:50%; padding:0;
-  border:2px solid var(--синий);
-  background:linear-gradient(140deg,#223055,#161d33); cursor:pointer;
+  border:none;
+  background:linear-gradient(140deg,#2a3356,#1b2340); cursor:pointer;
   display:flex; align-items:center; justify-content:center; font-size:1rem;
-  overflow:hidden; color:#7f9ddb;
+  overflow:hidden; color:var(--сирень);
 }
 #лицо-кнопка img{ width:100%; height:100%; object-fit:cover; display:block; }
 #лицо-кнопка svg{ width:17px; height:17px; }
-#лицо-кнопка.горит{ box-shadow:0 0 0 2px var(--синий-светлее); }
+/* Меню открыто - кольцо светлеет, а не прибавляется вторым. */
+#лицо-кнопка.горит::before{ background:var(--синий-светлее); }
 .круг-верх svg{ width:16px; height:16px; }
 .пилюля svg{ width:15px; height:15px; flex:0 0 auto; }
 /* Значок в кружке столбика — 27 точек при кружке в 52: ровно
@@ -357,20 +359,20 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261123-407"></script>
-<script src="shared/ui.js?v=20261123-407"></script>
-<script src="shared/смайлы.js?v=20261123-407"></script>
-<script src="shared/лица.js?v=20261123-407"></script>
-<script src="shared/эфир.js?v=20261123-407"></script>
-<script src="shared/icons.js?v=20261123-407"></script>
-<script src="shared/window.js?v=20261123-407"></script>
-<script src="shared/без-копий.js?v=20261123-407"></script>
-<script src="shared/time.js?v=20261123-407"></script>
-<script src="shared/auth.js?v=20261123-407"></script>
-<script src="shared/account.js?v=20261123-407"></script>
-<script src="shared/формы.js?v=20261123-407"></script>
-<script src="shared/игра.js?v=20261123-407"></script>
-<script src="shared/персонаж.js?v=20261123-407"></script>
+<script src="shared/api.js?v=20261123-408"></script>
+<script src="shared/ui.js?v=20261123-408"></script>
+<script src="shared/смайлы.js?v=20261123-408"></script>
+<script src="shared/лица.js?v=20261123-408"></script>
+<script src="shared/эфир.js?v=20261123-408"></script>
+<script src="shared/icons.js?v=20261123-408"></script>
+<script src="shared/window.js?v=20261123-408"></script>
+<script src="shared/без-копий.js?v=20261123-408"></script>
+<script src="shared/time.js?v=20261123-408"></script>
+<script src="shared/auth.js?v=20261123-408"></script>
+<script src="shared/account.js?v=20261123-408"></script>
+<script src="shared/формы.js?v=20261123-408"></script>
+<script src="shared/игра.js?v=20261123-408"></script>
+<script src="shared/персонаж.js?v=20261123-408"></script>
 <script>
 'use strict';
 
