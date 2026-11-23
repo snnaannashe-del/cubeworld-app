@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Сигналы · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-402">
-<link rel="stylesheet" href="shared/style.css?v=20261123-402">
-<link rel="stylesheet" href="shared/window.css?v=20261123-402">
-<link rel="stylesheet" href="shared/account.css?v=20261123-402">
-<script src="shared/theme.js?v=20261123-402"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-402">
+<link rel="icon" href="icons/favicon.svg?v=20261123-403">
+<link rel="stylesheet" href="shared/style.css?v=20261123-403">
+<link rel="stylesheet" href="shared/window.css?v=20261123-403">
+<link rel="stylesheet" href="shared/account.css?v=20261123-403">
+<script src="shared/theme.js?v=20261123-403"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-403">
 <!--
   СИГНАЛЫ КУБА.
 
@@ -277,18 +277,18 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-402"></script>
-<script src="shared/ui.js?v=20261123-402"></script>
-<script src="shared/смайлы.js?v=20261123-402"></script>
-<script src="shared/лица.js?v=20261123-402"></script>
-<script src="shared/эфир.js?v=20261123-402"></script>
-<script src="shared/icons.js?v=20261123-402"></script>
-<script src="shared/window.js?v=20261123-402"></script>
-<script src="shared/без-копий.js?v=20261123-402"></script>
-<script src="shared/time.js?v=20261123-402"></script>
-<script src="shared/auth.js?v=20261123-402"></script>
-<script src="shared/account.js?v=20261123-402"></script>
-<script src="shared/shell.js?v=20261123-402"></script>
+<script src="shared/api.js?v=20261123-403"></script>
+<script src="shared/ui.js?v=20261123-403"></script>
+<script src="shared/смайлы.js?v=20261123-403"></script>
+<script src="shared/лица.js?v=20261123-403"></script>
+<script src="shared/эфир.js?v=20261123-403"></script>
+<script src="shared/icons.js?v=20261123-403"></script>
+<script src="shared/window.js?v=20261123-403"></script>
+<script src="shared/без-копий.js?v=20261123-403"></script>
+<script src="shared/time.js?v=20261123-403"></script>
+<script src="shared/auth.js?v=20261123-403"></script>
+<script src="shared/account.js?v=20261123-403"></script>
+<script src="shared/shell.js?v=20261123-403"></script>
 <script>
 'use strict';
 
@@ -324,14 +324,14 @@ var вкладки = document.createElement('div');
 
    Лупа раньше уводила в общее окно поиска. Но общий поиск ищет людей,
    группы, кубы и эфиры — сигналов он не ищет вовсе, и человек, нажавший
-   лупу в сигналах, попадал не туда. Ищем здесь и по тому, что на экране:
-   пара, направление, автор, заметка. */
+   лупу в сигналах, попадал не туда. Ищем здесь по тому, что на экране,
+   и ровно по тому, что обещано в строке: пара и автор. */
 var строкаПоиска = document.createElement('div');
 строкаПоиска.className = 'поиск-сигналов';
 строкаПоиска.innerHTML =
     '<span class="зн">' + CW.значок('лупа') + '</span>'
   + '<input id="поиск-сигналов" type="text" spellcheck="false" autocomplete="off"'
-  + ' placeholder="Пара, направление, автор…">';
+  + ' placeholder="Пара, Автор">';
 шапка.querySelector('.поиск-угол')
      .insertBefore(строкаПоиска, шапка.querySelector('#кн-искать'));
 
@@ -414,11 +414,16 @@ function нарисоватьВкладки() {
   });
 }
 
-/* Мерка общая на всю программу — CW.ровно: без регистра и без ё. */
+/* Мерка общая на всю программу — CW.ровно: без регистра и без ё.
+
+   Ищем ровно по двум вещам, как и написано в строке: пара и автор.
+   Прежде сюда же подмешивались направление, состояние и заметка —
+   строка обещала одно, а находила другое, и набранное «лонг» молча
+   отбирало список, хотя для этого рядом стоит своя вкладка. */
 function подходит(с) {
   if (!С.ищем) return true;
   var что = CW.ровно(С.ищем);
-  return CW.ровно([с.pair, с.dir, с.author, с.note, с.status].join(' ')).indexOf(что) >= 0;
+  return CW.ровно([с.pair, с.author].join(' ')).indexOf(что) >= 0;
 }
 
 function отобранные() {

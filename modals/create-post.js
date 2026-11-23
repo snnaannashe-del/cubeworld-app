@@ -103,15 +103,15 @@ CW.модаль('create-post', function (данные) {
 
     + раздел('подпись', 'Подпись',
           '<input class="нп-строка нп-заголовок" type="text" autocomplete="off"'
-        + ' placeholder="Заголовок (необязательно)" maxlength="300">'
+        + ' placeholder="Заголовок" maxlength="300">'
         + '<input class="нп-строка нп-музыка" type="text" autocomplete="off"'
-        + ' placeholder="Музыка (необязательно)" maxlength="200">'
+        + ' placeholder="Музыка" maxlength="200">'
         + '<textarea class="нп-строка нп-описание" rows="3"'
-        + ' placeholder="Описание…" maxlength="2000"></textarea>')
+        + ' placeholder="Описание" maxlength="2000"></textarea>')
 
     + раздел('теги', 'Теги',
           '<input class="нп-строка нп-теги" type="text" autocomplete="off"'
-        + ' placeholder="#хэштег1 #хэштег2 …" maxlength="120">')
+        + ' placeholder="#хэштег" maxlength="120">')
 
     + '<div class="нп-беда"></div>';
 
