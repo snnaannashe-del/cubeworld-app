@@ -565,7 +565,7 @@
       где.innerHTML = '<div class="пр-подзаг">'
         + (моё ? ('Твоя оценка: ' + в.имя) : в.оцени) + '</div>'
         + '<div class="пр-выбор"></div>'
-        + '<textarea class="пр-поле" rows="2" maxlength="1000" '
+        + '<textarea class="оц-поле" rows="2" maxlength="1000" '
         +   'placeholder="Как прошла сделка? (необязательно)"></textarea>'
         + '<div class="пр-ряд2">'
         +   '<button type="button" class="кнопка главная пр-слать">'
@@ -574,7 +574,7 @@
         +     'Убрать</button>' : '')
         + '</div>';
 
-      var поле = где.querySelector('.пр-поле');
+      var поле = где.querySelector('.оц-поле');
       поле.value = (моё && моё.текст) || '';
 
       var выбор = где.querySelector('.пр-выбор');
