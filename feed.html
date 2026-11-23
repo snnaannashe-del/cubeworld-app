@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Лента · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-403">
-<link rel="stylesheet" href="shared/style.css?v=20261123-403">
-<link rel="stylesheet" href="shared/window.css?v=20261123-403">
-<link rel="stylesheet" href="shared/account.css?v=20261123-403">
-<script src="shared/theme.js?v=20261123-403"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-403">
+<link rel="icon" href="icons/favicon.svg?v=20261123-404">
+<link rel="stylesheet" href="shared/style.css?v=20261123-404">
+<link rel="stylesheet" href="shared/window.css?v=20261123-404">
+<link rel="stylesheet" href="shared/account.css?v=20261123-404">
+<script src="shared/theme.js?v=20261123-404"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-404">
 <!--
   ЛЕНТА.
 
@@ -162,23 +162,15 @@
   padding:16px 14px; font-size:0.8333rem; color:rgba(255,255,255,.55);
 }
 
-/* ── кнопка звука ──
-   Стоит по центру, прямо над кнопкой «играть», а не в правом верхнем
-   углу: звук включают и выключают чаще всего там же, где только что
-   нажали на кадр, — посередине. В углу до неё надо было тянуться
-   через весь кадр, и половина нажатий попадала мимо, ставя ролик на
-   паузу. Одно короткое нажатие — звук есть; ещё одно — нет.
+/* ── ЗВУК БЕЗ КНОПКИ ──
+   Кнопка звука висела посреди кадра, над кружком «играть», и была
+   единственной железкой поверх ролика. Анна: «спрячь её внутрь, как
+   кнопку плей, просто разное количество нажатий».
 
-   Считаем от середины: кружок «играть» 62 точки, половина его 31,
-   плюс свои 34 и зазор 10 — вот и 75. */
-.звук{
-  position:absolute; left:50%; transform:translateX(-50%);
-  top:calc(50% - 75px); z-index:28; padding:0;
-  width:34px; height:34px; border-radius:50%; cursor:pointer;
-  border:none; background:rgba(0,0,0,.42);
-  color:#fff; display:flex; align-items:center; justify-content:center;
-}
-.звук svg{ width:17px; height:17px; }
+   Теперь так: одно нажатие по кадру — пуск и пауза, два подряд —
+   звук. Знак звука показывается тем же способом, что и знак паузы:
+   большой кружок посреди кадра, который сам гаснет. Поэтому оформлен
+   он рядом с «.пауза» и ровно так же (см. правило ниже).
 
 /* ── полоса кадров ───────────────────────────────────────────────── */
 .полоса{
@@ -236,17 +228,21 @@
   background:rgba(255,255,255,.16); z-index:15; pointer-events:none; }
 .жила i{ display:block; height:100%; width:0; background:#fff; }
 
-.пауза{
+.пауза, .звуком{
   position:absolute; inset:0; z-index:5; pointer-events:none;
   display:flex; align-items:center; justify-content:center;
   opacity:0; transition:opacity .25s;
 }
-.пауза.видно{ opacity:1; }
-.пауза i{
+.пауза.видно, .звуком.видно{ opacity:1; }
+.пауза i, .звуком i{
   width:62px; height:62px; border-radius:50%; background:rgba(0,0,0,.45);
   display:flex; align-items:center; justify-content:center;
   font-style:normal; font-size:1.5333rem; color:#fff; padding-left:4px;
 }
+/* У знака звука внутри наш значок линиями, а не буква: ему отступ
+   слева не нужен, он и так по середине. */
+.звуком i{ padding-left:0; }
+.звуком i svg{ width:28px; height:28px; }
 
 /* ── низ кадра: слева автор, справа действия ─────────────────────── */
 .низ{
@@ -359,19 +355,19 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-403"></script>
-<script src="shared/ui.js?v=20261123-403"></script>
-<script src="shared/смайлы.js?v=20261123-403"></script>
-<script src="shared/лица.js?v=20261123-403"></script>
-<script src="shared/эфир.js?v=20261123-403"></script>
-<script src="shared/icons.js?v=20261123-403"></script>
-<script src="shared/window.js?v=20261123-403"></script>
-<script src="shared/без-копий.js?v=20261123-403"></script>
-<script src="shared/time.js?v=20261123-403"></script>
-<script src="shared/auth.js?v=20261123-403"></script>
-<script src="shared/account.js?v=20261123-403"></script>
-<script src="shared/shell.js?v=20261123-403"></script>
-<script src="shared/shelf.js?v=20261123-403"></script>
+<script src="shared/api.js?v=20261123-404"></script>
+<script src="shared/ui.js?v=20261123-404"></script>
+<script src="shared/смайлы.js?v=20261123-404"></script>
+<script src="shared/лица.js?v=20261123-404"></script>
+<script src="shared/эфир.js?v=20261123-404"></script>
+<script src="shared/icons.js?v=20261123-404"></script>
+<script src="shared/window.js?v=20261123-404"></script>
+<script src="shared/без-копий.js?v=20261123-404"></script>
+<script src="shared/time.js?v=20261123-404"></script>
+<script src="shared/auth.js?v=20261123-404"></script>
+<script src="shared/account.js?v=20261123-404"></script>
+<script src="shared/shell.js?v=20261123-404"></script>
+<script src="shared/shelf.js?v=20261123-404"></script>
 <script>
 'use strict';
 
@@ -610,14 +606,6 @@ function закрытьПоиск() {
   находки.classList.remove('видно');
 }
 
-/* кнопка звука */
-var кнЗвук = сделать('button', 'звук');
-/* Нажатие гасим: кнопка стоит посреди кадра, и то же нажатие,
-   дойдя до ролика, поставило бы его на паузу. Человек хотел убрать
-   звук, а остановил бы видео. */
-кнЗвук.onclick = function (е) { е.stopPropagation(); переключитьЗвук(); };
-столб.appendChild(кнЗвук);
-нарисоватьЗвук();
 
 /* полоса кадров */
 var полоса = сделать('div', 'полоса');
@@ -1005,6 +993,7 @@ function сделатьКадр(п) {
 
   к.innerHTML = медиа(п)
     + '<div class="пауза"><i>▶</i></div>'
+    + (естьРолик(п) ? '<div class="звуком"><i></i></div>' : '')
     + (естьРолик(п) ? '<div class="жила"><i></i></div>' : '')
     + '<div class="низ">'
     +   '<div class="про">'
@@ -1082,7 +1071,7 @@ function сделатьКадр(п) {
 
   var ролик = к.querySelector('video');
   if (ролик) {
-    ролик.onclick = function () { щёлкнуть(к, ролик); };
+    ролик.onclick = function () { нажали(к, ролик); };
     ролик.ontimeupdate = function () {
       var ж = к.querySelector('.жила i');
       if (ж && ролик.duration) {
@@ -1313,8 +1302,6 @@ function встал(кадр) {
   готовить(кадр);
   погретьРазговор(номер);
   var ролик = кадр.querySelector('video');
-  /* У поста звука нет и быть не может — кнопка там только мешает. */
-  кнЗвук.style.display = ролик ? 'flex' : 'none';
   if (ролик) {
     ролик.muted = С.тихо;
     кадр.querySelector('.пауза').classList.remove('видно');
@@ -1361,6 +1348,49 @@ function щёлкнуть(кадр, ролик) {
   var значок = кадр.querySelector('.пауза');
   if (ролик.paused) { ролик.play().catch(function () {}); значок.classList.remove('видно'); }
   else { ролик.pause(); значок.classList.add('видно'); }
+}
+
+/* ── ОДНО НАЖАТИЕ — ПУСК, ДВА — ЗВУК ──
+   Кнопки звука на кадре больше нет, и оба дела делает сам кадр.
+
+   Пуск срабатывает СРАЗУ, не дожидаясь второго нажатия: ждать треть
+   секунды на самом частом действии нельзя, это читается как
+   задержка. Если второе нажатие всё-таки пришло, первое отменяется
+   тем же щёлкнуть() - оно симметрично, и ролик возвращается в то
+   состояние, в котором был, - а звук переключается.
+
+   Триста миллисекунд - обычная мера двойного нажатия: быстрее
+   человек не успевает, дольше - это уже два отдельных нажатия. */
+var ЖДЁМ_ВТОРОГО = null;
+
+function нажали(кадр, ролик) {
+  if (ЖДЁМ_ВТОРОГО) {
+    clearTimeout(ЖДЁМ_ВТОРОГО.часы);
+    var было = ЖДЁМ_ВТОРОГО;
+    ЖДЁМ_ВТОРОГО = null;
+    if (было.кадр === кадр) {
+      щёлкнуть(кадр, ролик);          /* отменяем пуск-паузу первого */
+      переключитьЗвук();
+      мигнутьЗвуком(кадр);
+      return;
+    }
+  }
+  щёлкнуть(кадр, ролик);
+  ЖДЁМ_ВТОРОГО = { кадр: кадр, часы: setTimeout(function () {
+    ЖДЁМ_ВТОРОГО = null;
+  }, 300) };
+}
+
+/* Знак звука на полсекунды посреди кадра - тот же способ, которым
+   показывается пауза. Человек должен видеть, что именно он сделал:
+   без знака двойное нажатие выглядит как «ничего не произошло». */
+function мигнутьЗвуком(кадр) {
+  var з = кадр.querySelector('.звуком');
+  if (!з) return;
+  з.querySelector('i').innerHTML = CW.значок(С.тихо ? 'тихо' : 'звук', 28);
+  з.classList.add('видно');
+  clearTimeout(з._часы);
+  з._часы = setTimeout(function () { з.classList.remove('видно'); }, 700);
 }
 
 /* ── плейлист HLS ─────────────────────────────────────────────────────
@@ -1418,12 +1448,24 @@ function переключитьЗвук() {
   нарисоватьЗвук();
   var кадр = полоса.querySelector('.кадр[data-номер="' + С.текущий + '"]');
   var ролик = кадр && кадр.querySelector('video');
-  if (ролик) { ролик.muted = С.тихо; ролик.play().catch(function () {}); }
+  if (ролик) {
+    ролик.muted = С.тихо;
+    /* Играет - пусть играет дальше, уже со звуком. Стоит на паузе -
+       звук его не запускает: человек нажал про звук, а не про пуск.
+       Прежде здесь стоял безусловный play(), и двойное нажатие по
+       остановленному ролику снимало его с паузы заодно со звуком. */
+    if (!ролик.paused) ролик.play().catch(function () {});
+  }
 }
 
+/* Подсказка на самом ролике: нажатие одно и нажатие двойное. Кнопки
+   нет, и сказать об этом больше негде - на мониторе это видно при
+   наведении, на телефоне остаётся знак после двойного нажатия. */
 function нарисоватьЗвук() {
-  кнЗвук.innerHTML = CW.значок(С.тихо ? 'тихо' : 'звук');
-  кнЗвук.title = С.тихо ? 'Включить звук' : 'Выключить звук';
+  [].slice.call(полоса.querySelectorAll('.кадр video')).forEach(function (в) {
+    в.title = (С.тихо ? 'Два нажатия — включить звук'
+                      : 'Два нажатия — выключить звук') + ' · одно — пауза';
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
