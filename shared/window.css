@@ -2434,19 +2434,6 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
   display:flex; align-items:center; justify-content:center;
 }
 .эф-кадр video{ width:100%; height:100%; object-fit:contain; display:block; }
-/* Слово поверх кадра: у ведущего — «ты в эфире», у зрителя — честное
-   объяснение, почему картинки пока нет. */
-.эф-слово{
-  position:absolute; left:0; right:0; bottom:0;
-  padding:16px 18px; text-align:center; pointer-events:none;
-  background:linear-gradient(transparent, rgba(0,0,0,.72));
-}
-.эф-слово b{ display:block; font-size:0.9667rem; color:#fff; }
-.эф-слово span{
-  display:block; margin-top:5px; font-size:0.7667rem; line-height:1.5;
-  color:rgba(255,255,255,.72);
-}
-
 .эф-бок{
   width:330px; flex:0 0 330px; display:flex; flex-direction:column;
   border-left:1px solid var(--край); min-height:0;
@@ -2507,16 +2494,12 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
 }
 
 /* Эфир заведён не из мира — говорим словом и даём кнопку. */
+/* «Кубов здесь нет» - одна кнопка посередине кадра, без слов вокруг.
+   Поэтому и табличка под неё: по размеру кнопки, а не в пол-экрана. */
 .эф-нетмира{
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  width:min(420px, 86%); text-align:center;
-  padding:18px; border-radius:14px; background:rgba(3,4,10,.72);
+  padding:8px; border-radius:14px; background:rgba(3,4,10,.72);
   border:1px solid var(--край2);
-}
-.эф-нетмира b{ display:block; font-size:0.9667rem; color:#fff; }
-.эф-нетмира span{
-  display:block; margin:6px 0 12px; font-size:0.7667rem; line-height:1.5;
-  color:rgba(255,255,255,.72);
 }
 
 /* ── СВЁРНУТЫЙ ЭФИР ──
@@ -2613,9 +2596,12 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
 .ок-подложка.свёрнут .эф-метка.погас{ background:var(--текст3); }
 /* Третья вершина треугольника - глазок со счётом зрителей, внизу
    посередине. */
+/* Пузыря под глазком в кубике нет: Анна «там где глазик реакция убери
+   пузырь обводки». Кубик и так маленький, и серая таблетка вокруг двух
+   знаков смотрелась заплаткой. Остались сам глазок и число. */
 .ок-подложка.свёрнут .эф-счёт.глаз{
   left:46px; top:79px; bottom:auto;
-  padding:2px 8px; font-size:0.7333rem; background:var(--поле);
+  padding:0; font-size:0.7333rem; background:none;
 }
 .ок-подложка.свёрнут .эф-свернуть{
   width:26px; height:26px; flex:0 0 26px;
@@ -4984,3 +4970,38 @@ canvas.фл-клетка{
 .крз-строчка span{ color:var(--текст3); }
 .крз-строчка.мало b{ color:var(--красный); }
 .крз-мало{ font-size:0.8rem; color:var(--красный); line-height:1.5; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   КОНЕЦ ЭФИРА — ОКОШКО 2 НА 1 САНТИМЕТР (modals/live-end.js)
+
+   Анна: «удалить весь текст, оставить как иконку 2 на 1 см, стильно
+   сделать». В программе 50 точек - сантиметр, значит окно 100 на 50.
+
+   Внутри две кнопки кругляшом, по 34 точки: красная «закончить» слева,
+   серая «остаться» справа. Слов нет ни одного, но у каждой кнопки своя
+   подсказка и своё имя для чтения с экрана.
+   ═══════════════════════════════════════════════════════════════════════ */
+/* Мерка снимается по внешнему краю окна вместе с его рамкой: иначе
+   рамка добавляет точку сверху и снизу, и «ровно сантиметр» перестаёт
+   быть ровным. */
+.ок-подложка[data-окно="эфир-конец"] .ок-окно{
+  width:100px; min-width:0; max-width:100px;
+  height:50px; box-sizing:border-box; overflow:hidden;
+  border-radius:16px; padding:0;
+}
+.ок-подложка[data-окно="эфир-конец"] .ок-тело{ padding:0; }
+.кэ-ряд{
+  height:100%; display:flex; align-items:center;
+  justify-content:center; gap:8px;
+}
+.кэ-кнопка{
+  width:34px; height:34px; flex:0 0 34px; border-radius:50%;
+  border:none; cursor:pointer; padding:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.кэ-кнопка:disabled{ opacity:.55; cursor:default; }
+/* Красная - конец. Стоит слева нарочно: правый край телефона сам
+   попадает под палец, и класть туда конец эфира нельзя. */
+.кэ-конец{ background:var(--красный); color:#fff; }
+.кэ-мимо{ background:var(--поле); color:var(--текст2); }
+.кэ-мимо:hover{ color:var(--текст); }
