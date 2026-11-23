@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Оформление · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-430">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-430">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-430">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-430">
-<script src="../shared/theme.js?v=20261123-430"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-430">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-431">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-431">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-431">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-431">
+<script src="../shared/theme.js?v=20261123-431"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-431">
 <!--
   ОФОРМЛЕНИЕ — окно поверх программы.
   /home/claude/новое/cubeworld-app/windows/theme.html
@@ -383,20 +383,21 @@ html[data-цена-цвет="свой"] .оф-курс .цена{ color:var(--ц
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-430"></script>
-<script src="../shared/ui.js?v=20261123-430"></script>
-<script src="../shared/смайлы.js?v=20261123-430"></script>
-<script src="../shared/лица.js?v=20261123-430"></script>
-<script src="../shared/эфир.js?v=20261123-430"></script>
-<script src="../shared/icons.js?v=20261123-430"></script>
-<script src="../shared/window.js?v=20261123-430"></script>
-<script src="../shared/без-копий.js?v=20261123-430"></script>
-<script src="../shared/time.js?v=20261123-430"></script>
-<script src="../shared/auth.js?v=20261123-430"></script>
-<script src="../shared/account.js?v=20261123-430"></script>
-<script src="../shared/shell.js?v=20261123-430"></script>
-<script src="../shared/words.js?v=20261123-430"></script>
-<script src="../shared/голос.js?v=20261123-430"></script>
+<script src="../shared/api.js?v=20261123-431"></script>
+<script src="../shared/ui.js?v=20261123-431"></script>
+<script src="../shared/смайлы.js?v=20261123-431"></script>
+<script src="../shared/лица.js?v=20261123-431"></script>
+<script src="../shared/эфир.js?v=20261123-431"></script>
+<script src="../shared/icons.js?v=20261123-431"></script>
+<script src="../shared/window.js?v=20261123-431"></script>
+<script src="../shared/без-копий.js?v=20261123-431"></script>
+<script src="../shared/time.js?v=20261123-431"></script>
+<script src="../shared/auth.js?v=20261123-431"></script>
+<script src="../shared/lang.js?v=20261123-431"></script>
+<script src="../shared/account.js?v=20261123-431"></script>
+<script src="../shared/shell.js?v=20261123-431"></script>
+<script src="../shared/words.js?v=20261123-431"></script>
+<script src="../shared/голос.js?v=20261123-431"></script>
 <script>
 'use strict';
 
@@ -412,19 +413,8 @@ var О = CW.оформление;
    за картинку раньше, чем читает слово, а «中文» и «한국어» без флага
    для непривычного глаза просто узор. Флаг — пара букв в особой
    азбуке, своего файла с картинками не надо. */
-var ФЛАГИ = {
-  en:'🇬🇧', ru:'🇷🇺', es:'🇪🇸', zh:'🇨🇳',
-  fr:'🇫🇷', uk:'🇺🇦', de:'🇩🇪', it:'🇮🇹',
-  pt:'🇵🇹', pl:'🇵🇱', tr:'🇹🇷', ar:'🇸🇦',
-  vi:'🇻🇳', ja:'🇯🇵', ko:'🇰🇷', hi:'🇮🇳'
-};
-
-var ИМЕНА = {
-  en:'English',  ru:'Русский',   es:'Español',   zh:'中文',
-  fr:'Français', uk:'Українська', de:'Deutsch',  it:'Italiano',
-  pt:'Português', pl:'Polski',   tr:'Türkçe',    ar:'العربية',
-  vi:'Tiếng Việt', ja:'日本語',   ko:'한국어',     hi:'हिन्दी'
-};
+/* Флаги и имена языков стояли здесь своим списком, третьим по счёту в
+   программе. Теперь список один — shared/lang.js, CW.языки. */
 
 /* Какие створки открыты. Семь разделов из одиннадцати открыты сразу, а
    «Окна» и «Значки» свёрнуты: каждый из них — это семь и четырнадцать
@@ -532,29 +522,38 @@ function раздел(куда, имя, что) {
 /* ═══════════════════════════════════════════════════════════════════════
    ЯЗЫК ПРИЛОЖЕНИЯ
 
-   Словарь на 16 языков уже есть (shared/words.js) — им пользуются
-   титулка и тарифы. Здесь он один на всю программу.
+   Список языков лежит в одном месте на всю программу — shared/lang.js.
+   Здесь он только показывается. Прежде список стоял ещё и тут, своими
+   флагами и именами, и расходился с двумя другими.
+
+   Строки «Как в системе» нет нарочно: площадка международная, и первый
+   экран у всех одинаковый — английский США. Свой язык человек выбирает
+   здесь, и телефон его помнит.
    ═══════════════════════════════════════════════════════════════════════ */
 function язык(с) {
   var гнездо = ок('div', 'оф-поле');
   var поле = ок('div', 'ок-поле');
-  /* Строки «Как в системе» нет: система говорит на чём угодно, а
-     программа должна открыться на понятном языке. По умолчанию
-     русский, остальные пятнадцать рядом. */
+  var текущий = CW.язык();
   var выбор = '<select>';
-  языки().forEach(function (я) {
-    выбор += '<option value="' + я.код + '"'
-           + ((с.язык || 'ru') === я.код ? ' selected' : '') + '>'
-           + (ФЛАГИ[я.код] ? ФЛАГИ[я.код] + ' ' : '') + я.имя + '</option>';
+  CW.языки.forEach(function (я) {
+    /* У языков, чей словарь ещё не написан, стоит пометка «скоро».
+       Выбрать их можно - программа останется русской, и человек должен
+       узнать об этом до выбора, а не после. */
+    var пометка = CW.переведён(я[0]) ? '' : ('  ·  ' + Т('скоро'));
+    выбор += '<option value="' + я[0] + '"'
+           + (текущий === я[0] ? ' selected' : '') + '>'
+           + я[1] + ' ' + я[2] + пометка + '</option>';
   });
   поле.innerHTML = выбор + '</select>';
   поле.querySelector('select').onchange = function () {
-    /* Язык программа читает из своей памяти (CW.язык), а оформление
-       помнит выбор для «Оформления». Пишем в оба, иначе список здесь
-       показывает одно, а экраны говорят на другом. */
-    CW.язык(this.value || 'ru');
+    CW.язык(this.value);
     сменить({ язык: this.value });
-    CW.сказать('Язык сменится на всех экранах после перезагрузки');
+    CW.сказать(Т('Язык сменится на всех экранах после перезагрузки'));
+    /* Перезагружаем сами: половина экрана уже нарисована прежними
+       словами, и переписывать нарисованное по одному узлу значило бы
+       держать список всех узлов страницы. Один честный перезапуск
+       понятнее и не врёт. */
+    setTimeout(function () { location.reload(); }, 700);
   };
   гнездо.appendChild(поле);
   return гнездо;
@@ -1329,13 +1328,6 @@ function сбросить() {
 
 /* Список языков берём из самого словаря, а не пишем здесь второй раз:
    добавят язык в shared/words.js — он сам появится в этом окне. */
-function языки() {
-  var словарь = CW.СЛОВА || {};
-  return Object.keys(словарь).map(function (к) {
-    return { код: к, имя: ИМЕНА[к] || к.toUpperCase() };
-  }).sort(function (а, б) { return а.имя.localeCompare(б.имя); });
-}
-
 function уйти() {
   var откуда = '';
   try { откуда = sessionStorage.getItem('cw_откуда') || ''; } catch (е) {}

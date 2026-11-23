@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Тарифы · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-430">
-<link rel="stylesheet" href="shared/style.css?v=20261123-430">
-<link rel="stylesheet" href="shared/window.css?v=20261123-430">
-<link rel="stylesheet" href="shared/язык.css?v=20261123-430">
-<link rel="stylesheet" href="shared/ключ-окно.css?v=20261123-430">
-<script src="shared/theme.js?v=20261123-430"></script>
+<link rel="icon" href="icons/favicon.svg?v=20261123-431">
+<link rel="stylesheet" href="shared/style.css?v=20261123-431">
+<link rel="stylesheet" href="shared/window.css?v=20261123-431">
+<link rel="stylesheet" href="shared/lang.css?v=20261123-431">
+<link rel="stylesheet" href="shared/ключ-окно.css?v=20261123-431">
+<script src="shared/theme.js?v=20261123-431"></script>
 <!--
   ТАРИФЫ. Промежуточная страница между титулкой и входом.
 
@@ -297,20 +297,20 @@
 </div>
 </div>
 
-<script src="shared/api.js?v=20261123-430"></script>
-<script src="shared/ui.js?v=20261123-430"></script>
-<script src="shared/смайлы.js?v=20261123-430"></script>
-<script src="shared/лица.js?v=20261123-430"></script>
-<script src="shared/эфир.js?v=20261123-430"></script>
-<script src="shared/icons.js?v=20261123-430"></script>
-<script src="shared/window.js?v=20261123-430"></script>
-<script src="shared/без-копий.js?v=20261123-430"></script>
-<script src="shared/time.js?v=20261123-430"></script>
-<script src="shared/auth.js?v=20261123-430"></script>
-<script src="shared/words.js?v=20261123-430"></script>
-<script src="shared/небо.js?v=20261123-430"></script>
-<script src="shared/язык.js?v=20261123-430"></script>
-<script src="shared/ключ-окно.js?v=20261123-430"></script>
+<script src="shared/api.js?v=20261123-431"></script>
+<script src="shared/ui.js?v=20261123-431"></script>
+<script src="shared/смайлы.js?v=20261123-431"></script>
+<script src="shared/лица.js?v=20261123-431"></script>
+<script src="shared/эфир.js?v=20261123-431"></script>
+<script src="shared/icons.js?v=20261123-431"></script>
+<script src="shared/window.js?v=20261123-431"></script>
+<script src="shared/без-копий.js?v=20261123-431"></script>
+<script src="shared/time.js?v=20261123-431"></script>
+<script src="shared/auth.js?v=20261123-431"></script>
+<script src="shared/words.js?v=20261123-431"></script>
+<script src="shared/небо.js?v=20261123-431"></script>
+<script src="shared/lang.js?v=20261123-431"></script>
+<script src="shared/ключ-окно.js?v=20261123-431"></script>
 <script>
 'use strict';
 
@@ -360,7 +360,7 @@ var ЧЕРТЫ = [
   { поле: 'space',        слово: 'fspace'     }
 ];
 
-/* Язык — общий выбор из shared/язык.js: тот же список, та же кнопка,
+/* Язык — общий выбор из shared/lang.js: тот же список, та же кнопка,
    что на титулке. Здесь только сказано, что перерисовать после смены. */
 CW.выборЯзыка.подключить({
   кнопка: 'язык-кнопка', список: 'язык-список', код: 'язык-код',
@@ -372,7 +372,7 @@ CW.выборЯзыка.подключить({
    ОТРИСОВКА. Одно место, которое строит страницу. Другого нет.
    ═══════════════════════════════════════════════════════════════════════ */
 function нарисоватьВсё() {
-  /* Код языка в кнопке, lang и направление письма ставит shared/язык.js —
+  /* Код языка в кнопке, lang и направление письма ставит shared/lang.js —
      это свойства языка, а не этой страницы. */
   CW.выборЯзыка.обновить();
   CW.перевести(document);

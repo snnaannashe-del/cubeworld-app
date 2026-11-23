@@ -1,0 +1,41 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   ВИД ВЫБОРА ЯЗЫКА
+
+       shared/язык.css   (список и поведение — shared/язык.js)
+
+   Стоял дважды: на титулке и на странице тарифа. Здесь один раз.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.язык{ position:relative; }
+
+/* Кнопка языка — голые буквы «RU» и уголок: ни рамки, ни подложки.
+   Коробка в углу шапки спорила с кубом и названием слева, а выбор языка
+   — не главное действие страницы. Флага здесь тоже нет: он остался в
+   самом списке, где по нему и выбирают язык. */
+.язык-кнопка{
+  display:flex; align-items:center; gap:6px; cursor:pointer;
+  background:none; border:none; border-radius:10px;
+  padding:7px 6px; font-size:0.8667rem; color:var(--текст2);
+}
+.язык-кнопка:hover{ color:var(--текст); }
+
+/* Уголок выбора языка — наша же стрелка, повёрнутая вниз: отдельного
+   маленького уголка в наборе нет, а заводить его ради одного места
+   значит держать два похожих значка. */
+.язык-кнопка .уголок{ color:var(--текст3); line-height:0;
+  transform:rotate(-90deg); }
+
+.язык-список{
+  position:absolute; right:0; top:calc(100% + 7px); z-index:60; display:none;
+  background:var(--окно); border:1px solid var(--край2); border-radius:14px;
+  box-shadow:var(--тень); padding:6px; min-width:216px;
+  max-height:min(60vh,420px); overflow:auto;
+}
+.язык-список.видно{ display:block; }
+.язык-список button{
+  display:flex; align-items:center; gap:10px; width:100%; border:none;
+  background:none; color:var(--текст); font-size:0.9rem; padding:9px 11px;
+  border-radius:9px; cursor:pointer; text-align:left;
+}
+.язык-список button:hover{ background:var(--поле); }
+.язык-список button.выбран{ color:var(--синий); }
