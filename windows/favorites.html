@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Избранное · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-399">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-399">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-399">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-399">
-<script src="../shared/theme.js?v=20261123-399"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-399">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-400">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-400">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-400">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-400">
+<script src="../shared/theme.js?v=20261123-400"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-400">
 <!--
   ИЗБРАННОЕ — стоячее окно шириной 10 см, как портфолио и правка профиля.
 
@@ -58,21 +58,22 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-399"></script>
-<script src="../shared/ui.js?v=20261123-399"></script>
-<script src="../shared/смайлы.js?v=20261123-399"></script>
-<script src="../shared/лица.js?v=20261123-399"></script>
-<script src="../shared/эфир.js?v=20261123-399"></script>
-<script src="../shared/icons.js?v=20261123-399"></script>
-<script src="../shared/window.js?v=20261123-399"></script>
-<script src="../shared/без-копий.js?v=20261123-399"></script>
-<script src="../shared/time.js?v=20261123-399"></script>
-<script src="../shared/auth.js?v=20261123-399"></script>
-<script src="../shared/account.js?v=20261123-399"></script>
-<script src="../shared/shell.js?v=20261123-399"></script>
-<script src="../shared/вложения.js?v=20261123-399"></script>
-<script src="../shared/кнопки-сообщения.js?v=20261123-399"></script>
-<script src="../shared/chat.js?v=20261123-399"></script>
+<script src="../shared/api.js?v=20261123-400"></script>
+<script src="../shared/ui.js?v=20261123-400"></script>
+<script src="../shared/смайлы.js?v=20261123-400"></script>
+<script src="../shared/лица.js?v=20261123-400"></script>
+<script src="../shared/эфир.js?v=20261123-400"></script>
+<script src="../shared/icons.js?v=20261123-400"></script>
+<script src="../shared/window.js?v=20261123-400"></script>
+<script src="../shared/без-копий.js?v=20261123-400"></script>
+<script src="../shared/time.js?v=20261123-400"></script>
+<script src="../shared/auth.js?v=20261123-400"></script>
+<script src="../shared/account.js?v=20261123-400"></script>
+<script src="../shared/shell.js?v=20261123-400"></script>
+<script src="../shared/вложения.js?v=20261123-400"></script>
+<script src="../shared/кнопки-сообщения.js?v=20261123-400"></script>
+<script src="../shared/кадр-ролика.js?v=20261123-400"></script>
+<script src="../shared/chat.js?v=20261123-400"></script>
 <script>
 'use strict';
 
@@ -444,6 +445,10 @@ function показать() {
          снимком оставалась серой строкой с именем файла. */
       вид: /^geo:/i.test(String(раз.текст || '')) ? 'geo' : видЗаписи(з),
       адрес: видЗаписи(з) ? з.fileUrl : '',
+      /* Привью ролика. В переписке кадр едет служебной строкой, а
+         здесь запись своя, в этом браузере: ей хватает поля
+         (shared/кадр-ролика.js снимает кадр при добавлении). */
+      кадр: з.кадр || '',
       когда: CW.подпись(з.savedAt || з.time),
       метка: Date.parse(з.savedAt || з.time) || 0,
       /* «изменено» ставится, когда запись правили через меню. В чатах
@@ -540,6 +545,9 @@ function добавить(текст, вложение, срок) {
     з.fileName = вложение.имя;
     з.fileSize = вложение.размер;
     if (вложение.адрес) з.fileUrl = вложение.адрес;
+    /* Кадр ролика снят при выборе файла: без него отложенный себе
+       ролик остался бы пустым прямоугольником. */
+    if (вложение.кадр) з.кадр = вложение.кадр;
     /* Человек выбрал «Файл» - значит, файлом и покажем. Запись это
        помнит, иначе снимок всё равно развернулся бы картинкой. */
     if (вложение.документом) з.какФайл = true;
@@ -818,7 +826,7 @@ function кружком() {
     return CW.вложения.отправить([ф], 'clip', 'circle', function (о) {
       добавить('', { имя: о.имя || 'кружок.webm',
                      размер: о.размер || ф.size || 0,
-                     адрес: о.адрес }, срокВвода());
+                     адрес: о.адрес, кадр: о.кадр || '' }, срокВвода());
       CW.сказать('Кружок в избранном');
     });
   }).catch(function (е) {

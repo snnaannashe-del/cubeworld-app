@@ -119,36 +119,17 @@
     поле.click();
   }
 
-  /* Кадр из ролика: отступаем от начала, чтобы не попасть на чёрное. */
+  /* Кадр из ролика снимает общий файл shared/кадр-ролика.js: тот же
+     кадр нужен переписке, и двух таких съёмок в программе быть не
+     должно. Здесь только зовём и, если файла рядом нет, тихо
+     обходимся без привью — документ примет ролик и так. */
   function кадрИзРолика(файл) {
-    return new Promise(function (дать) {
-      var адрес = URL.createObjectURL(файл);
-      var в = document.createElement('video');
-      в.muted = true; в.playsInline = true; в.preload = 'auto'; в.src = адрес;
-      var отдали = false;
-      function всё(кадр) {
-        if (отдали) return;
-        отдали = true;
-        try { URL.revokeObjectURL(адрес); } catch (е) {}
-        дать(кадр);
-      }
-      в.onloadeddata = function () {
-        try { в.currentTime = Math.min(1, (в.duration || 3) / 3); } catch (е) {}
-      };
-      в.onseeked = function () {
-        var ш = в.videoWidth || 640, вы = в.videoHeight || 360;
-        var к = Math.min(1, 960 / ш);
-        var х = document.createElement('canvas');
-        х.width = Math.round(ш * к);
-        х.height = Math.round(вы * к);
-        х.getContext('2d').drawImage(в, 0, 0, х.width, х.height);
-        х.toBlob(function (б) {
-          всё(б ? new File([б], 'кадр.jpg', { type: 'image/jpeg' }) : null);
-        }, 'image/jpeg', 0.88);
-      };
-      в.onerror = function () { всё(null); };
-      setTimeout(function () { всё(null); }, 15000);
-    });
+    var готов = CW.кадрРолика
+      ? Promise.resolve()
+      : (CW.нужен ? CW.нужен('shared/кадр-ролика.js') : Promise.reject());
+    return готов.then(function () {
+      return CW.кадрРолика ? CW.кадрРолика.снять(файл) : null;
+    }).catch(function () { return null; });
   }
 
   /* ── Привязка полосы к листу ──────────────────────────────────── */

@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Группа · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-399">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-399">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-399">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-399">
-<script src="../shared/theme.js?v=20261123-399"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-399">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-400">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-400">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-400">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-400">
+<script src="../shared/theme.js?v=20261123-400"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-400">
 <!--
   ПЕРЕПИСКА ГРУППЫ — окно поверх программы, со своим адресом.
 
@@ -31,21 +31,22 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-399"></script>
-<script src="../shared/ui.js?v=20261123-399"></script>
-<script src="../shared/смайлы.js?v=20261123-399"></script>
-<script src="../shared/лица.js?v=20261123-399"></script>
-<script src="../shared/эфир.js?v=20261123-399"></script>
-<script src="../shared/icons.js?v=20261123-399"></script>
-<script src="../shared/window.js?v=20261123-399"></script>
-<script src="../shared/без-копий.js?v=20261123-399"></script>
-<script src="../shared/time.js?v=20261123-399"></script>
-<script src="../shared/auth.js?v=20261123-399"></script>
-<script src="../shared/account.js?v=20261123-399"></script>
-<script src="../shared/shell.js?v=20261123-399"></script>
-<script src="../shared/вложения.js?v=20261123-399"></script>
-<script src="../shared/кнопки-сообщения.js?v=20261123-399"></script>
-<script src="../shared/chat.js?v=20261123-399"></script>
+<script src="../shared/api.js?v=20261123-400"></script>
+<script src="../shared/ui.js?v=20261123-400"></script>
+<script src="../shared/смайлы.js?v=20261123-400"></script>
+<script src="../shared/лица.js?v=20261123-400"></script>
+<script src="../shared/эфир.js?v=20261123-400"></script>
+<script src="../shared/icons.js?v=20261123-400"></script>
+<script src="../shared/window.js?v=20261123-400"></script>
+<script src="../shared/без-копий.js?v=20261123-400"></script>
+<script src="../shared/time.js?v=20261123-400"></script>
+<script src="../shared/auth.js?v=20261123-400"></script>
+<script src="../shared/account.js?v=20261123-400"></script>
+<script src="../shared/shell.js?v=20261123-400"></script>
+<script src="../shared/вложения.js?v=20261123-400"></script>
+<script src="../shared/кнопки-сообщения.js?v=20261123-400"></script>
+<script src="../shared/кадр-ролика.js?v=20261123-400"></script>
+<script src="../shared/chat.js?v=20261123-400"></script>
 <script>
 'use strict';
 
@@ -108,9 +109,13 @@ var П = CW.перепискаОкно({
        прежде, чем взять текст или адрес файла. Разбор один на всю
        программу (shared/кнопки-сообщения.js). */
     var раз = CW.кнопкиСообщения.разобрать(м.content || '');
-    var адрес = вид && вид !== 'geo' ? (м.file_url || раз.текст || '') : '';
+    /* Привью ролика едет своей служебной строкой, следом за адресом
+       (shared/кадр-ролика.js): снимаем её так же, как кнопки. */
+    var рам = CW.кадрРолика.разобрать(раз.текст);
+    var адрес = вид && вид !== 'geo' ? (м.file_url || рам.текст || '') : '';
     return {
       своё: своё,
+      кадр: рам.кадр,
       кнопки: раз.кнопки,
       вряд: раз.вряд,
       цвет: раз.цвет,
@@ -119,7 +124,7 @@ var П = CW.перепискаОкно({
       кто: своё ? '' : CW.имяЧеловека(м),
       вид: вид,
       адрес: адрес,
-      текст: вид ? (вид === 'geo' ? раз.текст : '') : раз.текст,
+      текст: вид ? (вид === 'geo' ? рам.текст : '') : рам.текст,
       когда: CW.часы(м.created_at),
       метка: Date.parse(м.created_at) || 0,
       /* Метка «изменено» в группе была потеряна: сервер её отдаёт
@@ -165,8 +170,11 @@ var П = CW.перепискаОкно({
      вовсе. Сообщения из этого не выходило ни у кого. */
   вложением: function (о) {
     /* «хвост» — кнопки, ждавшие у поля ввода: к файлу их тоже можно
-       приложить, и едут они последней строкой того же content. */
-    var тело = { content: о.адрес + (о.хвост || ''), msg_type: о.тип };
+       приложить, и едут они последней строкой того же content.
+       «кадр» — привью ролика, снятое при отправке: встаёт между
+       адресом и кнопками, потому что кнопки ищут себя последними. */
+    var тело = { content: CW.кадрРолика.вшить(о.адрес, о.кадр) + (о.хвост || ''),
+                 msg_type: о.тип };
     /* Срок у группы зовётся expire_seconds — так его назвал сервер.
        Кнопка «∞» в ряду ввода одна и та же для текста и вложения. */
     if (о.срок) тело.expire_seconds = о.срок;
@@ -210,10 +218,14 @@ function менюСообщения(м, своё, x, y) {
   CW.нужен('shared/меню-сообщения.js').then(function () {
     var вид = м.msg_type && м.msg_type !== 'text' ? м.msg_type : '';
     var раз = CW.кнопкиСообщения.разобрать(м.content || '');
-    var адрес = вид && вид !== 'geo' ? (м.file_url || раз.текст || '') : '';
+    var рам = CW.кадрРолика.разобрать(раз.текст);
+    var адрес = вид && вид !== 'geo' ? (м.file_url || рам.текст || '') : '';
     var имя = м.file_name || (адрес ? имяИзАдреса(адрес) : '');
     var род = CW.родСообщения(вид, имя, адрес);
-    var текст = вид ? '' : раз.текст;
+    var текст = вид ? '' : рам.текст;
+    /* Правка пересобирает content заново, и привью обязано остаться:
+       иначе первое же «Изменить» стирало бы кадр ролика. */
+    function основой(что) { return CW.кадрРолика.вшить(что, рам.кадр); }
 
     CW.менюСообщения({
       род: род, своё: своё, текст: текст,
@@ -236,7 +248,7 @@ function менюСообщения(м, своё, x, y) {
         кнопки: своё ? {
           набор: раз.кнопки, вряд: раз.вряд, цвет: раз.цвет,
           сохранить: function (сп, вряд, цвет) {
-            var основа = вид ? адрес : текст;
+            var основа = вид ? основой(адрес) : текст;
             return CW.спросить('/groups/' + ИД + '/messages/' + м.id, {
               способ: 'PUT',
               тело: { content: CW.кнопкиСообщения.вшить(основа, сп, вряд, цвет) }
@@ -252,7 +264,9 @@ function менюСообщения(м, своё, x, y) {
             return CW.вложения.заменить({ берём: берём, положить: function (о) {
               return CW.спросить('/groups/' + ИД + '/messages/' + м.id, {
                 способ: 'PUT',
-                тело: { content: CW.кнопкиСообщения.вшить(о.адрес, раз.набор) }
+                /* Кадр берём новый, от нового файла. */
+                тело: { content: CW.кнопкиСообщения.вшить(
+                          CW.кадрРолика.вшить(о.адрес, о.кадр), раз.набор) }
               });
             } });
           }).then(function (вышло) { if (вышло) П.обновить(); });
