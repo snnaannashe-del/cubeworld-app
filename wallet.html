@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Кошелёк · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-400">
-<link rel="stylesheet" href="shared/style.css?v=20261123-400">
-<link rel="stylesheet" href="shared/window.css?v=20261123-400">
-<link rel="stylesheet" href="shared/account.css?v=20261123-400">
-<script src="shared/theme.js?v=20261123-400"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-400">
+<link rel="icon" href="icons/favicon.svg?v=20261123-401">
+<link rel="stylesheet" href="shared/style.css?v=20261123-401">
+<link rel="stylesheet" href="shared/window.css?v=20261123-401">
+<link rel="stylesheet" href="shared/account.css?v=20261123-401">
+<script src="shared/theme.js?v=20261123-401"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-401">
 <!--
   КОШЕЛЁК.
 
@@ -156,19 +156,19 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-400"></script>
-<script src="shared/ui.js?v=20261123-400"></script>
-<script src="shared/смайлы.js?v=20261123-400"></script>
-<script src="shared/лица.js?v=20261123-400"></script>
-<script src="shared/эфир.js?v=20261123-400"></script>
-<script src="shared/icons.js?v=20261123-400"></script>
-<script src="shared/window.js?v=20261123-400"></script>
-<script src="shared/без-копий.js?v=20261123-400"></script>
-<script src="shared/time.js?v=20261123-400"></script>
-<script src="shared/auth.js?v=20261123-400"></script>
-<script src="shared/account.js?v=20261123-400"></script>
-<script src="shared/shell.js?v=20261123-400"></script>
-<script src="shared/wallets.js?v=20261123-400"></script>
+<script src="shared/api.js?v=20261123-401"></script>
+<script src="shared/ui.js?v=20261123-401"></script>
+<script src="shared/смайлы.js?v=20261123-401"></script>
+<script src="shared/лица.js?v=20261123-401"></script>
+<script src="shared/эфир.js?v=20261123-401"></script>
+<script src="shared/icons.js?v=20261123-401"></script>
+<script src="shared/window.js?v=20261123-401"></script>
+<script src="shared/без-копий.js?v=20261123-401"></script>
+<script src="shared/time.js?v=20261123-401"></script>
+<script src="shared/auth.js?v=20261123-401"></script>
+<script src="shared/account.js?v=20261123-401"></script>
+<script src="shared/shell.js?v=20261123-401"></script>
+<script src="shared/wallets.js?v=20261123-401"></script>
 <script>
 'use strict';
 
@@ -372,7 +372,12 @@ function кускомПеревод() {
   var кому = document.createElement('input');
   кому.className = 'кому';
   кому.type = 'text';
-  кому.placeholder = 'Имя, @ник, CUBE-… или #номер';
+  /* Подсказка называет ровно то, что человек о собеседнике знает:
+     имя, ник и UID - тот самый номер, который виден в портфолио под
+     именем («UID · 00005686969»). Прежняя строка предлагала «CUBE-…»
+     - это входной ключ, искать по нему нельзя и показывать его
+     соседям тоже. */
+  кому.placeholder = 'Имя, Ник, UID';
   кому.autocomplete = 'off';
   /* Браузер принимает пару «строка + число» за платёжную форму и вешает
      сверху свою плашку про автозаполнение. Называем поля их настоящими
@@ -433,9 +438,16 @@ function кускомПеревод() {
       стр.appendChild(CW.кружок({ размер: 28, кто: ч.id, снимок: ч.avatar_url,
                                   версия: ч.avatar_ver }));
       var кто = document.createElement('span');
+      /* Под именем — настоящий UID, тот самый номер из портфолио.
+         Прежде здесь стояло «UID · 16»: когда сервер номера не
+         присылал, в подпись падал внутренний id, и выходила неправда
+         — по такому «UID» человека и не найти. Нет номера — пишем
+         внутренний номер решёткой, как он и зовётся везде. */
       кто.innerHTML = '<b>' + CW.безопасно(CW.имяЧеловека(ч)) + '</b>'
-                    + '<span class="мелко">UID · '
-                    + CW.безопасно(ч.uid || ч.id) + '</span>';
+                    + '<span class="мелко">'
+                    + (ч.uid ? ('UID · ' + CW.безопасно(ч.uid))
+                             : ('#' + CW.безопасно(ч.id)))
+                    + '</span>';
       стр.appendChild(кто);
       стр.onclick = function () { выбрать(ч); };
       список.appendChild(стр);

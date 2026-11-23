@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Сигналы · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-400">
-<link rel="stylesheet" href="shared/style.css?v=20261123-400">
-<link rel="stylesheet" href="shared/window.css?v=20261123-400">
-<link rel="stylesheet" href="shared/account.css?v=20261123-400">
-<script src="shared/theme.js?v=20261123-400"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-400">
+<link rel="icon" href="icons/favicon.svg?v=20261123-401">
+<link rel="stylesheet" href="shared/style.css?v=20261123-401">
+<link rel="stylesheet" href="shared/window.css?v=20261123-401">
+<link rel="stylesheet" href="shared/account.css?v=20261123-401">
+<script src="shared/theme.js?v=20261123-401"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-401">
 <!--
   СИГНАЛЫ КУБА.
 
@@ -215,6 +215,19 @@
      заголовка. */
   .верх-сигналов{ gap:2px; }
   .верх-сигналов h1{ margin-right:6px; font-size:1.25rem; }
+
+  /* ── ЛУПА УЕЗЖАЛА ЗА КРАЙ ──
+     Строка поиска была шириной ровно 240 точек. На телефоне шапка
+     всего 358: заголовок, плюс, восклицательный знак и эти 240 в
+     строку не помещались, и сама кнопка-лупа оказывалась за правым
+     краем экрана - замер показал её на 398..432 при ширине окна 390.
+
+     Теперь уголок с поиском тянется по свободному месту, а строка
+     внутри него сжимается: 240 остаётся её ЖЕЛАНИЕМ, а не законом.
+     min-width:0 обязателен - без него поле отказывается сжиматься
+     меньше своего содержимого, и всё остаётся как было. */
+  .верх-сигналов .поиск-угол{ flex:1 1 auto; min-width:0; }
+  .верх-сигналов .поиск-сигналов{ flex:1 1 auto; min-width:0; max-width:240px; }
 }
 
 /* Низ карточки: заметка слева, кнопка справа, одной строкой. На
@@ -264,18 +277,18 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-400"></script>
-<script src="shared/ui.js?v=20261123-400"></script>
-<script src="shared/смайлы.js?v=20261123-400"></script>
-<script src="shared/лица.js?v=20261123-400"></script>
-<script src="shared/эфир.js?v=20261123-400"></script>
-<script src="shared/icons.js?v=20261123-400"></script>
-<script src="shared/window.js?v=20261123-400"></script>
-<script src="shared/без-копий.js?v=20261123-400"></script>
-<script src="shared/time.js?v=20261123-400"></script>
-<script src="shared/auth.js?v=20261123-400"></script>
-<script src="shared/account.js?v=20261123-400"></script>
-<script src="shared/shell.js?v=20261123-400"></script>
+<script src="shared/api.js?v=20261123-401"></script>
+<script src="shared/ui.js?v=20261123-401"></script>
+<script src="shared/смайлы.js?v=20261123-401"></script>
+<script src="shared/лица.js?v=20261123-401"></script>
+<script src="shared/эфир.js?v=20261123-401"></script>
+<script src="shared/icons.js?v=20261123-401"></script>
+<script src="shared/window.js?v=20261123-401"></script>
+<script src="shared/без-копий.js?v=20261123-401"></script>
+<script src="shared/time.js?v=20261123-401"></script>
+<script src="shared/auth.js?v=20261123-401"></script>
+<script src="shared/account.js?v=20261123-401"></script>
+<script src="shared/shell.js?v=20261123-401"></script>
 <script>
 'use strict';
 
