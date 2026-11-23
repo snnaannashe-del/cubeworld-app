@@ -62,7 +62,7 @@ CW.модаль('story', function (данные) {
   var экран = CW.кусок('ст-экран');
   var полоски = CW.кусок('ст-полоски');
   var шапка = CW.кусок('ст-шапка',
-      '<span class="лицо мал"></span>'
+      '<span class="лицо мал cw-кружок"></span>'
     + '<span class="кто"><span class="имя"></span><span class="когда"></span></span>');
   var крест = CW.эл('button', 'ст-крест');
   крест.type = 'button';

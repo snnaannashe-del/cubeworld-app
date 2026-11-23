@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Чаты · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-425">
-<link rel="stylesheet" href="shared/style.css?v=20261123-425">
-<link rel="stylesheet" href="shared/window.css?v=20261123-425">
-<link rel="stylesheet" href="shared/account.css?v=20261123-425">
-<script src="shared/theme.js?v=20261123-425"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-425">
+<link rel="icon" href="icons/favicon.svg?v=20261123-426">
+<link rel="stylesheet" href="shared/style.css?v=20261123-426">
+<link rel="stylesheet" href="shared/window.css?v=20261123-426">
+<link rel="stylesheet" href="shared/account.css?v=20261123-426">
+<script src="shared/theme.js?v=20261123-426"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-426">
 <!--
   ЧАТЫ.
 
@@ -186,23 +186,23 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-425"></script>
-<script src="shared/ui.js?v=20261123-425"></script>
-<script src="shared/смайлы.js?v=20261123-425"></script>
-<script src="shared/лица.js?v=20261123-425"></script>
-<script src="shared/эфир.js?v=20261123-425"></script>
-<script src="shared/icons.js?v=20261123-425"></script>
-<script src="shared/window.js?v=20261123-425"></script>
-<script src="shared/без-копий.js?v=20261123-425"></script>
-<script src="shared/time.js?v=20261123-425"></script>
-<script src="shared/auth.js?v=20261123-425"></script>
-<script src="shared/account.js?v=20261123-425"></script>
-<script src="shared/shell.js?v=20261123-425"></script>
-<script src="shared/вложения.js?v=20261123-425"></script>
-<script src="shared/кнопки-сообщения.js?v=20261123-425"></script>
-<script src="shared/chat.js?v=20261123-425"></script>
-<script src="shared/shelf.js?v=20261123-425"></script>
-<script src="shared/архив.js?v=20261123-425"></script>
+<script src="shared/api.js?v=20261123-426"></script>
+<script src="shared/ui.js?v=20261123-426"></script>
+<script src="shared/смайлы.js?v=20261123-426"></script>
+<script src="shared/лица.js?v=20261123-426"></script>
+<script src="shared/эфир.js?v=20261123-426"></script>
+<script src="shared/icons.js?v=20261123-426"></script>
+<script src="shared/window.js?v=20261123-426"></script>
+<script src="shared/без-копий.js?v=20261123-426"></script>
+<script src="shared/time.js?v=20261123-426"></script>
+<script src="shared/auth.js?v=20261123-426"></script>
+<script src="shared/account.js?v=20261123-426"></script>
+<script src="shared/shell.js?v=20261123-426"></script>
+<script src="shared/вложения.js?v=20261123-426"></script>
+<script src="shared/кнопки-сообщения.js?v=20261123-426"></script>
+<script src="shared/chat.js?v=20261123-426"></script>
+<script src="shared/shelf.js?v=20261123-426"></script>
+<script src="shared/архив.js?v=20261123-426"></script>
 <script>
 'use strict';
 
@@ -391,7 +391,7 @@ function показатьСписок() {
       var б = document.createElement('button');
       б.className = 'переписка';
       б.innerHTML =
-          '<span class="лицо">' + CW.значок('человек', 17) + '</span>'
+          '<span class="лицо cw-кружок">' + CW.значок('человек') + '</span>'
         + '<span class="кто">'
         +   '<div class="имя" data-имя="' + CW.безопасно(String(п.peer_id)) + '">'
         +     CW.безопасно(CW.имяЧеловека(п)) + '</div>'
@@ -521,7 +521,7 @@ function искатьЛюдей(что, куда) {
         var б = document.createElement('button');
         б.className = 'найден';
         var имя = CW.имяЧеловека(ч);
-        б.innerHTML = '<span class="лицо мал">' + CW.значок('человек', 14)
+        б.innerHTML = '<span class="лицо мал cw-кружок">' + CW.значок('человек')
                     + '</span><span>' + CW.безопасно(имя) + '</span>';
         б.onclick = function () { открыть(ч.id, имя); };
         куда.appendChild(б);
