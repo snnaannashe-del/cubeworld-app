@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Рефералы · CubeWorld</title>
 <meta name="theme-color" content="#01010c">
-<link rel="icon" href="icons/favicon.svg?v=20261123-389">
-<link rel="stylesheet" href="shared/style.css?v=20261123-389">
-<link rel="stylesheet" href="shared/window.css?v=20261123-389">
-<link rel="stylesheet" href="shared/account.css?v=20261123-389">
-<script src="shared/theme.js?v=20261123-389"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-389">
+<link rel="icon" href="icons/favicon.svg?v=20261123-390">
+<link rel="stylesheet" href="shared/style.css?v=20261123-390">
+<link rel="stylesheet" href="shared/window.css?v=20261123-390">
+<link rel="stylesheet" href="shared/account.css?v=20261123-390">
+<script src="shared/theme.js?v=20261123-390"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-390">
 <!--
   ПРИГЛАШЕНИЯ.
 
@@ -77,7 +77,15 @@
 .число.синее .значение{ color:var(--синий); }
 .число.зелёное .значение{ color:var(--зелёный); }
 .число .подпись{ margin-top:4px; font-size:10.5px; color:var(--текст2); }
-@media (max-width:560px){ .числа{ grid-template-columns:1fr; } }
+/* На телефоне три числа остаются в один ряд: столбиком они занимали
+   треть экрана, а смысл их в том, чтобы охватить все три разом.
+   Ужимаем поля и буквы, ряд не ломаем. */
+@media (max-width:560px){
+  .числа{ gap:7px; }
+  .число{ padding:11px 5px; }
+  .число .значение{ font-size:20px; }
+  .число .подпись{ font-size:9.5px; line-height:1.25; }
+}
 
 /* ── кто пришёл ──────────────────────────────────────────────────── */
 .друзья{ border:1px solid var(--край); border-radius:var(--радиус);
@@ -125,18 +133,18 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-389"></script>
-<script src="shared/ui.js?v=20261123-389"></script>
-<script src="shared/смайлы.js?v=20261123-389"></script>
-<script src="shared/лица.js?v=20261123-389"></script>
-<script src="shared/эфир.js?v=20261123-389"></script>
-<script src="shared/icons.js?v=20261123-389"></script>
-<script src="shared/window.js?v=20261123-389"></script>
-<script src="shared/без-копий.js?v=20261123-389"></script>
-<script src="shared/time.js?v=20261123-389"></script>
-<script src="shared/auth.js?v=20261123-389"></script>
-<script src="shared/account.js?v=20261123-389"></script>
-<script src="shared/shell.js?v=20261123-389"></script>
+<script src="shared/api.js?v=20261123-390"></script>
+<script src="shared/ui.js?v=20261123-390"></script>
+<script src="shared/смайлы.js?v=20261123-390"></script>
+<script src="shared/лица.js?v=20261123-390"></script>
+<script src="shared/эфир.js?v=20261123-390"></script>
+<script src="shared/icons.js?v=20261123-390"></script>
+<script src="shared/window.js?v=20261123-390"></script>
+<script src="shared/без-копий.js?v=20261123-390"></script>
+<script src="shared/time.js?v=20261123-390"></script>
+<script src="shared/auth.js?v=20261123-390"></script>
+<script src="shared/account.js?v=20261123-390"></script>
+<script src="shared/shell.js?v=20261123-390"></script>
 <script>
 'use strict';
 

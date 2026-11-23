@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Группы · CubeWorld</title>
 <meta name="theme-color" content="#01010c">
-<link rel="icon" href="icons/favicon.svg?v=20261123-389">
-<link rel="stylesheet" href="shared/style.css?v=20261123-389">
-<link rel="stylesheet" href="shared/window.css?v=20261123-389">
-<link rel="stylesheet" href="shared/account.css?v=20261123-389">
-<script src="shared/theme.js?v=20261123-389"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-389">
+<link rel="icon" href="icons/favicon.svg?v=20261123-390">
+<link rel="stylesheet" href="shared/style.css?v=20261123-390">
+<link rel="stylesheet" href="shared/window.css?v=20261123-390">
+<link rel="stylesheet" href="shared/account.css?v=20261123-390">
+<script src="shared/theme.js?v=20261123-390"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-390">
 <!--
   ГРУППЫ.
 
@@ -100,7 +100,14 @@
 }
 /* Пусто — это надпись посреди пустого места, а не пустая карточка с
    рамкой. Так же сделано в чатах. */
-.список-групп.пусто{ border:none; background:none; }
+/* Пустая надпись стоит посреди свободного места, а не жмётся к
+   верхнему краю: пустой список - это не строка списка, это сообщение
+   на весь отведённый лист. Та же мера и в чатах. */
+.список-групп.пусто{
+  border:none; background:none;
+  flex:1 1 auto; display:flex; align-items:center; justify-content:center;
+  min-height:48vh;
+}
 
 .группа{
   display:flex; align-items:center; gap:13px; width:100%;
@@ -164,21 +171,21 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-389"></script>
-<script src="shared/ui.js?v=20261123-389"></script>
-<script src="shared/смайлы.js?v=20261123-389"></script>
-<script src="shared/лица.js?v=20261123-389"></script>
-<script src="shared/эфир.js?v=20261123-389"></script>
-<script src="shared/icons.js?v=20261123-389"></script>
-<script src="shared/window.js?v=20261123-389"></script>
-<script src="shared/без-копий.js?v=20261123-389"></script>
-<script src="shared/time.js?v=20261123-389"></script>
-<script src="shared/auth.js?v=20261123-389"></script>
-<script src="shared/account.js?v=20261123-389"></script>
-<script src="shared/shell.js?v=20261123-389"></script>
-<script src="shared/вложения.js?v=20261123-389"></script>
-<script src="shared/chat.js?v=20261123-389"></script>
-<script src="shared/shelf.js?v=20261123-389"></script>
+<script src="shared/api.js?v=20261123-390"></script>
+<script src="shared/ui.js?v=20261123-390"></script>
+<script src="shared/смайлы.js?v=20261123-390"></script>
+<script src="shared/лица.js?v=20261123-390"></script>
+<script src="shared/эфир.js?v=20261123-390"></script>
+<script src="shared/icons.js?v=20261123-390"></script>
+<script src="shared/window.js?v=20261123-390"></script>
+<script src="shared/без-копий.js?v=20261123-390"></script>
+<script src="shared/time.js?v=20261123-390"></script>
+<script src="shared/auth.js?v=20261123-390"></script>
+<script src="shared/account.js?v=20261123-390"></script>
+<script src="shared/shell.js?v=20261123-390"></script>
+<script src="shared/вложения.js?v=20261123-390"></script>
+<script src="shared/chat.js?v=20261123-390"></script>
+<script src="shared/shelf.js?v=20261123-390"></script>
 <script>
 'use strict';
 
@@ -355,11 +362,12 @@ function нарисовать(где) {
   где.classList.remove('пусто');
   if (!свои.length && !чужие.length) {
     где.classList.add('пусто');
-    где.appendChild(кусок('пусто-строка', С.ищем
-      ? 'Групп с таким названием нет.'
-      : (С.вкладка === 'мои'
-          ? 'Ты пока ни в одной группе.<br>Загляни во «Все группы» или создай свою.'
-          : 'Групп пока нет. Нажми ＋ и создай первую.')));
+    /* Одна короткая строка посреди пустого места. Длинное объяснение
+       «Загляни во Все группы или создай свою» человек читает один раз,
+       а видит каждый раз, когда групп нет; а что делать - написано на
+       кнопке ＋ прямо над списком. */
+    где.appendChild(кусок('пусто-строка',
+      С.ищем ? 'Ничего не нашлось' : 'Групп нет'));
     return;
   }
 

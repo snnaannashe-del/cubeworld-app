@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Чаты · CubeWorld</title>
 <meta name="theme-color" content="#01010c">
-<link rel="icon" href="icons/favicon.svg?v=20261123-389">
-<link rel="stylesheet" href="shared/style.css?v=20261123-389">
-<link rel="stylesheet" href="shared/window.css?v=20261123-389">
-<link rel="stylesheet" href="shared/account.css?v=20261123-389">
-<script src="shared/theme.js?v=20261123-389"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-389">
+<link rel="icon" href="icons/favicon.svg?v=20261123-390">
+<link rel="stylesheet" href="shared/style.css?v=20261123-390">
+<link rel="stylesheet" href="shared/window.css?v=20261123-390">
+<link rel="stylesheet" href="shared/account.css?v=20261123-390">
+<script src="shared/theme.js?v=20261123-390"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-390">
 <!--
   ЧАТЫ.
 
@@ -86,8 +86,13 @@
 /* ── пусто ───────────────────────────────────────────────────────── */
 /* Пустое состояние без рамки и подложки: в работающей программе это
    просто надпись посреди пустого места, а не карточка. */
-.переписки.пусто{ border:none; background:none; }
-.пусто-чаты{ text-align:center; padding:60px 20px; }
+/* Та же мера, что в группах: надпись посреди свободного места. */
+.переписки.пусто{
+  border:none; background:none;
+  flex:1 1 auto; display:flex; align-items:center; justify-content:center;
+  min-height:48vh;
+}
+.пусто-чаты{ text-align:center; padding:0 20px; }
 .пусто-чаты .знак{ display:flex; justify-content:center; color:var(--синий);
   margin-bottom:18px; }
 .пусто-чаты .знак svg{ width:44px; height:44px; }
@@ -180,23 +185,23 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-389"></script>
-<script src="shared/ui.js?v=20261123-389"></script>
-<script src="shared/смайлы.js?v=20261123-389"></script>
-<script src="shared/лица.js?v=20261123-389"></script>
-<script src="shared/эфир.js?v=20261123-389"></script>
-<script src="shared/icons.js?v=20261123-389"></script>
-<script src="shared/window.js?v=20261123-389"></script>
-<script src="shared/без-копий.js?v=20261123-389"></script>
-<script src="shared/time.js?v=20261123-389"></script>
-<script src="shared/auth.js?v=20261123-389"></script>
-<script src="shared/account.js?v=20261123-389"></script>
-<script src="shared/shell.js?v=20261123-389"></script>
-<script src="shared/вложения.js?v=20261123-389"></script>
-<script src="shared/кнопки-сообщения.js?v=20261123-389"></script>
-<script src="shared/chat.js?v=20261123-389"></script>
-<script src="shared/shelf.js?v=20261123-389"></script>
-<script src="shared/архив.js?v=20261123-389"></script>
+<script src="shared/api.js?v=20261123-390"></script>
+<script src="shared/ui.js?v=20261123-390"></script>
+<script src="shared/смайлы.js?v=20261123-390"></script>
+<script src="shared/лица.js?v=20261123-390"></script>
+<script src="shared/эфир.js?v=20261123-390"></script>
+<script src="shared/icons.js?v=20261123-390"></script>
+<script src="shared/window.js?v=20261123-390"></script>
+<script src="shared/без-копий.js?v=20261123-390"></script>
+<script src="shared/time.js?v=20261123-390"></script>
+<script src="shared/auth.js?v=20261123-390"></script>
+<script src="shared/account.js?v=20261123-390"></script>
+<script src="shared/shell.js?v=20261123-390"></script>
+<script src="shared/вложения.js?v=20261123-390"></script>
+<script src="shared/кнопки-сообщения.js?v=20261123-390"></script>
+<script src="shared/chat.js?v=20261123-390"></script>
+<script src="shared/shelf.js?v=20261123-390"></script>
+<script src="shared/архив.js?v=20261123-390"></script>
 <script>
 'use strict';
 
@@ -371,11 +376,12 @@ function показатьСписок() {
     список.innerHTML = '';
     if (!ряды.length) {
       список.classList.add('пусто');
+      /* Только строка, как в группах: значок речи и объяснение, откуда
+         берутся переписки, занимали пол-экрана и говорили то, что и так
+         понятно по названию раздела. */
       список.appendChild(кусок('пусто-чаты',
-          '<div class="знак">' + CW.значок('речь') + '</div>'
-        + '<div class="слова">' + (С.ищем
-            ? 'Переписок с таким именем нет.'
-            : 'Здесь появятся личные сообщения от участников куба') + '</div>'));
+        '<div class="слова">'
+        + (С.ищем ? 'Ничего не нашлось' : 'Диалогов нет') + '</div>'));
       return;
     }
     список.classList.remove('пусто');
