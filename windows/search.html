@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Поиск · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-435">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-435">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-435">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-435">
-<script src="../shared/theme.js?v=20261123-435"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-435">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-436">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-436">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-436">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-436">
+<script src="../shared/theme.js?v=20261123-436"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-436">
 <!--
   ПОИСК — окно поверх программы.
 
@@ -179,20 +179,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-435"></script>
-<script src="../shared/ui.js?v=20261123-435"></script>
-<script src="../shared/смайлы.js?v=20261123-435"></script>
-<script src="../shared/лица.js?v=20261123-435"></script>
-<script src="../shared/эфир.js?v=20261123-435"></script>
-<script src="../shared/icons.js?v=20261123-435"></script>
-<script src="../shared/window.js?v=20261123-435"></script>
-<script src="../shared/без-копий.js?v=20261123-435"></script>
-<script src="../shared/time.js?v=20261123-435"></script>
-<script src="../shared/auth.js?v=20261123-435"></script>
-<script src="../shared/lang.js?v=20261123-435"></script>
-<script src="../shared/account.js?v=20261123-435"></script>
-<script src="../shared/помощник.js?v=20261123-435"></script>
-<script src="../shared/shell.js?v=20261123-435"></script>
+<script src="../shared/api.js?v=20261123-436"></script>
+<script src="../shared/ui.js?v=20261123-436"></script>
+<script src="../shared/смайлы.js?v=20261123-436"></script>
+<script src="../shared/лица.js?v=20261123-436"></script>
+<script src="../shared/эфир.js?v=20261123-436"></script>
+<script src="../shared/icons.js?v=20261123-436"></script>
+<script src="../shared/window.js?v=20261123-436"></script>
+<script src="../shared/без-копий.js?v=20261123-436"></script>
+<script src="../shared/time.js?v=20261123-436"></script>
+<script src="../shared/auth.js?v=20261123-436"></script>
+<script src="../shared/lang.js?v=20261123-436"></script>
+<script src="../shared/account.js?v=20261123-436"></script>
+<script src="../shared/помощник.js?v=20261123-436"></script>
+<script src="../shared/shell.js?v=20261123-436"></script>
 <script>
 'use strict';
 
@@ -409,7 +409,8 @@ function показать() {
 
     if (!раскрыт && ряды.length > ВО_ВСЁМ) {
       var ещё = ок('button', 'по-ещё',
-                   Т('Ещё ') + (ряды.length - ВО_ВСЁМ) + ' в разделе «' + г.подпись + '»');
+                   Т.с('Ещё {н} в разделе «{раздел}»',
+                       { н: ряды.length - ВО_ВСЁМ, раздел: г.подпись }));
       /* Раскрываем раздел на месте: вкладок, куда можно было бы
          перейти, больше нет. */
       ещё.onclick = function () { С.раскрыт = г.имя; показать(); };
@@ -426,8 +427,9 @@ function показать() {
     ОКНО.пусто({
       знак: 'лупа',
       заголовок: Т('Ничего не нашлось'),
-      текст: 'По запросу «' + С.ищем + '» ни вопроса, ни людей, ни групп, ни '
-           + 'кубов, ни эфиров. Попробуй короче, поиск ищет по началу слова.'
+      текст: Т.с('По запросу «{что}» ни вопроса, ни людей, ни групп, ни кубов, '
+               + 'ни эфиров. Попробуй короче, поиск ищет по началу слова.',
+                 { что: С.ищем })
     });
   }
 }
@@ -447,7 +449,7 @@ function помощник() {
   т.appendChild(лист);
 
   П.разговор.forEach(function (м) { лист.appendChild(пузырь(м)); });
-  if (П.думает) лист.appendChild(пузырь({ чей: 'его', текст: 'Загрузка…' }));
+  if (П.думает) лист.appendChild(пузырь({ чей: 'его', текст: Т('Загрузка…') }));
 
   /* Подсказки — только пока разговор не начался: после первого ответа
      они повторяют то, что человек и так уже видел. */
@@ -461,7 +463,7 @@ function помощник() {
     лист.appendChild(п);
   }
 
-  var все = ок('button', 'пм-все', П.каталог ? 'Свернуть список' : 'Все вопросы');
+  var все = ок('button', 'пм-все', П.каталог ? Т('Свернуть список') : Т('Все вопросы'));
   все.onclick = function () { П.каталог = !П.каталог; показать(); };
   лист.appendChild(все);
 
@@ -546,10 +548,13 @@ function спросить(вопрос) {
     поПлощадке(о.искать).then(function (карточки) {
       П.думает = false;
       П.разговор.push(карточки.length
-        ? { чей: 'его', текст: 'Вот что нашлось по запросу «' + о.искать + '»:',
+        ? { чей: 'его',
+            текст: Т.с('Вот что нашлось по запросу «{что}»:', { что: о.искать }),
             находки: карточки }
-        : { чей: 'его', текст: 'По запросу «' + о.искать + '» на площадке ничего не '
-                             + 'нашлось. Ни людей, ни групп, ни кубов, ни эфиров.' });
+        : { чей: 'его',
+            текст: Т.с('По запросу «{что}» на площадке ничего не нашлось. '
+                     + 'Ни людей, ни групп, ни кубов, ни эфиров.',
+                       { что: о.искать }) });
       П.кВнизу = true;
       показать();
     });
@@ -561,7 +566,7 @@ function спросить(вопрос) {
     поПлощадке(о.искатьТоже).then(function (карточки) {
       П.думает = false;
       П.разговор.push(карточки.length
-        ? { чей: 'его', текст: 'Про это я не знаю, но на площадке нашлось вот что:',
+        ? { чей: 'его', текст: Т('Про это я не знаю, но на площадке нашлось вот что:'),
             находки: карточки }
         : { чей: 'его', текст: о.текст });
       П.кВнизу = true;
@@ -620,16 +625,16 @@ function строкаЧеловек(ч) {
 function строкаГруппа(г) {
   return строчка(
     CW.кружок({ размер: 38, род: 'группа', значок: г.icon || '' }),
-    г.name || ('Группа #' + г.id),
+    г.name || Т.с('Группа #{н}', { н: г.id }),
     г.description || '',
-    Number(г.member_count || 0) ? г.member_count + ' чел.' : '',
+    Number(г.member_count || 0) ? Т.с('{н} чел.', { н: г.member_count }) : '',
     function () { CW.уйти(CW.окно('group') + '?ид=' + г.id); });
 }
 
 function строкаКуб(к) {
   return строчка(
     CW.кружок({ размер: 38, род: 'куб', значок: к.icon || '' }),
-    к.name || ('Куб #' + к.id),
+    к.name || Т.с('Куб #{н}', { н: к.id }),
     к.description || '',
     '',
     function () { CW.уйти(CW.раздел('feed', к.id)); });
@@ -638,9 +643,9 @@ function строкаКуб(к) {
 function строкаЭфир(э) {
   return строчка(
     CW.кружок({ размер: 38, род: 'эфир', цвет: 'linear-gradient(140deg,#3b1d2e,#2a1420)' }),
-    э.title || э.name || ('Эфир #' + э.id),
+    э.title || э.name || Т.с('Эфир #{н}', { н: э.id }),
     э.display_name || '',
-    'в эфире',
+    Т('в эфире'),
     function () { CW.сказать(Т('Окно эфира ещё не готово')); });
 }
 

@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Маркетплейс · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-435">
-<link rel="stylesheet" href="shared/style.css?v=20261123-435">
-<link rel="stylesheet" href="shared/window.css?v=20261123-435">
-<link rel="stylesheet" href="shared/account.css?v=20261123-435">
-<script src="shared/theme.js?v=20261123-435"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-435">
+<link rel="icon" href="icons/favicon.svg?v=20261123-436">
+<link rel="stylesheet" href="shared/style.css?v=20261123-436">
+<link rel="stylesheet" href="shared/window.css?v=20261123-436">
+<link rel="stylesheet" href="shared/account.css?v=20261123-436">
+<script src="shared/theme.js?v=20261123-436"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-436">
 <!--
   МАРКЕТПЛЕЙС.
 
@@ -419,21 +419,21 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-435"></script>
-<script src="shared/ui.js?v=20261123-435"></script>
-<script src="shared/смайлы.js?v=20261123-435"></script>
-<script src="shared/лица.js?v=20261123-435"></script>
-<script src="shared/эфир.js?v=20261123-435"></script>
-<script src="shared/icons.js?v=20261123-435"></script>
-<script src="shared/window.js?v=20261123-435"></script>
-<script src="shared/продавец.js?v=20261123-435"></script>
-<script src="shared/корзина.js?v=20261123-435"></script>
-<script src="shared/без-копий.js?v=20261123-435"></script>
-<script src="shared/time.js?v=20261123-435"></script>
-<script src="shared/auth.js?v=20261123-435"></script>
-<script src="shared/lang.js?v=20261123-435"></script>
-<script src="shared/account.js?v=20261123-435"></script>
-<script src="shared/shell.js?v=20261123-435"></script>
+<script src="shared/api.js?v=20261123-436"></script>
+<script src="shared/ui.js?v=20261123-436"></script>
+<script src="shared/смайлы.js?v=20261123-436"></script>
+<script src="shared/лица.js?v=20261123-436"></script>
+<script src="shared/эфир.js?v=20261123-436"></script>
+<script src="shared/icons.js?v=20261123-436"></script>
+<script src="shared/window.js?v=20261123-436"></script>
+<script src="shared/продавец.js?v=20261123-436"></script>
+<script src="shared/корзина.js?v=20261123-436"></script>
+<script src="shared/без-копий.js?v=20261123-436"></script>
+<script src="shared/time.js?v=20261123-436"></script>
+<script src="shared/auth.js?v=20261123-436"></script>
+<script src="shared/lang.js?v=20261123-436"></script>
+<script src="shared/account.js?v=20261123-436"></script>
+<script src="shared/shell.js?v=20261123-436"></script>
 <script>
 'use strict';
 
@@ -523,8 +523,8 @@ var шапка = ок('div', 'верх-рынка', '<h1>' + CW.безопасн
 место.appendChild(шапка);
 
 var режимы = ок('div', 'режимы');
-режимы.appendChild(кнРежим('digital', 'дискета', 'Цифровой', 'файлы, ключи, доступы'));
-режимы.appendChild(кнРежим('shop', 'сумка', 'Шопинг', 'вещи: одежда, техника, всё'));
+режимы.appendChild(кнРежим('digital', 'дискета', Т('Цифровой'), Т('файлы, ключи, доступы')));
+режимы.appendChild(кнРежим('shop', 'сумка', Т('Шопинг'), Т('вещи: одежда, техника, всё')));
 место.appendChild(режимы);
 
 var катряд = ок('div', 'катряд');   место.appendChild(катряд);
@@ -603,12 +603,12 @@ function вспомнитьРежим() {
 
 function нарисоватьВерх() {
   var вещи = С.режим === 'shop';
-  поле.placeholder = вещи ? 'Поиск по названию, бренду, описанию'
-                          : 'Поиск по названию, описанию, тегам';
+  поле.placeholder = вещи ? Т('Поиск по названию, бренду, описанию')
+                          : Т('Поиск по названию, описанию, тегам');
 
   /* разделы */
   катряд.innerHTML = '';
-  катряд.appendChild(кнКата('', 'Все', null));
+  катряд.appendChild(кнКата('', Т('Все'), null));
   (С.коты[С.режим] || []).forEach(function (к) {
     катряд.appendChild(кнКата(к.id, к.name, к));
   });
@@ -620,7 +620,7 @@ function нарисоватьВерх() {
   var субы = (текущий && текущий.subs) || [];
   подряд.style.display = субы.length ? 'flex' : 'none';
   if (субы.length) {
-    подряд.appendChild(кнПода('', 'Любой'));
+    подряд.appendChild(кнПода('', Т('Любой')));
     субы.forEach(function (с) { подряд.appendChild(кнПода(с, с)); });
   }
 
@@ -717,8 +717,8 @@ function загрузить() {
       if (мой !== С.шаг) return;
       списком.innerHTML = '';
       var б = ок('div', 'беда');
-      б.textContent = е.сеть ? 'Нет связи с сервером'
-                             : (е.message || 'Маркетплейс не ответил');
+      б.textContent = е.сеть ? Т('Нет связи с сервером')
+                             : (е.message || Т('Маркетплейс не ответил'));
       списком.appendChild(б);
     });
 }
@@ -778,16 +778,16 @@ function пустое() {
     слова = '' + CW.безопасно(Т('Ты пока ничего не выложил.')) + '<br>' + CW.безопасно(Т('Кнопка «Добавить товар» наверху.')) + '';
   } else if (С.вид === 'bought') {
     знак = 'тележка';
-    слова = 'Ты пока ничего здесь не покупал.';
+    слова = Т('Ты пока ничего здесь не покупал.');
   } else if (С.ищем) {
     знак = 'лупа';
-    слова = 'По запросу «' + CW.безопасно(С.ищем) + '» ничего не нашлось.';
+    слова = CW.безопасно(Т.с('По запросу «{что}» ничего не нашлось.', { что: С.ищем }));
   } else if (вещи) {
-    слова = 'Здесь пока пусто. Будь первым, нажми «Добавить товар».';
+    слова = Т('Здесь пока пусто. Будь первым, нажми «Добавить товар».');
   } else {
     знак = 'дискета';
-    слова = '' + CW.безопасно(Т('В этой категории пока пусто.')) + '<br>'
-          + 'Выложи первым: витрина общая, товар увидят из всех кубов.';
+    слова = CW.безопасно(Т('В этой категории пока пусто.')) + '<br>'
+          + CW.безопасно(Т('Выложи первым: витрина общая, товар увидят из всех кубов.'));
   }
 
   var у = ок('div', 'пусто-рынка');
@@ -814,7 +814,7 @@ function карта(т) {
       '<span class="пик">' + пик + метки + значокФигуры(т) + '</span>'
     + '<span class="низ">'
     +   (т.brand ? '<span class="бренд">' + CW.безопасно(т.brand) + '</span>' : '')
-    +   '<span class="имя">' + CW.безопасно(т.title || 'Без названия') + '</span>'
+    +   '<span class="имя">' + CW.безопасно(т.title || Т('Без названия')) + '</span>'
     +   '<span class="кто">' + CW.безопасно(т.seller || '') + '</span>'
     +   '<span class="подвал">' + ценник(т) + мелочь(т) + '</span>'
     + '</span>';
@@ -939,14 +939,14 @@ function значокРаздела(кот, размер) {
 
 function разделПо(ид) {
   var с = (С.коты[С.режим] || []).filter(function (к) { return к.id === ид; })[0];
-  return с || { id: ид || 'other', name: ид || 'Разное', icon: '📦' };
+  return с || { id: ид || 'other', name: ид || Т('Разное'), icon: '📦' };
 }
 
 function ценник(т) {
   var цена = Number(т.price || 0);
   if (цена <= 0) {
     return '<span class="цена даром">'
-         + (С.режим === 'shop' ? 'Цены нет' : 'Бесплатно') + '</span>';
+         + CW.безопасно(С.режим === 'shop' ? Т('Цены нет') : Т('Бесплатно')) + '</span>';
   }
   return '<span class="цена">' + деньги(цена) + ' '
        + CW.безопасно(т.currency || 'CUBE') + '</span>';
@@ -956,7 +956,7 @@ function мелочь(т) {
   var части = [];
   if (С.режим === 'shop') {
     if (т.condition) части.push(имяСостояния(т.condition));
-    if (т.qty > 1) части.push(т.qty + ' шт');
+    if (т.qty > 1) части.push(Т.с('{н} шт', { н: т.qty }));
   } else {
     if (т.files_count) части.push(т.files_count + ' ' + склонение(т.files_count, 'файл', 'файла', 'файлов'));
     if (т.sales) части.push(т.sales + ' ' + склонение(т.sales, 'продажа', 'продажи', 'продаж'));
@@ -966,7 +966,7 @@ function мелочь(т) {
 }
 
 function состояниеТовара(с) {
-  return { hidden: 'скрыт', removed: 'снят с витрины', sold: 'разобрали' }[с] || с;
+  return { hidden: Т('скрыт'), removed: Т('снят с витрины'), sold: Т('разобрали') }[с] || с;
 }
 
 function имяСостояния(ид) {
@@ -976,7 +976,7 @@ function имяСостояния(ид) {
 
 function деньги(ч) {
   ч = Number(ч) || 0;
-  return (Math.round(ч * 100) / 100).toLocaleString('ru-RU');
+  return CW.число(Math.round(ч * 100) / 100);
 }
 
 function склонение(н, один, два, много) {
@@ -1001,7 +1001,7 @@ function открыть(ид) {
       if (мой !== С.шаг) return;
       списком.innerHTML = '';
       var б = ок('div', 'беда');
-      б.textContent = е.message || 'Товар не открылся';
+      б.textContent = е.message || Т('Товар не открылся');
       списком.appendChild(б);
       списком.appendChild(кнопкаНазад());
     });
@@ -1010,7 +1010,7 @@ function открыть(ид) {
 function кнопкаНазад() {
   var строка = ок('div', 'назад-строка');
   var б = ок('button', 'кн-назад');
-  б.innerHTML = CW.значок('стрелка') + 'К витрине';
+  б.innerHTML = CW.значок('стрелка') + CW.безопасно(Т('К витрине'));
   б.onclick = function () { С.открыт = null; нарисоватьСписок(); };
   строка.appendChild(б);
   return строка;
@@ -1170,14 +1170,14 @@ function действия(т) {
   var вещь = (С.режим === 'shop');
 
   if (т.mine) {
-    ряд.appendChild(кнопка(т.status === 'active' ? 'Снять с витрины' : 'Вернуть в продажу',
+    ряд.appendChild(кнопка(т.status === 'active' ? Т('Снять с витрины') : Т('Вернуть в продажу'),
       '', function () { переключитьПродажу(т); }));
     if (!вещь) {
-      ряд.appendChild(кнопка('Приложить файл', '', function () { приложитьФайл(т); }));
+      ряд.appendChild(кнопка(Т('Приложить файл'), '', function () { приложитьФайл(т); }));
     } else {
-      ряд.appendChild(кнопка('Добавить снимок', '', function () { приложитьСнимок(т); }));
+      ряд.appendChild(кнопка(Т('Добавить снимок'), '', function () { приложитьСнимок(т); }));
     }
-    ряд.appendChild(кнопка('Удалить', 'опасная', function () { удалить(т); }));
+    ряд.appendChild(кнопка(Т('Удалить'), 'опасная', function () { удалить(т); }));
     return ряд;
   }
 

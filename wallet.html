@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Кошелёк · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-435">
-<link rel="stylesheet" href="shared/style.css?v=20261123-435">
-<link rel="stylesheet" href="shared/window.css?v=20261123-435">
-<link rel="stylesheet" href="shared/account.css?v=20261123-435">
-<script src="shared/theme.js?v=20261123-435"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-435">
+<link rel="icon" href="icons/favicon.svg?v=20261123-436">
+<link rel="stylesheet" href="shared/style.css?v=20261123-436">
+<link rel="stylesheet" href="shared/window.css?v=20261123-436">
+<link rel="stylesheet" href="shared/account.css?v=20261123-436">
+<script src="shared/theme.js?v=20261123-436"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-436">
 <!--
   КОШЕЛЁК.
 
@@ -156,20 +156,20 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-435"></script>
-<script src="shared/ui.js?v=20261123-435"></script>
-<script src="shared/смайлы.js?v=20261123-435"></script>
-<script src="shared/лица.js?v=20261123-435"></script>
-<script src="shared/эфир.js?v=20261123-435"></script>
-<script src="shared/icons.js?v=20261123-435"></script>
-<script src="shared/window.js?v=20261123-435"></script>
-<script src="shared/без-копий.js?v=20261123-435"></script>
-<script src="shared/time.js?v=20261123-435"></script>
-<script src="shared/auth.js?v=20261123-435"></script>
-<script src="shared/lang.js?v=20261123-435"></script>
-<script src="shared/account.js?v=20261123-435"></script>
-<script src="shared/shell.js?v=20261123-435"></script>
-<script src="shared/wallets.js?v=20261123-435"></script>
+<script src="shared/api.js?v=20261123-436"></script>
+<script src="shared/ui.js?v=20261123-436"></script>
+<script src="shared/смайлы.js?v=20261123-436"></script>
+<script src="shared/лица.js?v=20261123-436"></script>
+<script src="shared/эфир.js?v=20261123-436"></script>
+<script src="shared/icons.js?v=20261123-436"></script>
+<script src="shared/window.js?v=20261123-436"></script>
+<script src="shared/без-копий.js?v=20261123-436"></script>
+<script src="shared/time.js?v=20261123-436"></script>
+<script src="shared/auth.js?v=20261123-436"></script>
+<script src="shared/lang.js?v=20261123-436"></script>
+<script src="shared/account.js?v=20261123-436"></script>
+<script src="shared/shell.js?v=20261123-436"></script>
+<script src="shared/wallets.js?v=20261123-436"></script>
 <script>
 'use strict';
 
@@ -229,7 +229,7 @@ function кусок(класс, внутри) { return CW.кусок(класс,
 
 function деньги(ч) {
   var з = Number(ч || 0);
-  return Number.isInteger(з) ? з.toLocaleString('ru') : з.toFixed(2);
+  return Number.isInteger(з) ? CW.число(з) : CW.число(з, 2);
 }
 
 /* ── баланс ── */
@@ -272,8 +272,8 @@ function кускомГрафик() {
        стрелки подряд с разным смыслом читались плохо. В боевой здесь
        тоже значок графика. */
     +   '<span class="знак">' + CW.значок('столбики') + '</span>'
-    +   'Баланс · 30 дней'
-    +   '<span class="тихо">' + (менялось ? '' : 'движений не было') + '</span>'
+    +   CW.безопасно(Т('Баланс · 30 дней'))
+    +   '<span class="тихо">' + (менялось ? '' : CW.безопасно(Т('движений не было'))) + '</span>'
     + '</div>'
     + '<canvas class="полотно"></canvas>'
     + '<div class="края">'
@@ -501,7 +501,7 @@ function обновитьСчёт() {
 /* ── история ── */
 function кускомИстория() {
   var где = document.createElement('div');
-  где.appendChild(кусок('раздел', 'История движений'));
+  где.appendChild(кусок('раздел', CW.безопасно(Т('История движений'))));
 
   var список = кусок('история');
   if (!С.движения.length) {

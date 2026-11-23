@@ -57,7 +57,8 @@
 
     var стрим = документ.createElement('button');
     стрим.className = 'кн-стрим';
-    стрим.innerHTML = '<span class="точка"></span>' + CW.значок('камера') + 'Стримить';
+    стрим.innerHTML = '<span class="точка"></span>' + CW.значок('камера')
+                    + CW.безопасно(Т('Стримить'));
     стрим.onclick = function () {
       CW.открыть('create-live');
     };

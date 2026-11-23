@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Сигналы · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-435">
-<link rel="stylesheet" href="shared/style.css?v=20261123-435">
-<link rel="stylesheet" href="shared/window.css?v=20261123-435">
-<link rel="stylesheet" href="shared/account.css?v=20261123-435">
-<script src="shared/theme.js?v=20261123-435"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-435">
+<link rel="icon" href="icons/favicon.svg?v=20261123-436">
+<link rel="stylesheet" href="shared/style.css?v=20261123-436">
+<link rel="stylesheet" href="shared/window.css?v=20261123-436">
+<link rel="stylesheet" href="shared/account.css?v=20261123-436">
+<script src="shared/theme.js?v=20261123-436"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-436">
 <!--
   СИГНАЛЫ КУБА.
 
@@ -277,19 +277,19 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-435"></script>
-<script src="shared/ui.js?v=20261123-435"></script>
-<script src="shared/смайлы.js?v=20261123-435"></script>
-<script src="shared/лица.js?v=20261123-435"></script>
-<script src="shared/эфир.js?v=20261123-435"></script>
-<script src="shared/icons.js?v=20261123-435"></script>
-<script src="shared/window.js?v=20261123-435"></script>
-<script src="shared/без-копий.js?v=20261123-435"></script>
-<script src="shared/time.js?v=20261123-435"></script>
-<script src="shared/auth.js?v=20261123-435"></script>
-<script src="shared/lang.js?v=20261123-435"></script>
-<script src="shared/account.js?v=20261123-435"></script>
-<script src="shared/shell.js?v=20261123-435"></script>
+<script src="shared/api.js?v=20261123-436"></script>
+<script src="shared/ui.js?v=20261123-436"></script>
+<script src="shared/смайлы.js?v=20261123-436"></script>
+<script src="shared/лица.js?v=20261123-436"></script>
+<script src="shared/эфир.js?v=20261123-436"></script>
+<script src="shared/icons.js?v=20261123-436"></script>
+<script src="shared/window.js?v=20261123-436"></script>
+<script src="shared/без-копий.js?v=20261123-436"></script>
+<script src="shared/time.js?v=20261123-436"></script>
+<script src="shared/auth.js?v=20261123-436"></script>
+<script src="shared/lang.js?v=20261123-436"></script>
+<script src="shared/account.js?v=20261123-436"></script>
+<script src="shared/shell.js?v=20261123-436"></script>
 <script>
 'use strict';
 
@@ -499,7 +499,7 @@ function карточка(с) {
      опытный») у страницы больше нет: оно называло человека опытным
      тогда, когда сервер считал его новичком, и в окне автора стояло
      другое слово. */
-  var УРОВНИ = { novice: 'новичок', author: 'автор', global: 'в общей витрине' };
+  var УРОВНИ = { novice: Т('новичок'), author: Т('автор'), global: Т('в общей витрине') };
 
   var чипы = '';
   if (с.mine) чипы += '<span class="чип ты">' + CW.безопасно(Т('ты')) + '</span>';
@@ -513,7 +513,7 @@ function карточка(с) {
      равной ставке, худшая серия, просадка и его сигналы) открывается
      нажатием, в окне автора: в карточку это не влезет, а врать
      сокращением нельзя. Полная фраза лежит в подсказке. */
-  var опыт = 'закр. ' + закрытых;
+  var опыт = Т.с('закр. {н}', { н: закрытых });
 
   var кто = '<span class="кто" title="' + CW.безопасно(опытомСловами(ст)) + '">'
           +   '<span class="опыт">' + CW.безопасно(опыт) + '</span>'
@@ -532,7 +532,7 @@ function карточка(с) {
       +   CW.значок(длинный ? 'вверх' : 'вниз') + (длинный ? 'LONG' : 'SHORT') + '</span>'
       + '<span class="пара">' + CW.безопасно(с.pair || '-') + '</span>'
       + '<span class="бирка-сост ' + (открыт ? 'открыт' : 'закрыт') + '">'
-      +   (открыт ? 'открыт' : 'закрыт') + '</span>'
+      +   CW.безопасно(открыт ? Т('открыт') : Т('закрыт')) + '</span>'
       + кто
       + '<span class="процент">'
       +   '<div class="знач ' + видПнл + '">' + (текстПнл == null ? '-' : текстПнл) + '</div>'
@@ -604,21 +604,23 @@ function карточка(с) {
 function опытомСловами(ст) {
   ст = ст || {};
   var закрытых = Number(ст.closed || 0);
-  if (!закрытых) return 'закрытых сигналов пока нет: судить не по чему';
+  if (!закрытых) return Т('закрытых сигналов пока нет: судить не по чему');
   if (ст.win_rate == null) {
     var надо = Number(ст.need_closed || 0);
-    return закрытых + ' закрытых · процент покажем после '
-         + (закрытых + надо) + ' (осталось ' + надо + ')';
+    return Т.с('{закрытых} закрытых · процент покажем после {всего} (осталось {надо})',
+               { закрытых: закрытых, всего: закрытых + надо, надо: надо });
   }
-  return закрытых + ' закрытых · ' + ст.win_rate + '% в плюс'
-       + ' · при равной ставке ' + (процент(ст.sum_pct) || '-')
-       + ' · худшая серия убытков ' + Number(ст.worst_streak || 0);
+  return Т.с('{закрытых} закрытых · {процент}% в плюс · при равной ставке {сумма}'
+           + ' · худшая серия убытков {серия}',
+             { закрытых: закрытых, процент: ст.win_rate,
+               сумма: процент(ст.sum_pct) || '-',
+               серия: Number(ст.worst_streak || 0) });
 }
 
 function когдаОткроется(с) {
-  if (!с) return 'позже';
+  if (!с) return Т('позже');
   var мс = CW.миг(с) - Date.now();
-  return мс <= 0 ? 'вот-вот' : 'через ' + CW.остаток(с);
+  return мс <= 0 ? Т('вот-вот') : Т.с('через {сколько}', { сколько: CW.остаток(с) });
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -667,9 +669,9 @@ document.getElementById('кн-новый').onclick = function () {
    место они занимают всегда. Текст тот же, что в боевой программе, —
    слово в слово, его не трогаем. */
 CW.окошко(document.getElementById('кн-правила'),
-  'Сигналы: мнение авторов, а не инвестиционная рекомендация. '
-+ 'Цену входа и исход фиксирует сервер по котировкам: изменить сигнал '
-+ 'после публикации нельзя. Решение и деньги, твои.');
+  Т('Сигналы: мнение авторов, а не инвестиционная рекомендация. '
+  + 'Цену входа и исход фиксирует сервер по котировкам: изменить сигнал '
+  + 'после публикации нельзя. Решение и деньги, твои.'));
 
 /* Лупа раскрывает и сворачивает строку. При сворачивании слово стирается:
    иначе спрятанная строка продолжала бы молча отбирать список, и человек

@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Уведомления · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-435">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-435">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-435">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-435">
-<script src="../shared/theme.js?v=20261123-435"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-435">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-436">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-436">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-436">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-436">
+<script src="../shared/theme.js?v=20261123-436"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-436">
 <!--
   УВЕДОМЛЕНИЯ — окно поверх программы. То же, что в меню под
   колокольчиком, но целым списком и с объяснением внизу.
@@ -80,20 +80,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-435"></script>
-<script src="../shared/ui.js?v=20261123-435"></script>
-<script src="../shared/смайлы.js?v=20261123-435"></script>
-<script src="../shared/лица.js?v=20261123-435"></script>
-<script src="../shared/эфир.js?v=20261123-435"></script>
-<script src="../shared/icons.js?v=20261123-435"></script>
-<script src="../shared/window.js?v=20261123-435"></script>
-<script src="../shared/без-копий.js?v=20261123-435"></script>
-<script src="../shared/time.js?v=20261123-435"></script>
-<script src="../shared/auth.js?v=20261123-435"></script>
-<script src="../shared/lang.js?v=20261123-435"></script>
-<script src="../shared/account.js?v=20261123-435"></script>
-<script src="../shared/вести.js?v=20261123-435"></script>
-<script src="../shared/shell.js?v=20261123-435"></script>
+<script src="../shared/api.js?v=20261123-436"></script>
+<script src="../shared/ui.js?v=20261123-436"></script>
+<script src="../shared/смайлы.js?v=20261123-436"></script>
+<script src="../shared/лица.js?v=20261123-436"></script>
+<script src="../shared/эфир.js?v=20261123-436"></script>
+<script src="../shared/icons.js?v=20261123-436"></script>
+<script src="../shared/window.js?v=20261123-436"></script>
+<script src="../shared/без-копий.js?v=20261123-436"></script>
+<script src="../shared/time.js?v=20261123-436"></script>
+<script src="../shared/auth.js?v=20261123-436"></script>
+<script src="../shared/lang.js?v=20261123-436"></script>
+<script src="../shared/account.js?v=20261123-436"></script>
+<script src="../shared/вести.js?v=20261123-436"></script>
+<script src="../shared/shell.js?v=20261123-436"></script>
 <script>
 'use strict';
 
@@ -129,7 +129,7 @@ var СОБЫТИЯ = [];
    СОБРАТЬ
    ═══════════════════════════════════════════════════════════════════════ */
 function собрать() {
-  ОКНО.имя('Уведомления', 'спрашиваю…');
+  ОКНО.имя(Т('Уведомления'), Т('спрашиваю…'));
   ОКНО.тело.innerHTML = '<div class="пусто-строка">' + CW.безопасно(Т('Загрузка…')) + '</div>';
   CW.вести.собрать().then(function (список) {
     СОБЫТИЯ = список;
@@ -142,8 +142,11 @@ function показать() {
   т.innerHTML = '';
 
   var новых = CW.вести.новых(СОБЫТИЯ);
-  ОКНО.имя('Уведомления', новых ? (новых + (новых === 1 ? ' новое' : ' новых'))
-                              : 'всё прочитано');
+  /* «16 новых», «1 новое». Слово при числе берёт Т.мн: по-русски форм
+     три, по-английски одна, и решает это словарь, а не этот код. */
+  ОКНО.имя(Т('Уведомления'),
+    новых ? (новых + ' ' + Т.мн(новых, 'новое', 'новых', 'новых'))
+          : Т('всё прочитано'));
   ОКНО.кнопки['прочитано'].disabled = !новых;
 
   if (!СОБЫТИЯ.length) {
@@ -195,14 +198,23 @@ function строка(с) {
 
 function хвост() {
   var х = ок('div', 'ув-хвост');
+
+  /* Фраза целиком одним ключом, а жирные слова — вставками. Прежде она
+     была склеена из шести кусков, и союз «и» между ними оставался
+     русским на всех языках: переводить склейку по кускам нельзя, в
+     другом языке и порядок слов другой, и союза может не быть вовсе. */
+  function ж(фраза) { return '<b>' + CW.безопасно(Т(фраза)) + '</b>'; }
+
   х.innerHTML =
-      '' + CW.безопасно(Т('Здесь системные события:')) + ' <b>' + CW.безопасно(Т('входы в кубы')) + '</b>, <b>' + CW.безопасно(Т('движения CUBE')) + '</b> '
-    + '' + CW.безопасно(Т('(награды, переводы),')) + ' <b>' + CW.безопасно(Т('выплаты')) + '</b>, <b>' + CW.безопасно(Т('новые подписчики')) + '</b> и '
-    + '<b>' + CW.безопасно(Т('пределы ключа')) + '</b>' + CW.безопасно(Т(', которые вот-вот кончатся.')) + '<br><br>'
-    + 'Переписки здесь нет намеренно: кто что написал, видно в чатах. '
-    + 'Лайков, комментариев и ответов пока нет: сервер их не записывает. '
-    + 'Как начнёт: они появятся здесь сами, отдельно делать ничего '
-    + 'не придётся.';
+      Т.с('Здесь системные события: {входы}, {движения} (награды, переводы), '
+        + '{выплаты}, {подписчики} и {пределы}, которые вот-вот кончатся.',
+          { входы: ж('входы в кубы'), движения: ж('движения CUBE'),
+            выплаты: ж('выплаты'), подписчики: ж('новые подписчики'),
+            пределы: ж('пределы ключа') })
+    + '<br><br>'
+    + CW.безопасно(Т('Переписки здесь нет намеренно: кто что написал, видно в чатах. '
+      + 'Лайков, комментариев и ответов пока нет: сервер их не записывает. '
+      + 'Как начнёт: они появятся здесь сами, отдельно делать ничего не придётся.'));
   ОКНО.тело.appendChild(х);
 }
 

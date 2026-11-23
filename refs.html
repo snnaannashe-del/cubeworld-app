@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Рефералы · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-435">
-<link rel="stylesheet" href="shared/style.css?v=20261123-435">
-<link rel="stylesheet" href="shared/window.css?v=20261123-435">
-<link rel="stylesheet" href="shared/account.css?v=20261123-435">
-<script src="shared/theme.js?v=20261123-435"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-435">
+<link rel="icon" href="icons/favicon.svg?v=20261123-436">
+<link rel="stylesheet" href="shared/style.css?v=20261123-436">
+<link rel="stylesheet" href="shared/window.css?v=20261123-436">
+<link rel="stylesheet" href="shared/account.css?v=20261123-436">
+<script src="shared/theme.js?v=20261123-436"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-436">
 <!--
   ПРИГЛАШЕНИЯ.
 
@@ -133,19 +133,19 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-435"></script>
-<script src="shared/ui.js?v=20261123-435"></script>
-<script src="shared/смайлы.js?v=20261123-435"></script>
-<script src="shared/лица.js?v=20261123-435"></script>
-<script src="shared/эфир.js?v=20261123-435"></script>
-<script src="shared/icons.js?v=20261123-435"></script>
-<script src="shared/window.js?v=20261123-435"></script>
-<script src="shared/без-копий.js?v=20261123-435"></script>
-<script src="shared/time.js?v=20261123-435"></script>
-<script src="shared/auth.js?v=20261123-435"></script>
-<script src="shared/lang.js?v=20261123-435"></script>
-<script src="shared/account.js?v=20261123-435"></script>
-<script src="shared/shell.js?v=20261123-435"></script>
+<script src="shared/api.js?v=20261123-436"></script>
+<script src="shared/ui.js?v=20261123-436"></script>
+<script src="shared/смайлы.js?v=20261123-436"></script>
+<script src="shared/лица.js?v=20261123-436"></script>
+<script src="shared/эфир.js?v=20261123-436"></script>
+<script src="shared/icons.js?v=20261123-436"></script>
+<script src="shared/window.js?v=20261123-436"></script>
+<script src="shared/без-копий.js?v=20261123-436"></script>
+<script src="shared/time.js?v=20261123-436"></script>
+<script src="shared/auth.js?v=20261123-436"></script>
+<script src="shared/lang.js?v=20261123-436"></script>
+<script src="shared/account.js?v=20261123-436"></script>
+<script src="shared/shell.js?v=20261123-436"></script>
 <script>
 'use strict';
 
@@ -194,8 +194,8 @@ function показать(д) {
 
   /* ── сколько платят ── */
   тело.appendChild(кусок('про-награду',
-      '<b>' + cube(д.bonus_inviter) + '</b> ' + CW.безопасно(Т('CUBE приходят когда')) + ' '
-    + 'приглашённый оплатит подписку.'
+      '<b>' + cube(д.bonus_inviter) + '</b> '
+    + CW.безопасно(Т('CUBE приходят, когда приглашённый оплатит подписку.'))
     + (д.bonus_friend ? ' ' + CW.безопасно(Т('Другу:')) + ' <b>' + cube(д.bonus_friend) + '</b> CUBE.' : '')));
 
   /* ── ссылка ── */
@@ -220,13 +220,13 @@ function показать(д) {
   ].forEach(function (н) {
     var з = Number(н.знач || 0);
     числа.appendChild(кусок('число ' + н.класс,
-        '<div class="значение">' + (н.дробь ? cube(з) : з.toLocaleString('ru')) + '</div>'
+        '<div class="значение">' + (н.дробь ? cube(з) : CW.число(з)) + '</div>'
       + '<div class="подпись">' + н.подпись + '</div>'));
   });
   тело.appendChild(числа);
 
   /* ── кто пришёл ── */
-  тело.appendChild(кусок('раздел', 'Кто пришёл по ссылке'));
+  тело.appendChild(кусок('раздел', CW.безопасно(Т('Кто пришёл по ссылке'))));
 
   var друзья = д.friends || [];
   var список = кусок('друзья');
@@ -235,9 +235,9 @@ function показать(д) {
       + '' + CW.безопасно(Т('Пока никто не переходил по твоей ссылке.')) + '</div>';
   } else {
     друзья.forEach(function (ч) {
-      var метка = ч.blocked ? ['отклонён', 'не засчитано']
-                : ч.active  ? ['засчитан', 'засчитано']
-                            : ['ждёт', 'ждёт оплаты'];
+      var метка = ч.blocked ? ['отклонён', Т('не засчитано')]
+                : ч.active  ? ['засчитан', Т('засчитано')]
+                            : ['ждёт', Т('ждёт оплаты')];
       список.appendChild(кусок('друг',
           '<span class="лицо cw-кружок">' + CW.значок('человек') + '</span>'
         + '<span>'
@@ -253,14 +253,14 @@ function показать(д) {
   /* ── как это работает ── */
   тело.appendChild(кусок('как-работает',
       '<span class="знак">' + CW.значок('лампа') + '</span>'
-    + '<span><b>' + CW.безопасно(Т('Как это работает:')) + '</b> ' + CW.безопасно(Т('ссылка у тебя одна и навсегда.')) + ' '
-    + 'Приглашение засчитывается только тому, кто зашёл впервые и оплатил '
-    + '' + CW.безопасно(Т('тариф.')) + '</span>'));
+    + '<span><b>' + CW.безопасно(Т('Как это работает:')) + '</b> '
+    + CW.безопасно(Т('ссылка у тебя одна и навсегда.')) + ' '
+    + CW.безопасно(Т('Приглашение засчитывается только тому, кто зашёл впервые и оплатил тариф.'))
+    + '</span>'));
 
   тело.appendChild(кусок('мелким',
-      'Ключи выдаются анонимно. Приглашения с того же устройства не '
-    + 'засчитываются. За одного человека оплата один раз, всё это видно '
-    + 'в истории CUBE.'));
+      CW.безопасно(Т('Ключи выдаются анонимно. Приглашения с того же устройства не засчитываются. '
+                    + 'За одного человека оплата один раз, всё это видно в истории CUBE.'))));
 }
 
 function скопировать() {

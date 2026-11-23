@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Мир · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-435">
+<link rel="icon" href="icons/favicon.svg?v=20261123-436">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261123-435">
-<link rel="stylesheet" href="shared/window.css?v=20261123-435">
-<link rel="stylesheet" href="shared/account.css?v=20261123-435">
-<script src="shared/theme.js?v=20261123-435"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261123-436">
+<link rel="stylesheet" href="shared/window.css?v=20261123-436">
+<link rel="stylesheet" href="shared/account.css?v=20261123-436">
+<script src="shared/theme.js?v=20261123-436"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -334,7 +334,7 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
        доли. Анна: «тут иконка сначала большая, потом нормальная, она
        не должна дёргаться». С классом в самой разметке доля
        применяется с первого же кадра, и ужиматься нечему. -->
-  <button id="лицо-кнопка" class="cw-кружок" title="Аккаунт"></button>
+  <button id="лицо-кнопка" class="cw-кружок" data-намёк="Аккаунт" title="Аккаунт"></button>
   <!-- Счётчика «N онлайн · N кубов» здесь больше нет. Он занимал место
        в полосе, а сказать мог только то, что и так видно: кубы на небе
        можно пересчитать глазами, а число людей рядом ни на что не
@@ -342,9 +342,9 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
        обходились и раньше. -->
   <div class="курсы"><div class="курсы-лента" id="курсы-лента"></div></div>
   <div class="полка">
-    <button class="круг-верх" id="кн-микрофон" title="Голосовые команды"></button>
-    <button class="круг-верх" id="кн-домой" title="Вернуть обзор"></button>
-    <button class="пилюля игры" id="кн-игры"><span class="слово">Игры</span></button>
+    <button class="круг-верх" id="кн-микрофон" data-намёк="Голосовые команды" title="Голосовые команды"></button>
+    <button class="круг-верх" id="кн-домой" data-намёк="Вернуть обзор" title="Вернуть обзор"></button>
+    <button class="пилюля игры" id="кн-игры"><span class="слово" data-слово="Игры">Игры</span></button>
     <button class="пилюля кубы" id="кн-баланс"><span id="баланс">0</span> <span class="слово">CUBE</span></button>
   </div>
 </div>
@@ -361,30 +361,30 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 </div>
 
 <div class="столбик">
-  <button class="мои"  id="кн-мои"  title="Мои кубы"></button>
-  <button class="ключ" id="кн-ключ" title="Войти по ключу куба"></button>
-  <button class="рука" id="кн-рука" title="Игры с кубами"></button>
+  <button class="мои"  id="кн-мои"  data-намёк="Мои кубы" title="Мои кубы"></button>
+  <button class="ключ" id="кн-ключ" data-намёк="Войти по ключу куба" title="Войти по ключу куба"></button>
+  <button class="рука" id="кн-рука" data-намёк="Игры с кубами" title="Игры с кубами"></button>
 </div>
 
-<div class="состояние" id="состояние">Собираю мир…</div>
+<div class="состояние" id="состояние" data-слово="Собираю мир…">Собираю мир…</div>
 
 </div>
 
-<script src="shared/api.js?v=20261123-435"></script>
-<script src="shared/ui.js?v=20261123-435"></script>
-<script src="shared/смайлы.js?v=20261123-435"></script>
-<script src="shared/лица.js?v=20261123-435"></script>
-<script src="shared/эфир.js?v=20261123-435"></script>
-<script src="shared/icons.js?v=20261123-435"></script>
-<script src="shared/window.js?v=20261123-435"></script>
-<script src="shared/без-копий.js?v=20261123-435"></script>
-<script src="shared/time.js?v=20261123-435"></script>
-<script src="shared/auth.js?v=20261123-435"></script>
-<script src="shared/lang.js?v=20261123-435"></script>
-<script src="shared/account.js?v=20261123-435"></script>
-<script src="shared/формы.js?v=20261123-435"></script>
-<script src="shared/игра.js?v=20261123-435"></script>
-<script src="shared/персонаж.js?v=20261123-435"></script>
+<script src="shared/api.js?v=20261123-436"></script>
+<script src="shared/ui.js?v=20261123-436"></script>
+<script src="shared/смайлы.js?v=20261123-436"></script>
+<script src="shared/лица.js?v=20261123-436"></script>
+<script src="shared/эфир.js?v=20261123-436"></script>
+<script src="shared/icons.js?v=20261123-436"></script>
+<script src="shared/window.js?v=20261123-436"></script>
+<script src="shared/без-копий.js?v=20261123-436"></script>
+<script src="shared/time.js?v=20261123-436"></script>
+<script src="shared/auth.js?v=20261123-436"></script>
+<script src="shared/lang.js?v=20261123-436"></script>
+<script src="shared/account.js?v=20261123-436"></script>
+<script src="shared/формы.js?v=20261123-436"></script>
+<script src="shared/игра.js?v=20261123-436"></script>
+<script src="shared/персонаж.js?v=20261123-436"></script>
 <script>
 'use strict';
 
@@ -394,6 +394,13 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 if (CW.пускать()) запустить();
 
 function запустить() {
+
+/* Мир не зовёт оболочку: у него своя полоса сверху и свой столбик
+   справа. Поэтому слова, вписанные прямо в разметку (data-слово,
+   data-намёк), переводим здесь сами, как только приехал словарь. */
+(CW.языкГотов || Promise.resolve()).then(function () {
+  if (CW.разметка) CW.разметка(document);
+}, function () {});
 
 var $ = function (и) { return document.getElementById(и); };
 
@@ -1017,12 +1024,12 @@ function показатьПодсказку() {
             : '<span' + (CW.тонЗнака
                          ? ' style="filter:' + CW.тонЗнака(цвЗн) + '"' : '')
               + '>' + CW.безопасно(смайл) + '</span>')
-    + '<span>' + CW.безопасно(куб.name || ('Куб ' + куб.id)) + '</span>';
+    + '<span>' + CW.безопасно(куб.name || Т.с('Куб {н}', { н: куб.id })) + '</span>';
   $('п-имя').style.color = цв;
-  $('п-опис').textContent = куб.description || 'Без описания';
+  $('п-опис').textContent = куб.description || Т('Без описания');
   $('п-часы').textContent = часыЖизни(куб.life);
   var вид = $('п-вид');
-  вид.textContent = открыт ? 'ОТКРЫТЫЙ' : 'ПО КЛЮЧУ';
+  вид.textContent = открыт ? Т('ОТКРЫТЫЙ') : Т('ПО КЛЮЧУ');
   вид.className = 'вид ' + (открыт ? 'открытый' : 'закрытый');
 
   /* Подсказка встаёт ВПЛОТНУЮ к кубу, с его правого бока, и держится
@@ -1110,7 +1117,7 @@ function пересобрать() {
 
   состояние(М.тела.length
     ? ''
-    : (М.кубы.length ? 'Ни один куб не отмечен в Юниверсе' : 'Кубов пока нет'),
+    : (М.кубы.length ? Т('Ни один куб не отмечен в Юниверсе') : Т('Кубов пока нет')),
     М.тела.length > 0);
 }
 
@@ -1626,7 +1633,7 @@ function собрать() {
     М.кубы = итог;
     пересобрать();
   }).catch(function (е) {
-    состояние(е && е.сеть ? 'Нет связи с сервером' : 'Не вышло собрать мир');
+    состояние(е && е.сеть ? Т('Нет связи с сервером') : Т('Не вышло собрать мир'));
   });
 }
 

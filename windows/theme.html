@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Оформление · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-435">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-435">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-435">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-435">
-<script src="../shared/theme.js?v=20261123-435"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-435">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-436">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-436">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-436">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-436">
+<script src="../shared/theme.js?v=20261123-436"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-436">
 <!--
   ОФОРМЛЕНИЕ — окно поверх программы.
   /home/claude/новое/cubeworld-app/windows/theme.html
@@ -383,21 +383,21 @@ html[data-цена-цвет="свой"] .оф-курс .цена{ color:var(--ц
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-435"></script>
-<script src="../shared/ui.js?v=20261123-435"></script>
-<script src="../shared/смайлы.js?v=20261123-435"></script>
-<script src="../shared/лица.js?v=20261123-435"></script>
-<script src="../shared/эфир.js?v=20261123-435"></script>
-<script src="../shared/icons.js?v=20261123-435"></script>
-<script src="../shared/window.js?v=20261123-435"></script>
-<script src="../shared/без-копий.js?v=20261123-435"></script>
-<script src="../shared/time.js?v=20261123-435"></script>
-<script src="../shared/auth.js?v=20261123-435"></script>
-<script src="../shared/lang.js?v=20261123-435"></script>
-<script src="../shared/account.js?v=20261123-435"></script>
-<script src="../shared/shell.js?v=20261123-435"></script>
-<script src="../shared/words.js?v=20261123-435"></script>
-<script src="../shared/голос.js?v=20261123-435"></script>
+<script src="../shared/api.js?v=20261123-436"></script>
+<script src="../shared/ui.js?v=20261123-436"></script>
+<script src="../shared/смайлы.js?v=20261123-436"></script>
+<script src="../shared/лица.js?v=20261123-436"></script>
+<script src="../shared/эфир.js?v=20261123-436"></script>
+<script src="../shared/icons.js?v=20261123-436"></script>
+<script src="../shared/window.js?v=20261123-436"></script>
+<script src="../shared/без-копий.js?v=20261123-436"></script>
+<script src="../shared/time.js?v=20261123-436"></script>
+<script src="../shared/auth.js?v=20261123-436"></script>
+<script src="../shared/lang.js?v=20261123-436"></script>
+<script src="../shared/account.js?v=20261123-436"></script>
+<script src="../shared/shell.js?v=20261123-436"></script>
+<script src="../shared/words.js?v=20261123-436"></script>
+<script src="../shared/голос.js?v=20261123-436"></script>
 <script>
 'use strict';
 
@@ -795,7 +795,8 @@ function окна(с) {
     var ряд = ок('div', 'оф-зона' + (открыта ? ' открыта' : ''));
     ряд.innerHTML =
         '<button type="button" class="мазок' + (есть ? ' есть' : '') + '" title="' + CW.безопасно(Т('Цвет')) + '"></button>'
-      + '<span class="тк"><b>' + з.имя + '</b><span>' + з.что + '</span></span>'
+      + '<span class="тк"><b>' + CW.безопасно(Т(з.имя)) + '</b><span>'
+      +   CW.безопасно(Т(з.что)) + '</span></span>'
       + '<button type="button" class="снять" title="' + CW.безопасно(Т('Как есть')) + '">'
       +   CW.рисунок('M6 6 18 18M18 6 6 18', 13) + '</button>'
       + '<button type="button" class="шев" title="' + CW.безопасно(Т('Ползунки')) + '">'
@@ -992,7 +993,7 @@ function окноОбоев() {
     б.dataset.о = о.к;
     if (о.п) б.style.backgroundImage = о.п;
     б.innerHTML = (о.к ? '' : '<span class="зн">' + CW.значок('сброс', 26) + '</span>')
-                + '<i>' + о.имя + '</i>';
+                + '<i>' + CW.безопасно(Т(о.имя)) + '</i>';
     return б;
   }
 
@@ -1178,7 +1179,8 @@ function голос(с) {
 
   var вкл = ок('button', 'кнопка главная');
   вкл.innerHTML = CW.значок('микрофон', 16)
-                + '<span>' + (идёт ? 'Выключить микрофон' : 'Включить микрофон') + '</span>';
+                + '<span>' + CW.безопасно(идёт ? Т('Выключить микрофон')
+                                                 : Т('Включить микрофон')) + '</span>';
   вкл.onclick = function () {
     if (!CW.голос || !CW.голос.переключить) return;
     CW.голос.переключить();
@@ -1283,7 +1285,7 @@ function ползунок(имя, знач, мин, макс, ед, делать
   var ряд = ок('div', 'оф-ряд');
   var в = (знач === undefined || знач === null || isNaN(parseInt(знач, 10)))
         ? мин : parseInt(знач, 10);
-  ряд.innerHTML = '<span class="им">' + имя + '</span>'
+  ряд.innerHTML = '<span class="им">' + CW.безопасно(Т(имя)) + '</span>'
     + '<input type="range" min="' + мин + '" max="' + макс + '" step="' + (шаг || 1)
     + '" value="' + в + '">'
     + '<span class="чис"></span>';

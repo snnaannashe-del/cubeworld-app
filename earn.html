@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Заработать · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-435">
-<link rel="stylesheet" href="shared/style.css?v=20261123-435">
-<link rel="stylesheet" href="shared/window.css?v=20261123-435">
-<link rel="stylesheet" href="shared/account.css?v=20261123-435">
-<script src="shared/theme.js?v=20261123-435"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-435">
+<link rel="icon" href="icons/favicon.svg?v=20261123-436">
+<link rel="stylesheet" href="shared/style.css?v=20261123-436">
+<link rel="stylesheet" href="shared/window.css?v=20261123-436">
+<link rel="stylesheet" href="shared/account.css?v=20261123-436">
+<script src="shared/theme.js?v=20261123-436"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-436">
 <!--
   ЗАРАБОТАТЬ.
 
@@ -261,26 +261,26 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-435"></script>
-<script src="shared/ui.js?v=20261123-435"></script>
-<script src="shared/смайлы.js?v=20261123-435"></script>
-<script src="shared/лица.js?v=20261123-435"></script>
-<script src="shared/эфир.js?v=20261123-435"></script>
-<script src="shared/icons.js?v=20261123-435"></script>
-<script src="shared/window.js?v=20261123-435"></script>
-<script src="shared/без-копий.js?v=20261123-435"></script>
-<script src="shared/time.js?v=20261123-435"></script>
-<script src="shared/auth.js?v=20261123-435"></script>
-<script src="shared/lang.js?v=20261123-435"></script>
-<script src="shared/account.js?v=20261123-435"></script>
-<script src="shared/shell.js?v=20261123-435"></script>
-<script src="shared/wallets.js?v=20261123-435"></script>
+<script src="shared/api.js?v=20261123-436"></script>
+<script src="shared/ui.js?v=20261123-436"></script>
+<script src="shared/смайлы.js?v=20261123-436"></script>
+<script src="shared/лица.js?v=20261123-436"></script>
+<script src="shared/эфир.js?v=20261123-436"></script>
+<script src="shared/icons.js?v=20261123-436"></script>
+<script src="shared/window.js?v=20261123-436"></script>
+<script src="shared/без-копий.js?v=20261123-436"></script>
+<script src="shared/time.js?v=20261123-436"></script>
+<script src="shared/auth.js?v=20261123-436"></script>
+<script src="shared/lang.js?v=20261123-436"></script>
+<script src="shared/account.js?v=20261123-436"></script>
+<script src="shared/shell.js?v=20261123-436"></script>
+<script src="shared/wallets.js?v=20261123-436"></script>
 <script>
 'use strict';
 
 CW.оболочка('earn').then(function (место) {
 
-CW.заглавие(место, { имя: 'Заработать' });
+CW.заглавие(место, { имя: Т('Заработать') });
 
 var тело = document.createElement('div');
 место.appendChild(тело);
@@ -305,7 +305,8 @@ Promise.all([
   тело.innerHTML = '';
   var б = document.createElement('div');
   б.className = 'беда';
-  б.textContent = е.сеть ? 'Нет связи с сервером' : (е.message || 'Не вышло открыть экран');
+  б.textContent = е.сеть ? Т('Нет связи с сервером')
+                         : (е.message || Т('Не вышло открыть экран'));
   тело.appendChild(б);
 });
 
@@ -359,8 +360,8 @@ function кускомПодписка() {
             + 'управляйте своим цифровым пространством.'))
     +   '</p>'
     + '</div>'
-    + '<button class="цена">' + (есть ? 'подключена'
-        : (цена ? '$' + цена + '/мес' : 'смотреть')) + '</button>');
+    + '<button class="цена">' + CW.безопасно(есть ? Т('подключена')
+        : (цена ? Т.с('${цена}/мес', { цена: цена }) : Т('смотреть'))) + '</button>');
 
   /* Кнопка открывает окно подписки прямо здесь, а не уводит на
      страницу тарифов: в боевой нажатие на «$6.99/мес» показывает
@@ -430,9 +431,9 @@ function кускомТройка() {
      дни подряд обычным цветом. */
   var у = кусок('тройка');
   [
-    [сегодня, 'CUBE сегодня', 'золото', true],
-    [подряд,  'дней подряд',  '',       false],
-    [месяц,   'CUBE за месяц', 'бирюза', true]
+    [сегодня, Т('CUBE сегодня'), 'золото', true],
+    [подряд,  Т('дней подряд'),  '',       false],
+    [месяц,   Т('CUBE за месяц'), 'бирюза', true]
   ].forEach(function (п) {
     у.appendChild(кусок('ячейка',
         '<div class="значение ' + (п[0] ? п[2] : 'пусто') + '">'
@@ -468,7 +469,10 @@ function кускомПримечание() {
 function кускомШапкаНаград() {
   var с = С.сегодня.rates || С.стат.rates || {};
   var просмотров = Number(с.views_for_reward || 0);
-  var порог = просмотров >= 1000 ? Math.round(просмотров / 1000) + 'к' : просмотров;
+  /* «10к» по-русски, «10k» по-английски: буква при числе тоже слово. */
+  var порог = просмотров >= 1000
+    ? Т.с('{н}к', { н: Math.round(просмотров / 1000) })
+    : CW.число(просмотров);
 
   var где = кусок('наград-шапка');
   var ряд = кусок('раздел',
@@ -481,7 +485,7 @@ function кускомШапкаНаград() {
 
   var окошко = кусок('подсказка-окно',
       Т('Начисление приходит раз в сутки, за прошедший день. '
-    + 'Пост и комментарий оплачиваются один раз, когда наберут ')
+      + 'Пост и комментарий оплачиваются один раз, когда наберут ')
     + порог + Т('+ просмотров. ')
     + Т('Активный день растёт со временем в кубе от ')
     + cube(с.active_day_min) + ' ' + Т('до') + ' ' + cube(с.active_day_max) + ' CUBE.');
@@ -508,27 +512,32 @@ function кускомШапкаНаград() {
 function кускомНаграды() {
   var с = С.сегодня.rates || С.стат.rates || {};
   var просмотров = Number(с.views_for_reward || 0);
-  var тысяч = просмотров >= 1000 ? Math.round(просмотров / 1000) + 'к' : просмотров;
+  /* «10к» по-русски, «10k» по-английски: буква при числе тоже слово. */
+  var тысяч = просмотров >= 1000
+    ? Т.с('{н}к', { н: Math.round(просмотров / 1000) })
+    : CW.число(просмотров);
 
   var строки = [
     { зн: 'календарь', имя: Т('Активный день'), тихо: Т('чем дольше в кубе'),
       цена: cube(с.active_day_min) + '-' + cube(с.active_day_max) + ' CUBE' },
-    { зн: 'лист', имя: 'Пост в ленте или группе', тихо: 'от ' + тысяч + ' просмотров',
+    { зн: 'лист', имя: Т('Пост в ленте или группе'),
+      тихо: Т.с('от {н} просмотров', { н: тысяч }),
       цена: cube(с.post_view_cube) + ' CUBE' },
-    { зн: 'речь', имя: 'Комментарий', тихо: 'от ' + тысяч + ' просмотров',
+    { зн: 'речь', имя: Т('Комментарий'),
+      тихо: Т.с('от {н} просмотров', { н: тысяч }),
       цена: cube(с.comment_view_cube) + ' CUBE' },
-    { зн: 'звено', имя: 'Реферальная ссылка',
+    { зн: 'звено', имя: Т('Реферальная ссылка'),
       цена: '+' + cube(с.referral_paid) + ' CUBE', плюс: true },
-    { зн: 'огонь', имя: 'Активная неделя',
+    { зн: 'огонь', имя: Т('Активная неделя'),
       цена: '+' + cube(с.bonus_week) + ' CUBE', плюс: true },
-    { зн: 'календарь', имя: 'Активный месяц',
+    { зн: 'календарь', имя: Т('Активный месяц'),
       цена: '+' + cube(с.bonus_month) + ' CUBE', плюс: true },
-    { зн: 'кубок', имя: 'Активный год',
+    { зн: 'кубок', имя: Т('Активный год'),
       цена: '+' + cube(с.bonus_year) + ' CUBE', плюс: true },
-    { зн: 'монета', имя: 'Чаевые автору контента', свободно: true },
-    { зн: 'камера', имя: 'Стримы и подарки', свободно: true },
-    { зн: 'картинка', имя: 'Подарки и чаевые за истории', свободно: true },
-    { зн: 'сумка', имя: 'Маркетплейс и сигналы', свободно: true }
+    { зн: 'монета', имя: Т('Чаевые автору контента'), свободно: true },
+    { зн: 'камера', имя: Т('Стримы и подарки'), свободно: true },
+    { зн: 'картинка', имя: Т('Подарки и чаевые за истории'), свободно: true },
+    { зн: 'сумка', имя: Т('Маркетплейс и сигналы'), свободно: true }
   ];
 
   var где = кусок('награды');
@@ -565,7 +574,7 @@ function кускомНачисления() {
     где.appendChild(кусок('начисление',
         '<span>'
       +   '<div class="день">' + CW.безопасно(н.day || н.month || '') + '</div>'
-      +   '<div class="за-что">' + CW.безопасно(н.reason || н.note || 'Награда') + '</div>'
+      +   '<div class="за-что">' + CW.безопасно(н.reason || н.note || Т('Награда')) + '</div>'
       + '</span>'
       + '<span class="сумма">+' + cube(н.cube || н.amount) + ' CUBE</span>'));
   });
@@ -583,9 +592,11 @@ function кускомУровень() {
     +   '<span class="xp">' + (с.xp || 0) + ' XP</span>'
     + '</div>'
     + '<div class="жёлоб"><i style="width:' + в + '%"></i></div>'
-    + '<div class="пояснение">' + CW.безопасно(Т('До')) + ' ' + ((с.level || 1) + 1) + '-го уровня: '
-    +   (с.xp_to_next || 0) + ' XP. XP растёт от того же, за что идут награды: '
-    +   '' + CW.безопасно(Т('посты, комментарии, лайки, приглашения и дни в сети.')) + '</div>');
+    + '<div class="пояснение">'
+    +   CW.безопасно(Т.с('До {уровень} уровня: {xp} XP.',
+          { уровень: (с.level || 1) + 1, xp: с.xp_to_next || 0 })) + ' '
+    +   CW.безопасно(Т('XP растёт от того же, за что идут награды:')) + ' '
+    +   CW.безопасно(Т('посты, комментарии, лайки, приглашения и дни в сети.')) + '</div>');
 }
 
 /* ── за месяц ── */
@@ -593,10 +604,10 @@ function кускомМесяц() {
   var с = С.стат;
   var у = кусок('месяц');
   [
-    [с.posts,              'постов'],
-    [с.comments_received,  'комментариев'],
-    [с.reactions_received, 'лайков'],
-    [с.days_active,        'активных дней']
+    [с.posts,              Т('постов')],
+    [с.comments_received,  Т('комментариев')],
+    [с.reactions_received, Т('лайков')],
+    [с.days_active,        Т('активных дней')]
   ].forEach(function (п) {
     var з = Number(п[0] || 0);
     у.appendChild(кусок('ячейка',
