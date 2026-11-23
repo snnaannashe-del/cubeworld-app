@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Поиск · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-398">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-398">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-398">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-398">
-<script src="../shared/theme.js?v=20261123-398"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-398">
+<link rel="icon" href="../icons/favicon.svg?v=20261123-399">
+<link rel="stylesheet" href="../shared/style.css?v=20261123-399">
+<link rel="stylesheet" href="../shared/window.css?v=20261123-399">
+<link rel="stylesheet" href="../shared/account.css?v=20261123-399">
+<script src="../shared/theme.js?v=20261123-399"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261123-399">
 <!--
   ПОИСК — окно поверх программы.
 
@@ -179,19 +179,19 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-398"></script>
-<script src="../shared/ui.js?v=20261123-398"></script>
-<script src="../shared/смайлы.js?v=20261123-398"></script>
-<script src="../shared/лица.js?v=20261123-398"></script>
-<script src="../shared/эфир.js?v=20261123-398"></script>
-<script src="../shared/icons.js?v=20261123-398"></script>
-<script src="../shared/window.js?v=20261123-398"></script>
-<script src="../shared/без-копий.js?v=20261123-398"></script>
-<script src="../shared/time.js?v=20261123-398"></script>
-<script src="../shared/auth.js?v=20261123-398"></script>
-<script src="../shared/account.js?v=20261123-398"></script>
-<script src="../shared/помощник.js?v=20261123-398"></script>
-<script src="../shared/shell.js?v=20261123-398"></script>
+<script src="../shared/api.js?v=20261123-399"></script>
+<script src="../shared/ui.js?v=20261123-399"></script>
+<script src="../shared/смайлы.js?v=20261123-399"></script>
+<script src="../shared/лица.js?v=20261123-399"></script>
+<script src="../shared/эфир.js?v=20261123-399"></script>
+<script src="../shared/icons.js?v=20261123-399"></script>
+<script src="../shared/window.js?v=20261123-399"></script>
+<script src="../shared/без-копий.js?v=20261123-399"></script>
+<script src="../shared/time.js?v=20261123-399"></script>
+<script src="../shared/auth.js?v=20261123-399"></script>
+<script src="../shared/account.js?v=20261123-399"></script>
+<script src="../shared/помощник.js?v=20261123-399"></script>
+<script src="../shared/shell.js?v=20261123-399"></script>
 <script>
 'use strict';
 
@@ -609,7 +609,7 @@ function строчка(кружок, имя, под, метка, делать) 
 function строкаЧеловек(ч) {
   return строчка(
     CW.кружок({ размер: 38, кто: ч.id, снимок: ч.avatar_url,
-                версия: ч.avatar_ver, значок: '👤' }),
+                версия: ч.avatar_ver }),
     CW.имяЧеловека(ч),
     ч.username ? '@' + ч.username : ('UID · ' + (ч.uid || ч.id)),
     '',
@@ -618,7 +618,7 @@ function строкаЧеловек(ч) {
 
 function строкаГруппа(г) {
   return строчка(
-    CW.кружок({ размер: 38, значок: г.icon || '👥' }),
+    CW.кружок({ размер: 38, род: 'группа', значок: г.icon || '' }),
     г.name || ('Группа #' + г.id),
     г.description || '',
     Number(г.member_count || 0) ? г.member_count + ' чел.' : '',
@@ -627,7 +627,7 @@ function строкаГруппа(г) {
 
 function строкаКуб(к) {
   return строчка(
-    CW.кружок({ размер: 38, значок: к.icon || '📦' }),
+    CW.кружок({ размер: 38, род: 'куб', значок: к.icon || '' }),
     к.name || ('Куб #' + к.id),
     к.description || '',
     '',
@@ -636,7 +636,7 @@ function строкаКуб(к) {
 
 function строкаЭфир(э) {
   return строчка(
-    CW.кружок({ размер: 38, значок: '🎥', цвет: 'linear-gradient(140deg,#3b1d2e,#2a1420)' }),
+    CW.кружок({ размер: 38, род: 'эфир', цвет: 'linear-gradient(140deg,#3b1d2e,#2a1420)' }),
     э.title || э.name || ('Эфир #' + э.id),
     э.display_name || '',
     'в эфире',

@@ -122,7 +122,7 @@ CW.модаль('transfer', function (данные) {
     карточка.innerHTML = '';
     карточка.appendChild(CW.кружок({
       размер: 36, кто: человек.id, снимок: человек.avatar_url,
-      версия: человек.avatar_ver, значок: '👤' }));
+      версия: человек.avatar_ver }));
     var кто = document.createElement('div');
     кто.className = 'кто';
     кто.innerHTML = '<b>' + CW.безопасно(CW.имяЧеловека(человек)) + '</b>'

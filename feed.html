@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Лента · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-398">
-<link rel="stylesheet" href="shared/style.css?v=20261123-398">
-<link rel="stylesheet" href="shared/window.css?v=20261123-398">
-<link rel="stylesheet" href="shared/account.css?v=20261123-398">
-<script src="shared/theme.js?v=20261123-398"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261123-398">
+<link rel="icon" href="icons/favicon.svg?v=20261123-399">
+<link rel="stylesheet" href="shared/style.css?v=20261123-399">
+<link rel="stylesheet" href="shared/window.css?v=20261123-399">
+<link rel="stylesheet" href="shared/account.css?v=20261123-399">
+<script src="shared/theme.js?v=20261123-399"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261123-399">
 <!--
   ЛЕНТА.
 
@@ -359,19 +359,19 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261123-398"></script>
-<script src="shared/ui.js?v=20261123-398"></script>
-<script src="shared/смайлы.js?v=20261123-398"></script>
-<script src="shared/лица.js?v=20261123-398"></script>
-<script src="shared/эфир.js?v=20261123-398"></script>
-<script src="shared/icons.js?v=20261123-398"></script>
-<script src="shared/window.js?v=20261123-398"></script>
-<script src="shared/без-копий.js?v=20261123-398"></script>
-<script src="shared/time.js?v=20261123-398"></script>
-<script src="shared/auth.js?v=20261123-398"></script>
-<script src="shared/account.js?v=20261123-398"></script>
-<script src="shared/shell.js?v=20261123-398"></script>
-<script src="shared/shelf.js?v=20261123-398"></script>
+<script src="shared/api.js?v=20261123-399"></script>
+<script src="shared/ui.js?v=20261123-399"></script>
+<script src="shared/смайлы.js?v=20261123-399"></script>
+<script src="shared/лица.js?v=20261123-399"></script>
+<script src="shared/эфир.js?v=20261123-399"></script>
+<script src="shared/icons.js?v=20261123-399"></script>
+<script src="shared/window.js?v=20261123-399"></script>
+<script src="shared/без-копий.js?v=20261123-399"></script>
+<script src="shared/time.js?v=20261123-399"></script>
+<script src="shared/auth.js?v=20261123-399"></script>
+<script src="shared/account.js?v=20261123-399"></script>
+<script src="shared/shell.js?v=20261123-399"></script>
+<script src="shared/shelf.js?v=20261123-399"></script>
 <script>
 'use strict';
 
@@ -1162,12 +1162,16 @@ function имяАвтора(п) {
 
 function кружокАвтора(п, размер) {
   /* Своего разбора адресов здесь больше нет: куда смотреть за лицом,
-     решает склад лиц (shared/лица.js). Здесь только буква имени на
-     случай, если лица у человека нет вовсе. */
+     решает склад лиц (shared/лица.js).
+
+     Своей заглушки здесь тоже больше нет. Стояла первая буква имени на
+     светлом кружке - и лента была единственным местом в программе, где
+     человек без фотографии выглядел буквой, а не значком; у кого имени
+     нет, тому доставался ноль из номера. В комментариях под этой же
+     записью тот же человек выходил значком на тёмном кружке. Теперь
+     заглушка одна на всю программу и живёт в CW.кружок. */
   return CW.кружок({ размер: размер || 36, кто: п.user_id,
-                     снимок: п.avatar_url, версия: п.avatar_ver,
-                     значок: имяАвтора(п).charAt(0).toUpperCase(),
-                     цвет: 'rgba(255,255,255,.18)' });
+                     снимок: п.avatar_url, версия: п.avatar_ver });
 }
 
 /* «Есть ролик» в разметке значит не «это шортс», а «кадром управляем
@@ -1256,6 +1260,36 @@ function смотрящий() {
   return СМОТРЯЩИЙ;
 }
 
+/* ── КОММЕНТАРИИ К ЭТОЙ ЗАПИСИ СПРАШИВАЕМ ЗАРАНЕЕ ──
+   Нажатие на речь открывает полку мгновенно, а список в ней ехал уже
+   после нажатия: полсекунды «Смотрю…» на каждое открытие. Между тем
+   какая запись под носом, лента знает заранее - вот и спрашиваем, пока
+   человек смотрит ролик.
+
+   Сам файл полки тоже подтягиваем заранее, один раз за страницу: он
+   приезжает отдельным файлом, и в первый раз это был ещё один круг до
+   сервера поверх ожидания списка.
+
+   Всё тихо и не к спеху: не приехало - полка спросит сама, как
+   спрашивала. */
+var ПОЛКАЕДЕТ = false;
+
+function погретьРазговор(номер) {
+  if (!номер) return;
+  if (!ПОЛКАЕДЕТ) {
+    ПОЛКАЕДЕТ = true;
+    CW.нужен('modals/comments.js').catch(function () { ПОЛКАЕДЕТ = false; });
+  }
+  /* Греем не сразу: первые мгновения кадра заняты роликом и обложкой,
+     и лишний запрос там только мешает. */
+  setTimeout(function () {
+    if (String(С.текущий) !== String(номер)) return;   /* уже пролистали */
+    if (CW.комментарии && CW.комментарии.погреть) {
+      CW.комментарии.погреть('/feed/' + номер + '/comments');
+    }
+  }, 700);
+}
+
 /* Второй наблюдатель — на один экран вперёд и назад. Он не включает
    воспроизведение, он только проставляет адреса: к тому мгновению, когда
    кадр станет виден, обложка уже на месте, а ролик знает, откуда брать
@@ -1277,6 +1311,7 @@ function встал(кадр) {
   С.текущий = номер;
 
   готовить(кадр);
+  погретьРазговор(номер);
   var ролик = кадр.querySelector('video');
   /* У поста звука нет и быть не может — кнопка там только мешает. */
   кнЗвук.style.display = ролик ? 'flex' : 'none';

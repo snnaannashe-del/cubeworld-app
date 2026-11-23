@@ -140,7 +140,7 @@ CW.модаль('people', function (данные) {
     var с = document.createElement('div');
     с.className = 'ок-строка';
     с.appendChild(CW.кружок({ размер: 38, кто: ч.id, снимок: ч.avatar_url,
-                              версия: ч.avatar_ver, значок: '👤' }));
+                              версия: ч.avatar_ver }));
 
     var т = document.createElement('div');
     т.className = 'текст';
