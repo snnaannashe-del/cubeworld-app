@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Маркетплейс · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261124-450">
-<link rel="stylesheet" href="shared/style.css?v=20261124-450">
-<link rel="stylesheet" href="shared/window.css?v=20261124-450">
-<link rel="stylesheet" href="shared/account.css?v=20261124-450">
-<script src="shared/theme.js?v=20261124-450"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261124-450">
+<link rel="icon" href="icons/favicon.svg?v=20261124-451">
+<link rel="stylesheet" href="shared/style.css?v=20261124-451">
+<link rel="stylesheet" href="shared/window.css?v=20261124-451">
+<link rel="stylesheet" href="shared/account.css?v=20261124-451">
+<script src="shared/theme.js?v=20261124-451"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261124-451">
 <!--
   МАРКЕТПЛЕЙС.
 
@@ -419,21 +419,21 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261124-450"></script>
-<script src="shared/ui.js?v=20261124-450"></script>
-<script src="shared/смайлы.js?v=20261124-450"></script>
-<script src="shared/лица.js?v=20261124-450"></script>
-<script src="shared/эфир.js?v=20261124-450"></script>
-<script src="shared/icons.js?v=20261124-450"></script>
-<script src="shared/window.js?v=20261124-450"></script>
-<script src="shared/продавец.js?v=20261124-450"></script>
-<script src="shared/корзина.js?v=20261124-450"></script>
-<script src="shared/без-копий.js?v=20261124-450"></script>
-<script src="shared/time.js?v=20261124-450"></script>
-<script src="shared/auth.js?v=20261124-450"></script>
-<script src="shared/lang.js?v=20261124-450"></script>
-<script src="shared/account.js?v=20261124-450"></script>
-<script src="shared/shell.js?v=20261124-450"></script>
+<script src="shared/api.js?v=20261124-451"></script>
+<script src="shared/ui.js?v=20261124-451"></script>
+<script src="shared/смайлы.js?v=20261124-451"></script>
+<script src="shared/лица.js?v=20261124-451"></script>
+<script src="shared/эфир.js?v=20261124-451"></script>
+<script src="shared/icons.js?v=20261124-451"></script>
+<script src="shared/window.js?v=20261124-451"></script>
+<script src="shared/продавец.js?v=20261124-451"></script>
+<script src="shared/корзина.js?v=20261124-451"></script>
+<script src="shared/без-копий.js?v=20261124-451"></script>
+<script src="shared/time.js?v=20261124-451"></script>
+<script src="shared/auth.js?v=20261124-451"></script>
+<script src="shared/lang.js?v=20261124-451"></script>
+<script src="shared/account.js?v=20261124-451"></script>
+<script src="shared/shell.js?v=20261124-451"></script>
 <script>
 'use strict';
 
@@ -610,7 +610,7 @@ function нарисоватьВерх() {
   катряд.innerHTML = '';
   катряд.appendChild(кнКата('', Т('Все'), null));
   (С.коты[С.режим] || []).forEach(function (к) {
-    катряд.appendChild(кнКата(к.id, к.name, к));
+    катряд.appendChild(кнКата(к.id, Т(к.name), к));
   });
 
   /* подразделы — только у вещей и только когда раздел выбран */
@@ -621,7 +621,7 @@ function нарисоватьВерх() {
   подряд.style.display = субы.length ? 'flex' : 'none';
   if (субы.length) {
     подряд.appendChild(кнПода('', Т('Любой')));
-    субы.forEach(function (с) { подряд.appendChild(кнПода(с, с)); });
+    субы.forEach(function (с) { подряд.appendChild(кнПода(с, Т(с))); });
   }
 
   /* вкладки */
@@ -804,7 +804,7 @@ function карта(т) {
   var метки = '<span class="метка-угол"><span class="зн" style="color:'
             + (ЦВЕТА[т.category] || 'currentColor') + '">'
             + значокРаздела(кот) + '</span>'
-            + '<span class="имя">' + CW.безопасно(кот.name) + '</span></span>'
+            + '<span class="имя">' + CW.безопасно(Т(кот.name)) + '</span></span>'
     + (т.mine ? '<span class="метка-право моё">' + CW.безопасно(Т('моё')) + '</span>'
       : т.bought ? '<span class="метка-право куплено">' + CW.безопасно(Т('куплено')) + '</span>' : '')
     + (т.status && т.status !== 'active'
@@ -971,7 +971,7 @@ function состояниеТовара(с) {
 
 function имяСостояния(ид) {
   var с = С.состояния.filter(function (х) { return х.id === ид; })[0];
-  return с ? с.name : ид;
+  return с ? Т(с.name) : ид;
 }
 
 function деньги(ч) {
@@ -1096,8 +1096,8 @@ function нарисоватьОписание(куда, т) {
   имяПродавца.textContent = т.seller || '-';
   ктоСтрока.appendChild(имяПродавца);
   ктоСтрока.appendChild(document.createTextNode(
-      ' · ' + разделПо(т.category).name
-    + (т.subcategory ? ' · ' + т.subcategory : '')));
+      ' · ' + Т(разделПо(т.category).name)
+    + (т.subcategory ? ' · ' + Т(т.subcategory) : '')));
   куда.appendChild(ктоСтрока);
   if (т.seller_id && CW.продавец) CW.продавец.привязать(имяПродавца, т.seller_id);
 
