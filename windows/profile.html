@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Портфолио · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261124-462">
-<link rel="stylesheet" href="../shared/style.css?v=20261124-462">
-<link rel="stylesheet" href="../shared/window.css?v=20261124-462">
-<link rel="stylesheet" href="../shared/account.css?v=20261124-462">
-<script src="../shared/theme.js?v=20261124-462"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261124-462">
+<link rel="icon" href="../icons/favicon.svg?v=20261124-463">
+<link rel="stylesheet" href="../shared/style.css?v=20261124-463">
+<link rel="stylesheet" href="../shared/window.css?v=20261124-463">
+<link rel="stylesheet" href="../shared/account.css?v=20261124-463">
+<script src="../shared/theme.js?v=20261124-463"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261124-463">
 <!--
   ПРОФИЛЬ: два окна.
 
@@ -310,20 +310,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261124-462"></script>
-<script src="../shared/ui.js?v=20261124-462"></script>
-<script src="../shared/смайлы.js?v=20261124-462"></script>
-<script src="../shared/лица.js?v=20261124-462"></script>
-<script src="../shared/эфир.js?v=20261124-462"></script>
-<script src="../shared/icons.js?v=20261124-462"></script>
-<script src="../shared/window.js?v=20261124-462"></script>
-<script src="../shared/продавец.js?v=20261124-462"></script>
-<script src="../shared/без-копий.js?v=20261124-462"></script>
-<script src="../shared/time.js?v=20261124-462"></script>
-<script src="../shared/auth.js?v=20261124-462"></script>
-<script src="../shared/lang.js?v=20261124-462"></script>
-<script src="../shared/account.js?v=20261124-462"></script>
-<script src="../shared/shell.js?v=20261124-462"></script>
+<script src="../shared/api.js?v=20261124-463"></script>
+<script src="../shared/ui.js?v=20261124-463"></script>
+<script src="../shared/смайлы.js?v=20261124-463"></script>
+<script src="../shared/лица.js?v=20261124-463"></script>
+<script src="../shared/эфир.js?v=20261124-463"></script>
+<script src="../shared/icons.js?v=20261124-463"></script>
+<script src="../shared/window.js?v=20261124-463"></script>
+<script src="../shared/продавец.js?v=20261124-463"></script>
+<script src="../shared/без-копий.js?v=20261124-463"></script>
+<script src="../shared/time.js?v=20261124-463"></script>
+<script src="../shared/auth.js?v=20261124-463"></script>
+<script src="../shared/lang.js?v=20261124-463"></script>
+<script src="../shared/account.js?v=20261124-463"></script>
+<script src="../shared/shell.js?v=20261124-463"></script>
 <script>
 'use strict';
 
@@ -1014,18 +1014,18 @@ function пустое() {
                 + '<div class="под">' + CW.безопасно(Т('Сохранённое видит только хозяин портфолио.')) + '</div>';
     return з;
   }
-  var слово = фильтр === 'сохранённое'
+  var слово = Т(фильтр === 'сохранённое'
     ? (шорт ? 'Нет сохранённых видео' : 'Нет сохранённых постов')
     : фильтр === 'репосты'
       ? (шорт ? 'Нет репостов видео' : 'Нет репостов')
-      : (шорт ? 'Нет коротких видео' : 'Нет постов');
+      : (шорт ? 'Нет коротких видео' : 'Нет постов'));
   /* «Опубликуй первое» — это разговор с собой. В чужом портфолио такая
      строка советует человеку публиковать за другого. */
   var под = (фильтр === 'мои' && !ЧУЖОЙ)
-    ? 'Опубликуй первое: оно появится здесь.' : '';
+    ? Т('Опубликуй первое: оно появится здесь.') : '';
   у.innerHTML = '<div class="круг">' + зн(шорт ? 'плёнка' : 'клетки') + '</div>'
-              + '<div class="слово">' + слово + '</div>'
-              + (под ? '<div class="под">' + под + '</div>' : '');
+              + '<div class="слово">' + CW.безопасно(слово) + '</div>'
+              + (под ? '<div class="под">' + CW.безопасно(под) + '</div>' : '');
   return у;
 }
 

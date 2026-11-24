@@ -313,7 +313,7 @@
         var б = э('button', 'кнопка' + (к.главная ? ' главная' : '')
                           + (к.опасная ? ' опасная' : ''));
         б.type = 'button';
-        б.textContent = к.подпись || '';
+        б.textContent = Т(к.подпись || '');
         б.onclick = function (е) { if (к.делать) к.делать(е, б); };
         подвал.appendChild(б);
         низ[к.имя || к.подпись] = б;
@@ -515,7 +515,7 @@
           var б = э('button', 'кнопка главная');
           б.type = 'button';
           б.style.marginTop = '16px';
-          б.textContent = что.кнопка.подпись;
+          б.textContent = Т(что.кнопка.подпись);
           б.onclick = что.кнопка.делать;
           п.appendChild(б);
         }
@@ -720,9 +720,9 @@
       if (п.вид === 'тумблер') {
         var строка = э('div', 'ок-строка');
         строка.innerHTML = '<div class="текст"><b></b><span></span></div>';
-        строка.querySelector('b').textContent = п.подпись || '';
+        строка.querySelector('b').textContent = Т(п.подпись || '');
         var подп = строка.querySelector('span');
-        подп.textContent = п.под || '';
+        подп.textContent = Т(п.под || '');
         if (!п.под) подп.style.display = 'none';
         var т = э('button', 'ок-тумблер' + (значения[п.имя] ? ' вкл' : ''));
         т.type = 'button';
@@ -740,7 +740,7 @@
       var поле = э('div', 'ок-поле');
       if (п.подпись) {
         var ярлык = э('label');
-        ярлык.textContent = п.подпись + (п.обяз ? ' *' : '');
+        ярлык.textContent = Т(п.подпись) + (п.обяз ? ' *' : '');
         поле.appendChild(ярлык);
       }
 
@@ -753,7 +753,7 @@
         (п.пункты || []).forEach(function (к) {
           var о = э('option');
           о.value = к.знач;
-          о.textContent = к.подпись;
+          о.textContent = Т(к.подпись);
           у.appendChild(о);
         });
       } else if (п.вид === 'фишки' || п.вид === 'смайл') {
@@ -763,7 +763,7 @@
                     + (значения[п.имя] === к.знач ? ' выбрана' : ''));
           б.type = 'button';
           б.innerHTML = (к.зн ? CW.значок(к.зн) : '')
-                      + '<span>' + CW.безопасно(к.подпись) + '</span>';
+                      + '<span>' + CW.безопасно(Т(к.подпись)) + '</span>';
           б.onclick = function () {
             значения[п.имя] = к.знач;
             [].slice.call(у.children).forEach(function (д) {

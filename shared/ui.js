@@ -1249,7 +1249,7 @@
       б.className = 'оф-цвет';
       б.style.setProperty('--он', к.ц);
       б.dataset.ц = к.ц;
-      б.title = к.имя;
+      б.title = Т(к.имя);
       б.innerHTML = галка;
       б.onclick = function () {
         показать(к.ц);

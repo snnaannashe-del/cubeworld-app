@@ -69,7 +69,7 @@ CW.модаль('premium', function (данные) {
         }
         ряды.push({
           ключ: к, срок: с,
-          имя: п.name || к,
+          имя: Т(п.name || к),
           cube: цифра,
           usd: Number(с === 'year' ? п.usd_year : п.usd_month) || 0,
           выгода: выгода > 0 ? выгода : 0
@@ -111,7 +111,7 @@ CW.модаль('premium', function (данные) {
       return;
     }
 
-    шапкаВТеле('На балансе ' + баланс + ' CUBE');
+    шапкаВТеле(Т.с('На балансе {н} CUBE', { н: баланс }));
 
     var витрина = document.createElement('div');
     витрина.className = 'подп-витрина';
@@ -127,7 +127,7 @@ CW.модаль('premium', function (данные) {
           '<span class="имя">' + CW.безопасно(р.имя) + '</span>'
         + '<span class="цена">' + р.cube + ' <small>CUBE</small></span>'
         + '<span class="низ">'
-        +   (р.срок === 'year' ? 'Год' : 'Месяц')
+        +   CW.безопасно(р.срок === 'year' ? Т('Год') : Т('Месяц'))
         +   (р.usd ? ' · $' + р.usd : '')
         + '</span>'
         + (р.выгода ? '<span class="скидка">−' + р.выгода + '%</span>' : '');

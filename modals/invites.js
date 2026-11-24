@@ -66,13 +66,13 @@ CW.модаль('invites', function (данные) {
     /* ── что вышло ── */
     var счёты = document.createElement('div');
     счёты.className = 'оц-счёты';
-    [[д.invited || 0, 'приглашено'],
-     [д.active || 0, 'прижилось'],
-     [Math.round(Number(д.earned || 0)), 'CUBE заработано']
+    [[д.invited || 0, Т('приглашено')],
+     [д.active || 0, Т('прижилось')],
+     [Math.round(Number(д.earned || 0)), Т('CUBE заработано')]
     ].forEach(function (п) {
       var к = document.createElement('div');
       к.className = 'оц-счёт';
-      к.innerHTML = '<b>' + п[0] + '</b><span>' + п[1] + '</span>';
+      к.innerHTML = '<b>' + п[0] + '</b><span>' + CW.безопасно(п[1]) + '</span>';
       счёты.appendChild(к);
     });
     М.тело.appendChild(счёты);
@@ -81,9 +81,10 @@ CW.модаль('invites', function (данные) {
       var п = document.createElement('div');
       п.className = 'подсказ';
       п.style.cssText = 'margin-top:12px;line-height:1.65';
-      п.textContent = Т('За каждого, кто придёт по ссылке и останется: тебе ')
-        + Math.round(Number(д.bonus_inviter || 0)) + ' CUBE, ему '
-        + Math.round(Number(д.bonus_friend || 0)) + ' CUBE.';
+      п.textContent = Т.с('За каждого, кто придёт по ссылке и останется: '
+        + 'тебе {мне} CUBE, ему {ему} CUBE.',
+        { мне: Math.round(Number(д.bonus_inviter || 0)),
+          ему: Math.round(Number(д.bonus_friend || 0)) });
       М.тело.appendChild(п);
     }
 

@@ -95,7 +95,7 @@ CW.модаль('create-group', function (данные) {
 
     + метка('Название')
     + '<input class="кб-строка гр-имя" type="text" maxlength="40"'
-    + ' placeholder="Название группы" autocomplete="off" autocorrect="off"'
+    + ' placeholder="' + CW.безопасно(Т('Название группы')) + '" autocomplete="off" autocorrect="off"'
     + ' autocapitalize="sentences" spellcheck="false"'
     + ' data-lpignore="true" data-form-type="other">'
     + '<div class="ок-беда гр-беда"></div>'
@@ -106,7 +106,7 @@ CW.модаль('create-group', function (данные) {
 
     + метка('Теги')
     + '<input class="кб-строка гр-теги" type="text" maxlength="120"'
-    + ' placeholder="через запятую: фото, искусство" autocomplete="off"'
+    + ' placeholder="' + CW.безопасно(Т('через запятую: фото, искусство')) + '" autocomplete="off"'
     + ' spellcheck="false" data-lpignore="true" data-form-type="other">'
 
     + метка('Тип')
@@ -120,13 +120,13 @@ CW.модаль('create-group', function (данные) {
     +   '<span>' + CW.безопасно(Т('Показывать список участников всем')) + '</span>'
     + '</label>';
 
-  function метка(т) { return '<div class="кб-метка">' + т + '</div>'; }
+  function метка(т) { return '<div class="кб-метка">' + CW.безопасно(Т(т)) + '</div>'; }
   function карточка(знач, зн, имя, под) {
     return '<button type="button" class="гр-тип' + (знач === С.тип ? ' тут' : '')
          + '" data-т="' + знач + '">'
          + '<span class="гр-тип-знак">' + CW.значок(зн) + '</span>'
-         + '<b>' + имя + '</b>'
-         + '<span class="гр-тип-под">' + под + '</span>'
+         + '<b>' + CW.безопасно(Т(имя)) + '</b>'
+         + '<span class="гр-тип-под">' + CW.безопасно(Т(под)) + '</span>'
          + '</button>';
   }
   function где(класс) { return М.тело.querySelector('.' + класс); }
