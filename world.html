@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Мир · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261123-437">
+<link rel="icon" href="icons/favicon.svg?v=20261124-439">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261123-437">
-<link rel="stylesheet" href="shared/window.css?v=20261123-437">
-<link rel="stylesheet" href="shared/account.css?v=20261123-437">
-<script src="shared/theme.js?v=20261123-437"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261124-439">
+<link rel="stylesheet" href="shared/window.css?v=20261124-439">
+<link rel="stylesheet" href="shared/account.css?v=20261124-439">
+<script src="shared/theme.js?v=20261124-439"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -370,21 +370,21 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261123-437"></script>
-<script src="shared/ui.js?v=20261123-437"></script>
-<script src="shared/смайлы.js?v=20261123-437"></script>
-<script src="shared/лица.js?v=20261123-437"></script>
-<script src="shared/эфир.js?v=20261123-437"></script>
-<script src="shared/icons.js?v=20261123-437"></script>
-<script src="shared/window.js?v=20261123-437"></script>
-<script src="shared/без-копий.js?v=20261123-437"></script>
-<script src="shared/time.js?v=20261123-437"></script>
-<script src="shared/auth.js?v=20261123-437"></script>
-<script src="shared/lang.js?v=20261123-437"></script>
-<script src="shared/account.js?v=20261123-437"></script>
-<script src="shared/формы.js?v=20261123-437"></script>
-<script src="shared/игра.js?v=20261123-437"></script>
-<script src="shared/персонаж.js?v=20261123-437"></script>
+<script src="shared/api.js?v=20261124-439"></script>
+<script src="shared/ui.js?v=20261124-439"></script>
+<script src="shared/смайлы.js?v=20261124-439"></script>
+<script src="shared/лица.js?v=20261124-439"></script>
+<script src="shared/эфир.js?v=20261124-439"></script>
+<script src="shared/icons.js?v=20261124-439"></script>
+<script src="shared/window.js?v=20261124-439"></script>
+<script src="shared/без-копий.js?v=20261124-439"></script>
+<script src="shared/time.js?v=20261124-439"></script>
+<script src="shared/auth.js?v=20261124-439"></script>
+<script src="shared/lang.js?v=20261124-439"></script>
+<script src="shared/account.js?v=20261124-439"></script>
+<script src="shared/формы.js?v=20261124-439"></script>
+<script src="shared/игра.js?v=20261124-439"></script>
+<script src="shared/персонаж.js?v=20261124-439"></script>
 <script>
 'use strict';
 
@@ -930,11 +930,74 @@ function сторожПлавности(сейчас) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
+   ПОКОЙ — КОГДА НИКТО НЕ СМОТРИТ
+
+   Мир — самое тяжёлое место программы: холст во весь экран, шестьдесят
+   кадров в секунду, и он крутится сам. Человек положил телефон на стол
+   и ушёл за чаем — а мир всё рисует, греет корпус и жжёт заряд. Анна
+   спросила прямо: может ли программа сжечь телефон. Сжечь не может —
+   защита по температуре стоит в самом железе, ниже браузера, и
+   страницу об этом даже не спрашивают. Но греть зря — может, и это
+   наша вина, а не телефона.
+
+   Поэтому: минуту никто не касался экрана — самовращение
+   останавливается, и кадр рисуется раз в десять заходов, то есть
+   примерно шесть раз в секунду вместо шестидесяти. Глазом это не
+   видно: человек не смотрит. Первое касание, нажатие, колесо мыши или
+   голосовая команда возвращают всё мгновенно.
+
+   Пока идёт игра, покоя нет: кубы летят сами, и рваные кадры было бы
+   видно. Кадры в скрытой вкладке останавливает сам браузер — об этом
+   заботиться не нужно.
+   ═══════════════════════════════════════════════════════════════════════ */
+var ПОКОЙ_ЧЕРЕЗ = 60000;   /* сколько молчать до покоя */
+var ПОКОЙ_ШАГ   = 10;      /* рисуем каждый десятый заход */
+var ТРОНУЛИ = (окноПерф());
+var ПОКОЙСЧЁТ = 0;
+
+function окноПерф() {
+  try { return performance.now(); } catch (е) { return Date.now(); }
+}
+
+function тронули() {
+  ТРОНУЛИ = окноПерф();
+}
+
+/* Любое человеческое действие на странице — это «тронули». Слушаем на
+   захвате и пассивно: так мы не мешаем ни одному обработчику ниже. */
+['pointerdown', 'pointermove', 'touchstart', 'touchmove', 'wheel',
+ 'keydown', 'click'].forEach(function (и) {
+  window.addEventListener(и, тронули, { capture: true, passive: true });
+});
+
+function вПокое() {
+  if (CW.игра && CW.игра.идёт && CW.игра.идёт()) return false;
+  if (М.тянем) return false;
+  return (окноПерф() - ТРОНУЛИ) > ПОКОЙ_ЧЕРЕЗ;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
    КРУГ ОТРИСОВКИ. Единственный. Другого в файле нет.
    ═══════════════════════════════════════════════════════════════════════ */
 function круг() {
   М.кадр = requestAnimationFrame(круг);
   if (!К || М.Ш < 4 || М.В < 4) return;
+
+  /* Покой: заход пропускаем целиком — ни счёта, ни рисования. Сторожа
+     плавности тоже не зовём: он мерил бы наши же пропуски и честно
+     решил, что телефон слабый. */
+  if (вПокое()) {
+    М.сам = false;
+    ПОКОЙСЧЁТ = (ПОКОЙСЧЁТ + 1) % ПОКОЙ_ШАГ;
+    if (ПОКОЙСЧЁТ) return;
+  } else if (ПОКОЙСЧЁТ) {
+    /* Вышли из покоя: окно сторожа начинаем заново. Иначе он поделил бы
+       наши пропущенные заходы на прошедшие секунды, решил, что телефон
+       слабый, и навсегда сбросил чёткость. */
+    ПОКОЙСЧЁТ = 0;
+    СТОРОЖ.окно = 0; СТОРОЖ.кадров = 0;
+  }
+
   var время = performance.now() / 1000;
   сторожПлавности(время * 1000);
 

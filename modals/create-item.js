@@ -332,7 +332,7 @@ CW.модаль('create-item', function (данные) {
       return '<button type="button" class="вщ-форма'
            + (ф.к === С.фигура ? ' тут' : '') + '" data-ф="' + ф.к + '">'
            + '<canvas width="84" height="84"></canvas>'
-           + '<span>' + CW.безопасно(ф.имя) + '</span></button>';
+           + '<span>' + CW.безопасно(Т(ф.имя)) + '</span></button>';
     }).join('');
     [].slice.call(куда.children).forEach(function (б) {
       CW.формы.образец(б.querySelector('canvas'), б.dataset.ф, С.цвет);

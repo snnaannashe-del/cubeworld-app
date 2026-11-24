@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Голосовые команды · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-437">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-437">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-437">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-437">
-<script src="../shared/theme.js?v=20261123-437"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-437">
+<link rel="icon" href="../icons/favicon.svg?v=20261124-439">
+<link rel="stylesheet" href="../shared/style.css?v=20261124-439">
+<link rel="stylesheet" href="../shared/window.css?v=20261124-439">
+<link rel="stylesheet" href="../shared/account.css?v=20261124-439">
+<script src="../shared/theme.js?v=20261124-439"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261124-439">
 <!--
   ГОЛОСОВЫЕ КОМАНДЫ — окно поверх программы.
 
@@ -119,26 +119,26 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-437"></script>
-<script src="../shared/ui.js?v=20261123-437"></script>
-<script src="../shared/смайлы.js?v=20261123-437"></script>
-<script src="../shared/лица.js?v=20261123-437"></script>
-<script src="../shared/эфир.js?v=20261123-437"></script>
-<script src="../shared/icons.js?v=20261123-437"></script>
-<script src="../shared/window.js?v=20261123-437"></script>
-<script src="../shared/без-копий.js?v=20261123-437"></script>
-<script src="../shared/time.js?v=20261123-437"></script>
-<script src="../shared/auth.js?v=20261123-437"></script>
-<script src="../shared/lang.js?v=20261123-437"></script>
-<script src="../shared/account.js?v=20261123-437"></script>
-<script src="../shared/shell.js?v=20261123-437"></script>
+<script src="../shared/api.js?v=20261124-439"></script>
+<script src="../shared/ui.js?v=20261124-439"></script>
+<script src="../shared/смайлы.js?v=20261124-439"></script>
+<script src="../shared/лица.js?v=20261124-439"></script>
+<script src="../shared/эфир.js?v=20261124-439"></script>
+<script src="../shared/icons.js?v=20261124-439"></script>
+<script src="../shared/window.js?v=20261124-439"></script>
+<script src="../shared/без-копий.js?v=20261124-439"></script>
+<script src="../shared/time.js?v=20261124-439"></script>
+<script src="../shared/auth.js?v=20261124-439"></script>
+<script src="../shared/lang.js?v=20261124-439"></script>
+<script src="../shared/account.js?v=20261124-439"></script>
+<script src="../shared/shell.js?v=20261124-439"></script>
 <!-- Игра, формы и персонаж — ради их команд: список должен быть полным
      и здесь, а не только в мире. Сами они тут ничего не двигают, кубов на
      этой странице нет; команда из этих разделов уводит в мир. -->
-<script src="../shared/игра.js?v=20261123-437"></script>
-<script src="../shared/формы.js?v=20261123-437"></script>
-<script src="../shared/персонаж.js?v=20261123-437"></script>
-<script src="../shared/голос.js?v=20261123-437"></script>
+<script src="../shared/игра.js?v=20261124-439"></script>
+<script src="../shared/формы.js?v=20261124-439"></script>
+<script src="../shared/персонаж.js?v=20261124-439"></script>
+<script src="../shared/голос.js?v=20261124-439"></script>
 <script>
 'use strict';
 
@@ -207,7 +207,12 @@ var выборЯзыка = верх.querySelector('.гл-язык');
 
 CW.голос.следить(отметить);
 отметить();
-нарисовать();
+
+/* Первую отрисовку ждём, пока приедут слова голосовых команд: список
+   длинный, и если нарисовать его русским, а через миг переписать
+   переведённым, мигание будет видно. Словарь маленький и лежит рядом.
+   Не приехал — рисуем как есть: пустого окна быть не должно. */
+(CW.голос.слова || Promise.resolve()).then(нарисовать, нарисовать);
 
 function отметить() {
   /* Кнопка говорит, что СЕЙЧАС, а не что будет по нажатию: обычный
@@ -222,8 +227,8 @@ function отметить() {
        стойка, и переписывать всё нутро значит его потерять. */
     кнВслух.innerHTML = CW.значок(звучит ? 'звук' : 'тихо')
                       + '<span class="счёт"></span>';
-    кнВслух.title = звучит ? 'Со звуком. Выключить ответ вслух'
-                           : 'Без звука. Включить ответ вслух';
+    кнВслух.title = звучит ? Т('Со звуком. Выключить ответ вслух')
+                           : Т('Без звука. Включить ответ вслух');
     кнВслух.setAttribute('aria-label', кнВслух.title);
     кнВслух.setAttribute('aria-pressed', звучит ? 'true' : 'false');
   }
@@ -233,13 +238,13 @@ function отметить() {
   var г = ОКНО.кнопки['главная'];
   if (г) {
     г.classList.toggle('опасная', CW.голос.идёт());
-    г.title = CW.голос.идёт() ? 'Выключить микрофон' : 'Включить микрофон';
+    г.title = CW.голос.идёт() ? Т('Выключить микрофон') : Т('Включить микрофон');
     г.setAttribute('aria-label', г.title);
   }
   /* Подпись под названием — только по делу: слушает микрофон или нет.
      Без микрофона подписи нет вовсе. */
-  ОКНО.имя('Голосовые команды',
-    CW.голос.идёт() ? (CW.голос.слышит() ? 'слушаю…' : 'поднимаю микрофон…') : '');
+  ОКНО.имя(Т('Голосовые команды'),
+    CW.голос.идёт() ? (CW.голос.слышит() ? Т('слушаю…') : Т('поднимаю микрофон…')) : '');
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -261,8 +266,9 @@ function нарисовать() {
   var беда = CW.голос.беда();
   if (беда) {
     var весть = ок('div', 'гл-весть');
-    весть.innerHTML = '<b>' + CW.безопасно(Т('Микрофона здесь не будет.')) + '</b> ' + CW.безопасно(беда)
-      + ' Команды из списка всё равно делаются руками.';
+    весть.innerHTML = '<b>' + CW.безопасно(Т('Микрофона здесь не будет.')) + '</b> '
+      + CW.безопасно(беда) + ' '
+      + CW.безопасно(Т('Команды из списка всё равно делаются руками.'));
     ОКНО.тело.appendChild(весть);
   }
 
@@ -300,9 +306,9 @@ function нарисовать() {
       Т('Такой команды нет. Поищи по части слова.')));
   }
 
-  ОКНО.имя('Голосовые команды',
-           что ? ('нашлось ' + подходят.length)
-               : (CW.голос.идёт() ? 'слушаю…' : ''));
+  ОКНО.имя(Т('Голосовые команды'),
+           что ? Т.с('нашлось {н}', { н: подходят.length })
+               : (CW.голос.идёт() ? Т('слушаю…') : ''));
 }
 
 /* Выход из голосовых команд: возвращаемся ровно туда, откуда пришли.

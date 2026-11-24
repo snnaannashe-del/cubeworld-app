@@ -348,7 +348,7 @@
     куда.innerHTML = CW.формы.СПИСОК.map(function (ф) {
       return '<button type="button" class="фр-кн" data-ф="' + ф.к + '">'
            + '<canvas width="96" height="96"></canvas>'
-           + '<span>' + CW.безопасно(ф.имя) + '</span></button>';
+           + '<span>' + CW.безопасно(окно.Т ? окно.Т(ф.имя) : ф.имя) + '</span></button>';
     }).join('');
 
     [].slice.call(куда.children).forEach(function (б) {

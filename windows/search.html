@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Поиск · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261123-437">
-<link rel="stylesheet" href="../shared/style.css?v=20261123-437">
-<link rel="stylesheet" href="../shared/window.css?v=20261123-437">
-<link rel="stylesheet" href="../shared/account.css?v=20261123-437">
-<script src="../shared/theme.js?v=20261123-437"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261123-437">
+<link rel="icon" href="../icons/favicon.svg?v=20261124-439">
+<link rel="stylesheet" href="../shared/style.css?v=20261124-439">
+<link rel="stylesheet" href="../shared/window.css?v=20261124-439">
+<link rel="stylesheet" href="../shared/account.css?v=20261124-439">
+<script src="../shared/theme.js?v=20261124-439"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261124-439">
 <!--
   ПОИСК — окно поверх программы.
 
@@ -179,20 +179,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261123-437"></script>
-<script src="../shared/ui.js?v=20261123-437"></script>
-<script src="../shared/смайлы.js?v=20261123-437"></script>
-<script src="../shared/лица.js?v=20261123-437"></script>
-<script src="../shared/эфир.js?v=20261123-437"></script>
-<script src="../shared/icons.js?v=20261123-437"></script>
-<script src="../shared/window.js?v=20261123-437"></script>
-<script src="../shared/без-копий.js?v=20261123-437"></script>
-<script src="../shared/time.js?v=20261123-437"></script>
-<script src="../shared/auth.js?v=20261123-437"></script>
-<script src="../shared/lang.js?v=20261123-437"></script>
-<script src="../shared/account.js?v=20261123-437"></script>
-<script src="../shared/помощник.js?v=20261123-437"></script>
-<script src="../shared/shell.js?v=20261123-437"></script>
+<script src="../shared/api.js?v=20261124-439"></script>
+<script src="../shared/ui.js?v=20261124-439"></script>
+<script src="../shared/смайлы.js?v=20261124-439"></script>
+<script src="../shared/лица.js?v=20261124-439"></script>
+<script src="../shared/эфир.js?v=20261124-439"></script>
+<script src="../shared/icons.js?v=20261124-439"></script>
+<script src="../shared/window.js?v=20261124-439"></script>
+<script src="../shared/без-копий.js?v=20261124-439"></script>
+<script src="../shared/time.js?v=20261124-439"></script>
+<script src="../shared/auth.js?v=20261124-439"></script>
+<script src="../shared/lang.js?v=20261124-439"></script>
+<script src="../shared/account.js?v=20261124-439"></script>
+<script src="../shared/помощник.js?v=20261124-439"></script>
+<script src="../shared/shell.js?v=20261124-439"></script>
 <script>
 'use strict';
 
@@ -455,7 +455,7 @@ function помощник() {
      они повторяют то, что человек и так уже видел. */
   if (!П.разговор.length) {
     var п = ок('div', 'пм-подсказки');
-    CW.помощник.подсказки.forEach(function (в) {
+    CW.помощник.подсказки().forEach(function (в) {
       var ч = ок('button', 'пм-чип', в);
       ч.onclick = function () { спросить(в); };
       п.appendChild(ч);
@@ -673,21 +673,34 @@ function уйти() {
   CW.уйти(CW.раздел(ладно.test(откуда) ? откуда : 'feed', CW.какойКуб()));
 }
 
-/* Запрос мог приехать в адресе — из верхней строки программы. */
+/* Запрос мог приехать в адресе — из верхней строки программы.
+
+   Первый кадр ждёт слова помощника: справочник везётся отдельным
+   набором (lang/help-<язык>.js), и если нарисовать до него, подсказки
+   и каталог мелькнут по-русски и только потом станут английскими. Ждём
+   недолго — файл маленький, — а если он не приехал, рисуем как есть: по
+   английскому запасу или по русскому источнику. */
 (function () {
   var сразу = '';
   try { сразу = new URLSearchParams(location.search).get('что') || ''; } catch (е) {}
-  if (сразу) {
-    поле.value = сразу; С.ищем = сразу.trim();
-    стереть.style.visibility = 'visible';
-    показать();
-    искать();
-  } else {
-    показать();
+
+  function первыйКадр() {
+    if (сразу) {
+      поле.value = сразу; С.ищем = сразу.trim();
+      стереть.style.visibility = 'visible';
+      показать();
+      искать();
+    } else {
+      показать();
+    }
+    /* Курсор всегда в единственной строке окна: она и ищет, и
+       спрашивает. */
+    поле.focus();
   }
-  /* Курсор всегда в единственной строке окна: она и ищет, и
-     спрашивает. */
-  поле.focus();
+
+  var слова = (CW.помощник && CW.помощник.слова) || null;
+  if (слова && слова.then) слова.then(первыйКадр, первыйКадр);
+  else первыйКадр();
 })();
 
 function ок(тег, класс, текст) { return CW.эл(тег, класс, текст); }
