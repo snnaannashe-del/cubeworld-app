@@ -2347,6 +2347,8 @@ CW.словарь('fi', {
   'Панда': 'Panda',
   'Лягушка': 'Sammakko',
   'Пришелец': 'Muukalainen',
-  'Запись': 'Nauhoitus'
+  'Запись': 'Nauhoitus',
+  'У тебя пока нет кубов. Создай первый, кнопка с плюсом наверху.': 'Sinulla ei ole vielä kuutioita. Luo ensimmäinen ylhäällä olevalla plus-näppäimellä.',
+  'Список кубов не доехал. Сервер не ответил — открой окно ещё раз.': 'Kuutioiden luettelo ei tullut perille. Palvelin ei vastannut — avaa ikkuna uudestaan.'
 
 });

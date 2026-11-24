@@ -2347,6 +2347,8 @@ CW.словарь('hu', {
   'Панда': 'Panda',
   'Лягушка': 'Béka',
   'Пришелец': 'Földönkívüli',
-  'Запись': 'Felvétel'
+  'Запись': 'Felvétel',
+  'У тебя пока нет кубов. Создай первый, кнопка с плюсом наверху.': 'Még nincs kockád. Hozd létre az elsőt a fenti plusz gombbal.',
+  'Список кубов не доехал. Сервер не ответил — открой окно ещё раз.': 'A kockák listája nem érkezett meg. A kiszolgáló nem válaszolt — nyisd meg az ablakot újra.'
 
 });

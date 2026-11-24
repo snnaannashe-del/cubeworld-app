@@ -2350,6 +2350,8 @@ CW.словарь('es', {
   'Панда': 'Panda',
   'Лягушка': 'Rana',
   'Пришелец': 'Extraterrestre',
-  'Запись': 'Grabación'
+  'Запись': 'Grabación',
+  'У тебя пока нет кубов. Создай первый, кнопка с плюсом наверху.': 'Todavía no tienes cubos. Crea el primero con el botón más de arriba.',
+  'Список кубов не доехал. Сервер не ответил — открой окно ещё раз.': 'La lista de cubos no llegó. El servidor no respondió: abre la ventana otra vez.'
 
 });

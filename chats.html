@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Чаты · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261124-464">
-<link rel="stylesheet" href="shared/style.css?v=20261124-464">
-<link rel="stylesheet" href="shared/window.css?v=20261124-464">
-<link rel="stylesheet" href="shared/account.css?v=20261124-464">
-<script src="shared/theme.js?v=20261124-464"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261124-464">
+<link rel="icon" href="icons/favicon.svg?v=20261124-465">
+<link rel="stylesheet" href="shared/style.css?v=20261124-465">
+<link rel="stylesheet" href="shared/window.css?v=20261124-465">
+<link rel="stylesheet" href="shared/account.css?v=20261124-465">
+<script src="shared/theme.js?v=20261124-465"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261124-465">
 <!--
   ЧАТЫ.
 
@@ -186,31 +186,31 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261124-464"></script>
-<script src="shared/ui.js?v=20261124-464"></script>
-<script src="shared/смайлы.js?v=20261124-464"></script>
-<script src="shared/лица.js?v=20261124-464"></script>
-<script src="shared/эфир.js?v=20261124-464"></script>
-<script src="shared/icons.js?v=20261124-464"></script>
-<script src="shared/window.js?v=20261124-464"></script>
-<script src="shared/без-копий.js?v=20261124-464"></script>
-<script src="shared/time.js?v=20261124-464"></script>
-<script src="shared/auth.js?v=20261124-464"></script>
-<script src="shared/lang.js?v=20261124-464"></script>
-<script src="shared/account.js?v=20261124-464"></script>
-<script src="shared/shell.js?v=20261124-464"></script>
-<script src="shared/вложения.js?v=20261124-464"></script>
-<script src="shared/запись-голоса.js?v=20261124-464"></script>
-<script src="shared/кнопки-сообщения.js?v=20261124-464"></script>
-<script src="shared/chat.js?v=20261124-464"></script>
-<script src="shared/shelf.js?v=20261124-464"></script>
-<script src="shared/архив.js?v=20261124-464"></script>
+<script src="shared/api.js?v=20261124-465"></script>
+<script src="shared/ui.js?v=20261124-465"></script>
+<script src="shared/смайлы.js?v=20261124-465"></script>
+<script src="shared/лица.js?v=20261124-465"></script>
+<script src="shared/эфир.js?v=20261124-465"></script>
+<script src="shared/icons.js?v=20261124-465"></script>
+<script src="shared/window.js?v=20261124-465"></script>
+<script src="shared/без-копий.js?v=20261124-465"></script>
+<script src="shared/time.js?v=20261124-465"></script>
+<script src="shared/auth.js?v=20261124-465"></script>
+<script src="shared/lang.js?v=20261124-465"></script>
+<script src="shared/account.js?v=20261124-465"></script>
+<script src="shared/shell.js?v=20261124-465"></script>
+<script src="shared/вложения.js?v=20261124-465"></script>
+<script src="shared/запись-голоса.js?v=20261124-465"></script>
+<script src="shared/кнопки-сообщения.js?v=20261124-465"></script>
+<script src="shared/chat.js?v=20261124-465"></script>
+<script src="shared/shelf.js?v=20261124-465"></script>
+<script src="shared/архив.js?v=20261124-465"></script>
 <script>
 'use strict';
 
 CW.оболочка('chats').then(function (место) {
 
-var С = { входящие: [], ищем: '', сторис: false, люди: null, искать: false };
+var С = { входящие: [], ищем: '', сторис: false, люди: null, искать: false, сбой: null };
 
 var две = document.createElement('div');
 две.className = 'две-колонки';
@@ -241,19 +241,57 @@ if (CW.архив) CW.архив.загрузить().then(function () { пок�
 /* ═══════════════════════════════════════════════════════════════════════
    ЗАГРУЗКА
    ═══════════════════════════════════════════════════════════════════════ */
+/* ── «ДИАЛОГОВ НЕТ» — ЭТО БЫЛА НЕПРАВДА ──────────────────────────────
+   Когда сервер молчал, список чатов писал «Диалогов нет» и так и
+   стоял. Человеку сообщали, что его переписки пропали, хотя они на
+   месте — просто ответ не доехал. Это хуже молчания: пустой список
+   читается как потеря.
+
+   Беду ловил и этот самый загрузить(), и писал «Нет связи с
+   сервером» — но её тут же затирал архив. Архив приезжает своим
+   запросом и, приехав, зовёт показатьСписок() ещё раз; тот рисует
+   список из С.входящие, а там пусто, потому что входящие не пришли.
+   Красная строка пропадала, и на её месте выходило «Диалогов нет».
+
+   Поэтому неудачу теперь помним в С.сбой, и показатьСписок() на неё
+   смотрит: пока входящих нет и сбой стоит — рисуем беду с кнопкой
+   «Повторить», а не выдуманную пустоту. */
 function загрузить() {
+  С.сбой = null;
   CW.спросить('/dm/inbox', { сроком: 20000 })
     .then(function (д) {
       С.входящие = Array.isArray(д) ? д : ((д && д.items) || []);
+      С.сбой = null;
       показатьСписок();
     })
     .catch(function (е) {
-      левая.innerHTML = '';
-      var б = document.createElement('div');
-      б.className = 'беда';
-      б.textContent = е.сеть ? Т('Нет связи с сервером') : (е.message || Т('Не вышло открыть чаты'));
-      левая.appendChild(б);
+      С.сбой = е || true;
+      показатьБеду();
     });
+}
+
+function показатьБеду() {
+  левая.innerHTML = '';
+  var е = С.сбой;
+  var б = document.createElement('div');
+  б.className = 'беда';
+  б.textContent = (е && е.сеть) ? Т('Нет связи с сервером')
+                                : ((е && е.message) || Т('Не вышло открыть чаты'));
+  левая.appendChild(б);
+
+  /* Кнопка нужна: обновлять всю страницу ради одного запроса — лишняя
+     работа, и человек теряет место, на котором стоял. */
+  var ещё = document.createElement('button');
+  ещё.type = 'button';
+  ещё.className = 'кнопка';
+  ещё.style.cssText = 'margin:12px auto 0;display:block';
+  ещё.textContent = Т('Повторить');
+  ещё.onclick = function () {
+    левая.innerHTML = '';
+    CW.ждём(левая);
+    загрузить();
+  };
+  левая.appendChild(ещё);
 }
 
 function кусок(класс, внутри) { return CW.кусок(класс, внутри); }
@@ -262,6 +300,9 @@ function кусок(класс, внутри) { return CW.кусок(класс,
    СПИСОК ПЕРЕПИСОК
    ═══════════════════════════════════════════════════════════════════════ */
 function показатьСписок() {
+  /* Входящие не доехали — беду не затираем (см. загрузить). */
+  if (С.сбой && !(С.входящие && С.входящие.length)) { показатьБеду(); return; }
+
   левая.innerHTML = '';
 
   /* шапка */

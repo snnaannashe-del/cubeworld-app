@@ -2356,6 +2356,8 @@ CW.словарь('de', {
   'Панда': 'Panda',
   'Лягушка': 'Frosch',
   'Пришелец': 'Außerirdischer',
-  'Запись': 'Aufnahme'
+  'Запись': 'Aufnahme',
+  'У тебя пока нет кубов. Создай первый, кнопка с плюсом наверху.': 'Du hast noch keine Würfel. Erstelle den ersten mit der Plus-Schaltfläche oben.',
+  'Список кубов не доехал. Сервер не ответил — открой окно ещё раз.': 'Die Liste der Würfel kam nicht an. Der Server hat nicht geantwortet — öffne das Fenster noch einmal.'
 
 });

@@ -2347,6 +2347,8 @@ CW.словарь('id', {
   'Панда': 'Panda',
   'Лягушка': 'Katak',
   'Пришелец': 'Makhluk asing',
-  'Запись': 'Rekaman'
+  'Запись': 'Rekaman',
+  'У тебя пока нет кубов. Создай первый, кнопка с плюсом наверху.': 'Kamu belum punya kubus. Buat yang pertama dengan tombol plus di atas.',
+  'Список кубов не доехал. Сервер не ответил — открой окно ещё раз.': 'Daftar kubus tidak sampai. Server tidak menjawab — buka jendelanya lagi.'
 
 });

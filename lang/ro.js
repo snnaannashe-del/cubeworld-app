@@ -2347,6 +2347,8 @@ CW.словарь('ro', {
   'Панда': 'Panda',
   'Лягушка': 'Broască',
   'Пришелец': 'Extraterestru',
-  'Запись': 'Înregistrare'
+  'Запись': 'Înregistrare',
+  'У тебя пока нет кубов. Создай первый, кнопка с плюсом наверху.': 'Încă nu ai cuburi. Creează-l pe primul cu butonul plus de sus.',
+  'Список кубов не доехал. Сервер не ответил — открой окно ещё раз.': 'Lista de cuburi nu a ajuns. Serverul nu a răspuns — deschide fereastra încă o dată.'
 
 });

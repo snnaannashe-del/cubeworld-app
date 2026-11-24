@@ -2347,6 +2347,8 @@ CW.словарь('tr', {
   'Панда': 'Panda',
   'Лягушка': 'Kurbağa',
   'Пришелец': 'Uzaylı',
-  'Запись': 'Kayıt'
+  'Запись': 'Kayıt',
+  'У тебя пока нет кубов. Создай первый, кнопка с плюсом наверху.': 'Henüz küpün yok. İlkini yukarıdaki artı düğmesiyle oluştur.',
+  'Список кубов не доехал. Сервер не ответил — открой окно ещё раз.': 'Küplerin listesi gelmedi. Sunucu yanıt vermedi — pencereyi yeniden aç.'
 
 });

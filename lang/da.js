@@ -2347,6 +2347,8 @@ CW.словарь('da', {
   'Панда': 'Panda',
   'Лягушка': 'Frø',
   'Пришелец': 'Rumvæsen',
-  'Запись': 'Optagelse'
+  'Запись': 'Optagelse',
+  'У тебя пока нет кубов. Создай первый, кнопка с плюсом наверху.': 'Du har ingen kuber endnu. Lav den første med plusknappen øverst.',
+  'Список кубов не доехал. Сервер не ответил — открой окно ещё раз.': 'Listen over kuber kom ikke frem. Serveren svarede ikke — åbn vinduet igen.'
 
 });

@@ -2347,6 +2347,8 @@ CW.словарь('pl', {
   'Панда': 'Panda',
   'Лягушка': 'Żaba',
   'Пришелец': 'Przybysz',
-  'Запись': 'Nagranie'
+  'Запись': 'Nagranie',
+  'У тебя пока нет кубов. Создай первый, кнопка с плюсом наверху.': 'Nie masz jeszcze kostek. Stwórz pierwszą przyciskiem z plusem u góry.',
+  'Список кубов не доехал. Сервер не ответил — открой окно ещё раз.': 'Lista kostek nie dojechała. Serwer nie odpowiedział — otwórz okno jeszcze raz.'
 
 });

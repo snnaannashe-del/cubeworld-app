@@ -2347,6 +2347,8 @@ CW.словарь('cs', {
   'Панда': 'Panda',
   'Лягушка': 'Žába',
   'Пришелец': 'Mimozemšťan',
-  'Запись': 'Nahrávka'
+  'Запись': 'Nahrávka',
+  'У тебя пока нет кубов. Создай первый, кнопка с плюсом наверху.': 'Zatím nemáš žádné kostky. Vytvoř první tlačítkem s plusem nahoře.',
+  'Список кубов не доехал. Сервер не ответил — открой окно ещё раз.': 'Seznam kostek nedorazil. Server neodpověděl — otevři okno ještě jednou.'
 
 });

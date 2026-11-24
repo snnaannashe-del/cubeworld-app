@@ -2347,6 +2347,8 @@ CW.словарь('nl', {
   'Панда': 'Panda',
   'Лягушка': 'Kikker',
   'Пришелец': 'Buitenaards wezen',
-  'Запись': 'Opname'
+  'Запись': 'Opname',
+  'У тебя пока нет кубов. Создай первый, кнопка с плюсом наверху.': 'Je hebt nog geen kubussen. Maak de eerste met de plusknop bovenaan.',
+  'Список кубов не доехал. Сервер не ответил — открой окно ещё раз.': 'De lijst met kubussen kwam niet aan. De server antwoordde niet — open het venster opnieuw.'
 
 });
