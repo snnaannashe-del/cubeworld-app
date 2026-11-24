@@ -2203,6 +2203,43 @@ CW.словарь('en', {
   'Файл больше {предел} КБ': 'The file is larger than {предел} KB',
   'Не получилось сменить форму. Либо куб не твой, либо форма неизвестна, либо для картинки не пришла ссылка.': 'Could not change the shape. Either the cube is not yours, or the shape is unknown, or no link came for the picture.',
   'Товар уже кому-то достался — насовсем удалить нельзя. Снял с витрины: новых покупок не будет, а у получивших он останется.': 'Someone has already got this item — it cannot be deleted for good. Taken off the showcase: there will be no new purchases, and those who got it keep it.',
-  'Удалён': 'Deleted'
+  'Удалён': 'Deleted',
+
+  /* ── намёки в полях и имена полок ──
+     Намёк переводится в одной точке — в CW.поля (shared/window.js),
+     имя полки — в CW.разделы.рисовать там же. Поэтому ключом стоит
+     сама русская строка, как её пишут в окне. */
+  'Название и описание': 'Name and description',
+  'Вид куба': 'Kind of cube',
+  'Тип': 'Type',
+  'например 16': 'for example 16',
+  'Да, согласен': 'Yes, I agree',
+  'Промокод CUBE2026': 'Promo code CUBE2026',
+  'Что продаёшь': 'What you are selling',
+  'Что внутри, кому пригодится, что нужно знать': 'What is inside, who it suits, what to know',
+  '0: бесплатно': '0: free',
+  'через пробел': 'separated by spaces',
+  'Ключ, промокод, ссылка, инструкция…': 'Key, promo code, link, instructions…',
+  'Цена и теги': 'Price and tags',
+  'Что получает покупатель': 'What the buyer gets',
+  'Файлы товара': 'Item files',
+  'Необязательно, но помогает разобраться': 'Optional, but it helps to understand',
+  '0x… адрес кошелька': '0x… wallet address',
+  'Действия': 'Actions',
+  'Формы предметов': 'Object shapes',
+  'Персонаж': 'Character',
+  'Свои действия': 'Your own actions',
+  '0: подписки нет': '0: no subscription',
+  'Почему именно так': 'Why exactly this way',
+  'Необязательно: получатель её увидит': 'Optional: the recipient will see it',
+  'Страна, город, улица, дом, получатель': 'Country, city, street, house, recipient',
+  'Необязательно': 'Optional',
+  'Видео и обложка': 'Video and cover',
+  'Фото или файл': 'Photo or file',
+  'Подпись': 'Caption',
+  'Видно всем в списке эфиров': 'Visible to everyone in the list of streams',
+  'Кто входит и насколько': 'Who gets in and for how long',
+  'Как он выглядит': 'How it looks',
+  'Ключ куба (Key 2)': 'Cube key (Key 2)'
 
 });
