@@ -2152,6 +2152,57 @@ CW.словарь('en', {
   'Юзернейм: 4-24 символа, только a-z 0-9 _': 'Username: 4-24 characters, only a-z 0-9 _',
   'Сервер ответил ': 'The server answered ',
   'Сервер не ответил за ': 'The server did not answer in ',
-  'с': 's'
+  'с': 's',
+
+  /* ── ответы сервера со вставками ──
+     Сервер отдаёт такую беду не склеенной строкой, а фразой и числами
+     отдельно (сила ошибка() в main.py). Поэтому ключ здесь — с пустыми
+     местами, и подставляются они уже после перевода. Имена вставок
+     менять нельзя: по ним сервер и кладёт числа. */
+  'Фото слишком большое: {сколько} КБ, максимум {предел} КБ. Уменьши картинку.': 'The photo is too large: {сколько} KB, maximum {предел} KB. Shrink the picture.',
+  'Больше {предел} кошельков привязать нельзя': 'You cannot link more than {предел} wallets',
+  'На сегодня хватит: {что}, {предел} в сутки. Счётчик обнулится в полночь по UTC.': 'That is enough for today: {что}, {предел} per day. The counter resets at midnight UTC.',
+  'Сумма от {от} до {до} CUBE': 'Amount from {от} to {до} CUBE',
+  'На счету только {сколько} CUBE': 'Only {сколько} CUBE in the balance',
+  'За сутки можно перевести {предел} CUBE. Сегодня осталось {осталось}': 'You can transfer {предел} CUBE per day. {осталось} left today',
+  'Нужно {нужно} CUBE, на счету {есть}': 'You need {нужно} CUBE, the balance is {есть}',
+  'Файл больше {предел} МБ': 'The file is larger than {предел} MB',
+  'Ролик в ленту не длиннее {предел} секунд': 'A clip for the feed is no longer than {предел} seconds',
+  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 10, Голд — 33.': 'On the {тариф} plan you get {предел} of your own cubes at a time, and they are taken. Silver — 10, Gold — 33.',
+  '{что}: в Сильвер и Голд. Сейчас у тебя {тариф}.': '{что}: in Silver and Gold. You are on {тариф} right now.',
+  '{тариф} включается после оплаты у платёжного провайдера.': '{тариф} starts after the payment at the payment provider.',
+  'Нет котировок по паре {пара}': 'No quotes for the pair {пара}',
+  'У тебя уже {сколько} открытых сигнала. Дождись их закрытия.': 'You already have {сколько} open signals. Wait for them to close.',
+  'По {пара} у тебя уже есть открытый сигнал': 'You already have an open signal on {пара}',
+  'Нет котировок по паре {пара}. Сигнал без котировок закрыть нечем.': 'No quotes for the pair {пара}. There is nothing to close a signal with.',
+  '{что} слишком близко к входу: минимум 0.1%': '{что} is too close to the entry: at least 0.1%',
+  '{что} дальше 50% от входа: так не бывает': '{что} is further than 50% from the entry: that does not happen',
+  'Не хватает CUBE: на балансе {есть}': 'Not enough CUBE: the balance is {есть}',
+  'Платная подписка открывается после {сколько} закрытых сигналов. Осталось {осталось}.': 'A paid subscription opens after {сколько} closed signals. {осталось} to go.',
+  'Не хватает CUBE: на балансе {есть}, нужно {нужно}': 'Not enough CUBE: the balance is {есть}, you need {нужно}',
+  'Больше {предел} товаров в продаже одновременно держать нельзя': 'You cannot keep more than {предел} items on sale at once',
+  'Цена от 0 до {предел} CUBE': 'Price from 0 to {предел} CUBE',
+  'Больше {предел} файлов к одному товару приложить нельзя': 'You cannot attach more than {предел} files to one item',
+  'Не влезает: на товар всего {предел} МБ, занято {занято} МБ': 'It does not fit: an item holds {предел} MB in all, {занято} MB taken',
+  'Не хватает CUBE: нужно {нужно}, на балансе {есть}': 'Not enough CUBE: you need {нужно}, the balance is {есть}',
+  'Меньше ${предел} не меняем': 'We do not exchange less than ${предел}',
+  'На сегодня по этой стороне осталось ${осталось}': '${осталось} left on this side for today',
+  'Вывести можно только заработанное: доступно {сколько} CUBE. Наградные CUBE тратятся внутри площадки.': 'Only what you earned can be withdrawn: {сколько} CUBE available. Reward CUBE is spent inside the platform.',
+  'Не хватает CUBE: нужно {нужно}, есть {есть}. Пополнить можно в кошельке.': 'Not enough CUBE: you need {нужно}, you have {есть}. You can top up in the wallet.',
+  'Больше {предел} карточек одновременно держать нельзя': 'You cannot keep more than {предел} cards at once',
+  'Больше {предел} товаров одновременно в продаже держать нельзя': 'You cannot keep more than {предел} items on sale at once',
+  'Столько нет: осталось {сколько} шт': 'There are not that many: {сколько} left',
+  'К одному товару можно приложить {предел} снимков и роликов': 'You can attach {предел} photos and clips to one item',
+  'Ролик длиннее {предел} секунд': 'The clip is longer than {предел} seconds',
+  'Снимков можно не больше {предел}': 'No more than {предел} photos',
+  'Нужно {нужно} CUBE, на балансе {есть}. Пополнить можно в кошельке.': 'You need {нужно} CUBE, the balance is {есть}. You can top up in the wallet.',
+  'Нужно {нужно} CUBE, на балансе {есть}': 'You need {нужно} CUBE, the balance is {есть}',
+  'Список папок не прочитался: {почему}': 'The folder list could not be read: {почему}',
+  'Папок уже {сколько}, больше {предел} не держим — удали ненужные': 'You already have {сколько} folders, we do not keep more than {предел} — delete the ones you do not need',
+  'Папка не создалась: {почему}': 'The folder was not created: {почему}',
+  'Файл больше {предел} КБ': 'The file is larger than {предел} KB',
+  'Не получилось сменить форму. Либо куб не твой, либо форма неизвестна, либо для картинки не пришла ссылка.': 'Could not change the shape. Either the cube is not yours, or the shape is unknown, or no link came for the picture.',
+  'Товар уже кому-то достался — насовсем удалить нельзя. Снял с витрины: новых покупок не будет, а у получивших он останется.': 'Someone has already got this item — it cannot be deleted for good. Taken off the showcase: there will be no new purchases, and those who got it keep it.',
+  'Удалён': 'Deleted'
 
 });
