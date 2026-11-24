@@ -356,7 +356,7 @@
     if (к.дело === 'окно')   return 'Окно: ' + словом(ОКНА, к.знач);
     if (к.дело === 'человек')return 'Портфолио #' + к.знач;
     if (к.дело === 'ссылка') return к.знач;
-    return д.имя;
+    return Т(д.имя);
   }
 
   function словом(список, ключ) {
@@ -593,7 +593,7 @@
     ДЕЛА.forEach(function (д) {
       var о = документ.createElement('option');
       о.value = д.к;
-      о.textContent = д.имя;
+      о.textContent = Т(д.имя);
       что.appendChild(о);
     });
     что.value = К.дело;
