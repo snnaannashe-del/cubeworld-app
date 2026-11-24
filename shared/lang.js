@@ -432,7 +432,8 @@
     help:  {
       'en': 1, 'es': 1, 'pt': 1, 'fr': 1, 'de': 1, 'it': 1,
       'pl': 1, 'uk': 1, 'nl': 1, 'tr': 1, 'zh-Hans': 1,
-      'zh-Hant': 1, 'ja': 1, 'ko': 1
+      'zh-Hant': 1, 'ja': 1, 'ko': 1, 'ar': 1, 'hi': 1,
+      'vi': 1, 'id': 1
     },
     voice: {
       'en': 1, 'es': 1, 'de': 1, 'fr': 1, 'pt': 1, 'it': 1, 'nl': 1,
