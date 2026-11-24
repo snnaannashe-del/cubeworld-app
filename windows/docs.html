@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Документы · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261124-449">
-<link rel="stylesheet" href="../shared/style.css?v=20261124-449">
-<link rel="stylesheet" href="../shared/window.css?v=20261124-449">
-<link rel="stylesheet" href="../shared/account.css?v=20261124-449">
-<script src="../shared/theme.js?v=20261124-449"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261124-449">
+<link rel="icon" href="../icons/favicon.svg?v=20261124-450">
+<link rel="stylesheet" href="../shared/style.css?v=20261124-450">
+<link rel="stylesheet" href="../shared/window.css?v=20261124-450">
+<link rel="stylesheet" href="../shared/account.css?v=20261124-450">
+<script src="../shared/theme.js?v=20261124-450"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261124-450">
 <!--
   ДОКУМЕНТЫ — окно поверх программы, со своим адресом.
 
@@ -43,7 +43,7 @@
 
 .дк-полка{
   flex:0 0 260px; min-width:0; padding:12px 10px 16px;
-  border-right:1px solid var(--край);
+  border-inline-end:1px solid var(--край);
   overflow-y:auto; overscroll-behavior:contain;
   display:flex; flex-direction:column; gap:4px;
 }
@@ -56,7 +56,7 @@
 @media (max-width:760px){
   .дк-два{ flex-direction:column; height:auto; }
   .дк-полка{
-    flex:0 0 auto; border-right:none; border-bottom:1px solid var(--край);
+    flex:0 0 auto; border-inline-end:none; border-bottom:1px solid var(--край);
     max-height:none; overflow:visible;
   }
 }
@@ -65,7 +65,7 @@
   display:flex; align-items:center; gap:11px; width:100%;
   padding:8px 10px; border:1px solid transparent; border-radius:13px;
   cursor:pointer; background:none; color:var(--текст2); font:inherit;
-  font-size:0.8667rem; text-align:left; line-height:1.3;
+  font-size:0.8667rem; text-align:start; line-height:1.3;
   transition:background .14s, border-color .14s, transform .12s;
 }
 .дк-пункт:hover{ background:rgba(255,255,255,.06); transform:translateX(2px); }
@@ -118,7 +118,7 @@
 }
 
 .дк-текст h3{
-  position:relative; margin:24px 0 9px; padding-left:12px;
+  position:relative; margin:24px 0 9px; padding-inline-start:12px;
   font-size:1rem; font-weight:800; color:var(--текст); letter-spacing:-.005em;
 }
 .дк-текст h3::before{
@@ -129,7 +129,7 @@
 .дк-текст p{ margin:0 0 13px; }
 /* Первый абзац документа — всегда короткая суть, поэтому он врезкой. */
 .дк-текст h3:first-of-type + p{
-  background:rgba(74,158,255,.09); border-left:3px solid var(--синий);
+  background:rgba(74,158,255,.09); border-inline-start:3px solid var(--синий);
   border-radius:0 12px 12px 0; padding:12px 15px; margin:0 0 18px;
   color:var(--текст);
 }
@@ -139,7 +139,7 @@
   background:rgba(74,158,255,.14); color:var(--синий);
   border:1px solid rgba(74,158,255,.22); border-radius:7px; padding:2px 7px;
 }
-.дк-текст ul{ margin:0 0 13px; padding-left:20px; }
+.дк-текст ul{ margin:0 0 13px; padding-inline-start:20px; }
 .дк-текст li{ margin-bottom:6px; }
 .дк-текст table{
   width:100%; border-collapse:separate; border-spacing:0; margin:6px 0 18px;
@@ -147,13 +147,13 @@
   overflow:hidden;
 }
 .дк-текст th{
-  padding:9px 12px; text-align:left; vertical-align:top;
+  padding:9px 12px; text-align:start; vertical-align:top;
   background:rgba(74,158,255,.16); color:var(--синий);
   font-size:0.7rem; letter-spacing:.06em; text-transform:uppercase;
   font-weight:700; border:none;
 }
 .дк-текст td{
-  padding:9px 12px; text-align:left; vertical-align:top;
+  padding:9px 12px; text-align:start; vertical-align:top;
   border:none; border-bottom:1px solid var(--край);
 }
 .дк-текст tr:last-child td{ border-bottom:none; }
@@ -162,20 +162,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261124-449"></script>
-<script src="../shared/ui.js?v=20261124-449"></script>
-<script src="../shared/смайлы.js?v=20261124-449"></script>
-<script src="../shared/лица.js?v=20261124-449"></script>
-<script src="../shared/эфир.js?v=20261124-449"></script>
-<script src="../shared/icons.js?v=20261124-449"></script>
-<script src="../shared/window.js?v=20261124-449"></script>
-<script src="../shared/без-копий.js?v=20261124-449"></script>
-<script src="../shared/time.js?v=20261124-449"></script>
-<script src="../shared/auth.js?v=20261124-449"></script>
-<script src="../shared/lang.js?v=20261124-449"></script>
-<script src="../shared/account.js?v=20261124-449"></script>
-<script src="../shared/shell.js?v=20261124-449"></script>
-<script src="../shared/docs.js?v=20261124-449"></script>
+<script src="../shared/api.js?v=20261124-450"></script>
+<script src="../shared/ui.js?v=20261124-450"></script>
+<script src="../shared/смайлы.js?v=20261124-450"></script>
+<script src="../shared/лица.js?v=20261124-450"></script>
+<script src="../shared/эфир.js?v=20261124-450"></script>
+<script src="../shared/icons.js?v=20261124-450"></script>
+<script src="../shared/window.js?v=20261124-450"></script>
+<script src="../shared/без-копий.js?v=20261124-450"></script>
+<script src="../shared/time.js?v=20261124-450"></script>
+<script src="../shared/auth.js?v=20261124-450"></script>
+<script src="../shared/lang.js?v=20261124-450"></script>
+<script src="../shared/account.js?v=20261124-450"></script>
+<script src="../shared/shell.js?v=20261124-450"></script>
+<script src="../shared/docs.js?v=20261124-450"></script>
 <script>
 'use strict';
 

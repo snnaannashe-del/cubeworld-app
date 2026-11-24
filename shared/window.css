@@ -126,7 +126,7 @@
   position:relative;               /* якорь для своей палитры цвета */
   width:100%; max-width:none; max-height:76%;
   border-radius:18px 18px 0 0;
-  border-left:none; border-right:none; border-bottom:none;
+  border-inline-start:none; border-inline-end:none; border-bottom:none;
   animation:ок-снизу .2s cubic-bezier(.2,.8,.3,1);
 }
 .ок-подложка.вкадре .ок-окно.лежачее{ margin:0; }
@@ -153,7 +153,7 @@
   left:0; right:0; bottom:0; top:auto;
   min-width:0; max-height:76%; overflow-y:auto;
   border-radius:18px 18px 0 0;
-  border-left:none; border-right:none; border-bottom:none;
+  border-inline-start:none; border-inline-end:none; border-bottom:none;
   animation:ок-снизу .2s cubic-bezier(.2,.8,.3,1);
 }
 @keyframes ок-снизу{ from{ transform:translateY(16px); opacity:0 } to{ transform:none; opacity:1 } }
@@ -828,7 +828,7 @@
 .вщ-шапка:hover{ color:var(--текст); }
 .вщ-стрелка,
 .вщ-шапка .шев{
-  margin-left:auto; flex:0 0 auto; display:flex; color:inherit;
+  margin-inline-start:auto; flex:0 0 auto; display:flex; color:inherit;
   transform:rotate(90deg); transition:transform .16s;
 }
 .вщ-стрелка svg,
@@ -934,7 +934,7 @@ textarea.вщ-строка{ resize:vertical; min-height:88px; line-height:1.5; }
 .вщ-формы{
   flex:1; min-width:0; max-height:208px; overflow-y:auto;
   display:grid; grid-template-columns:repeat(3,1fr); gap:7px;
-  padding-right:2px;
+  padding-inline-end:2px;
 }
 .вщ-форма{
   display:flex; flex-direction:column; align-items:center; gap:3px;
@@ -1005,7 +1005,7 @@ textarea.вщ-строка{ resize:vertical; min-height:88px; line-height:1.5; }
      и та же вещь — строка, за которой открывается список. */
   padding:9px 12px; border-radius:10px; font:inherit; font-size:0.9333rem;
   border:1px solid var(--край); background:var(--поле); color:var(--текст);
-  text-align:left;
+  text-align:start;
 }
 .тв-выбор:hover{ border-color:var(--край2); }
 .тв-выбор .зн{ display:flex; flex:0 0 auto; color:var(--синий); }
@@ -1338,7 +1338,7 @@ textarea.нп-строка{ resize:vertical; min-height:92px; line-height:1.5; }
 /* Название окна стоит в самом теле, а не в шапке: шапка с её чертой и
    кружком значка была здесь лишней рамой. Выход — крестик в углу. */
 .подп-шапка{
-  display:flex; align-items:center; gap:9px; margin:0 0 14px; padding-right:34px;
+  display:flex; align-items:center; gap:9px; margin:0 0 14px; padding-inline-end:34px;
 }
 .подп-шапка .зн{ display:flex; flex:0 0 auto; color:#0095F6; }
 .подп-шапка b{ display:block; font-size:19px; font-weight:800; }
@@ -1350,7 +1350,7 @@ textarea.нп-строка{ resize:vertical; min-height:92px; line-height:1.5; }
 }
 .подп-плитка{
   position:relative; display:flex; flex-direction:column; gap:1px;
-  align-items:flex-start; text-align:left;
+  align-items:flex-start; text-align:start;
   padding:13px 13px 12px; border-radius:15px; cursor:pointer;
   border:1px solid var(--край); background:var(--поле);
   color:var(--текст); font:inherit;
@@ -1535,13 +1535,13 @@ textarea.нп-строка{ resize:vertical; min-height:92px; line-height:1.5; }
    жёлтым, мелко, сразу за временем, в одной строке с именем. Отдельной
    строкой под текстом он разрывал комментарий надвое. */
 .км-строка .срок{ font-size:0.7333rem; color:var(--жёлтый);
-  margin-left:6px; white-space:nowrap; }
+  margin-inline-start:6px; white-space:nowrap; }
 
 .км-строка{ display:flex; gap:10px; padding:7px 10px 7px 0;
   align-items:flex-start; }
 .км-строка .тело{ flex:1; min-width:0; }
 .км-строка .кто{ font-size:0.8rem; color:var(--текст3); margin-bottom:3px; }
-.км-строка .кто b{ color:var(--текст); font-weight:600; margin-right:6px; }
+.км-строка .кто b{ color:var(--текст); font-weight:600; margin-inline-end:6px; }
 .км-строка .что{ font-size:0.9333rem; line-height:1.5; word-break:break-word; }
 /* Пометки формата, которые разбирает CW.сРазметкой. Жирный, курсив и
    зачёркнутый браузер рисует сам, а «коду» нужен свой вид: иначе он
@@ -1564,7 +1564,7 @@ textarea.нп-строка{ resize:vertical; min-height:92px; line-height:1.5; }
 
 /* Ответ — тот же ряд, только с отступом и чертой слева: видно, что
    это ветка, а не отдельный комментарий. */
-.км-ответы{ padding-left:16px; border-left:1px solid var(--край); margin-left:15px; }
+.км-ответы{ padding-inline-start:16px; border-inline-start:1px solid var(--край); margin-inline-start:15px; }
 .км-ответы.спрятано{ display:none; }
 .км-строка.ответ .что{ font-size:0.8667rem; }
 .км-свернуть{
@@ -1707,7 +1707,7 @@ textarea.нп-строка{ resize:vertical; min-height:92px; line-height:1.5; }
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .юн-погас{
-  font-style:normal; font-size:0.6667rem; margin-left:6px;
+  font-style:normal; font-size:0.6667rem; margin-inline-start:6px;
   padding:1px 6px; border-radius:5px;
   background:rgba(255,59,48,.18); color:var(--красный);
 }
@@ -2006,7 +2006,7 @@ textarea.нп-строка{ resize:vertical; min-height:92px; line-height:1.5; }
 .переслать-строка{
   display:flex; align-items:center; gap:11px; width:100%; padding:9px 8px;
   border:none; background:none; cursor:pointer; border-radius:12px;
-  text-align:left; color:var(--текст);
+  text-align:start; color:var(--текст);
 }
 .переслать-строка:hover{ background:var(--поле); }
 .переслать-строка:disabled{ opacity:.5; cursor:default; }
@@ -2026,7 +2026,7 @@ textarea.нп-строка{ resize:vertical; min-height:92px; line-height:1.5; }
 /* ── ГАЛОЧКИ ──
    Одна «доставлено», две «прочитано». Стоят в строке времени, сразу
    за ним, и у прочитанного синеют: так это читают без объяснений. */
-.пузырь .время .галки{ margin-left:5px; letter-spacing:-2px; }
+.пузырь .время .галки{ margin-inline-start:5px; letter-spacing:-2px; }
 .пузырь .время .галки.прочитано{ color:var(--синий); opacity:1; }
 
 /* Окно перевода: сам перевод крупно, под ним кнопка «Скопировать».
@@ -2104,7 +2104,7 @@ textarea.нп-строка{ resize:vertical; min-height:92px; line-height:1.5; }
    Скрытый — тёмная плашка: букв не видно, пока по ней не нажмут. Так
    прячут спойлер, и так же это сделано в работающей программе. */
 .цитата{
-  display:block; border-left:3px solid var(--синий); padding-left:9px;
+  display:block; border-inline-start:3px solid var(--синий); padding-inline-start:9px;
   margin:2px 0; color:var(--текст2);
 }
 .скрытый{
@@ -2398,7 +2398,7 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
   display:flex; align-items:center;
   justify-content:center; overflow:hidden; position:relative;
 }
-.эф-про{ display:flex; flex-direction:column; min-width:0; margin-right:auto; }
+.эф-про{ display:flex; flex-direction:column; min-width:0; margin-inline-end:auto; }
 .эф-про b{ font-size:0.9667rem; }
 .эф-назв{
   font-size:0.7667rem; color:var(--текст3);
@@ -2469,7 +2469,7 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
 .эф-кадр video{ width:100%; height:100%; object-fit:cover; display:block; }
 .эф-бок{
   width:330px; flex:0 0 330px; display:flex; flex-direction:column;
-  border-left:1px solid var(--край); min-height:0;
+  border-inline-start:1px solid var(--край); min-height:0;
 }
 .эф-лента{
   flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain;
@@ -2671,7 +2671,7 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
   display:flex; align-items:center; gap:10px;
   padding:12px 14px 8px; font-size:0.8667rem; color:var(--текст2);
 }
-.эф-полка-имя{ margin-right:auto; }
+.эф-полка-имя{ margin-inline-end:auto; }
 .эф-полка-имя b{ color:var(--жёлтый); }
 /* Тот же кругляш, что в шапке окна: в покое линия, под рукой подложка.
    Держать здесь свой вид незачем — это такой же выход. */
@@ -2787,7 +2787,7 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
   .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-бок{
     position:absolute; left:0; right:0; bottom:0; z-index:5;
     width:auto; flex:none; max-height:66%;
-    border-left:none; border-top:none;
+    border-inline-start:none; border-top:none;
     padding-bottom:var(--низ-край);
     background:linear-gradient(rgba(3,4,10,0), rgba(3,4,10,.62) 22%, rgba(3,4,10,.93));
   }
@@ -2901,7 +2901,7 @@ select.кб-строка{ cursor:pointer; }
   display:flex; align-items:center; gap:11px; width:100%; cursor:pointer;
   padding:9px 13px; border-radius:11px;
   border:1px solid var(--край); background:var(--поле);
-  color:var(--текст); font:inherit; font-size:0.9333rem; text-align:left;
+  color:var(--текст); font:inherit; font-size:0.9333rem; text-align:start;
 }
 .кб-курок:hover{ border-color:var(--край2); }
 .кб-лицо{
@@ -3038,7 +3038,7 @@ select.кб-строка{ cursor:pointer; }
   display:flex; align-items:center; gap:11px; width:100%; cursor:pointer;
   padding:10px 12px; margin-bottom:8px; border-radius:12px;
   border:1px solid var(--край); background:var(--поле);
-  color:var(--текст); font:inherit; text-align:left;
+  color:var(--текст); font:inherit; text-align:start;
 }
 .кл-дело:hover{ border-color:var(--край2); }
 .кл-дело .зн{
@@ -3272,7 +3272,7 @@ select.кб-строка{ cursor:pointer; }
 .св-сохранить{ width:100%; margin-top:14px; }
 .св-своё{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
 .св-пуск{
-  flex:1 1 0; min-width:0; text-align:left; cursor:pointer;
+  flex:1 1 0; min-width:0; text-align:start; cursor:pointer;
   padding:9px 12px; border-radius:11px;
   border:1px solid var(--край); background:var(--поле);
   color:var(--текст); font:inherit;
@@ -3536,7 +3536,7 @@ select.кб-строка{ cursor:pointer; }
   display:flex; align-items:center; gap:9px; width:100%;
   padding:7px 10px; margin-bottom:5px; border-radius:11px; cursor:pointer;
   border:1px solid var(--край); background:var(--поле);
-  color:var(--текст); font:inherit; text-align:left;
+  color:var(--текст); font:inherit; text-align:start;
 }
 .пп-вид:hover{ border-color:rgba(74,158,255,.45); background:rgba(74,158,255,.07); }
 .пп-вид .зн{ flex:0 0 20px; display:flex; color:var(--синий); }
@@ -3562,7 +3562,7 @@ select.кб-строка{ cursor:pointer; }
   outline:none;
 }
 .пп-текст:focus{ border-color:var(--синий); }
-.пп-счёт{ font-size:0.7333rem; color:var(--текст3); margin-top:8px; text-align:right; }
+.пп-счёт{ font-size:0.7333rem; color:var(--текст3); margin-top:8px; text-align:end; }
 
 /* «Вернуть» в архиве — словом, а не значком: действие редкое, и
    угадывать значок человеку тут незачем. */
@@ -3613,7 +3613,7 @@ select.кб-строка{ cursor:pointer; }
   border-radius:3px; background:var(--синий);
 }
 .му-плеер .точка{
-  position:absolute; top:50%; left:0; width:13px; height:13px; margin-left:-6.5px;
+  position:absolute; top:50%; left:0; width:13px; height:13px; margin-inline-start:-6.5px;
   border-radius:50%; background:#fff; transform:translateY(-50%);
   box-shadow:0 1px 6px rgba(0,0,0,.6); pointer-events:none;
 }
@@ -3685,7 +3685,7 @@ select.кб-строка{ cursor:pointer; }
 .авт-оценка{ display:inline-flex; align-items:center; gap:6px; min-width:0; }
 .авт-оценка b{ color:var(--текст); font-size:0.8333rem; }
 .авт-оценка span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.авт-кн-отзывы{ margin-left:auto; padding:5px 11px; font-size:0.7667rem;
+.авт-кн-отзывы{ margin-inline-start:auto; padding:5px 11px; font-size:0.7667rem;
   white-space:nowrap; }
 
 .авт-раздел{
@@ -3710,7 +3710,7 @@ select.кб-строка{ cursor:pointer; }
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .авт-ряд .итог{
-  margin-left:auto; flex:0 0 auto;
+  margin-inline-start:auto; flex:0 0 auto;
   font-family:ui-monospace,Menlo,monospace; font-weight:800;
   font-variant-numeric:tabular-nums;
 }
@@ -3903,7 +3903,7 @@ select.кб-строка{ cursor:pointer; }
   padding:0 4px; white-space:nowrap;
 }
 /* В полосе редактора счёт прижат к правому концу. */
-.фл-полоса .фл-счёт{ margin-left:auto; }
+.фл-полоса .фл-счёт{ margin-inline-start:auto; }
 
 /* Тело окна файла не прокручивается: своё прокручивает каждый
    редактор. Иначе справа стоят две полосы разом.
@@ -3974,11 +3974,11 @@ select.кб-строка{ cursor:pointer; }
   font-size:var(--код-кегль); line-height:var(--код-строка); white-space:pre;
 }
 .фл-строки{
-  flex:0 0 auto; overflow:hidden; text-align:right; user-select:none;
+  flex:0 0 auto; overflow:hidden; text-align:end; user-select:none;
   padding:14px 8px 14px 14px; white-space:pre;
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   font-size:var(--код-кегль); line-height:var(--код-строка); color:var(--текст3);
-  border-right:1px solid var(--край);
+  border-inline-end:1px solid var(--край);
 }
 
 /* Полотно таблицы: прокручивается само, окно стоит на месте. */
@@ -4023,19 +4023,19 @@ select.кб-строка{ cursor:pointer; }
 .фл-табл th{
   font-size:0.7333rem; font-weight:600; color:var(--текст3);
   background:var(--полоса); padding:4px 7px; text-align:center;
-  border-right:1px solid var(--край); border-bottom:1px solid var(--край);
+  border-inline-end:1px solid var(--край); border-bottom:1px solid var(--край);
 }
 .фл-табл thead th{ position:sticky; top:0; z-index:3; }
 .фл-табл tbody th{ position:sticky; left:0; z-index:2; }
 /* Угол — над обоими: он прилипает и к верху, и к левому краю. */
 .фл-табл thead th:first-child{ left:0; z-index:4; }
 .фл-табл th:first-child, .фл-табл td:first-child{
-  border-left:1px solid var(--край);
+  border-inline-start:1px solid var(--край);
 }
 .фл-табл thead th{ border-top:1px solid var(--край); }
 .фл-табл td{
   padding:0; background:var(--фон);
-  border-right:1px solid var(--край); border-bottom:1px solid var(--край);
+  border-inline-end:1px solid var(--край); border-bottom:1px solid var(--край);
 }
 .фл-табл input{
   border:none; outline:none; background:transparent; color:var(--текст);
@@ -4156,7 +4156,7 @@ canvas.фл-холст{
 .фл-лист.фл-слайд.пусто:before{ left:30px; top:26px; }
 .фл-лист h1{ font-size:1.6rem; margin:.4em 0 .3em; }
 .фл-лист h2{ font-size:1.25rem; margin:.4em 0 .3em; }
-.фл-лист ul, .фл-лист ol{ padding-left:1.4em; margin:.3em 0; }
+.фл-лист ul, .фл-лист ol{ padding-inline-start:1.4em; margin:.3em 0; }
 .фл-лист hr{ border:none; border-top:1px solid #d7dae2; margin:1em 0; }
 .фл-лист a{ color:#0b63c5; }
 .фл-лист img{ max-width:100%; border-radius:4px; }
@@ -4313,7 +4313,7 @@ canvas.фл-клетка{
 .ст-шапка .имя{ font-size:0.9rem; font-weight:700; }
 .ст-шапка .когда{ font-size:0.75rem; color:rgba(255,255,255,.65); }
 .ст-крест{
-  margin-left:auto; width:34px; height:34px; border-radius:50%;
+  margin-inline-start:auto; width:34px; height:34px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   background:rgba(255,255,255,.12); border:none; color:#fff; cursor:pointer;
 }
@@ -4371,7 +4371,7 @@ canvas.фл-клетка{
 .мн-быстро{ display:flex; gap:7px; margin-bottom:10px; }
 /* Пять кнопок в один ряд: «100 CUBE» не должна уезжать на свою
    строку и выглядеть главной. */
-.мн-быстро .кнопка{ flex:1 1 0; min-width:0; padding-left:0; padding-right:0; }
+.мн-быстро .кнопка{ flex:1 1 0; min-width:0; padding-inline-start:0; padding-inline-end:0; }
 
 /* ═════════════════════════════════════════════════════════════════
    КНОПКИ ПОД СООБЩЕНИЕМ
@@ -4666,7 +4666,7 @@ canvas.фл-клетка{
 .рд-кн{ flex:0 1 auto; padding:7px 12px; font-size:0.8rem; }
 .рд-ползунок{ display:flex; align-items:center; gap:9px; }
 .рд-ползунок input[type=range]{ flex:1 1 auto; min-width:0; accent-color:var(--синий); }
-.рд-ползунок .чис{ flex:0 0 58px; text-align:right; font-size:0.7667rem;
+.рд-ползунок .чис{ flex:0 0 58px; text-align:end; font-size:0.7667rem;
   color:var(--текст2); font-variant-numeric:tabular-nums; }
 
 /* ── фильтры и наклейки ── */
@@ -4710,7 +4710,7 @@ canvas.фл-клетка{
 .рд-слой{
   display:flex; align-items:center; gap:8px; padding:6px 9px; cursor:pointer;
   border:1px solid var(--край); border-radius:9px; background:var(--окно);
-  color:var(--текст2); font-size:0.8rem; text-align:left;
+  color:var(--текст2); font-size:0.8rem; text-align:start;
 }
 .рд-слой.тут{ border-color:var(--синий); color:var(--текст); }
 .рд-слой .нм{ flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis;
@@ -4725,7 +4725,7 @@ canvas.фл-клетка{
 .рд-обёртка{ position:relative; margin-top:12px; }
 .рд-дорожка{ flex:0 0 auto; display:flex; gap:5px; min-height:58px; }
 .рд-бегунок{
-  position:absolute; top:-3px; bottom:-3px; width:2px; margin-left:-1px;
+  position:absolute; top:-3px; bottom:-3px; width:2px; margin-inline-start:-1px;
   background:var(--синий); border-radius:2px; pointer-events:none;
   box-shadow:0 0 0 1px rgba(0,0,0,.35);
 }
@@ -4736,7 +4736,7 @@ canvas.фл-клетка{
 .рд-кусок{
   min-width:0; height:54px; padding:0; cursor:pointer; overflow:hidden;
   border:1px solid var(--край); border-radius:10px; background:var(--поле);
-  color:var(--текст2); text-align:left; position:relative;
+  color:var(--текст2); text-align:start; position:relative;
   /* Миниатюра кадра не растянутая, а повторённая лентой: так кусок
      читается полосой кадров, как в монтажках, и короткий кусок не
      выглядит размазанной кляксой. */
@@ -4912,7 +4912,7 @@ canvas.фл-клетка{
 .оц-ярлык svg{ width:13px; height:13px; }
 .оц-оц{ display:inline-flex; align-items:center; gap:5px; }
 .оц-оц .оц-число{ font-size:0.8rem; }
-.оц-раздел .оц-мелко{ text-align:right; white-space:nowrap; overflow:hidden;
+.оц-раздел .оц-мелко{ text-align:end; white-space:nowrap; overflow:hidden;
   text-overflow:ellipsis; }
 
 /* ── полка разделов в окне ── */
@@ -4955,12 +4955,12 @@ canvas.фл-клетка{
 /* Оценок нет — прочерк. Крупным кеглем он читался как длинная палка,
    а не как «пока нечего показать». */
 .оц-крупно.пусто{ font-size:1.3333rem; color:var(--текст3); font-weight:600; }
-.оц-итоги{ margin-left:auto; display:flex; flex-direction:column; gap:3px;
+.оц-итоги{ margin-inline-start:auto; display:flex; flex-direction:column; gap:3px;
   font-size:0.8333rem; }
 .оц-отзывы{ display:flex; flex-direction:column; gap:8px; }
 .оц-отзыв{ padding:10px 11px; border:1px solid var(--край); border-radius:12px; }
 .оц-кто{ display:flex; align-items:center; gap:8px; font-size:0.8333rem; }
-.оц-кто .оц-мелко{ margin-left:auto; }
+.оц-кто .оц-мелко{ margin-inline-start:auto; }
 .оц-текст{ margin-top:5px; font-size:0.8667rem; line-height:1.5;
   word-break:break-word; }
 .оц-моё{ margin-top:14px; }

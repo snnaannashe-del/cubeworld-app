@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Лента · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261124-449">
-<link rel="stylesheet" href="shared/style.css?v=20261124-449">
-<link rel="stylesheet" href="shared/window.css?v=20261124-449">
-<link rel="stylesheet" href="shared/account.css?v=20261124-449">
-<script src="shared/theme.js?v=20261124-449"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261124-449">
+<link rel="icon" href="icons/favicon.svg?v=20261124-450">
+<link rel="stylesheet" href="shared/style.css?v=20261124-450">
+<link rel="stylesheet" href="shared/window.css?v=20261124-450">
+<link rel="stylesheet" href="shared/account.css?v=20261124-450">
+<script src="shared/theme.js?v=20261124-450"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261124-450">
 <!--
   ЛЕНТА.
 
@@ -93,7 +93,7 @@
 }
 .вк-кнопка:hover,.вк-кнопка.горит{ color:#fff; }
 .вк-кнопка svg{ width:15px; height:15px; }
-.вк-лупа{ margin-left:auto; }
+.вк-лупа{ margin-inline-start:auto; }
 .вк-свернуть svg{ width:16px; height:16px; }
 
 /* Обводки у этой птички нет нарочно: кружок с рамкой поверх кадра
@@ -145,7 +145,7 @@
 .вк-находка{
   display:flex; align-items:center; gap:12px; width:100%;
   padding:11px 14px; border:none; background:none; cursor:pointer;
-  text-align:left; color:#fff; font-family:inherit;
+  text-align:start; color:#fff; font-family:inherit;
 }
 .вк-находка:hover{ background:rgba(255,255,255,.08); }
 .вк-находка svg{ width:16px; height:16px; flex:0 0 16px; opacity:.6; }
@@ -237,11 +237,11 @@
 .пауза i, .звуком i{
   width:62px; height:62px; border-radius:50%; background:rgba(0,0,0,.45);
   display:flex; align-items:center; justify-content:center;
-  font-style:normal; font-size:1.5333rem; color:#fff; padding-left:4px;
+  font-style:normal; font-size:1.5333rem; color:#fff; padding-inline-start:4px;
 }
 /* У знака звука внутри наш значок линиями, а не буква: ему отступ
    слева не нужен, он и так по середине. */
-.звуком i{ padding-left:0; }
+.звуком i{ padding-inline-start:0; }
 .звуком i svg{ width:28px; height:28px; }
 
 /* ── низ кадра: слева автор, справа действия ─────────────────────── */
@@ -367,20 +367,20 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261124-449"></script>
-<script src="shared/ui.js?v=20261124-449"></script>
-<script src="shared/смайлы.js?v=20261124-449"></script>
-<script src="shared/лица.js?v=20261124-449"></script>
-<script src="shared/эфир.js?v=20261124-449"></script>
-<script src="shared/icons.js?v=20261124-449"></script>
-<script src="shared/window.js?v=20261124-449"></script>
-<script src="shared/без-копий.js?v=20261124-449"></script>
-<script src="shared/time.js?v=20261124-449"></script>
-<script src="shared/auth.js?v=20261124-449"></script>
-<script src="shared/lang.js?v=20261124-449"></script>
-<script src="shared/account.js?v=20261124-449"></script>
-<script src="shared/shell.js?v=20261124-449"></script>
-<script src="shared/shelf.js?v=20261124-449"></script>
+<script src="shared/api.js?v=20261124-450"></script>
+<script src="shared/ui.js?v=20261124-450"></script>
+<script src="shared/смайлы.js?v=20261124-450"></script>
+<script src="shared/лица.js?v=20261124-450"></script>
+<script src="shared/эфир.js?v=20261124-450"></script>
+<script src="shared/icons.js?v=20261124-450"></script>
+<script src="shared/window.js?v=20261124-450"></script>
+<script src="shared/без-копий.js?v=20261124-450"></script>
+<script src="shared/time.js?v=20261124-450"></script>
+<script src="shared/auth.js?v=20261124-450"></script>
+<script src="shared/lang.js?v=20261124-450"></script>
+<script src="shared/account.js?v=20261124-450"></script>
+<script src="shared/shell.js?v=20261124-450"></script>
+<script src="shared/shelf.js?v=20261124-450"></script>
 <script>
 'use strict';
 

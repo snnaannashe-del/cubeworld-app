@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Сигналы · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261124-449">
-<link rel="stylesheet" href="shared/style.css?v=20261124-449">
-<link rel="stylesheet" href="shared/window.css?v=20261124-449">
-<link rel="stylesheet" href="shared/account.css?v=20261124-449">
-<script src="shared/theme.js?v=20261124-449"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261124-449">
+<link rel="icon" href="icons/favicon.svg?v=20261124-450">
+<link rel="stylesheet" href="shared/style.css?v=20261124-450">
+<link rel="stylesheet" href="shared/window.css?v=20261124-450">
+<link rel="stylesheet" href="shared/account.css?v=20261124-450">
+<script src="shared/theme.js?v=20261124-450"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261124-450">
 <!--
   СИГНАЛЫ КУБА.
 
@@ -43,12 +43,12 @@
 /* Горит, пока строка поиска раскрыта: видно, что список отобран. */
 .кругляш.горит{ color:var(--синий); background:rgba(74,158,255,.16); }
 .кругляш svg{ width:17px; height:17px; }
-.кругляш.правее{ margin-left:auto; }
+.кругляш.правее{ margin-inline-start:auto; }
 
 .вкладки{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
 
 /* ── поиск по сигналам ────────────────────────────────────────────── */
-.поиск-угол{ margin-left:auto; display:flex; align-items:center; gap:8px; }
+.поиск-угол{ margin-inline-start:auto; display:flex; align-items:center; gap:8px; }
 .поиск-сигналов{ position:relative; display:none; margin:0; width:240px; }
 .поиск-сигналов.видно{ display:block; }
 .поиск-сигналов input{
@@ -121,7 +121,7 @@
 .бирка-сост.платный{ color:var(--жёлтый); }
 
 /* Когда опубликован — в верхнем ряду, мелким, слева от итога. */
-.процент{ margin-left:auto; text-align:right; flex:0 0 auto; }
+.процент{ margin-inline-start:auto; text-align:end; flex:0 0 auto; }
 .процент .знач{
   font-family:ui-monospace,Menlo,monospace; font-size:1rem; font-weight:700;
   font-variant-numeric:tabular-nums;
@@ -144,8 +144,8 @@
 /* Кто выложил — прямо в верхнем ряду, между парой и сроком: сперва
    опыт (по нему и судят), затем имя и чипы. Нажимается: за ней окно
    автора со всеми его числами и его сигналами. */
-.кто{ display:flex; align-items:center; gap:7px; margin-left:10px; min-width:0;
-  cursor:pointer; border-radius:9px; padding:3px 6px; margin-right:-6px; }
+.кто{ display:flex; align-items:center; gap:7px; margin-inline-start:10px; min-width:0;
+  cursor:pointer; border-radius:9px; padding:3px 6px; margin-inline-end:-6px; }
 .кто:hover{ background:rgba(var(--синий-ргб),.1); }
 .кто:hover .имя{ color:var(--синий); }
 /* Автор без номера (старый сигнал) не притворяется кнопкой. */
@@ -174,7 +174,7 @@
   color:var(--текст3); white-space:nowrap;
 }
 .цена .знач{
-  margin-left:auto; font-family:ui-monospace,Menlo,monospace;
+  margin-inline-start:auto; font-family:ui-monospace,Menlo,monospace;
   font-size:0.9333rem; font-weight:700; font-variant-numeric:tabular-nums;
   white-space:nowrap;
 }
@@ -194,7 +194,7 @@
   .цена + .цена{ border-top:1px solid var(--край); }
 
   .сигнал .ряд{ flex-wrap:wrap; }
-  .кто{ margin-left:0; }
+  .кто{ margin-inline-start:0; }
 
   /* ── ШЕСТЬ ОТБОРОВ В ОДИН РЯД ──
      «Все, Открытые, Лонг, Шорт, Мои, Авторы» переносились вторым
@@ -214,7 +214,7 @@
      разным углам. Ставим их рядом, а воздух оставляем только после
      заголовка. */
   .верх-сигналов{ gap:2px; }
-  .верх-сигналов h1{ margin-right:6px; font-size:1.25rem; }
+  .верх-сигналов h1{ margin-inline-end:6px; font-size:1.25rem; }
 
   /* ── ЛУПА УЕЗЖАЛА ЗА КРАЙ ──
      Строка поиска была шириной ровно 240 точек. На телефоне шапка
@@ -244,7 +244,7 @@
    (корень страницы 12.5, отсюда 0.88rem). Была 9 на 18 и держала этаж
    высотой с ячейку цены ради двух слов. */
 .кн-закрыть{
-  margin-left:auto; cursor:pointer; white-space:nowrap; flex:0 0 auto;
+  margin-inline-start:auto; cursor:pointer; white-space:nowrap; flex:0 0 auto;
   border:1px solid rgba(248,113,113,.4); background:rgba(248,113,113,.08);
   color:#fca5a5; border-radius:8px; padding:5px 12px;
   font-size:0.88rem; font-weight:700;
@@ -277,19 +277,19 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261124-449"></script>
-<script src="shared/ui.js?v=20261124-449"></script>
-<script src="shared/смайлы.js?v=20261124-449"></script>
-<script src="shared/лица.js?v=20261124-449"></script>
-<script src="shared/эфир.js?v=20261124-449"></script>
-<script src="shared/icons.js?v=20261124-449"></script>
-<script src="shared/window.js?v=20261124-449"></script>
-<script src="shared/без-копий.js?v=20261124-449"></script>
-<script src="shared/time.js?v=20261124-449"></script>
-<script src="shared/auth.js?v=20261124-449"></script>
-<script src="shared/lang.js?v=20261124-449"></script>
-<script src="shared/account.js?v=20261124-449"></script>
-<script src="shared/shell.js?v=20261124-449"></script>
+<script src="shared/api.js?v=20261124-450"></script>
+<script src="shared/ui.js?v=20261124-450"></script>
+<script src="shared/смайлы.js?v=20261124-450"></script>
+<script src="shared/лица.js?v=20261124-450"></script>
+<script src="shared/эфир.js?v=20261124-450"></script>
+<script src="shared/icons.js?v=20261124-450"></script>
+<script src="shared/window.js?v=20261124-450"></script>
+<script src="shared/без-копий.js?v=20261124-450"></script>
+<script src="shared/time.js?v=20261124-450"></script>
+<script src="shared/auth.js?v=20261124-450"></script>
+<script src="shared/lang.js?v=20261124-450"></script>
+<script src="shared/account.js?v=20261124-450"></script>
+<script src="shared/shell.js?v=20261124-450"></script>
 <script>
 'use strict';
 

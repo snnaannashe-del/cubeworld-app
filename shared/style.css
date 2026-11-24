@@ -469,8 +469,8 @@ body.в-раме{
   height:var(--видимая-высота, 100dvh);
   width:min(var(--рама-ширина), calc(100vw - var(--поля-по-краям) * 2));
   background:var(--фон);
-  border-left:1px solid var(--край);
-  border-right:1px solid var(--край);
+  border-inline-start:1px solid var(--край);
+  border-inline-end:1px solid var(--край);
   border-bottom:1px solid var(--край);
   border-bottom-left-radius:var(--низ-скругление);
   border-bottom-right-radius:var(--низ-скругление);
@@ -494,7 +494,7 @@ body.в-раме{
 @media (max-width:980px){
   /* На телефоне полей нет: там дорог каждый пиксель. */
   .рама{
-    width:100%; border-left:none; border-right:none; border-bottom:none;
+    width:100%; border-inline-start:none; border-inline-end:none; border-bottom:none;
     border-radius:0;
   }
 }
@@ -896,3 +896,16 @@ input, textarea, [contenteditable="true"], .фл-тело, .фл-тело *{
   line-height:1; font-size:1rem; text-align:center;
   -webkit-user-select:none; user-select:none;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ПИСЬМО СПРАВА НАЛЕВО
+
+   Раскладку браузер переворачивает сам: ряды, колонки, отступы — всё,
+   что записано логически (start/end, inline-start/inline-end). Ради
+   этого стороны в программе и переписаны логическими.
+
+   Руками остаётся одно: значки, которые показывают в сторону. Стрелка
+   «назад» у нас смотрит влево, а на арабском назад — это вправо.
+   Помечает их сам CW.значок, переворачивает это правило.
+   ═══════════════════════════════════════════════════════════════════════ */
+[dir="rtl"] svg.зеркалить{ transform:scaleX(-1); }

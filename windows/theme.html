@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Оформление · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261124-449">
-<link rel="stylesheet" href="../shared/style.css?v=20261124-449">
-<link rel="stylesheet" href="../shared/window.css?v=20261124-449">
-<link rel="stylesheet" href="../shared/account.css?v=20261124-449">
-<script src="../shared/theme.js?v=20261124-449"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261124-449">
+<link rel="icon" href="../icons/favicon.svg?v=20261124-450">
+<link rel="stylesheet" href="../shared/style.css?v=20261124-450">
+<link rel="stylesheet" href="../shared/window.css?v=20261124-450">
+<link rel="stylesheet" href="../shared/account.css?v=20261124-450">
+<script src="../shared/theme.js?v=20261124-450"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261124-450">
 <!--
   ОФОРМЛЕНИЕ — окно поверх программы.
   /home/claude/новое/cubeworld-app/windows/theme.html
@@ -46,7 +46,7 @@
    раз описывать размер букв нельзя: разойдётся с остальными окнами. */
 .оф-полоса{
   width:100%; gap:10px; line-height:1.45;
-  padding:18px 16px 9px; border:none; background:none; text-align:left;
+  padding:18px 16px 9px; border:none; background:none; text-align:start;
 }
 /* Первый раздел не вплотную к шапке: шапка и так прижата к рамке, и
    без этого отступа «Язык приложения» читался её продолжением. */
@@ -164,7 +164,7 @@
 .оф-ряд .им{ font-size:0.7333rem; color:var(--текст3); width:92px; flex:0 0 92px; }
 .оф-ряд input[type=range]{ flex:1; min-width:0; accent-color:var(--синий); }
 .оф-ряд .чис{
-  font-size:0.7333rem; color:var(--текст2); width:44px; text-align:right;
+  font-size:0.7333rem; color:var(--текст2); width:44px; text-align:end;
   flex:0 0 44px; font-variant-numeric:tabular-nums;
 }
 
@@ -212,7 +212,7 @@
 .оф-камера .оф-гкарта{ margin:0; }
 /* «Переключить» прижата к правому краю карточки: иначе справа от неё
    остаётся пустое поле в треть ширины, и карточка выглядит недоделанной. */
-.оф-камера .оф-гкарта .кнопка{ margin-left:auto; }
+.оф-камера .оф-гкарта .кнопка{ margin-inline-start:auto; }
 .оф-камокно{
   margin:0; border-radius:var(--радиус); overflow:hidden;
   background:var(--поле); border:1px solid var(--край);
@@ -249,7 +249,7 @@ html[data-движение="нет"] .оф-гкарта .точка{ animation:n
 .оф-гкарта .текст span{ display:block; font-size:0.8rem; color:var(--текст2); margin-top:1px; }
 .оф-гкарта .подпись{ font-size:0.9333rem; font-weight:600; }
 .оф-гкарта select{
-  margin-left:auto; max-width:56%; padding:8px 11px; font-size:0.9rem;
+  margin-inline-start:auto; max-width:56%; padding:8px 11px; font-size:0.9rem;
   font-family:inherit; background:var(--фон2); color:var(--текст);
   border:1px solid var(--край); border-radius:var(--радиус-мал); outline:none;
 }
@@ -275,7 +275,7 @@ html[data-движение="нет"] .оф-гкарта .точка{ animation:n
   margin:0 16px; width:calc(100% - 32px); box-sizing:border-box;
   padding:9px 13px; border-radius:12px;
   border:1px solid var(--край); background:var(--поле);
-  color:var(--текст); font:inherit; font-size:0.9333rem; text-align:left;
+  color:var(--текст); font:inherit; font-size:0.9333rem; text-align:start;
 }
 .оф-курок:hover{ border-color:var(--край2); }
 .оф-курок .пр{
@@ -318,7 +318,7 @@ html[data-движение="нет"] .оф-гкарта .точка{ animation:n
 .оф-обой.пусто.фото i{ color:var(--синий); }
 /* Полки в окне выбора: подпись над каждой сеткой. В окне отступы по
    бокам уже есть, поэтому подполоса тут без своих. */
-.оф-обои-полки .оф-подполоса{ padding-left:0; margin-top:14px; }
+.оф-обои-полки .оф-подполоса{ padding-inline-start:0; margin-top:14px; }
 .оф-обои-полки .оф-подполоса:first-child{ margin-top:0; }
 
 /* ── образцы ────────────────────────────────────────────────────── */
@@ -328,7 +328,7 @@ html[data-движение="нет"] .оф-гкарта .точка{ animation:n
 }
 .оф-образец .пара{ display:flex; gap:8px; margin-bottom:10px; }
 .оф-образец .мой{
-  margin-left:auto; background:var(--пузырь); color:#fff;
+  margin-inline-start:auto; background:var(--пузырь); color:#fff;
   border-radius:14px 14px 4px 14px; padding:8px 12px;
   font-size:calc(0.9333rem * var(--пер-доля,1));
 }
@@ -345,11 +345,11 @@ html[data-пер-цвет="свой"] .оф-образец .чужой{ color:va
   display:flex; gap:18px; font-size:0.7667rem; flex-wrap:wrap;
 }
 .оф-курс .сим{ color:var(--текст3); letter-spacing:.07em; font-weight:600;
-  margin-right:6px; }
+  margin-inline-end:6px; }
 .оф-курс .цена{ color:var(--текст); font-weight:600; }
 html[data-цена-цвет="свой"] .оф-курс .цена{ color:var(--цена-цвет); }
-.оф-курс .вверх{ color:var(--зелёный); margin-left:6px; }
-.оф-курс .вниз{ color:var(--красный); margin-left:6px; }
+.оф-курс .вверх{ color:var(--зелёный); margin-inline-start:6px; }
+.оф-курс .вниз{ color:var(--красный); margin-inline-start:6px; }
 
 /* ── размер текста ──────────────────────────────────────────────── */
 .оф-размеры{ display:flex; gap:9px; padding:0 16px; align-items:flex-end; }
@@ -383,21 +383,21 @@ html[data-цена-цвет="свой"] .оф-курс .цена{ color:var(--ц
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261124-449"></script>
-<script src="../shared/ui.js?v=20261124-449"></script>
-<script src="../shared/смайлы.js?v=20261124-449"></script>
-<script src="../shared/лица.js?v=20261124-449"></script>
-<script src="../shared/эфир.js?v=20261124-449"></script>
-<script src="../shared/icons.js?v=20261124-449"></script>
-<script src="../shared/window.js?v=20261124-449"></script>
-<script src="../shared/без-копий.js?v=20261124-449"></script>
-<script src="../shared/time.js?v=20261124-449"></script>
-<script src="../shared/auth.js?v=20261124-449"></script>
-<script src="../shared/lang.js?v=20261124-449"></script>
-<script src="../shared/account.js?v=20261124-449"></script>
-<script src="../shared/shell.js?v=20261124-449"></script>
-<script src="../shared/words.js?v=20261124-449"></script>
-<script src="../shared/голос.js?v=20261124-449"></script>
+<script src="../shared/api.js?v=20261124-450"></script>
+<script src="../shared/ui.js?v=20261124-450"></script>
+<script src="../shared/смайлы.js?v=20261124-450"></script>
+<script src="../shared/лица.js?v=20261124-450"></script>
+<script src="../shared/эфир.js?v=20261124-450"></script>
+<script src="../shared/icons.js?v=20261124-450"></script>
+<script src="../shared/window.js?v=20261124-450"></script>
+<script src="../shared/без-копий.js?v=20261124-450"></script>
+<script src="../shared/time.js?v=20261124-450"></script>
+<script src="../shared/auth.js?v=20261124-450"></script>
+<script src="../shared/lang.js?v=20261124-450"></script>
+<script src="../shared/account.js?v=20261124-450"></script>
+<script src="../shared/shell.js?v=20261124-450"></script>
+<script src="../shared/words.js?v=20261124-450"></script>
+<script src="../shared/голос.js?v=20261124-450"></script>
 <script>
 'use strict';
 

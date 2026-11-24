@@ -78,7 +78,7 @@
   display:flex; align-items:center; gap:10px;
   padding:9px 10px; border:none; border-radius:9px;
   background:none; color:var(--текст); font:inherit; font-size:0.8667rem;
-  font-weight:500; cursor:pointer; text-align:left;
+  font-weight:500; cursor:pointer; text-align:start;
   transition:background .14s;
 }
 .об-аккаунт-ряд:hover{ background:var(--поле); }
@@ -137,7 +137,7 @@
 .вести-шапка .зн{ display:flex; color:var(--синий); }
 .вести-шапка .счёт{ font-style:normal; color:var(--синий); }
 .вести-всё{
-  margin-left:auto; cursor:pointer; font-family:inherit; font-size:0.8rem;
+  margin-inline-start:auto; cursor:pointer; font-family:inherit; font-size:0.8rem;
   padding:5px 11px; border-radius:var(--радиус-круг);
   border:1px solid var(--край2); background:none; color:var(--текст2);
 }
@@ -150,7 +150,7 @@
 .вести-строка{
   display:flex; align-items:center; gap:11px; width:100%;
   padding:9px 10px; border:none; background:none; cursor:pointer;
-  text-align:left; color:var(--текст); font-family:inherit; border-radius:11px;
+  text-align:start; color:var(--текст); font-family:inherit; border-radius:11px;
 }
 .вести-строка:hover{ background:var(--поле); }
 .вести-строка .зн{ flex:0 0 30px; height:30px; border-radius:50%;

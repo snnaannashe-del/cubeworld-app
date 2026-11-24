@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Маркетплейс · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261124-449">
-<link rel="stylesheet" href="shared/style.css?v=20261124-449">
-<link rel="stylesheet" href="shared/window.css?v=20261124-449">
-<link rel="stylesheet" href="shared/account.css?v=20261124-449">
-<script src="shared/theme.js?v=20261124-449"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261124-449">
+<link rel="icon" href="icons/favicon.svg?v=20261124-450">
+<link rel="stylesheet" href="shared/style.css?v=20261124-450">
+<link rel="stylesheet" href="shared/window.css?v=20261124-450">
+<link rel="stylesheet" href="shared/account.css?v=20261124-450">
+<script src="shared/theme.js?v=20261124-450"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261124-450">
 <!--
   МАРКЕТПЛЕЙС.
 
@@ -133,7 +133,7 @@
 .сетка{ display:grid; gap:14px;
   grid-template-columns:repeat(auto-fill,minmax(184px,1fr)); }
 .карта{
-  display:flex; flex-direction:column; cursor:pointer; text-align:left;
+  display:flex; flex-direction:column; cursor:pointer; text-align:start;
   background:var(--окно); border:1px solid var(--край); border-radius:16px;
   overflow:hidden; padding:0; font-family:inherit; color:var(--текст);
 }
@@ -214,8 +214,8 @@
 .цена{ font-size:0.9333rem; font-weight:800; color:var(--жёлтый);
   font-family:ui-monospace,Menlo,monospace; white-space:nowrap; }
 .цена.даром{ color:var(--зелёный); font-family:inherit; font-size:0.8667rem; }
-.карта .мелко{ margin-left:auto; font-size:0.6667rem; color:var(--текст3);
-  text-align:right; line-height:1.45; }
+.карта .мелко{ margin-inline-start:auto; font-size:0.6667rem; color:var(--текст3);
+  text-align:end; line-height:1.45; }
 
 /* На телефоне в одну колонку витрина выглядит лентой объявлений, а не
    витриной: карточки делаем мельче, чтобы встали по две. */
@@ -406,7 +406,7 @@
 }
 .выбор-файла::-webkit-file-upload-button,
 .выбор-файла::file-selector-button{
-  margin-right:12px; cursor:pointer; padding:9px 16px; font-family:inherit;
+  margin-inline-end:12px; cursor:pointer; padding:9px 16px; font-family:inherit;
   font-size:0.8667rem; font-weight:600; border-radius:var(--радиус-мал);
   border:1px solid var(--край2); background:var(--поле); color:var(--текст);
 }
@@ -419,21 +419,21 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261124-449"></script>
-<script src="shared/ui.js?v=20261124-449"></script>
-<script src="shared/смайлы.js?v=20261124-449"></script>
-<script src="shared/лица.js?v=20261124-449"></script>
-<script src="shared/эфир.js?v=20261124-449"></script>
-<script src="shared/icons.js?v=20261124-449"></script>
-<script src="shared/window.js?v=20261124-449"></script>
-<script src="shared/продавец.js?v=20261124-449"></script>
-<script src="shared/корзина.js?v=20261124-449"></script>
-<script src="shared/без-копий.js?v=20261124-449"></script>
-<script src="shared/time.js?v=20261124-449"></script>
-<script src="shared/auth.js?v=20261124-449"></script>
-<script src="shared/lang.js?v=20261124-449"></script>
-<script src="shared/account.js?v=20261124-449"></script>
-<script src="shared/shell.js?v=20261124-449"></script>
+<script src="shared/api.js?v=20261124-450"></script>
+<script src="shared/ui.js?v=20261124-450"></script>
+<script src="shared/смайлы.js?v=20261124-450"></script>
+<script src="shared/лица.js?v=20261124-450"></script>
+<script src="shared/эфир.js?v=20261124-450"></script>
+<script src="shared/icons.js?v=20261124-450"></script>
+<script src="shared/window.js?v=20261124-450"></script>
+<script src="shared/продавец.js?v=20261124-450"></script>
+<script src="shared/корзина.js?v=20261124-450"></script>
+<script src="shared/без-копий.js?v=20261124-450"></script>
+<script src="shared/time.js?v=20261124-450"></script>
+<script src="shared/auth.js?v=20261124-450"></script>
+<script src="shared/lang.js?v=20261124-450"></script>
+<script src="shared/account.js?v=20261124-450"></script>
+<script src="shared/shell.js?v=20261124-450"></script>
 <script>
 'use strict';
 

@@ -65,8 +65,8 @@ body{ background:var(--вне-рамы); }
   height:var(--видимая-высота, 100dvh);
   width:min(var(--рама-ширина), calc(100vw - var(--поля-по-краям) * 2));
   background:var(--фон);
-  border-left:1px solid var(--край);
-  border-right:1px solid var(--край);
+  border-inline-start:1px solid var(--край);
+  border-inline-end:1px solid var(--край);
   border-bottom:1px solid var(--край);
   border-bottom-left-radius:var(--низ-скругление);
   border-bottom-right-radius:var(--низ-скругление);
@@ -95,7 +95,7 @@ body{ background:var(--вне-рамы); }
   flex:0 0 auto; z-index:40;
   height:calc(var(--полоса-верх) + env(safe-area-inset-top));
   padding-top:env(safe-area-inset-top);
-  display:flex; align-items:center; gap:12px; padding-left:16px; padding-right:16px;
+  display:flex; align-items:center; gap:12px; padding-inline-start:16px; padding-inline-end:16px;
   background:var(--полоса-цвет);
   backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   border-bottom:1px solid var(--край);
@@ -139,7 +139,7 @@ body{ background:var(--вне-рамы); }
    Голос, Документы, Скачать) висит под этой маленькой стрелкой рядом.
    Без неё в разделах эти четыре вещи не открыть вовсе. */
 .об-лицо-ещё{
-  width:20px; height:20px; flex:0 0 20px; padding:0; margin-left:-4px;
+  width:20px; height:20px; flex:0 0 20px; padding:0; margin-inline-start:-4px;
   border:none; background:none; cursor:pointer; color:var(--текст3);
   display:flex; align-items:center; justify-content:center;
 }
@@ -148,7 +148,7 @@ body{ background:var(--вне-рамы); }
 
 /* Правый ряд прижат к краю: длинной строки поиска в полосе больше нет,
    вместо неё значок в самом ряду. Распорка — просто пустое место. */
-.об-верх > .об-право{ margin-left:auto; }
+.об-верх > .об-право{ margin-inline-start:auto; }
 
 .об-поиск{ flex:1; min-width:0; position:relative; display:flex; align-items:center; }
 .об-поиск input{
@@ -299,7 +299,7 @@ body{ background:var(--вне-рамы); }
 .об-меню{
   width:var(--меню-ширина); flex:0 0 var(--меню-ширина);
   overflow-y:auto; overscroll-behavior:contain; padding:14px 12px 26px;
-  border-right:1px solid var(--край); background:var(--фон);
+  border-inline-end:1px solid var(--край); background:var(--фон);
   scrollbar-width:none;            /* Firefox */
   -ms-overflow-style:none;         /* старая Edge */
 }
@@ -315,7 +315,7 @@ body{ background:var(--вне-рамы); }
    и не помещалось целиком. */
 .об-пункт{
   display:flex; align-items:center; gap:12px; width:100%;
-  border:none; background:none; cursor:pointer; text-align:left;
+  border:none; background:none; cursor:pointer; text-align:start;
   color:var(--текст2); font-size:0.9667rem; padding:4px 10px;
   border-radius:12px; margin-bottom:9px;
 }
@@ -355,7 +355,7 @@ body{ background:var(--вне-рамы); }
   color:var(--текст); font-weight:600;
   background:linear-gradient(90deg,rgba(var(--синий-ргб),.2),
                                    rgba(var(--синий-ргб),.08));
-  border-left:2px solid var(--синий); padding-left:8px;
+  border-inline-start:2px solid var(--синий); padding-inline-start:8px;
 }
 .об-пункт.тут .зн{
   background:linear-gradient(135deg,rgba(var(--синий-ргб),1),
@@ -409,13 +409,13 @@ body{ background:var(--вне-рамы); }
 .об-лист[data-раздел="wallet"],
 .об-лист[data-раздел="stats"],
 .об-лист[data-раздел="refs"]{
-  padding-left:75px; padding-right:75px;
+  padding-inline-start:75px; padding-inline-end:75px;
 }
 
 .об-заглавие{ display:flex; align-items:center; gap:12px; margin-bottom:22px; }
 .об-заглавие h1{ margin:0; font-size:1.4rem; font-weight:700; letter-spacing:-.02em; }
 .об-живое{
-  margin-left:auto; display:flex; align-items:center; gap:8px;
+  margin-inline-start:auto; display:flex; align-items:center; gap:8px;
   font-size:0.8667rem; color:var(--зелёный); font-weight:600;
 }
 .об-живое .точка{
@@ -443,7 +443,7 @@ body{ background:var(--вне-рамы); }
 @media (max-width:980px){
   /* На телефоне полей по краям нет: там дорог каждый пиксель. */
   .об-рама{
-    width:100%; border-left:none; border-right:none; border-bottom:none;
+    width:100%; border-inline-start:none; border-inline-end:none; border-bottom:none;
     border-radius:0;
   }
 
@@ -549,7 +549,7 @@ body{ background:var(--вне-рамы); }
     transform:translateY(100%);
     visibility:hidden; pointer-events:none;
     transition:transform .24s cubic-bezier(.2,.8,.3,1), visibility 0s .24s;
-    border-right:none; border-top:1px solid var(--край);
+    border-inline-end:none; border-top:1px solid var(--край);
     border-radius:22px 22px 0 0;
     box-shadow:0 -18px 50px rgba(0,0,0,.55);
     padding:8px 12px calc(16px + var(--низ-край));
@@ -636,8 +636,8 @@ body{ background:var(--вне-рамы); }
   /* Выбранный пункт: полоски слева на плитке быть не может - её
      примета здесь рамка и заливка акцентом. */
   .об-меню .об-пункт.тут{
-    border:1px solid rgba(var(--синий-ргб), .75); border-left-width:1px;
-    padding-left:4px; color:var(--текст);
+    border:1px solid rgba(var(--синий-ргб), .75); border-inline-start-width:1px;
+    padding-inline-start:4px; color:var(--текст);
     background:linear-gradient(180deg, rgba(var(--синий-ргб),.18),
                                        rgba(var(--синий-ргб),.06));
   }
@@ -660,7 +660,7 @@ body{ background:var(--вне-рамы); }
   .об-лист{ padding:20px 16px 26px; }
   /* На узком экране полутора сантиметров с каждого бока просто нет —
      списки возвращаются к общим 16 точкам. */
-  .об-лист[data-раздел]{ padding-left:16px; padding-right:16px; }
+  .об-лист[data-раздел]{ padding-inline-start:16px; padding-inline-end:16px; }
 }
 
 @media (max-width:640px){
@@ -676,7 +676,7 @@ body{ background:var(--вне-рамы); }
    Ничего не прячем: все кнопки нужны. Ужимаем зазоры и поля - этого
    хватает, чтобы ряд стал 364 точки и встал целиком. */
 @media (max-width:430px){
-  .об-верх{ gap:8px; padding-left:10px; padding-right:10px; }
+  .об-верх{ gap:8px; padding-inline-start:10px; padding-inline-end:10px; }
   .об-cube{ padding:6px 9px; gap:5px; }
   .об-круг, .об-ключ, .об-плюс{ width:31px; height:31px; flex:0 0 31px; }
 }
@@ -716,7 +716,7 @@ body{ background:var(--вне-рамы); }
 .раздел .знак{ display:flex; color:var(--сирень); }
 .раздел .знак svg{ width:14px; height:14px; }
 .раздел .тихо{
-  margin-left:auto; font-size:0.7667rem; letter-spacing:0;
+  margin-inline-start:auto; font-size:0.7667rem; letter-spacing:0;
   text-transform:none; color:var(--текст3); font-weight:400;
 }
 
@@ -731,7 +731,7 @@ body{ background:var(--вне-рамы); }
 .уровень .ряд .знак{ display:flex; color:var(--жёлтый); }
 .уровень .ряд .знак svg{ width:15px; height:15px; }
 .уровень .ряд .xp{
-  margin-left:auto; font-family:ui-monospace,Menlo,monospace;
+  margin-inline-start:auto; font-family:ui-monospace,Menlo,monospace;
   font-size:12px; color:var(--текст3);
 }
 .уровень .пояснение{ margin-top:12px; font-size:0.8667rem; line-height:1.65; color:var(--текст2); }
@@ -773,7 +773,7 @@ body{ background:var(--вне-рамы); }
 .мой-кошелёк .метка.проверен{ color:var(--зелёный); }
 .мой-кошелёк .метка.нет{ color:var(--текст3); }
 .мой-кошелёк .убрать{
-  margin-left:auto; background:none; border:none; cursor:pointer;
+  margin-inline-start:auto; background:none; border:none; cursor:pointer;
   color:var(--текст3); font-size:1.1333rem; padding:4px 8px;
 }
 .мой-кошелёк .убрать:hover{ color:var(--красный); }
@@ -938,7 +938,7 @@ body{ background:var(--вне-рамы); }
 .сов-подпись{
   position:absolute; left:0; right:0; bottom:0; z-index:2;
   padding:14px 6px 5px; font-size:0.6rem; line-height:1.3; color:#fff;
-  text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  text-align:start; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   background:linear-gradient(transparent, rgba(0,0,0,.78));
 }
 
@@ -1023,9 +1023,9 @@ body{ background:var(--вне-рамы); }
    такой зазор разносит их по всей строке, и ряд перестаёт читаться
    как один набор действий. До заголовка и до соседей группы зазор
    остаётся прежним. */
-.раздел-верх .кругляш + .кругляш{ margin-left:-6px; }
+.раздел-верх .кругляш + .кругляш{ margin-inline-start:-6px; }
 .раздел-верх h1{ margin:0; font-size:1.4rem; font-weight:700; letter-spacing:-.02em; }
-.раздел-верх .вправо{ margin-left:auto; display:flex; align-items:center; gap:10px; }
+.раздел-верх .вправо{ margin-inline-start:auto; display:flex; align-items:center; gap:10px; }
 .раздел-знак{ display:flex; color:var(--жёлтый); }
 .раздел-знак svg{ width:19px; height:19px; }
 .раздел-кружок{
@@ -1136,7 +1136,7 @@ body{ background:var(--вне-рамы); }
 .переписка-шапка .имя{ font-size:1rem; font-weight:600; }
 .переписка-шапка .сколько{ font-size:0.8333rem; color:var(--текст3); }
 .переписка-шапка .ещё{
-  margin-left:auto; background:none; border:none; cursor:pointer;
+  margin-inline-start:auto; background:none; border:none; cursor:pointer;
   color:var(--текст3); font-size:1.2rem; padding:0 4px;
 }
 
@@ -1246,20 +1246,20 @@ html[data-тема="светлая"] .пузырь.чужое:not(.медиа){
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .кто-над:first-child{ margin-top:0; }
-.пузырь .время{ font-size:0.7333rem; opacity:.6; margin-top:5px; text-align:right; }
+.пузырь .время{ font-size:0.7333rem; opacity:.6; margin-top:5px; text-align:end; }
 /* ── ЧАСЫ У СОБЕСЕДНИКА СТОЯТ СЛЕВА ──
    Своё сообщение прижато к правому краю, чужое к левому, и часы
    должны смотреть туда же, куда и сам пузырь: иначе у собеседника
    время убегает от его слов к пустому краю. У кучки вложений так
    было с самого начала (.кучка.чужое .кучка-время), а у обычного
    пузыря нет - одно и то же правило в двух местах расходилось. */
-.пузырь.чужое .время{ text-align:left; }
+.пузырь.чужое .время{ text-align:start; }
 /* Остаток срока стоит в одной строке с часами, справа от них:
    отдельной строкой «исчезнет через 4м» он был длиннее самого
    сообщения. Жёлтым - это единственное место в пузыре, где цвет
    что-то значит: «это скоро пропадёт». */
 .пузырь .срок{
-  font-size:0.7333rem; color:var(--жёлтый); margin-left:6px;
+  font-size:0.7333rem; color:var(--жёлтый); margin-inline-start:6px;
   opacity:1;
 }
 .пузырь.медиа > .время{ opacity:.75; }
@@ -1268,7 +1268,7 @@ html[data-тема="светлая"] .пузырь.чужое:not(.медиа){
    «найдено поиском», и два смысла у одной приметы читались как
    случайная черта вокруг сообщения. */
 .пузырь .время .булавка{
-  display:inline-flex; vertical-align:-2px; margin-right:4px;
+  display:inline-flex; vertical-align:-2px; margin-inline-end:4px;
   color:var(--жёлтый); opacity:.9;
 }
 /* Найденное поиском. «нашлось» — все совпадения разом, «тут» — то, на
@@ -1340,7 +1340,7 @@ html[data-тема="светлая"] .пузырь.чужое:not(.медиа){
   border-color:rgba(74,158,255,.9); color:var(--текст);
   background:rgba(0,153,255,.2);
 }
-.пер-вкладка .сколько{ opacity:.6; margin-left:5px; font-weight:400; }
+.пер-вкладка .сколько{ opacity:.6; margin-inline-start:5px; font-weight:400; }
 
 /* Пузырь не того рода, пока выбрана полка. */
 .пузырь.мимо{ display:none; }
@@ -1547,7 +1547,7 @@ html[data-тема="светлая"] .пузырь.своё .вл-место{
    точек до края и висела бы в воздухе. */
 .об-место:has(.две-колонки){ overflow:hidden; }
 /* Поле по бокам у страниц с двумя окнами — 22, а не 26. Ровно столько
-   же стоит между первым окном и чертой (.левая{margin-right:22px}), и
+   же стоит между первым окном и чертой (.левая{margin-inline-end:22px}), и
    с 26 слева зазор был на четыре точки шире правого: глазом это видно
    как лишний миллиметр, Анна его и увидела. Теперь по обе стороны
    карточки одно и то же число, и оно одно на ленту, чаты и группы. */
@@ -1562,7 +1562,7 @@ html[data-тема="светлая"] .пузырь.своё .вл-место{
    точки — именно так они и разошлись в прошлый раз. */
 .левая{
   flex:0 0 var(--окно-8-5см); min-width:0; min-height:0;
-  margin-right:22px; display:flex; flex-direction:column;
+  margin-inline-end:22px; display:flex; flex-direction:column;
   padding:18px 0; overflow-y:auto;
 }
 /* Правая колонка держится ровно в тех же границах, что окно слева:
@@ -1575,7 +1575,7 @@ html[data-тема="светлая"] .пузырь.своё .вл-место{
   /* 21 сверху и снизу — ровно столько же, сколько отступает рамка окна
      слева (.левая.в-рамке{margin:21px 0}). Так верх полки совпадает с
      верхом окна, а низ — с его низом, и ряд читается одной линией. */
-  padding:21px 0 21px 22px; border-left:1px solid var(--край);
+  padding:21px 0 21px 22px; border-inline-start:1px solid var(--край);
   overflow:hidden;
 }
 /* Расстояния между кусками полки задаёт один gap, а не собственные
@@ -1612,11 +1612,11 @@ html[data-полка="нет"] .правая > .полка{ justify-content:cent
   .об-место:has(.две-колонки){ overflow:auto; }
   .об-лист:has(.две-колонки){ height:auto; }
   .две-колонки{ flex-direction:column; height:auto; }
-  .левая{ flex:1 1 auto; width:100%; margin-right:0; margin-bottom:0;
+  .левая{ flex:1 1 auto; width:100%; margin-inline-end:0; margin-bottom:0;
     padding-bottom:18px; overflow:visible; }
   .правая{
     flex:1 1 auto; width:100%; padding:18px 0 0;
-    border-left:none; border-top:1px solid var(--край);
+    border-inline-start:none; border-top:1px solid var(--край);
   }
 }
 
@@ -1845,10 +1845,10 @@ html[data-движение="нет"] .кн-стрим .точка{ animation:non
    строкой под ней. Десять одинаковых «03:29» подряд - это шум. */
 .кучка .пузырь > .время{ display:none; }
 .кучка-время{
-  flex:0 0 100%; text-align:right;
+  flex:0 0 100%; text-align:end;
   font-size:0.7333rem; opacity:.6; margin-top:1px;
 }
-.кучка.чужое .кучка-время{ text-align:left; }
+.кучка.чужое .кучка-время{ text-align:start; }
 /* Снимок в кучке: сто десять точек по длинной стороне, форма своя.
    Три таких в ряд как раз укладываются в ширину пузыря. */
 .кучка .вл-снимок,

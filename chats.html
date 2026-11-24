@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Чаты · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261124-449">
-<link rel="stylesheet" href="shared/style.css?v=20261124-449">
-<link rel="stylesheet" href="shared/window.css?v=20261124-449">
-<link rel="stylesheet" href="shared/account.css?v=20261124-449">
-<script src="shared/theme.js?v=20261124-449"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261124-449">
+<link rel="icon" href="icons/favicon.svg?v=20261124-450">
+<link rel="stylesheet" href="shared/style.css?v=20261124-450">
+<link rel="stylesheet" href="shared/window.css?v=20261124-450">
+<link rel="stylesheet" href="shared/account.css?v=20261124-450">
+<script src="shared/theme.js?v=20261124-450"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261124-450">
 <!--
   ЧАТЫ.
 
@@ -33,7 +33,7 @@
    переехали в оболочку: они одинаковые у чатов, групп и избранного.
    Здесь осталось только то, чего больше нигде нет. */
 .сторис-кн{
-  margin-left:auto; display:flex; align-items:center; gap:8px; cursor:pointer;
+  margin-inline-start:auto; display:flex; align-items:center; gap:8px; cursor:pointer;
   background:none; border:none; color:var(--текст2); font-size:0.9333rem; padding:0;
   font-family:inherit;
 }
@@ -46,7 +46,7 @@
 .найден{
   display:flex; align-items:center; gap:12px; width:100%; padding:12px 15px;
   background:none; border:none; border-bottom:1px solid var(--край);
-  color:var(--текст); font-size:0.9667rem; cursor:pointer; text-align:left;
+  color:var(--текст); font-size:0.9667rem; cursor:pointer; text-align:start;
 }
 .найден:last-child{ border-bottom:none; }
 .найден:hover{ background:var(--поле); }
@@ -57,8 +57,8 @@
 .переписка{
   display:flex; align-items:center; gap:13px; width:100%;
   padding:14px 16px; border-bottom:1px solid var(--край);
-  background:none; border-left:none; border-right:none; border-top:none;
-  color:var(--текст); cursor:pointer; text-align:left;
+  background:none; border-inline-start:none; border-inline-end:none; border-top:none;
+  color:var(--текст); cursor:pointer; text-align:start;
 }
 .переписка:last-child{ border-bottom:none; }
 .переписка:hover{ background:var(--поле); }
@@ -68,12 +68,12 @@
   font-size:0.8667rem; color:var(--текст3); margin-top:3px;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.переписка .справа{ text-align:right; flex:0 0 auto; }
+.переписка .справа{ text-align:end; flex:0 0 auto; }
 .переписка .когда{ font-size:0.7667rem; color:var(--текст3); }
 /* Галочки перед временем: одна «доставлено», две синие «прочитано».
    Знаки ставим вплотную друг к другу, иначе две галочки читаются как
    две отдельные. */
-.переписка .когда .галки{ margin-right:5px; letter-spacing:-2px; }
+.переписка .когда .галки{ margin-inline-end:5px; letter-spacing:-2px; }
 .переписка .когда .галки.прочитано{ color:var(--синий); }
 .переписка .непрочитано{
   display:inline-block; margin-top:5px; min-width:20px; padding:2px 7px;
@@ -186,25 +186,25 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261124-449"></script>
-<script src="shared/ui.js?v=20261124-449"></script>
-<script src="shared/смайлы.js?v=20261124-449"></script>
-<script src="shared/лица.js?v=20261124-449"></script>
-<script src="shared/эфир.js?v=20261124-449"></script>
-<script src="shared/icons.js?v=20261124-449"></script>
-<script src="shared/window.js?v=20261124-449"></script>
-<script src="shared/без-копий.js?v=20261124-449"></script>
-<script src="shared/time.js?v=20261124-449"></script>
-<script src="shared/auth.js?v=20261124-449"></script>
-<script src="shared/lang.js?v=20261124-449"></script>
-<script src="shared/account.js?v=20261124-449"></script>
-<script src="shared/shell.js?v=20261124-449"></script>
-<script src="shared/вложения.js?v=20261124-449"></script>
-<script src="shared/запись-голоса.js?v=20261124-449"></script>
-<script src="shared/кнопки-сообщения.js?v=20261124-449"></script>
-<script src="shared/chat.js?v=20261124-449"></script>
-<script src="shared/shelf.js?v=20261124-449"></script>
-<script src="shared/архив.js?v=20261124-449"></script>
+<script src="shared/api.js?v=20261124-450"></script>
+<script src="shared/ui.js?v=20261124-450"></script>
+<script src="shared/смайлы.js?v=20261124-450"></script>
+<script src="shared/лица.js?v=20261124-450"></script>
+<script src="shared/эфир.js?v=20261124-450"></script>
+<script src="shared/icons.js?v=20261124-450"></script>
+<script src="shared/window.js?v=20261124-450"></script>
+<script src="shared/без-копий.js?v=20261124-450"></script>
+<script src="shared/time.js?v=20261124-450"></script>
+<script src="shared/auth.js?v=20261124-450"></script>
+<script src="shared/lang.js?v=20261124-450"></script>
+<script src="shared/account.js?v=20261124-450"></script>
+<script src="shared/shell.js?v=20261124-450"></script>
+<script src="shared/вложения.js?v=20261124-450"></script>
+<script src="shared/запись-голоса.js?v=20261124-450"></script>
+<script src="shared/кнопки-сообщения.js?v=20261124-450"></script>
+<script src="shared/chat.js?v=20261124-450"></script>
+<script src="shared/shelf.js?v=20261124-450"></script>
+<script src="shared/архив.js?v=20261124-450"></script>
 <script>
 'use strict';
 
