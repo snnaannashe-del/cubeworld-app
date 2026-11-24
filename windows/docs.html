@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Документы · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261124-444">
-<link rel="stylesheet" href="../shared/style.css?v=20261124-444">
-<link rel="stylesheet" href="../shared/window.css?v=20261124-444">
-<link rel="stylesheet" href="../shared/account.css?v=20261124-444">
-<script src="../shared/theme.js?v=20261124-444"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261124-444">
+<link rel="icon" href="../icons/favicon.svg?v=20261124-445">
+<link rel="stylesheet" href="../shared/style.css?v=20261124-445">
+<link rel="stylesheet" href="../shared/window.css?v=20261124-445">
+<link rel="stylesheet" href="../shared/account.css?v=20261124-445">
+<script src="../shared/theme.js?v=20261124-445"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261124-445">
 <!--
   ДОКУМЕНТЫ — окно поверх программы, со своим адресом.
 
@@ -106,6 +106,17 @@
   border:1px solid rgba(74,158,255,.28); border-radius:999px;
 }
 
+/* Оговорка про перевод — рядом с датой и такой же плашкой, только
+   жёлтой: это не предупреждение об опасности, но и не мелкий шрифт
+   внизу, который никто не читает. Стоит ДО текста, по той же причине,
+   что и дата. */
+.дк-оговорка{
+  margin:0 0 16px; padding:8px 12px;
+  font-size:0.78rem; line-height:1.5; color:var(--текст2);
+  background:rgba(255,176,32,.10);
+  border:1px solid rgba(255,176,32,.30); border-radius:12px;
+}
+
 .дк-текст h3{
   position:relative; margin:24px 0 9px; padding-left:12px;
   font-size:1rem; font-weight:800; color:var(--текст); letter-spacing:-.005em;
@@ -151,26 +162,38 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261124-444"></script>
-<script src="../shared/ui.js?v=20261124-444"></script>
-<script src="../shared/смайлы.js?v=20261124-444"></script>
-<script src="../shared/лица.js?v=20261124-444"></script>
-<script src="../shared/эфир.js?v=20261124-444"></script>
-<script src="../shared/icons.js?v=20261124-444"></script>
-<script src="../shared/window.js?v=20261124-444"></script>
-<script src="../shared/без-копий.js?v=20261124-444"></script>
-<script src="../shared/time.js?v=20261124-444"></script>
-<script src="../shared/auth.js?v=20261124-444"></script>
-<script src="../shared/lang.js?v=20261124-444"></script>
-<script src="../shared/account.js?v=20261124-444"></script>
-<script src="../shared/shell.js?v=20261124-444"></script>
-<script src="../shared/docs.js?v=20261124-444"></script>
+<script src="../shared/api.js?v=20261124-445"></script>
+<script src="../shared/ui.js?v=20261124-445"></script>
+<script src="../shared/смайлы.js?v=20261124-445"></script>
+<script src="../shared/лица.js?v=20261124-445"></script>
+<script src="../shared/эфир.js?v=20261124-445"></script>
+<script src="../shared/icons.js?v=20261124-445"></script>
+<script src="../shared/window.js?v=20261124-445"></script>
+<script src="../shared/без-копий.js?v=20261124-445"></script>
+<script src="../shared/time.js?v=20261124-445"></script>
+<script src="../shared/auth.js?v=20261124-445"></script>
+<script src="../shared/lang.js?v=20261124-445"></script>
+<script src="../shared/account.js?v=20261124-445"></script>
+<script src="../shared/shell.js?v=20261124-445"></script>
+<script src="../shared/docs.js?v=20261124-445"></script>
 <script>
 'use strict';
 
-CW.оболочка('feed').then(function (место) {
+/* Бумаги на языке везутся отдельным набором (lang/docs-en.js и дальше),
+   и ждать его надо ДО первого кадра: иначе человек увидел бы русский
+   текст и через полсекунды он сменился бы переводом. Набора нет —
+   показываем русский, это не беда, а главный текст. */
+Promise.all([
+  CW.оболочка('feed'),
+  (CW.довезти ? CW.довезти('docs') : Promise.resolve()).catch(function () {})
+]).then(function (всё) { построить(всё[0]); });
 
-var ДОКИ = CW.документы || [];
+function построить(место) {
+
+var ЯЗ = CW.язык ? CW.язык() : 'ru';
+var ДОКИ = (CW.документыНа ? CW.документыНа(ЯЗ) : CW.документы) || [];
+var ОГОВОРКА = CW.документыОговорка ? CW.документыОговорка(ЯЗ) : '';
+var ДАТА = CW.документыДатаНа ? CW.документыДатаНа(ЯЗ) : CW.документыДата;
 
 /* Пришли по ссылке на документ (?н=3) — открываем сразу его. Прятать
    при этом нечего: список стоит столбцом слева и виден всегда. */
@@ -262,14 +285,16 @@ function показать() {
   var д = ДОКИ[текущий];
   /* В шапке — название открытой бумаги: в двух столбцах заголовок
      «Документы» один на оба, а что читаешь — видно подписью. */
-  ОКНО.имя('Документы', д.имя);
+  ОКНО.имя(Т('Документы'), д.имя);
   /* Поля у окна выключены, чтобы столбцы доходили до краёв. Значит,
      отступы текста — на нас: строка, упёртая в край окна, читается как
      обрезанная. */
   бумага.innerHTML =
       '<div class="дк-страница">'
     +   '<div class="дк-дата">' + CW.безопасно(Т('Редакция от')) + ' '
-    +     CW.безопасно(CW.документыДата || '-') + '</div>'
+    +     CW.безопасно(ДАТА || '-') + '</div>'
+    +   (ОГОВОРКА
+        ? '<div class="дк-оговорка">' + CW.безопасно(ОГОВОРКА) + '</div>' : '')
     +   '<div class="дк-текст">' + разметка(д.текст) + '</div>'
     + '</div>';
   бумага.scrollTop = 0;
@@ -359,7 +384,7 @@ function уйти() {
 
 function ок(тег, класс, текст) { return CW.эл(тег, класс, текст); }
 
-});
+}
 </script>
 </body>
 </html>

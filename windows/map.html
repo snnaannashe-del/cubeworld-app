@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Карта · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261124-444">
-<link rel="stylesheet" href="../shared/style.css?v=20261124-444">
-<link rel="stylesheet" href="../shared/window.css?v=20261124-444">
-<link rel="stylesheet" href="../shared/account.css?v=20261124-444">
-<script src="../shared/theme.js?v=20261124-444"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261124-444">
+<link rel="icon" href="../icons/favicon.svg?v=20261124-445">
+<link rel="stylesheet" href="../shared/style.css?v=20261124-445">
+<link rel="stylesheet" href="../shared/window.css?v=20261124-445">
+<link rel="stylesheet" href="../shared/account.css?v=20261124-445">
+<script src="../shared/theme.js?v=20261124-445"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261124-445">
 <!--
   ЖИВАЯ КАРТА — окно поверх программы, со своим адресом.
 
@@ -176,19 +176,19 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261124-444"></script>
-<script src="../shared/ui.js?v=20261124-444"></script>
-<script src="../shared/смайлы.js?v=20261124-444"></script>
-<script src="../shared/лица.js?v=20261124-444"></script>
-<script src="../shared/эфир.js?v=20261124-444"></script>
-<script src="../shared/icons.js?v=20261124-444"></script>
-<script src="../shared/window.js?v=20261124-444"></script>
-<script src="../shared/без-копий.js?v=20261124-444"></script>
-<script src="../shared/time.js?v=20261124-444"></script>
-<script src="../shared/auth.js?v=20261124-444"></script>
-<script src="../shared/lang.js?v=20261124-444"></script>
-<script src="../shared/account.js?v=20261124-444"></script>
-<script src="../shared/shell.js?v=20261124-444"></script>
+<script src="../shared/api.js?v=20261124-445"></script>
+<script src="../shared/ui.js?v=20261124-445"></script>
+<script src="../shared/смайлы.js?v=20261124-445"></script>
+<script src="../shared/лица.js?v=20261124-445"></script>
+<script src="../shared/эфир.js?v=20261124-445"></script>
+<script src="../shared/icons.js?v=20261124-445"></script>
+<script src="../shared/window.js?v=20261124-445"></script>
+<script src="../shared/без-копий.js?v=20261124-445"></script>
+<script src="../shared/time.js?v=20261124-445"></script>
+<script src="../shared/auth.js?v=20261124-445"></script>
+<script src="../shared/lang.js?v=20261124-445"></script>
+<script src="../shared/account.js?v=20261124-445"></script>
+<script src="../shared/shell.js?v=20261124-445"></script>
 <script>
 'use strict';
 
@@ -259,8 +259,8 @@ CW.нужен('shared/карта-данные.js')
       if (ш === null || д === null) return;
       if (CW.карта.кМесту(ш, д, 7)) {
         /* Пришли по точке из переписки — говорим об этом подписью. */
-        ОКНО.имя('Карта', 'точка ' + Number(ш).toFixed(3) + ', '
-                                   + Number(д).toFixed(3));
+        ОКНО.имя(Т('Карта'), Т.с('точка {ш}, {д}',
+                 { ш: Number(ш).toFixed(3), д: Number(д).toFixed(3) }));
       }
     })();
     /* Окно может открыться раньше, чем браузер посчитает его размеры.

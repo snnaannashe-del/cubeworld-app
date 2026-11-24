@@ -339,7 +339,7 @@ CW.модаль('story', function (данные) {
       CW.спросить('/stories/' + шт.id + '/stats', { тихо: true })
         .then(function (с) {
           var люди = (с && с.viewers) || [];
-          Л.имя('Кто смотрел', люди.length + ' из них');
+          Л.имя(Т('Кто смотрел'), Т.с('{сколько} из них', { сколько: люди.length }));
           Л.тело.innerHTML = '';
           if (!люди.length) {
             Л.тело.appendChild(CW.кусок('пусто-строка', 'Пока никто не смотрел'));
@@ -383,8 +383,9 @@ CW.модаль('story', function (данные) {
       ]).then(function (пара) {
         var список = (пара[0] && пара[0].gifts) || [];
         var счёт = пара[1] && пара[1].cube_balance;
-        Л.имя('Подарки', (счёт === undefined || счёт === null)
-          ? '' : (Math.round(Number(счёт) * 100) / 100) + ' CUBE на счету');
+        Л.имя(Т('Подарки'), (счёт === undefined || счёт === null)
+          ? '' : Т.с('{сколько} CUBE на счету',
+                     { сколько: Math.round(Number(счёт) * 100) / 100 }));
         Л.тело.innerHTML = '';
         var сетка = CW.кусок('пд-сетка');
         список.forEach(function (п) {
@@ -450,8 +451,9 @@ CW.модаль('story', function (данные) {
          программы: второго места для него нет. */
       CW.спросить('/me', { тихо: true }).then(function (я) {
         if (я && я.cube_balance !== undefined) {
-          Л.имя('Чаевые автору',
-                'на счету ' + (Math.round(Number(я.cube_balance) * 100) / 100) + ' CUBE');
+          Л.имя(Т('Чаевые автору'),
+                Т.с('на счету {сколько} CUBE',
+                    { сколько: Math.round(Number(я.cube_balance) * 100) / 100 }));
         }
       }).catch(function () {});
       setTimeout(function () {
@@ -485,7 +487,7 @@ CW.модаль('story', function (данные) {
       CW.спросить('/stories/' + шт.id + '/gifts', { тихо: true })
         .then(function (о) {
           var ряды = (о && о.items) || [];
-          Л.имя('Чаевые за историю', ряды.length ? (ряды.length + '') : '');
+          Л.имя(Т('Чаевые за историю'), ряды.length ? (ряды.length + '') : '');
           Л.тело.innerHTML = '';
           if (!ряды.length) {
             Л.тело.appendChild(CW.кусок('пусто-строка', 'Пока ничего не прислали'));

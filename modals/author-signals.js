@@ -156,8 +156,8 @@ CW.модаль('author-signals', function (данные) {
     var ст = а.stats || {};
     var закрытых = Number(ст.closed || 0);
 
-    М.имя(String(а.name || данные.имя || 'Автор'),
-          УРОВНИ[ст.level] || УРОВНИ.novice);
+    М.имя(String(а.name || данные.имя || Т('Автор')),
+          Т(УРОВНИ[ст.level] || УРОВНИ.novice));
 
     М.тело.innerHTML = '';
 
