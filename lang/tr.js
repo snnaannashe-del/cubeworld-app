@@ -3111,6 +3111,10 @@ CW.словарь('tr', {
   'всего в файле {сколько}': 'dosyanın tamamında {сколько}',
   'меняется и картинка, и звук, и длина куска': 'görüntü de ses de parçanın uzunluğu da değişir',
   'ролик начнётся с этого места записи': 'video kaydın bu yerinden başlayacak',
-  '◀ Левее': '◀ Sola'
+  '◀ Левее': '◀ Sola',
+
+  'Отделение': 'Uzaklaşma',
+  'Кусок разделён': 'Parça bölündü',
+  'Кусок разделён посередине': 'Parça ortadan bölündü'
 
 });

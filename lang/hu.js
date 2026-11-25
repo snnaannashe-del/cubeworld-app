@@ -3111,6 +3111,10 @@ CW.словарь('hu', {
   'всего в файле {сколько}': '{сколько} a teljes fájlban',
   'меняется и картинка, и звук, и длина куска': 'változik a kép is, a hang is, és a darab hossza is',
   'ролик начнётся с этого места записи': 'a film a felvétel ezen pontjától indul',
-  '◀ Левее': '◀ Balra'
+  '◀ Левее': '◀ Balra',
+
+  'Отделение': 'Távolítás',
+  'Кусок разделён': 'A darab ketté van vágva',
+  'Кусок разделён посередине': 'A darab középen ketté van vágva'
 
 });

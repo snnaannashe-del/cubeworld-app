@@ -3111,6 +3111,10 @@ CW.словарь('nl', {
   'всего в файле {сколько}': '{сколько} in het hele bestand',
   'меняется и картинка, и звук, и длина куска': 'het beeld, het geluid en de lengte van het stuk veranderen allemaal',
   'ролик начнётся с этого места записи': 'de video begint op dit punt van de opname',
-  '◀ Левее': '◀ Links'
+  '◀ Левее': '◀ Links',
+
+  'Отделение': 'Uitzoomen',
+  'Кусок разделён': 'Het stuk is gesplitst',
+  'Кусок разделён посередине': 'Het stuk is in het midden gesplitst'
 
 });

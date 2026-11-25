@@ -3111,6 +3111,10 @@ CW.словарь('nb', {
   'всего в файле {сколько}': '{сколько} i hele filen',
   'меняется и картинка, и звук, и длина куска': 'både bildet, lyden og lengden på klippet endrer seg',
   'ролик начнётся с этого места записи': 'filmen starter fra dette stedet i opptaket',
-  '◀ Левее': '◀ Venstre'
+  '◀ Левее': '◀ Venstre',
+
+  'Отделение': 'Utzooming',
+  'Кусок разделён': 'Klippet er delt',
+  'Кусок разделён посередине': 'Klippet er delt på midten'
 
 });

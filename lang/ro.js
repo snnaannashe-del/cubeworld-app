@@ -3111,6 +3111,10 @@ CW.словарь('ro', {
   'всего в файле {сколько}': '{сколько} în tot fișierul',
   'меняется и картинка, и звук, и длина куска': 'se schimbă și imaginea, și sunetul, și lungimea bucății',
   'ролик начнётся с этого места записи': 'filmul va începe din acest loc al înregistrării',
-  '◀ Левее': '◀ Stânga'
+  '◀ Левее': '◀ Stânga',
+
+  'Отделение': 'Depărtare',
+  'Кусок разделён': 'Bucata e împărțită',
+  'Кусок разделён посередине': 'Bucata e împărțită la mijloc'
 
 });

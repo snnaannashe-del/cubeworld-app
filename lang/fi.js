@@ -3111,6 +3111,10 @@ CW.словарь('fi', {
   'всего в файле {сколько}': '{сколько} koko tiedostossa',
   'меняется и картинка, и звук, и длина куска': 'muuttuu kuva, ääni ja pätkän pituus',
   'ролик начнётся с этого места записи': 'video alkaa tästä nauhoituksen kohdasta',
-  '◀ Левее': '◀ Vasemmalle'
+  '◀ Левее': '◀ Vasemmalle',
+
+  'Отделение': 'Loitonnus',
+  'Кусок разделён': 'Pätkä on jaettu',
+  'Кусок разделён посередине': 'Pätkä on jaettu keskeltä'
 
 });

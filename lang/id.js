@@ -3111,6 +3111,10 @@ CW.словарь('id', {
   'всего в файле {сколько}': '{сколько} di seluruh berkas',
   'меняется и картинка, и звук, и длина куска': 'gambar, suara, dan panjang potongan semuanya berubah',
   'ролик начнётся с этого места записи': 'video akan mulai dari titik ini pada rekaman',
-  '◀ Левее': '◀ Kiri'
+  '◀ Левее': '◀ Kiri',
+
+  'Отделение': 'Memperkecil',
+  'Кусок разделён': 'Potongan sudah dibelah',
+  'Кусок разделён посередине': 'Potongan sudah dibelah di tengah'
 
 });

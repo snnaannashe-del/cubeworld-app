@@ -3111,6 +3111,10 @@ CW.словарь('it', {
   'всего в файле {сколько}': '{сколько} in tutto il file',
   'меняется и картинка, и звук, и длина куска': 'cambiano immagine, suono e durata del pezzo',
   'ролик начнётся с этого места записи': 'il video partirà da questo punto della registrazione',
-  '◀ Левее': '◀ Sinistra'
+  '◀ Левее': '◀ Sinistra',
+
+  'Отделение': 'Allontanamento',
+  'Кусок разделён': 'Il pezzo è diviso',
+  'Кусок разделён посередине': 'Il pezzo è diviso a metà'
 
 });
