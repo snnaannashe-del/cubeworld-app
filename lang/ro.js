@@ -3115,6 +3115,13 @@ CW.словарь('ro', {
 
   'Отделение': 'Depărtare',
   'Кусок разделён': 'Bucata e împărțită',
-  'Кусок разделён посередине': 'Bucata e împărțită la mijloc'
+  'Кусок разделён посередине': 'Bucata e împărțită la mijloc',
+
+  'Вписать': 'Încadrează',
+  'Заполнить': 'Umple',
+  'Размытый фон': 'Fundal neclar',
+  'Повёрнут на {град}°': 'Rotit cu {град}°',
+  'Отражён': 'Oglindit',
+  'Запись не вышла': 'Înregistrarea nu a ieșit'
 
 });

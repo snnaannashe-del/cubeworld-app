@@ -3118,6 +3118,13 @@ CW.словарь('fr', {
 
   'Отделение': 'Dézoom',
   'Кусок разделён': 'Le morceau est coupé',
-  'Кусок разделён посередине': 'Le morceau est coupé au milieu'
+  'Кусок разделён посередине': 'Le morceau est coupé au milieu',
+
+  'Вписать': 'Ajuster',
+  'Заполнить': 'Remplir',
+  'Размытый фон': 'Fond flou',
+  'Повёрнут на {град}°': 'Tourné de {град}°',
+  'Отражён': 'Reflété',
+  'Запись не вышла': 'L’enregistrement n’a pas marché'
 
 });

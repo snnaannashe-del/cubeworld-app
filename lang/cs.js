@@ -3115,6 +3115,13 @@ CW.словарь('cs', {
 
   'Отделение': 'Oddálení',
   'Кусок разделён': 'Kousek je rozdělen',
-  'Кусок разделён посередине': 'Kousek je rozdělen uprostřed'
+  'Кусок разделён посередине': 'Kousek je rozdělen uprostřed',
+
+  'Вписать': 'Vepsat',
+  'Заполнить': 'Vyplnit',
+  'Размытый фон': 'Rozmazané pozadí',
+  'Повёрнут на {град}°': 'Otočeno o {град}°',
+  'Отражён': 'Zrcadleno',
+  'Запись не вышла': 'Nahrávka se nepovedla'
 
 });

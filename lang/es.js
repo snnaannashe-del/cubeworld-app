@@ -3118,6 +3118,13 @@ CW.словарь('es', {
 
   'Отделение': 'Alejar',
   'Кусок разделён': 'El trozo está partido',
-  'Кусок разделён посередине': 'El trozo está partido por la mitad'
+  'Кусок разделён посередине': 'El trozo está partido por la mitad',
+
+  'Вписать': 'Encajar',
+  'Заполнить': 'Rellenar',
+  'Размытый фон': 'Fondo borroso',
+  'Повёрнут на {град}°': 'Girado {град}°',
+  'Отражён': 'Reflejado',
+  'Запись не вышла': 'La grabación no salió'
 
 });

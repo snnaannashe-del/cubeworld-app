@@ -3115,6 +3115,13 @@ CW.словарь('id', {
 
   'Отделение': 'Memperkecil',
   'Кусок разделён': 'Potongan sudah dibelah',
-  'Кусок разделён посередине': 'Potongan sudah dibelah di tengah'
+  'Кусок разделён посередине': 'Potongan sudah dibelah di tengah',
+
+  'Вписать': 'Paskan',
+  'Заполнить': 'Penuhi',
+  'Размытый фон': 'Latar buram',
+  'Повёрнут на {град}°': 'Diputar {град}°',
+  'Отражён': 'Dicerminkan',
+  'Запись не вышла': 'Rekaman tidak jadi'
 
 });

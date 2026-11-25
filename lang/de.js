@@ -3124,6 +3124,13 @@ CW.словарь('de', {
 
   'Отделение': 'Herauszoomen',
   'Кусок разделён': 'Das Stück ist geteilt',
-  'Кусок разделён посередине': 'Das Stück ist in der Mitte geteilt'
+  'Кусок разделён посередине': 'Das Stück ist in der Mitte geteilt',
+
+  'Вписать': 'Einpassen',
+  'Заполнить': 'Ausfüllen',
+  'Размытый фон': 'Verschwommener Hintergrund',
+  'Повёрнут на {град}°': 'Um {град}° gedreht',
+  'Отражён': 'Gespiegelt',
+  'Запись не вышла': 'Die Aufnahme hat nicht geklappt'
 
 });

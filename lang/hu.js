@@ -3115,6 +3115,13 @@ CW.словарь('hu', {
 
   'Отделение': 'Távolítás',
   'Кусок разделён': 'A darab ketté van vágva',
-  'Кусок разделён посередине': 'A darab középen ketté van vágva'
+  'Кусок разделён посередине': 'A darab középen ketté van vágva',
+
+  'Вписать': 'Beillesztés',
+  'Заполнить': 'Kitöltés',
+  'Размытый фон': 'Elmosott háttér',
+  'Повёрнут на {град}°': '{град}°-kal elforgatva',
+  'Отражён': 'Tükrözve',
+  'Запись не вышла': 'A felvétel nem jött össze'
 
 });

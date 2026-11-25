@@ -3237,6 +3237,13 @@ CW.словарь('en', {
 
   'Отделение': 'Zoom out',
   'Кусок разделён': 'The clip is split',
-  'Кусок разделён посередине': 'The clip is split in the middle'
+  'Кусок разделён посередине': 'The clip is split in the middle',
+
+  'Вписать': 'Fit',
+  'Заполнить': 'Fill',
+  'Размытый фон': 'Blurred background',
+  'Повёрнут на {град}°': 'Turned by {град}°',
+  'Отражён': 'Mirrored',
+  'Запись не вышла': 'The recording did not work out'
 
 });

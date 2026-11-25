@@ -3115,6 +3115,13 @@ CW.словарь('sv', {
 
   'Отделение': 'Utzoomning',
   'Кусок разделён': 'Klippet är delat',
-  'Кусок разделён посередине': 'Klippet är delat på mitten'
+  'Кусок разделён посередине': 'Klippet är delat på mitten',
+
+  'Вписать': 'Passa in',
+  'Заполнить': 'Fyll',
+  'Размытый фон': 'Suddig bakgrund',
+  'Повёрнут на {град}°': 'Vriden {град}°',
+  'Отражён': 'Speglad',
+  'Запись не вышла': 'Inspelningen gick inte'
 
 });

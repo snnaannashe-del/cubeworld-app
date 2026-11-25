@@ -3115,6 +3115,13 @@ CW.словарь('pl', {
 
   'Отделение': 'Oddalenie',
   'Кусок разделён': 'Kawałek podzielony',
-  'Кусок разделён посередине': 'Kawałek podzielony na środku'
+  'Кусок разделён посередине': 'Kawałek podzielony na środku',
+
+  'Вписать': 'Zmieść',
+  'Заполнить': 'Wypełnij',
+  'Размытый фон': 'Rozmyte tło',
+  'Повёрнут на {град}°': 'Obrócone o {град}°',
+  'Отражён': 'Odbite',
+  'Запись не вышла': 'Nagranie się nie udało'
 
 });

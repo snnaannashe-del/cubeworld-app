@@ -3115,6 +3115,13 @@ CW.словарь('it', {
 
   'Отделение': 'Allontanamento',
   'Кусок разделён': 'Il pezzo è diviso',
-  'Кусок разделён посередине': 'Il pezzo è diviso a metà'
+  'Кусок разделён посередине': 'Il pezzo è diviso a metà',
+
+  'Вписать': 'Adatta',
+  'Заполнить': 'Riempi',
+  'Размытый фон': 'Sfondo sfocato',
+  'Повёрнут на {град}°': 'Ruotato di {град}°',
+  'Отражён': 'Specchiato',
+  'Запись не вышла': 'La registrazione non è riuscita'
 
 });

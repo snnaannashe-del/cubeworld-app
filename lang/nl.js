@@ -3115,6 +3115,13 @@ CW.словарь('nl', {
 
   'Отделение': 'Uitzoomen',
   'Кусок разделён': 'Het stuk is gesplitst',
-  'Кусок разделён посередине': 'Het stuk is in het midden gesplitst'
+  'Кусок разделён посередине': 'Het stuk is in het midden gesplitst',
+
+  'Вписать': 'Passend',
+  'Заполнить': 'Vullen',
+  'Размытый фон': 'Wazige achtergrond',
+  'Повёрнут на {град}°': '{град}° gedraaid',
+  'Отражён': 'Gespiegeld',
+  'Запись не вышла': 'De opname is niet gelukt'
 
 });

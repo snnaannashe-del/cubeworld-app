@@ -3115,6 +3115,13 @@ CW.словарь('fi', {
 
   'Отделение': 'Loitonnus',
   'Кусок разделён': 'Pätkä on jaettu',
-  'Кусок разделён посередине': 'Pätkä on jaettu keskeltä'
+  'Кусок разделён посередине': 'Pätkä on jaettu keskeltä',
+
+  'Вписать': 'Sovita',
+  'Заполнить': 'Täytä',
+  'Размытый фон': 'Sumea tausta',
+  'Повёрнут на {град}°': 'Käännetty {град}°',
+  'Отражён': 'Peilattu',
+  'Запись не вышла': 'Nauhoitus ei onnistunut'
 
 });
