@@ -3122,6 +3122,19 @@ CW.словарь('id', {
   'Размытый фон': 'Latar buram',
   'Повёрнут на {град}°': 'Diputar {град}°',
   'Отражён': 'Dicerminkan',
-  'Запись не вышла': 'Rekaman tidak jadi'
+  'Запись не вышла': 'Rekaman tidak jadi',
+
+  'Отправлено {н}': 'Terkirim {н}',
+  'Ушло {ушло} из {всего}. {беда}': '{ушло} dari {всего} sudah terkirim. {беда}',
+  'Место не определилось': 'Tempat tidak bisa ditentukan',
+  'Кружок не записался': 'Lingkaran tidak terekam',
+  'Файл в избранном': 'Berkas ada di «Tersimpan»',
+  '{н} файла в избранном': '{н} berkas ada di «Tersimpan»',
+  '{н} не влезли: в избранное берём до 900 КБ': '{н} tidak muat: «Tersimpan» menerima sampai 900 KB',
+
+  'Раздел: {что}': 'Bagian: {что}',
+  'Окно: {что}': 'Jendela: {что}',
+  'Портфолио #{н}': 'Portofolio #{н}',
+  'Кнопка': 'Tombol'
 
 });

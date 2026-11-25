@@ -3122,6 +3122,19 @@ CW.словарь('sv', {
   'Размытый фон': 'Suddig bakgrund',
   'Повёрнут на {град}°': 'Vriden {град}°',
   'Отражён': 'Speglad',
-  'Запись не вышла': 'Inspelningen gick inte'
+  'Запись не вышла': 'Inspelningen gick inte',
+
+  'Отправлено {н}': '{н} skickade',
+  'Ушло {ушло} из {всего}. {беда}': '{ушло} av {всего} gick iväg. {беда}',
+  'Место не определилось': 'Platsen gick inte att bestämma',
+  'Кружок не записался': 'Cirkeln spelades inte in',
+  'Файл в избранном': 'Filen ligger i ”Sparat”',
+  '{н} файла в избранном': '{н} filer ligger i ”Sparat”',
+  '{н} не влезли: в избранное берём до 900 КБ': '{н} fick inte plats: ”Sparat” tar upp till 900 KB',
+
+  'Раздел: {что}': 'Avsnitt: {что}',
+  'Окно: {что}': 'Fönster: {что}',
+  'Портфолио #{н}': 'Portfölj #{н}',
+  'Кнопка': 'Knapp'
 
 });

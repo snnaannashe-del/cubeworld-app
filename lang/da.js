@@ -3122,6 +3122,19 @@ CW.словарь('da', {
   'Размытый фон': 'Sløret baggrund',
   'Повёрнут на {град}°': 'Drejet {град}°',
   'Отражён': 'Spejlet',
-  'Запись не вышла': 'Optagelsen gik ikke'
+  'Запись не вышла': 'Optagelsen gik ikke',
+
+  'Отправлено {н}': '{н} sendt',
+  'Ушло {ушло} из {всего}. {беда}': '{ушло} af {всего} gik af sted. {беда}',
+  'Место не определилось': 'Stedet kunne ikke bestemmes',
+  'Кружок не записался': 'Cirklen blev ikke optaget',
+  'Файл в избранном': 'Filen ligger i “Gemt”',
+  '{н} файла в избранном': '{н} filer ligger i “Gemt”',
+  '{н} не влезли: в избранное берём до 900 КБ': '{н} kunne ikke være der: “Gemt” tager op til 900 KB',
+
+  'Раздел: {что}': 'Afsnit: {что}',
+  'Окно: {что}': 'Vindue: {что}',
+  'Портфолио #{н}': 'Portefølje #{н}',
+  'Кнопка': 'Knap'
 
 });

@@ -3122,6 +3122,19 @@ CW.словарь('ro', {
   'Размытый фон': 'Fundal neclar',
   'Повёрнут на {град}°': 'Rotit cu {град}°',
   'Отражён': 'Oglindit',
-  'Запись не вышла': 'Înregistrarea nu a ieșit'
+  'Запись не вышла': 'Înregistrarea nu a ieșit',
+
+  'Отправлено {н}': 'Trimise {н}',
+  'Ушло {ушло} из {всего}. {беда}': 'Au plecat {ушло} din {всего}. {беда}',
+  'Место не определилось': 'Locul nu a putut fi determinat',
+  'Кружок не записался': 'Cerculețul nu s-a înregistrat',
+  'Файл в избранном': 'Fișierul e în „Salvate”',
+  '{н} файла в избранном': '{н} fișiere sunt în „Salvate”',
+  '{н} не влезли: в избранное берём до 900 КБ': '{н} nu au încăput: „Salvate” ia până la 900 KB',
+
+  'Раздел: {что}': 'Secțiune: {что}',
+  'Окно: {что}': 'Fereastră: {что}',
+  'Портфолио #{н}': 'Portofoliu #{н}',
+  'Кнопка': 'Buton'
 
 });

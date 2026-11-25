@@ -3125,6 +3125,19 @@ CW.словарь('fr', {
   'Размытый фон': 'Fond flou',
   'Повёрнут на {град}°': 'Tourné de {град}°',
   'Отражён': 'Reflété',
-  'Запись не вышла': 'L’enregistrement n’a pas marché'
+  'Запись не вышла': 'L’enregistrement n’a pas marché',
+
+  'Отправлено {н}': '{н} envoyés',
+  'Ушло {ушло} из {всего}. {беда}': '{ушло} sur {всего} sont partis. {беда}',
+  'Место не определилось': 'Le lieu n’a pas pu être déterminé',
+  'Кружок не записался': 'Le cercle n’a pas été enregistré',
+  'Файл в избранном': 'Le fichier est dans « Enregistré »',
+  '{н} файла в избранном': '{н} fichiers sont dans « Enregistré »',
+  '{н} не влезли: в избранное берём до 900 КБ': '{н} n’ont pas tenu : « Enregistré » prend jusqu’à 900 Ko',
+
+  'Раздел: {что}': 'Section : {что}',
+  'Окно: {что}': 'Fenêtre : {что}',
+  'Портфолио #{н}': 'Portfolio #{н}',
+  'Кнопка': 'Bouton'
 
 });

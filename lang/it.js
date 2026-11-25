@@ -3122,6 +3122,19 @@ CW.словарь('it', {
   'Размытый фон': 'Sfondo sfocato',
   'Повёрнут на {град}°': 'Ruotato di {град}°',
   'Отражён': 'Specchiato',
-  'Запись не вышла': 'La registrazione non è riuscita'
+  'Запись не вышла': 'La registrazione non è riuscita',
+
+  'Отправлено {н}': 'Inviati {н}',
+  'Ушло {ушло} из {всего}. {беда}': 'Sono partiti {ушло} su {всего}. {беда}',
+  'Место не определилось': 'Il luogo non si è potuto determinare',
+  'Кружок не записался': 'Il cerchio non è stato registrato',
+  'Файл в избранном': 'Il file è in «Salvati»',
+  '{н} файла в избранном': '{н} file sono in «Salvati»',
+  '{н} не влезли: в избранное берём до 900 КБ': '{н} non ci sono entrati: «Salvati» prende fino a 900 KB',
+
+  'Раздел: {что}': 'Sezione: {что}',
+  'Окно: {что}': 'Finestra: {что}',
+  'Портфолио #{н}': 'Portfolio #{н}',
+  'Кнопка': 'Pulsante'
 
 });

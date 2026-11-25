@@ -3122,6 +3122,19 @@ CW.словарь('fi', {
   'Размытый фон': 'Sumea tausta',
   'Повёрнут на {град}°': 'Käännetty {град}°',
   'Отражён': 'Peilattu',
-  'Запись не вышла': 'Nauhoitus ei onnistunut'
+  'Запись не вышла': 'Nauhoitus ei onnistunut',
+
+  'Отправлено {н}': 'Lähetetty {н}',
+  'Ушло {ушло} из {всего}. {беда}': '{всего} lähti {ушло}. {беда}',
+  'Место не определилось': 'Paikkaa ei saatu selville',
+  'Кружок не записался': 'Ympyrää ei tallennettu',
+  'Файл в избранном': 'Tiedosto on kohdassa ”Tallennetut”',
+  '{н} файла в избранном': '{н} tiedostoa on kohdassa ”Tallennetut”',
+  '{н} не влезли: в избранное берём до 900 КБ': '{н} ei mahtunut: ”Tallennetut” ottaa 900 kt asti',
+
+  'Раздел: {что}': 'Osio: {что}',
+  'Окно: {что}': 'Ikkuna: {что}',
+  'Портфолио #{н}': 'Portfolio #{н}',
+  'Кнопка': 'Painike'
 
 });

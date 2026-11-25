@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Избранное · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261125-482">
-<link rel="stylesheet" href="../shared/style.css?v=20261125-482">
-<link rel="stylesheet" href="../shared/window.css?v=20261125-482">
-<link rel="stylesheet" href="../shared/account.css?v=20261125-482">
-<script src="../shared/theme.js?v=20261125-482"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261125-482">
+<link rel="icon" href="../icons/favicon.svg?v=20261125-483">
+<link rel="stylesheet" href="../shared/style.css?v=20261125-483">
+<link rel="stylesheet" href="../shared/window.css?v=20261125-483">
+<link rel="stylesheet" href="../shared/account.css?v=20261125-483">
+<script src="../shared/theme.js?v=20261125-483"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261125-483">
 <!--
   ИЗБРАННОЕ — стоячее окно шириной 10 см, как портфолио и правка профиля.
 
@@ -58,24 +58,24 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261125-482"></script>
-<script src="../shared/ui.js?v=20261125-482"></script>
-<script src="../shared/смайлы.js?v=20261125-482"></script>
-<script src="../shared/лица.js?v=20261125-482"></script>
-<script src="../shared/эфир.js?v=20261125-482"></script>
-<script src="../shared/icons.js?v=20261125-482"></script>
-<script src="../shared/window.js?v=20261125-482"></script>
-<script src="../shared/без-копий.js?v=20261125-482"></script>
-<script src="../shared/time.js?v=20261125-482"></script>
-<script src="../shared/auth.js?v=20261125-482"></script>
-<script src="../shared/lang.js?v=20261125-482"></script>
-<script src="../shared/account.js?v=20261125-482"></script>
-<script src="../shared/shell.js?v=20261125-482"></script>
-<script src="../shared/вложения.js?v=20261125-482"></script>
-<script src="../shared/запись-голоса.js?v=20261125-482"></script>
-<script src="../shared/кнопки-сообщения.js?v=20261125-482"></script>
-<script src="../shared/кадр-ролика.js?v=20261125-482"></script>
-<script src="../shared/chat.js?v=20261125-482"></script>
+<script src="../shared/api.js?v=20261125-483"></script>
+<script src="../shared/ui.js?v=20261125-483"></script>
+<script src="../shared/смайлы.js?v=20261125-483"></script>
+<script src="../shared/лица.js?v=20261125-483"></script>
+<script src="../shared/эфир.js?v=20261125-483"></script>
+<script src="../shared/icons.js?v=20261125-483"></script>
+<script src="../shared/window.js?v=20261125-483"></script>
+<script src="../shared/без-копий.js?v=20261125-483"></script>
+<script src="../shared/time.js?v=20261125-483"></script>
+<script src="../shared/auth.js?v=20261125-483"></script>
+<script src="../shared/lang.js?v=20261125-483"></script>
+<script src="../shared/account.js?v=20261125-483"></script>
+<script src="../shared/shell.js?v=20261125-483"></script>
+<script src="../shared/вложения.js?v=20261125-483"></script>
+<script src="../shared/запись-голоса.js?v=20261125-483"></script>
+<script src="../shared/кнопки-сообщения.js?v=20261125-483"></script>
+<script src="../shared/кадр-ролика.js?v=20261125-483"></script>
+<script src="../shared/chat.js?v=20261125-483"></script>
 <script>
 'use strict';
 
@@ -475,8 +475,8 @@ function показать() {
   if (С.поискВиден) {
     var сколько = ряды.length;
     итогПоиска.textContent = С.ищем
-      ? (сколько ? 'Нашлось: ' + сколько : 'Ничего не нашлось')
-      : (С.вкладка ? 'В разделе: ' + сколько : '');
+      ? (сколько ? Т.с('Нашлось: {н}', { н: сколько }) : Т('Ничего не нашлось'))
+      : (С.вкладка ? Т.с('В разделе: {н}', { н: сколько }) : '');
   }
   if (ПРИЛИП) ПРИЛИП.вернуть(); else CW.вниз(лента);
 }
@@ -782,7 +782,7 @@ function положитьМесто() {
     добавить(CW.вложения.строкойГео(м), null, срокВвода());
     CW.сказать(Т('Место в избранном'));
   }).catch(function (е) {
-    CW.сказать((е && е.message) || 'Место не определилось', 6000);
+    CW.сказать((е && е.message) || Т('Место не определилось'), 6000);
   });
 }
 
@@ -798,9 +798,10 @@ function взятьФайлы(файлы, документом) {
   var легло = 0, тяжёлых = 0;
   (function следующий(и) {
     if (и >= файлы.length) {
-      if (легло) CW.сказать(легло === 1 ? 'Файл в избранном'
-                                        : (легло + ' файла в избранном'), 2500);
-      if (тяжёлых) CW.сказать(тяжёлых + ' не влезли: в избранное берём до 900 КБ', 7000);
+      if (легло) CW.сказать(легло === 1 ? Т('Файл в избранном')
+                                        : Т.с('{н} файла в избранном', { н: легло }), 2500);
+      if (тяжёлых) CW.сказать(Т.с('{н} не влезли: в избранное берём до 900 КБ',
+                                  { н: тяжёлых }), 7000);
       return;
     }
     var ф = файлы[и];
@@ -850,7 +851,7 @@ function кружком() {
       CW.сказать(Т('Кружок в избранном'));
     });
   }).catch(function (е) {
-    CW.сказать((е && е.message) || 'Кружок не записался', 6000);
+    CW.сказать((е && е.message) || Т('Кружок не записался'), 6000);
   });
 }
 

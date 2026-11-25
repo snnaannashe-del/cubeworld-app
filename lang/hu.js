@@ -3122,6 +3122,19 @@ CW.словарь('hu', {
   'Размытый фон': 'Elmosott háttér',
   'Повёрнут на {град}°': '{град}°-kal elforgatva',
   'Отражён': 'Tükrözve',
-  'Запись не вышла': 'A felvétel nem jött össze'
+  'Запись не вышла': 'A felvétel nem jött össze',
+
+  'Отправлено {н}': '{н} elküldve',
+  'Ушло {ушло} из {всего}. {беда}': '{всего} közül {ушло} ment el. {беда}',
+  'Место не определилось': 'A helyet nem sikerült megállapítani',
+  'Кружок не записался': 'A körvideó nem rögzült',
+  'Файл в избранном': 'A fájl a „Mentettek” között van',
+  '{н} файла в избранном': '{н} fájl a „Mentettek” között van',
+  '{н} не влезли: в избранное берём до 900 КБ': '{н} nem fért be: a „Mentettek” 900 KB-ig vesz',
+
+  'Раздел: {что}': 'Rovat: {что}',
+  'Окно: {что}': 'Ablak: {что}',
+  'Портфолио #{н}': 'Portfólió #{н}',
+  'Кнопка': 'Gomb'
 
 });

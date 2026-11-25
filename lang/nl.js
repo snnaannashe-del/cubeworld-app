@@ -3122,6 +3122,19 @@ CW.словарь('nl', {
   'Размытый фон': 'Wazige achtergrond',
   'Повёрнут на {град}°': '{град}° gedraaid',
   'Отражён': 'Gespiegeld',
-  'Запись не вышла': 'De opname is niet gelukt'
+  'Запись не вышла': 'De opname is niet gelukt',
+
+  'Отправлено {н}': '{н} verstuurd',
+  'Ушло {ушло} из {всего}. {беда}': '{ушло} van {всего} zijn weg. {беда}',
+  'Место не определилось': 'De plek kon niet worden bepaald',
+  'Кружок не записался': 'De cirkel is niet opgenomen',
+  'Файл в избранном': 'Het bestand staat in ‘Bewaard’',
+  '{н} файла в избранном': '{н} bestanden staan in ‘Bewaard’',
+  '{н} не влезли: в избранное берём до 900 КБ': '{н} pasten niet: ‘Bewaard’ neemt tot 900 KB',
+
+  'Раздел: {что}': 'Onderdeel: {что}',
+  'Окно: {что}': 'Venster: {что}',
+  'Портфолио #{н}': 'Portfolio #{н}',
+  'Кнопка': 'Knop'
 
 });
