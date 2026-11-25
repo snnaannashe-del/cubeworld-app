@@ -3160,6 +3160,8 @@ CW.словарь('hu', {
 
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Szimulátor és gyakorlópálya a kriptotőzsdéhez. A megtakarított pénz megkeresett pénz. Tudásbázis és gyakorlás. Tanulj kereskedni a szimulátoron, teszt érmékkel és teszt pénzzel, és csak azután gondolj igazi tőzsdére.',
   'В подписке': 'Az előfizetésben',
-  'Кварц пока не подключён': 'A Kvarc még nincs bekötve'
+  'Кварц пока не подключён': 'A Kvarc még nincs bekötve',
+
+  'Первый модуль открыт бесплатно. Остальное — по подписке.': 'Az első modul ingyenes. A többi az előfizetéssel jár.'
 
 });

@@ -3160,6 +3160,8 @@ CW.словарь('nl', {
 
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Een simulator en oefenterrein voor de cryptobeurs. Gespaard geld is verdiend geld. Kennis en oefening. Leer handelen op de simulator, met testmunten en testgeld, en denk pas daarna aan een echte beurs.',
   'В подписке': 'In het abonnement',
-  'Кварц пока не подключён': 'Kvarc is nog niet aangesloten'
+  'Кварц пока не подключён': 'Kvarc is nog niet aangesloten',
+
+  'Первый модуль открыт бесплатно. Остальное — по подписке.': 'De eerste module is gratis. De rest hoort bij het abonnement.'
 
 });

@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Заработать · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-489">
-<link rel="stylesheet" href="shared/style.css?v=20261125-489">
-<link rel="stylesheet" href="shared/window.css?v=20261125-489">
-<link rel="stylesheet" href="shared/account.css?v=20261125-489">
-<script src="shared/theme.js?v=20261125-489"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261125-489">
+<link rel="icon" href="icons/favicon.svg?v=20261125-490">
+<link rel="stylesheet" href="shared/style.css?v=20261125-490">
+<link rel="stylesheet" href="shared/window.css?v=20261125-490">
+<link rel="stylesheet" href="shared/account.css?v=20261125-490">
+<script src="shared/theme.js?v=20261125-490"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-490">
 <!--
   ЗАРАБОТАТЬ.
 
@@ -263,20 +263,20 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261125-489"></script>
-<script src="shared/ui.js?v=20261125-489"></script>
-<script src="shared/смайлы.js?v=20261125-489"></script>
-<script src="shared/лица.js?v=20261125-489"></script>
-<script src="shared/эфир.js?v=20261125-489"></script>
-<script src="shared/icons.js?v=20261125-489"></script>
-<script src="shared/window.js?v=20261125-489"></script>
-<script src="shared/без-копий.js?v=20261125-489"></script>
-<script src="shared/time.js?v=20261125-489"></script>
-<script src="shared/auth.js?v=20261125-489"></script>
-<script src="shared/lang.js?v=20261125-489"></script>
-<script src="shared/account.js?v=20261125-489"></script>
-<script src="shared/shell.js?v=20261125-489"></script>
-<script src="shared/wallets.js?v=20261125-489"></script>
+<script src="shared/api.js?v=20261125-490"></script>
+<script src="shared/ui.js?v=20261125-490"></script>
+<script src="shared/смайлы.js?v=20261125-490"></script>
+<script src="shared/лица.js?v=20261125-490"></script>
+<script src="shared/эфир.js?v=20261125-490"></script>
+<script src="shared/icons.js?v=20261125-490"></script>
+<script src="shared/window.js?v=20261125-490"></script>
+<script src="shared/без-копий.js?v=20261125-490"></script>
+<script src="shared/time.js?v=20261125-490"></script>
+<script src="shared/auth.js?v=20261125-490"></script>
+<script src="shared/lang.js?v=20261125-490"></script>
+<script src="shared/account.js?v=20261125-490"></script>
+<script src="shared/shell.js?v=20261125-490"></script>
+<script src="shared/wallets.js?v=20261125-490"></script>
 <script>
 'use strict';
 
@@ -329,7 +329,6 @@ function cube(ч) {
 function показать() {
   тело.innerHTML = '';
   тело.appendChild(кускомПодписка());
-  тело.appendChild(кускомКварц());
   тело.appendChild(кускомМайнинг());
   тело.appendChild(кускомТройка());
   тело.appendChild(кускомПримечание());
@@ -342,6 +341,10 @@ function показать() {
   тело.appendChild(кусок('раздел', Т('За этот месяц')));
   тело.appendChild(кускомМесяц());
   тело.appendChild(CW.кусокСвайпа());
+  /* «Кварц» стоит сразу под свайпом, а не под подпиской: вверху у него
+     отбирала внимание карточка подписки, а здесь он попадает тому, кто
+     и так пришёл за криптой — доскроллил до обмена, значит тема его. */
+  тело.appendChild(кускомКварц());
   тело.appendChild(CW.кусокКошельков());
 }
 
@@ -398,12 +401,18 @@ function кускомКварц() {
           + 'монетах и деньгах, и только потом думай, сливаться на биржу '
           + 'или нет.'))
     +   '</p>'
+    /* Без подписки «Кварц» не закрыт: первый модуль там открыт всем и
+       проходится без ключа. Поэтому кнопка у всех одна — «Открыть», а
+       разницу объясняем словами. Не пустить человека посмотреть то, что
+       и так бесплатно, значит потерять его на пороге. */
+    +   (есть ? '' : '<p class="под">'
+          + CW.безопасно(Т('Первый модуль открыт бесплатно. Остальное — по подписке.'))
+          + '</p>')
     + '</div>'
-    + '<button class="цена">' + CW.безопасно(есть ? Т('Открыть') : Т('В подписке')) + '</button>');
+    + '<button class="цена">' + CW.безопасно(Т('Открыть')) + '</button>');
 
   у.querySelector('.цена').onclick = function () {
     var кн = у.querySelector('.цена');
-    if (!есть) { CW.открыть('premium', { потом: перечитать }); return; }
 
     /* Окно открываем ДО запроса и пустым. Если открыть его в ответе,
        телефон сочтёт это всплывающим окном и закроет: разрешено только
@@ -413,10 +422,11 @@ function кускомКварц() {
     CW.спросить('/kvarc/ticket', { тихо: true, сроком: 20000 })
       .then(function (о) {
         кн.disabled = false;
-        if (о && о.open) { if (окно2) окно2.location = о.open; else location.href = о.open; return; }
-        if (окно2) окно2.close();
-        if (о && !о.level) { CW.открыть('premium', { потом: перечитать }); return; }
-        CW.сказать(Т('Кварц пока не подключён'), 5000);
+        /* С подпиской — по пропуску, сразу на свой уровень. Без неё —
+           просто на сайт, в демо-режим с открытым первым модулем. */
+        var куда = (о && (о.open || о.url)) || '';
+        if (!куда) { if (окно2) окно2.close(); CW.сказать(Т('Кварц пока не подключён'), 5000); return; }
+        if (окно2) окно2.location = куда; else location.href = куда;
       })
       .catch(function (е) {
         кн.disabled = false;
