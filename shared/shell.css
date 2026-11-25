@@ -223,7 +223,7 @@ body{ background:var(--вне-рамы); }
 .об-кубы{
   flex:1 1 auto; min-width:0;
   display:flex; align-items:center; gap:10px;
-  overflow-x:auto; touch-action:pan-x pan-y; overscroll-behavior-x:none; overflow-y:hidden; scrollbar-width:none;
+  overflow-x:auto; overflow-y:hidden; scrollbar-width:none;
 }
 .об-кубы::-webkit-scrollbar{ display:none; }
 /* Класс ставит shell.js, когда вправо есть что прокручивать. */
@@ -380,12 +380,7 @@ body{ background:var(--вне-рамы); }
 /* ── содержимое ──────────────────────────────────────────────────── */
 .об-место{
   flex:1; min-width:0; overflow-y:auto; overflow-x:hidden;
-  /* «contain» держит прокрутку внутри, но САМ жест перелистывания
-     браузеру всё равно оставляет. «none» забирает и его: ни дуги
-     отскока, ни ухода «назад». Поперёк здесь и так нечего двигать,
-     терять нечего. */
-  overscroll-behavior-y:contain; overscroll-behavior-x:none;
-  touch-action:pan-y;
+  overscroll-behavior:contain;
 }
 .об-место::-webkit-scrollbar{ width:9px; }
 .об-место::-webkit-scrollbar-thumb{
@@ -907,7 +902,7 @@ body{ background:var(--вне-рамы); }
    наведении — ещё и подъём на две точки. Теперь и рамка, и подъём внутри. */
 .сов-окошко{
   height:var(--сов-рост, 150px); padding:3px 0;
-  overflow-x:auto; touch-action:pan-x pan-y; overscroll-behavior-x:none; overflow-y:hidden; scrollbar-width:none;
+  overflow-x:auto; overflow-y:hidden; scrollbar-width:none;
   -ms-overflow-style:none; scroll-snap-type:x mandatory;
 }
 .сов-окошко::-webkit-scrollbar{ width:0; height:0; display:none; }
@@ -1331,7 +1326,7 @@ html[data-тема="светлая"] .пузырь.чужое:not(.медиа){
 
 /* Полки содержимого: «Фото · Видео · Аудио · Ссылки» со счётом. */
 .пер-вкладки{
-  display:flex; gap:7px; padding:12px 16px; overflow-x:auto; touch-action:pan-x pan-y; overscroll-behavior-x:none; overflow-y:hidden;
+  display:flex; gap:7px; padding:12px 16px; overflow-x:auto; overflow-y:hidden;
   scrollbar-width:none; flex:0 0 auto;
 }
 .пер-вкладки::-webkit-scrollbar{ display:none; }
