@@ -3171,6 +3171,4 @@ CW.словарь('de', {
   'В подписке': 'Im Abo',
   'Кварц пока не подключён': 'Kvarc ist noch nicht angeschlossen',
 
-  'Первый модуль открыт бесплатно. Остальное — по подписке.': 'Das erste Modul ist frei. Der Rest kommt mit dem Abo.'
-
 });

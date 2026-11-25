@@ -3162,6 +3162,4 @@ CW.словарь('cs', {
   'В подписке': 'V předplatném',
   'Кварц пока не подключён': 'Kvarc zatím není připojen',
 
-  'Первый модуль открыт бесплатно. Остальное — по подписке.': 'První modul je zdarma. Zbytek přichází s předplatným.'
-
 });

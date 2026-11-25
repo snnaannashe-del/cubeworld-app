@@ -3162,6 +3162,4 @@ CW.словарь('nb', {
   'В подписке': 'Inngår i abonnementet',
   'Кварц пока не подключён': 'Kvarc er ikke koblet til ennå',
 
-  'Первый модуль открыт бесплатно. Остальное — по подписке.': 'Første modul er gratis. Resten følger med abonnementet.'
-
 });

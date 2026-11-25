@@ -3162,6 +3162,4 @@ CW.словарь('id', {
   'В подписке': 'Termasuk langganan',
   'Кварц пока не подключён': 'Kvarc belum tersambung',
 
-  'Первый модуль открыт бесплатно. Остальное — по подписке.': 'Modul pertama gratis. Sisanya ikut langganan.'
-
 });

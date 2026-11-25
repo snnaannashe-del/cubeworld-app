@@ -3162,6 +3162,4 @@ CW.словарь('ro', {
   'В подписке': 'În abonament',
   'Кварц пока не подключён': 'Kvarc încă nu este conectat',
 
-  'Первый модуль открыт бесплатно. Остальное — по подписке.': 'Primul modul este gratuit. Restul vine cu abonamentul.'
-
 });

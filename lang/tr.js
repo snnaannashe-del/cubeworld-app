@@ -3162,6 +3162,4 @@ CW.словарь('tr', {
   'В подписке': 'Abonelikte',
   'Кварц пока не подключён': 'Kvarc henüz bağlı değil',
 
-  'Первый модуль открыт бесплатно. Остальное — по подписке.': 'İlk bölüm ücretsiz. Gerisi abonelikle gelir.'
-
 });

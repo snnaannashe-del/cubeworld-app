@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Заработать · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-491">
-<link rel="stylesheet" href="shared/style.css?v=20261125-491">
-<link rel="stylesheet" href="shared/window.css?v=20261125-491">
-<link rel="stylesheet" href="shared/account.css?v=20261125-491">
-<script src="shared/theme.js?v=20261125-491"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261125-491">
+<link rel="icon" href="icons/favicon.svg?v=20261125-492">
+<link rel="stylesheet" href="shared/style.css?v=20261125-492">
+<link rel="stylesheet" href="shared/window.css?v=20261125-492">
+<link rel="stylesheet" href="shared/account.css?v=20261125-492">
+<script src="shared/theme.js?v=20261125-492"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-492">
 <!--
   ЗАРАБОТАТЬ.
 
@@ -263,20 +263,20 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261125-491"></script>
-<script src="shared/ui.js?v=20261125-491"></script>
-<script src="shared/смайлы.js?v=20261125-491"></script>
-<script src="shared/лица.js?v=20261125-491"></script>
-<script src="shared/эфир.js?v=20261125-491"></script>
-<script src="shared/icons.js?v=20261125-491"></script>
-<script src="shared/window.js?v=20261125-491"></script>
-<script src="shared/без-копий.js?v=20261125-491"></script>
-<script src="shared/time.js?v=20261125-491"></script>
-<script src="shared/auth.js?v=20261125-491"></script>
-<script src="shared/lang.js?v=20261125-491"></script>
-<script src="shared/account.js?v=20261125-491"></script>
-<script src="shared/shell.js?v=20261125-491"></script>
-<script src="shared/wallets.js?v=20261125-491"></script>
+<script src="shared/api.js?v=20261125-492"></script>
+<script src="shared/ui.js?v=20261125-492"></script>
+<script src="shared/смайлы.js?v=20261125-492"></script>
+<script src="shared/лица.js?v=20261125-492"></script>
+<script src="shared/эфир.js?v=20261125-492"></script>
+<script src="shared/icons.js?v=20261125-492"></script>
+<script src="shared/window.js?v=20261125-492"></script>
+<script src="shared/без-копий.js?v=20261125-492"></script>
+<script src="shared/time.js?v=20261125-492"></script>
+<script src="shared/auth.js?v=20261125-492"></script>
+<script src="shared/lang.js?v=20261125-492"></script>
+<script src="shared/account.js?v=20261125-492"></script>
+<script src="shared/shell.js?v=20261125-492"></script>
+<script src="shared/wallets.js?v=20261125-492"></script>
 <script>
 'use strict';
 
@@ -402,12 +402,9 @@ function кускомКварц() {
           + 'или нет.'))
     +   '</p>'
     /* Без подписки «Кварц» не закрыт: первый модуль там открыт всем и
-       проходится без ключа. Поэтому кнопка у всех одна — «Открыть», а
-       разницу объясняем словами. Не пустить человека посмотреть то, что
-       и так бесплатно, значит потерять его на пороге. */
-    +   (есть ? '' : '<p class="под">'
-          + CW.безопасно(Т('Первый модуль открыт бесплатно. Остальное — по подписке.'))
-          + '</p>')
+       проходится без ключа. Поэтому кнопка у всех одна — «Открыть», и
+       никакой приписки под описанием: про бесплатный модуль человеку
+       скажет сам «Кварц», когда откроется. */
     + '</div>'
     + '<button class="цена">' + CW.безопасно(Т('Открыть')) + '</button>');
 

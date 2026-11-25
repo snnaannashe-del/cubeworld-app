@@ -3162,6 +3162,4 @@ CW.словарь('hu', {
   'В подписке': 'Az előfizetésben',
   'Кварц пока не подключён': 'A Kvarc még nincs bekötve',
 
-  'Первый модуль открыт бесплатно. Остальное — по подписке.': 'Az első modul ingyenes. A többi az előfizetéssel jár.'
-
 });

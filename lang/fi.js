@@ -3162,6 +3162,4 @@ CW.словарь('fi', {
   'В подписке': 'Kuuluu tilaukseen',
   'Кварц пока не подключён': 'Kvarcia ei ole vielä kytketty',
 
-  'Первый модуль открыт бесплатно. Остальное — по подписке.': 'Ensimmäinen osa on ilmainen. Loput tulevat tilauksen mukana.'
-
 });

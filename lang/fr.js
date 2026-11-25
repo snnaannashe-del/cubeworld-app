@@ -3165,6 +3165,4 @@ CW.словарь('fr', {
   'В подписке': 'Dans l\'abonnement',
   'Кварц пока не подключён': 'Kvarc n\'est pas encore branché',
 
-  'Первый модуль открыт бесплатно. Остальное — по подписке.': 'Le premier module est gratuit. Le reste vient avec l\'abonnement.'
-
 });
