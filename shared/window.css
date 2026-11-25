@@ -1749,7 +1749,7 @@ textarea.нп-строка{ resize:vertical; min-height:92px; line-height:1.5; }
    заливка спорила бы с выбранной клеткой в сетке под ней. */
 .вз-полки{
   display:flex; gap:4px; margin:-2px 0 10px; padding-bottom:8px;
-  border-bottom:1px solid var(--край); overflow-x:auto; overflow-y:hidden;
+  border-bottom:1px solid var(--край); overflow-x:auto; touch-action:pan-x pan-y; overscroll-behavior-x:none; overflow-y:hidden;
 }
 .вз-полка{
   flex:1 1 0; min-width:38px; padding:7px 0 8px; cursor:pointer;
@@ -2262,7 +2262,7 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
    как эта кнопка обещает. */
 .смайлы-движения{
   display:flex; gap:8px; padding:10px 10px 12px; flex:0 0 auto;
-  align-items:center; overflow-x:auto; overflow-y:hidden;
+  align-items:center; overflow-x:auto; touch-action:pan-x pan-y; overscroll-behavior-x:none; overflow-y:hidden;
   scrollbar-width:none; border-bottom:1px solid var(--край);
 }
 .смайлы-движения::-webkit-scrollbar{ display:none; }
@@ -2306,7 +2306,7 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
      сосед по колонке и обязана держать свой рост: без этого правила
      панель сжимала её, и кружки обрезались снизу. */
   flex:0 0 auto; align-items:center;
-  overflow-x:auto; overflow-y:hidden; scrollbar-width:none;
+  overflow-x:auto; touch-action:pan-x pan-y; overscroll-behavior-x:none; overflow-y:hidden; scrollbar-width:none;
   border-bottom:1px solid var(--край);
 }
 .смайлы-цвета::-webkit-scrollbar{ display:none; }
@@ -2330,7 +2330,7 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
 }
 
 .смайлы-разделы{
-  display:flex; gap:2px; padding:8px 10px; overflow-x:auto; overflow-y:hidden;
+  display:flex; gap:2px; padding:8px 10px; overflow-x:auto; touch-action:pan-x pan-y; overscroll-behavior-x:none; overflow-y:hidden;
   scrollbar-width:none; border-bottom:1px solid var(--край); flex:0 0 auto;
 }
 .смайлы-разделы::-webkit-scrollbar{ display:none; }
@@ -2801,7 +2801,7 @@ html[data-смайл-движение="кувырок"] .смайл-зн.кру�
   /* Реакции - одним рядом вдоль картинки, с прокруткой вбок: их
      двадцать четыре, и в два ряда они съедали бы кадр. */
   .ок-подложка[data-окно="эфир"]:not(.свёрнут) .эф-реакции{
-    flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden; max-height:none;
+    flex-wrap:nowrap; overflow-x:auto; touch-action:pan-x pan-y; overscroll-behavior-x:none; overflow-y:hidden; max-height:none;
     border-top:none; padding:4px 10px; gap:7px;
     scrollbar-width:none;
   }
@@ -4629,7 +4629,7 @@ canvas.фл-клетка{
    всё окно, а в ряд они листаются пальцем, как в монтажных на
    телефоне. */
 .рд-полки{
-  display:flex; gap:6px; overflow-x:auto; overflow-y:hidden;
+  display:flex; gap:6px; overflow-x:auto; touch-action:pan-x pan-y; overscroll-behavior-x:none; overflow-y:hidden;
   scrollbar-width:none; padding-bottom:2px;
 }
 .рд-полки::-webkit-scrollbar{ display:none; }
