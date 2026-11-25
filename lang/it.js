@@ -3135,6 +3135,21 @@ CW.словарь('it', {
   'Раздел: {что}': 'Sezione: {что}',
   'Окно: {что}': 'Finestra: {что}',
   'Портфолио #{н}': 'Portfolio #{н}',
-  'Кнопка': 'Pulsante'
+  'Кнопка': 'Pulsante',
+
+  'Оплатить криптой': 'Pagare in cripto',
+  'Оплатить криптой · ${сумма}': 'Pagare in cripto · ${сумма}',
+  'Чем платить': 'Con che cosa pagare',
+  'Приём оплаты криптой ещё не подключён': 'Il pagamento in cripto non è ancora collegato',
+  'Не удалось получить список монет': 'Non è stato possibile caricare l\'elenco delle monete',
+  'Счёт не выставился': 'La fattura non è stata creata',
+  'Другая сеть: деньги потеряются.': 'Un’altra rete: il denaro andrà perduto.',
+  'Ждём перевод. Окно можно закрыть: тариф включится сам, как только деньги дойдут.': 'Aspettiamo il trasferimento. Puoi chiudere questa finestra: il piano si attiverà da solo appena il denaro arriva.',
+  'Перевод увиден, ждём подтверждения сети.': 'Trasferimento visto, aspettiamo la conferma della rete.',
+  'Платёж не прошёл. Деньги, если ушли, вернутся отправителю.': 'Il pagamento non è passato. Se il denaro è partito, tornerà al mittente.',
+
+  'Не хватает {н} CUBE. Можно заплатить криптой.': 'Mancano {н} CUBE. Puoi pagare in cripto.',
+
+  'в сети|блокчейн': 'sulla rete'
 
 });

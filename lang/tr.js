@@ -3135,6 +3135,21 @@ CW.словарь('tr', {
   'Раздел: {что}': 'Bölüm: {что}',
   'Окно: {что}': 'Pencere: {что}',
   'Портфолио #{н}': 'Portföy #{н}',
-  'Кнопка': 'Düğme'
+  'Кнопка': 'Düğme',
+
+  'Оплатить криптой': 'Kripto ile öde',
+  'Оплатить криптой · ${сумма}': 'Kripto ile öde · ${сумма}',
+  'Чем платить': 'Neyle ödenecek',
+  'Приём оплаты криптой ещё не подключён': 'Kripto ile ödeme henüz bağlı değil',
+  'Не удалось получить список монет': 'Para birimi listesi alınamadı',
+  'Счёт не выставился': 'Fatura oluşturulmadı',
+  'Другая сеть: деньги потеряются.': 'Başka ağ: para kaybolur.',
+  'Ждём перевод. Окно можно закрыть: тариф включится сам, как только деньги дойдут.': 'Transferi bekliyoruz. Bu pencereyi kapatabilirsin: para geldiği anda tarife kendiliğinden açılır.',
+  'Перевод увиден, ждём подтверждения сети.': 'Transfer görüldü, ağ onayını bekliyoruz.',
+  'Платёж не прошёл. Деньги, если ушли, вернутся отправителю.': 'Ödeme geçmedi. Para çıktıysa gönderene geri döner.',
+
+  'Не хватает {н} CUBE. Можно заплатить криптой.': '{н} CUBE eksik. Kripto ile ödeyebilirsin.',
+
+  'в сети|блокчейн': 'ağında'
 
 });

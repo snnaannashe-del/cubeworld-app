@@ -3135,6 +3135,21 @@ CW.словарь('cs', {
   'Раздел: {что}': 'Oddíl: {что}',
   'Окно: {что}': 'Okno: {что}',
   'Портфолио #{н}': 'Portfolio #{н}',
-  'Кнопка': 'Tlačítko'
+  'Кнопка': 'Tlačítko',
+
+  'Оплатить криптой': 'Zaplatit kryptem',
+  'Оплатить криптой · ${сумма}': 'Zaplatit kryptem · ${сумма}',
+  'Чем платить': 'Čím zaplatit',
+  'Приём оплаты криптой ещё не подключён': 'Platba kryptem zatím není připojená',
+  'Не удалось получить список монет': 'Seznam mincí se nepodařilo načíst',
+  'Счёт не выставился': 'Faktura se nevystavila',
+  'Другая сеть: деньги потеряются.': 'Jiná síť: peníze se ztratí.',
+  'Ждём перевод. Окно можно закрыть: тариф включится сам, как только деньги дойдут.': 'Čekáme na převod. Okno můžeš zavřít: tarif se zapne sám, jakmile peníze dojdou.',
+  'Перевод увиден, ждём подтверждения сети.': 'Převod vidíme, čekáme na potvrzení sítě.',
+  'Платёж не прошёл. Деньги, если ушли, вернутся отправителю.': 'Platba neprošla. Pokud peníze odešly, vrátí se odesílateli.',
+
+  'Не хватает {н} CUBE. Можно заплатить криптой.': 'Chybí {н} CUBE. Můžeš zaplatit kryptem.',
+
+  'в сети|блокчейн': 'v síti'
 
 });

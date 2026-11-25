@@ -3135,6 +3135,21 @@ CW.словарь('fi', {
   'Раздел: {что}': 'Osio: {что}',
   'Окно: {что}': 'Ikkuna: {что}',
   'Портфолио #{н}': 'Portfolio #{н}',
-  'Кнопка': 'Painike'
+  'Кнопка': 'Painike',
+
+  'Оплатить криптой': 'Maksa kryptolla',
+  'Оплатить криптой · ${сумма}': 'Maksa kryptolla · ${сумма}',
+  'Чем платить': 'Millä maksat',
+  'Приём оплаты криптой ещё не подключён': 'Kryptomaksua ei ole vielä kytketty',
+  'Не удалось получить список монет': 'Kolikkolistaa ei saatu haettua',
+  'Счёт не выставился': 'Laskua ei luotu',
+  'Другая сеть: деньги потеряются.': 'Toinen verkko: rahat katoavat.',
+  'Ждём перевод. Окно можно закрыть: тариф включится сам, как только деньги дойдут.': 'Odotamme siirtoa. Voit sulkea ikkunan: tilaus kytkeytyy itsestään heti kun rahat saapuvat.',
+  'Перевод увиден, ждём подтверждения сети.': 'Siirto näkyy, odotamme verkon vahvistusta.',
+  'Платёж не прошёл. Деньги, если ушли, вернутся отправителю.': 'Maksu ei mennyt läpi. Jos rahaa lähti, se palaa lähettäjälle.',
+
+  'Не хватает {н} CUBE. Можно заплатить криптой.': '{н} CUBE puuttuu. Voit maksaa kryptolla.',
+
+  'в сети|блокчейн': 'verkossa'
 
 });

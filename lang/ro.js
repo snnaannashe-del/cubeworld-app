@@ -3135,6 +3135,21 @@ CW.словарь('ro', {
   'Раздел: {что}': 'Secțiune: {что}',
   'Окно: {что}': 'Fereastră: {что}',
   'Портфолио #{н}': 'Portofoliu #{н}',
-  'Кнопка': 'Buton'
+  'Кнопка': 'Buton',
+
+  'Оплатить криптой': 'Plătește cu cripto',
+  'Оплатить криптой · ${сумма}': 'Plătește cu cripto · ${сумма}',
+  'Чем платить': 'Cu ce plătești',
+  'Приём оплаты криптой ещё не подключён': 'Plata cu cripto nu este încă conectată',
+  'Не удалось получить список монет': 'Lista de monede nu a putut fi încărcată',
+  'Счёт не выставился': 'Factura nu a fost emisă',
+  'Другая сеть: деньги потеряются.': 'Altă rețea: banii se pierd.',
+  'Ждём перевод. Окно можно закрыть: тариф включится сам, как только деньги дойдут.': 'Așteptăm transferul. Poți închide fereastra: abonamentul se pornește singur de îndată ce banii ajung.',
+  'Перевод увиден, ждём подтверждения сети.': 'Transferul a fost văzut, așteptăm confirmarea rețelei.',
+  'Платёж не прошёл. Деньги, если ушли, вернутся отправителю.': 'Plata nu a trecut. Dacă banii au plecat, se întorc la expeditor.',
+
+  'Не хватает {н} CUBE. Можно заплатить криптой.': 'Lipsesc {н} CUBE. Poți plăti cu cripto.',
+
+  'в сети|блокчейн': 'în rețeaua'
 
 });

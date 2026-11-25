@@ -3135,6 +3135,21 @@ CW.словарь('hu', {
   'Раздел: {что}': 'Rovat: {что}',
   'Окно: {что}': 'Ablak: {что}',
   'Портфолио #{н}': 'Portfólió #{н}',
-  'Кнопка': 'Gomb'
+  'Кнопка': 'Gomb',
+
+  'Оплатить криптой': 'Fizetés kriptóval',
+  'Оплатить криптой · ${сумма}': 'Fizetés kriptóval · ${сумма}',
+  'Чем платить': 'Mivel fizetsz',
+  'Приём оплаты криптой ещё не подключён': 'A kriptós fizetés még nincs bekötve',
+  'Не удалось получить список монет': 'Az érmelistát nem sikerült betölteni',
+  'Счёт не выставился': 'A számla nem jött létre',
+  'Другая сеть: деньги потеряются.': 'Másik hálózat: a pénz elvész.',
+  'Ждём перевод. Окно можно закрыть: тариф включится сам, как только деньги дойдут.': 'Várjuk az utalást. Az ablak bezárható: a csomag magától bekapcsol, amint megérkezik a pénz.',
+  'Перевод увиден, ждём подтверждения сети.': 'Az utalást látjuk, várjuk a hálózat megerősítését.',
+  'Платёж не прошёл. Деньги, если ушли, вернутся отправителю.': 'A fizetés nem ment át. Ha elment a pénz, visszatér a küldőhöz.',
+
+  'Не хватает {н} CUBE. Можно заплатить криптой.': 'Hiányzik {н} CUBE. Fizethetsz kriptóval.',
+
+  'в сети|блокчейн': 'hálózaton'
 
 });
