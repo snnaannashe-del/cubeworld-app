@@ -3061,6 +3061,12 @@ CW.словарь('nl', {
   'твоя цена {1}': 'jouw prijs {1}',
   'убыток −{1}': 'verlies −{1}',
   'худшая серия убытков': 'slechtste verliesreeks',
-  'цена за блок': 'prijs per blok'
+  'цена за блок': 'prijs per blok',
+
+  'процент после 20 закрытых': 'percentage na 20 gesloten',
+  'в плюс': 'in winst',
+  'подписчик': 'abonnee',
+  'подписчика': 'abonnees',
+  'подписчиков': 'abonnees'
 
 });

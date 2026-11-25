@@ -3061,6 +3061,12 @@ CW.словарь('id', {
   'твоя цена {1}': 'hargamu {1}',
   'убыток −{1}': 'rugi −{1}',
   'худшая серия убытков': 'rentetan rugi terburuk',
-  'цена за блок': 'harga per blok'
+  'цена за блок': 'harga per blok',
+
+  'процент после 20 закрытых': 'persentase setelah 20 ditutup',
+  'в плюс': 'untung',
+  'подписчик': 'pelanggan',
+  'подписчика': 'pelanggan',
+  'подписчиков': 'pelanggan'
 
 });

@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Мир · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-472">
+<link rel="icon" href="icons/favicon.svg?v=20261125-473">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261125-472">
-<link rel="stylesheet" href="shared/window.css?v=20261125-472">
-<link rel="stylesheet" href="shared/account.css?v=20261125-472">
-<script src="shared/theme.js?v=20261125-472"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261125-473">
+<link rel="stylesheet" href="shared/window.css?v=20261125-473">
+<link rel="stylesheet" href="shared/account.css?v=20261125-473">
+<script src="shared/theme.js?v=20261125-473"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -370,21 +370,21 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261125-472"></script>
-<script src="shared/ui.js?v=20261125-472"></script>
-<script src="shared/смайлы.js?v=20261125-472"></script>
-<script src="shared/лица.js?v=20261125-472"></script>
-<script src="shared/эфир.js?v=20261125-472"></script>
-<script src="shared/icons.js?v=20261125-472"></script>
-<script src="shared/window.js?v=20261125-472"></script>
-<script src="shared/без-копий.js?v=20261125-472"></script>
-<script src="shared/time.js?v=20261125-472"></script>
-<script src="shared/auth.js?v=20261125-472"></script>
-<script src="shared/lang.js?v=20261125-472"></script>
-<script src="shared/account.js?v=20261125-472"></script>
-<script src="shared/формы.js?v=20261125-472"></script>
-<script src="shared/игра.js?v=20261125-472"></script>
-<script src="shared/персонаж.js?v=20261125-472"></script>
+<script src="shared/api.js?v=20261125-473"></script>
+<script src="shared/ui.js?v=20261125-473"></script>
+<script src="shared/смайлы.js?v=20261125-473"></script>
+<script src="shared/лица.js?v=20261125-473"></script>
+<script src="shared/эфир.js?v=20261125-473"></script>
+<script src="shared/icons.js?v=20261125-473"></script>
+<script src="shared/window.js?v=20261125-473"></script>
+<script src="shared/без-копий.js?v=20261125-473"></script>
+<script src="shared/time.js?v=20261125-473"></script>
+<script src="shared/auth.js?v=20261125-473"></script>
+<script src="shared/lang.js?v=20261125-473"></script>
+<script src="shared/account.js?v=20261125-473"></script>
+<script src="shared/формы.js?v=20261125-473"></script>
+<script src="shared/игра.js?v=20261125-473"></script>
+<script src="shared/персонаж.js?v=20261125-473"></script>
 <script>
 'use strict';
 
@@ -1756,13 +1756,18 @@ function изБраузера() {
    открываем его заново, уже с кубами в кадре. */
 (function () {
   var ид = '';
-  try { ид = new URLSearchParams(location.search).get('эфир') || ''; } catch (е) {}
+  /* Имя в адресе по-английски; старое русское «?эфир=» читаем тоже. */
+  try {
+    var вп = new URLSearchParams(location.search);
+    ид = вп.get('stream') || вп.get('эфир') || '';
+  } catch (е) {}
   if (!ид) return;
   /* Номер из адреса убираем сразу: иначе перезагрузка страницы (и
      любой новый эфир, заведённый отсюда же) снова открывали бы ТОТ
      эфир — со всем его прежним разговором. */
   try {
     var а = new URL(location.href);
+    а.searchParams.delete('stream');
     а.searchParams.delete('эфир');
     history.replaceState(null, '', а.pathname + (а.search || '') + (а.hash || ''));
   } catch (е) {}

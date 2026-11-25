@@ -3061,6 +3061,12 @@ CW.словарь('hu', {
   'твоя цена {1}': 'a te árad {1}',
   'убыток −{1}': 'veszteség −{1}',
   'худшая серия убытков': 'legrosszabb vesztessorozat',
-  'цена за блок': 'blokkonkénti ár'
+  'цена за блок': 'blokkonkénti ár',
+
+  'процент после 20 закрытых': 'százalék 20 lezárt után',
+  'в плюс': 'pluszban',
+  'подписчик': 'feliratkozó',
+  'подписчика': 'feliratkozó',
+  'подписчиков': 'feliratkozó'
 
 });

@@ -3064,6 +3064,12 @@ CW.словарь('pt', {
   'твоя цена {1}': 'o teu preço {1}',
   'убыток −{1}': 'perda −{1}',
   'худшая серия убытков': 'pior série de perdas',
-  'цена за блок': 'preço por bloco'
+  'цена за блок': 'preço por bloco',
+
+  'процент после 20 закрытых': 'percentagem após 20 fechados',
+  'в плюс': 'em lucro',
+  'подписчик': 'subscritor',
+  'подписчика': 'subscritores',
+  'подписчиков': 'subscritores'
 
 });

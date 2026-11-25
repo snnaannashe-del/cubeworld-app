@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Поиск · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261125-472">
-<link rel="stylesheet" href="../shared/style.css?v=20261125-472">
-<link rel="stylesheet" href="../shared/window.css?v=20261125-472">
-<link rel="stylesheet" href="../shared/account.css?v=20261125-472">
-<script src="../shared/theme.js?v=20261125-472"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261125-472">
+<link rel="icon" href="../icons/favicon.svg?v=20261125-473">
+<link rel="stylesheet" href="../shared/style.css?v=20261125-473">
+<link rel="stylesheet" href="../shared/window.css?v=20261125-473">
+<link rel="stylesheet" href="../shared/account.css?v=20261125-473">
+<script src="../shared/theme.js?v=20261125-473"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261125-473">
 <!--
   ПОИСК — окно поверх программы.
 
@@ -179,20 +179,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261125-472"></script>
-<script src="../shared/ui.js?v=20261125-472"></script>
-<script src="../shared/смайлы.js?v=20261125-472"></script>
-<script src="../shared/лица.js?v=20261125-472"></script>
-<script src="../shared/эфир.js?v=20261125-472"></script>
-<script src="../shared/icons.js?v=20261125-472"></script>
-<script src="../shared/window.js?v=20261125-472"></script>
-<script src="../shared/без-копий.js?v=20261125-472"></script>
-<script src="../shared/time.js?v=20261125-472"></script>
-<script src="../shared/auth.js?v=20261125-472"></script>
-<script src="../shared/lang.js?v=20261125-472"></script>
-<script src="../shared/account.js?v=20261125-472"></script>
-<script src="../shared/помощник.js?v=20261125-472"></script>
-<script src="../shared/shell.js?v=20261125-472"></script>
+<script src="../shared/api.js?v=20261125-473"></script>
+<script src="../shared/ui.js?v=20261125-473"></script>
+<script src="../shared/смайлы.js?v=20261125-473"></script>
+<script src="../shared/лица.js?v=20261125-473"></script>
+<script src="../shared/эфир.js?v=20261125-473"></script>
+<script src="../shared/icons.js?v=20261125-473"></script>
+<script src="../shared/window.js?v=20261125-473"></script>
+<script src="../shared/без-копий.js?v=20261125-473"></script>
+<script src="../shared/time.js?v=20261125-473"></script>
+<script src="../shared/auth.js?v=20261125-473"></script>
+<script src="../shared/lang.js?v=20261125-473"></script>
+<script src="../shared/account.js?v=20261125-473"></script>
+<script src="../shared/помощник.js?v=20261125-473"></script>
+<script src="../shared/shell.js?v=20261125-473"></script>
 <script>
 'use strict';
 
@@ -628,7 +628,7 @@ function строкаГруппа(г) {
     г.name || Т.с('Группа #{н}', { н: г.id }),
     г.description || '',
     Number(г.member_count || 0) ? Т.с('{н} чел.', { н: г.member_count }) : '',
-    function () { CW.уйти(CW.окно('group') + '?ид=' + г.id); });
+    function () { CW.уйти(CW.окно('group') + '?id=' + г.id); });
 }
 
 function строкаКуб(к) {

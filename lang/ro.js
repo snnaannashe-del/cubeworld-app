@@ -3061,6 +3061,12 @@ CW.словарь('ro', {
   'твоя цена {1}': 'prețul tău {1}',
   'убыток −{1}': 'pierdere −{1}',
   'худшая серия убытков': 'cea mai proastă serie de pierderi',
-  'цена за блок': 'preț pe bloc'
+  'цена за блок': 'preț pe bloc',
+
+  'процент после 20 закрытых': 'procent după 20 închise',
+  'в плюс': 'pe plus',
+  'подписчик': 'abonat',
+  'подписчика': 'abonați',
+  'подписчиков': 'abonați'
 
 });

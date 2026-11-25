@@ -213,7 +213,12 @@
   /* ── ролики ── */
   function налитьРолики(п) {
     var тут = 0;
-    try { тут = Number(new окно.URLSearchParams(окно.location.search).get('пост') || 0); }
+    /* Имя в адресе по-английски. Русское читаем тоже: ссылки с
+       «?пост=» люди уже разослали, и ломать их нельзя. */
+    try {
+      var вп = new окно.URLSearchParams(окно.location.search);
+      тут = Number(вп.get('post') || вп.get('пост') || 0);
+    }
     catch (е) {}
 
     CW.спросить('/feed?limit=40&offset=0', { тихо: true }).then(function (д) {
@@ -229,7 +234,7 @@
           кадр: з.image_url || '',
           подпись: з.title || з.description || '',
           делать: function () {
-            CW.уйти(CW.раздел('feed', CW.какойКуб()) + '?пост=' + з.id);
+            CW.уйти(CW.раздел('feed', CW.какойКуб()) + '?post=' + з.id);
           }
         }));
       });

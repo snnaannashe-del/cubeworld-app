@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Заработать · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-472">
-<link rel="stylesheet" href="shared/style.css?v=20261125-472">
-<link rel="stylesheet" href="shared/window.css?v=20261125-472">
-<link rel="stylesheet" href="shared/account.css?v=20261125-472">
-<script src="shared/theme.js?v=20261125-472"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261125-472">
+<link rel="icon" href="icons/favicon.svg?v=20261125-473">
+<link rel="stylesheet" href="shared/style.css?v=20261125-473">
+<link rel="stylesheet" href="shared/window.css?v=20261125-473">
+<link rel="stylesheet" href="shared/account.css?v=20261125-473">
+<script src="shared/theme.js?v=20261125-473"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-473">
 <!--
   ЗАРАБОТАТЬ.
 
@@ -123,6 +123,61 @@
   .майнинг .жёлоб i, .майнинг .жёлоб i::after{ animation:none; }
   .майнинг .жёлоб i{ width:100%; }
 }
+
+/* ── МОЛНИЯ НАД ПОЛОСОЙ ──
+   Просила Анна: чтобы вокруг идущего майнинга всё время летала
+   молния, заходила за слово «(онлайн)» и шла до конца, три-четыре
+   раза подряд.
+
+   Почему не видео. Ролик весит сотни килобайт, не умеет менять цвет
+   вместе с оформлением, не умеет остановиться у того, кому движение
+   на экране мешает, и на тёмной теме показывает свой чёрный угол.
+   Здесь нарисовано тем же значком, что и везде в программе, и летит
+   это самим браузером — ни одного лишнего байта на страницу.
+
+   Как сделано, что «три-четыре раза, потом передышка». Одной
+   анимацией так не скажешь: CSS умеет либо n раз и встать, либо
+   бесконечно. Поэтому их две, вложенные одна в другую.
+
+       .молния   — окно показа: 12,6 с, из них видно первые 7,2 с;
+       .молния i — сам полёт: 1,8 с, без конца.
+
+   12,6 делится на 1,8 ровно семь раз, поэтому окно и полёт не
+   расходятся со временем: ровно четыре пролёта, потом три такта
+   тишины, и снова четыре. Возьми числа «покрасивее» — и через
+   минуту молния начнёт обрываться на середине. */
+.майнинг .молния{
+  position:absolute; top:-9px; left:0; right:0; height:17px;
+  z-index:0; pointer-events:none; overflow:hidden;
+  animation:майнинг-молния-окно 12.6s linear infinite;
+}
+/* Надпись закрывает молнию собой: за этим всё и затевалось. */
+.майнинг .надпись{ z-index:1; }
+.майнинг .молния i{
+  position:absolute; top:1px; left:0; display:flex; color:#fbbf24;
+  filter:drop-shadow(0 0 6px rgba(251,191,36,.85));
+  animation:майнинг-молния-полёт 1.8s linear infinite;
+}
+.майнинг .молния i svg{ width:15px; height:15px; }
+@keyframes майнинг-молния-окно{
+  0%{ opacity:1; } 57.1%{ opacity:1; }
+  57.2%{ opacity:0; } 100%{ opacity:0; }
+}
+/* Летит слева направо и чуть подрагивает по высоте: прямая линия
+   читается как ползунок, а не как разряд. */
+@keyframes майнинг-молния-полёт{
+  0%{   left:-18px; transform:translateY(0) rotate(-8deg);  opacity:0; }
+  8%{   opacity:1; }
+  50%{  transform:translateY(2px) rotate(6deg); }
+  92%{  opacity:1; }
+  100%{ left:100%;  transform:translateY(-1px) rotate(-6deg); opacity:0; }
+}
+/* Кому движение мешает — молнии нет вовсе. Она здесь украшение, а не
+   сведения: убрать её можно без потерь. */
+@media (prefers-reduced-motion: reduce){
+  .майнинг .молния{ display:none; }
+}
+
 .майнинг .под{ margin-top:7px; font-size:10.5px; line-height:1.5; color:var(--текст3); }
 
 /* ── три числа ───────────────────────────────────────────────────── */
@@ -261,20 +316,20 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261125-472"></script>
-<script src="shared/ui.js?v=20261125-472"></script>
-<script src="shared/смайлы.js?v=20261125-472"></script>
-<script src="shared/лица.js?v=20261125-472"></script>
-<script src="shared/эфир.js?v=20261125-472"></script>
-<script src="shared/icons.js?v=20261125-472"></script>
-<script src="shared/window.js?v=20261125-472"></script>
-<script src="shared/без-копий.js?v=20261125-472"></script>
-<script src="shared/time.js?v=20261125-472"></script>
-<script src="shared/auth.js?v=20261125-472"></script>
-<script src="shared/lang.js?v=20261125-472"></script>
-<script src="shared/account.js?v=20261125-472"></script>
-<script src="shared/shell.js?v=20261125-472"></script>
-<script src="shared/wallets.js?v=20261125-472"></script>
+<script src="shared/api.js?v=20261125-473"></script>
+<script src="shared/ui.js?v=20261125-473"></script>
+<script src="shared/смайлы.js?v=20261125-473"></script>
+<script src="shared/лица.js?v=20261125-473"></script>
+<script src="shared/эфир.js?v=20261125-473"></script>
+<script src="shared/icons.js?v=20261125-473"></script>
+<script src="shared/window.js?v=20261125-473"></script>
+<script src="shared/без-копий.js?v=20261125-473"></script>
+<script src="shared/time.js?v=20261125-473"></script>
+<script src="shared/auth.js?v=20261125-473"></script>
+<script src="shared/lang.js?v=20261125-473"></script>
+<script src="shared/account.js?v=20261125-473"></script>
+<script src="shared/shell.js?v=20261125-473"></script>
+<script src="shared/wallets.js?v=20261125-473"></script>
 <script>
 'use strict';
 
@@ -405,7 +460,13 @@ function кускомМайнинг() {
      минуты, она почти всё время стояла бы на месте, и «майнинг»
      выглядел бы выключенным. */
   return кусок('майнинг',
-      '<div class="надпись">'
+      /* Молния летит ПОД надписью и потому заходит за слово
+         «(онлайн)»: у надписи свой непрозрачный фон и z-index выше.
+         Стоит она первой в разметке нарочно — так и порядок
+         отрисовки, и z-index говорят одно и то же. */
+      '<span class="молния" aria-hidden="true"><i>'
+    +   CW.значок('молния', 15) + '</i></span>'
+    + '<div class="надпись">'
     +   '<span class="знак">' + CW.значок('кирка') + '</span>'
     +   CW.безопасно(Т('Майнинг Cube'))
     +   '<span class="состояние">(' + CW.безопасно(Т(вСети ? 'онлайн' : 'ждёт')) + ')</span>'

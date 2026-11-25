@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Портфолио · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261125-472">
-<link rel="stylesheet" href="../shared/style.css?v=20261125-472">
-<link rel="stylesheet" href="../shared/window.css?v=20261125-472">
-<link rel="stylesheet" href="../shared/account.css?v=20261125-472">
-<script src="../shared/theme.js?v=20261125-472"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261125-472">
+<link rel="icon" href="../icons/favicon.svg?v=20261125-473">
+<link rel="stylesheet" href="../shared/style.css?v=20261125-473">
+<link rel="stylesheet" href="../shared/window.css?v=20261125-473">
+<link rel="stylesheet" href="../shared/account.css?v=20261125-473">
+<script src="../shared/theme.js?v=20261125-473"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261125-473">
 <!--
   ПРОФИЛЬ: два окна.
 
@@ -310,20 +310,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261125-472"></script>
-<script src="../shared/ui.js?v=20261125-472"></script>
-<script src="../shared/смайлы.js?v=20261125-472"></script>
-<script src="../shared/лица.js?v=20261125-472"></script>
-<script src="../shared/эфир.js?v=20261125-472"></script>
-<script src="../shared/icons.js?v=20261125-472"></script>
-<script src="../shared/window.js?v=20261125-472"></script>
-<script src="../shared/продавец.js?v=20261125-472"></script>
-<script src="../shared/без-копий.js?v=20261125-472"></script>
-<script src="../shared/time.js?v=20261125-472"></script>
-<script src="../shared/auth.js?v=20261125-472"></script>
-<script src="../shared/lang.js?v=20261125-472"></script>
-<script src="../shared/account.js?v=20261125-472"></script>
-<script src="../shared/shell.js?v=20261125-472"></script>
+<script src="../shared/api.js?v=20261125-473"></script>
+<script src="../shared/ui.js?v=20261125-473"></script>
+<script src="../shared/смайлы.js?v=20261125-473"></script>
+<script src="../shared/лица.js?v=20261125-473"></script>
+<script src="../shared/эфир.js?v=20261125-473"></script>
+<script src="../shared/icons.js?v=20261125-473"></script>
+<script src="../shared/window.js?v=20261125-473"></script>
+<script src="../shared/продавец.js?v=20261125-473"></script>
+<script src="../shared/без-копий.js?v=20261125-473"></script>
+<script src="../shared/time.js?v=20261125-473"></script>
+<script src="../shared/auth.js?v=20261125-473"></script>
+<script src="../shared/lang.js?v=20261125-473"></script>
+<script src="../shared/account.js?v=20261125-473"></script>
+<script src="../shared/shell.js?v=20261125-473"></script>
 <script>
 'use strict';
 
@@ -385,7 +385,11 @@ var Я = {
    в личном хранилище (/me/prefs), а оно у каждого своё — сервер чужое
    не отдаёт никому, и выдумывать тут нечего. */
 var КТО = null;
-try { КТО = new URLSearchParams(location.search).get('кто'); } catch (е) {}
+try {
+  var впП = new URLSearchParams(location.search);
+  /* Имя в адресе по-английски; старое русское «?кто=» читаем тоже. */
+  КТО = впП.get('user') || впП.get('кто');
+} catch (е) {}
 var ЧУЖОЙ = false;
 
 var вкладка = 'short';     /* short | post */
@@ -562,7 +566,7 @@ function статусПо(имя) {
    ОКНО ПЕРВОЕ: ПОРТФОЛИО
    ═══════════════════════════════════════════════════════════════════════ */
 function написатьЕму() {
-  CW.уйти(CW.окно('dm') + '?кто=' + encodeURIComponent(Я.id)
+  CW.уйти(CW.окно('dm') + '?user=' + encodeURIComponent(Я.id)
           + '&имя=' + encodeURIComponent(Я.display_name || номерUID()));
 }
 
@@ -655,7 +659,7 @@ function блокировать(надо) {
 }
 
 function позвонитьЕму() {
-  CW.уйти(CW.окно('call') + '?кто=' + encodeURIComponent(Я.id)
+  CW.уйти(CW.окно('call') + '?user=' + encodeURIComponent(Я.id)
           + '&имя=' + encodeURIComponent(Я.display_name || номерUID()));
 }
 
@@ -963,7 +967,7 @@ function нарисоватьСетку() {
       к.innerHTML += '<span class="смотры">' + зн('глазок', 11) + ' '
                    + кругло(з.view_count) + '</span>';
     }
-    к.onclick = function () { CW.уйти(CW.раздел('feed') + '?пост=' + з.id); };
+    к.onclick = function () { CW.уйти(CW.раздел('feed') + '?post=' + з.id); };
     сетка.appendChild(к);
   });
 }

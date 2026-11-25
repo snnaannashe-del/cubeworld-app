@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Звонок · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261125-472">
-<link rel="stylesheet" href="../shared/style.css?v=20261125-472">
-<link rel="stylesheet" href="../shared/window.css?v=20261125-472">
-<link rel="stylesheet" href="../shared/account.css?v=20261125-472">
-<script src="../shared/theme.js?v=20261125-472"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261125-472">
+<link rel="icon" href="../icons/favicon.svg?v=20261125-473">
+<link rel="stylesheet" href="../shared/style.css?v=20261125-473">
+<link rel="stylesheet" href="../shared/window.css?v=20261125-473">
+<link rel="stylesheet" href="../shared/account.css?v=20261125-473">
+<script src="../shared/theme.js?v=20261125-473"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261125-473">
 <!--
   Аудиозвонок — окно поверх программы.
 
@@ -26,22 +26,22 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261125-472"></script>
-<script src="../shared/ui.js?v=20261125-472"></script>
-<script src="../shared/смайлы.js?v=20261125-472"></script>
-<script src="../shared/лица.js?v=20261125-472"></script>
-<script src="../shared/эфир.js?v=20261125-472"></script>
-<script src="../shared/icons.js?v=20261125-472"></script>
-<script src="../shared/window.js?v=20261125-472"></script>
-<script src="../shared/без-копий.js?v=20261125-472"></script>
-<script src="../shared/time.js?v=20261125-472"></script>
-<script src="../shared/auth.js?v=20261125-472"></script>
-<script src="../shared/lang.js?v=20261125-472"></script>
-<script src="../shared/account.js?v=20261125-472"></script>
-<script src="../shared/сокет.js?v=20261125-472"></script>
-<script src="../shared/shell.js?v=20261125-472"></script>
-<script src="../shared/call.js?v=20261125-472"></script>
-<script src="../shared/звонки.js?v=20261125-472"></script>
+<script src="../shared/api.js?v=20261125-473"></script>
+<script src="../shared/ui.js?v=20261125-473"></script>
+<script src="../shared/смайлы.js?v=20261125-473"></script>
+<script src="../shared/лица.js?v=20261125-473"></script>
+<script src="../shared/эфир.js?v=20261125-473"></script>
+<script src="../shared/icons.js?v=20261125-473"></script>
+<script src="../shared/window.js?v=20261125-473"></script>
+<script src="../shared/без-копий.js?v=20261125-473"></script>
+<script src="../shared/time.js?v=20261125-473"></script>
+<script src="../shared/auth.js?v=20261125-473"></script>
+<script src="../shared/lang.js?v=20261125-473"></script>
+<script src="../shared/account.js?v=20261125-473"></script>
+<script src="../shared/сокет.js?v=20261125-473"></script>
+<script src="../shared/shell.js?v=20261125-473"></script>
+<script src="../shared/call.js?v=20261125-473"></script>
+<script src="../shared/звонки.js?v=20261125-473"></script>
 <script>
 'use strict';
 
@@ -52,17 +52,22 @@ CW.безОкна = true;
 
 CW.оболочка('chats').then(function (место) {
 
-/* Куда звоним: человеку (?кто=) или группе (?группа=). Остальное —
-   разговор, в который нас позвали: ?разговор=…&принят=1&от=… */
+/* Куда звоним: человеку (?user=) или группе (?group=). Остальное —
+   разговор, в который нас позвали: ?talk=…&accepted=1&from=… */
 var А = (function () {
   var п = {};
   try { п = new URLSearchParams(location.search); } catch (е) { п = { get: function () { return null; } }; }
+  /* Имена в адресе по-английски. Старые русские читаем тоже: у
+     человека могла остаться открытая вкладка или разосланная ссылка,
+     и ломать их из-за переименования нельзя. */
+  function числом(з) { return з ? (parseInt(з, 10) || 0) : 0; }
+  function взять(англ, рус) { return п.get(англ) || п.get(рус) || ''; }
   return {
-    кто:      п.get('кто') ? parseInt(п.get('кто'), 10) : 0,
-    группа:   п.get('группа') ? parseInt(п.get('группа'), 10) : 0,
-    разговор: п.get('разговор') || '',
-    принят:   п.get('принят') === '1',
-    от:       п.get('от') ? parseInt(п.get('от'), 10) : 0
+    кто:      числом(взять('user',  'кто')),
+    группа:   числом(взять('group', 'группа')),
+    разговор: взять('talk', 'разговор'),
+    принят:   (п.get('accepted') || п.get('принят')) === '1',
+    от:       числом(взять('from', 'от'))
   };
 })();
 

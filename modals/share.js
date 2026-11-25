@@ -25,10 +25,13 @@ CW.модаль('share', function (данные) {
         : location.pathname.replace(/\/[^\/]*$/, '/'));
 
   var АДРЕСА = {
-    пост:    function (ид) { return корень + 'feed.html?пост=' + ид; },
-    группа:  function (ид) { return корень + 'windows/group.html?ид=' + ид; },
+    /* Имена в адресе по-английски: ссылку человек видит и шлёт
+       другим, и «?ид=» в ней выглядит как сбой на любом языке.
+       Старые ссылки окна по-прежнему читают. */
+    пост:    function (ид) { return корень + 'feed.html?post=' + ид; },
+    группа:  function (ид) { return корень + 'windows/group.html?id=' + ид; },
     куб:     function (ид) { return корень + 'feed.html?id=' + ид; },
-    профиль: function (ид) { return корень + 'windows/profile.html?кто=' + ид; },
+    профиль: function (ид) { return корень + 'windows/profile.html?user=' + ид; },
     товар:   function (ид) { return корень + 'market.html?товар=' + ид; }
   };
 

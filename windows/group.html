@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Группа · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261125-472">
-<link rel="stylesheet" href="../shared/style.css?v=20261125-472">
-<link rel="stylesheet" href="../shared/window.css?v=20261125-472">
-<link rel="stylesheet" href="../shared/account.css?v=20261125-472">
-<script src="../shared/theme.js?v=20261125-472"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261125-472">
+<link rel="icon" href="../icons/favicon.svg?v=20261125-473">
+<link rel="stylesheet" href="../shared/style.css?v=20261125-473">
+<link rel="stylesheet" href="../shared/window.css?v=20261125-473">
+<link rel="stylesheet" href="../shared/account.css?v=20261125-473">
+<script src="../shared/theme.js?v=20261125-473"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261125-473">
 <!--
   ПЕРЕПИСКА ГРУППЫ — окно поверх программы, со своим адресом.
 
-      windows/group.html?ид=12
+      windows/group.html?id=12
 
   Это близнец личной переписки. По правилу проекта внутри они почти
   одинаковые: сверху название с кнопками, посередине лента пузырей,
@@ -31,24 +31,24 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261125-472"></script>
-<script src="../shared/ui.js?v=20261125-472"></script>
-<script src="../shared/смайлы.js?v=20261125-472"></script>
-<script src="../shared/лица.js?v=20261125-472"></script>
-<script src="../shared/эфир.js?v=20261125-472"></script>
-<script src="../shared/icons.js?v=20261125-472"></script>
-<script src="../shared/window.js?v=20261125-472"></script>
-<script src="../shared/без-копий.js?v=20261125-472"></script>
-<script src="../shared/time.js?v=20261125-472"></script>
-<script src="../shared/auth.js?v=20261125-472"></script>
-<script src="../shared/lang.js?v=20261125-472"></script>
-<script src="../shared/account.js?v=20261125-472"></script>
-<script src="../shared/shell.js?v=20261125-472"></script>
-<script src="../shared/вложения.js?v=20261125-472"></script>
-<script src="../shared/запись-голоса.js?v=20261125-472"></script>
-<script src="../shared/кнопки-сообщения.js?v=20261125-472"></script>
-<script src="../shared/кадр-ролика.js?v=20261125-472"></script>
-<script src="../shared/chat.js?v=20261125-472"></script>
+<script src="../shared/api.js?v=20261125-473"></script>
+<script src="../shared/ui.js?v=20261125-473"></script>
+<script src="../shared/смайлы.js?v=20261125-473"></script>
+<script src="../shared/лица.js?v=20261125-473"></script>
+<script src="../shared/эфир.js?v=20261125-473"></script>
+<script src="../shared/icons.js?v=20261125-473"></script>
+<script src="../shared/window.js?v=20261125-473"></script>
+<script src="../shared/без-копий.js?v=20261125-473"></script>
+<script src="../shared/time.js?v=20261125-473"></script>
+<script src="../shared/auth.js?v=20261125-473"></script>
+<script src="../shared/lang.js?v=20261125-473"></script>
+<script src="../shared/account.js?v=20261125-473"></script>
+<script src="../shared/shell.js?v=20261125-473"></script>
+<script src="../shared/вложения.js?v=20261125-473"></script>
+<script src="../shared/запись-голоса.js?v=20261125-473"></script>
+<script src="../shared/кнопки-сообщения.js?v=20261125-473"></script>
+<script src="../shared/кадр-ролика.js?v=20261125-473"></script>
+<script src="../shared/chat.js?v=20261125-473"></script>
 <script>
 'use strict';
 
@@ -56,7 +56,12 @@ CW.оболочка('groups').then(function (место) {
 
 var ИД = (function () {
   var н = null;
-  try { н = new URLSearchParams(location.search).get('ид'); } catch (е) {}
+  /* Имя в адресе по-английски. Русское «?ид=» читаем тоже: такие
+     ссылки на группы уже разосланы, и ломать их нельзя. */
+  try {
+    var вп = new URLSearchParams(location.search);
+    н = вп.get('id') || вп.get('ид');
+  } catch (е) {}
   return н ? parseInt(н, 10) : null;
 })();
 
@@ -485,7 +490,7 @@ function меню(е, кнопка) {
    и звук начинает рваться у всех сразу. Это сказано и в shared/звонки.js,
    где стоит сам предел. */
 function звонокГруппе(видео) {
-  CW.уйти(CW.окно(видео ? 'call-video' : 'call') + '?группа=' + ИД);
+  CW.уйти(CW.окно(видео ? 'call-video' : 'call') + '?group=' + ИД);
 }
 
 /* Очистки переписки здесь больше нет совсем: ни пункта в меню, ни

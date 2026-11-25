@@ -3061,6 +3061,12 @@ CW.словарь('sv', {
   'твоя цена {1}': 'ditt pris {1}',
   'убыток −{1}': 'förlust −{1}',
   'худшая серия убытков': 'värsta förlustsvit',
-  'цена за блок': 'pris per block'
+  'цена за блок': 'pris per block',
+
+  'процент после 20 закрытых': 'procent efter 20 stängda',
+  'в плюс': 'på plus',
+  'подписчик': 'prenumerant',
+  'подписчика': 'prenumeranter',
+  'подписчиков': 'prenumeranter'
 
 });

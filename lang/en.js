@@ -3183,6 +3183,12 @@ CW.словарь('en', {
   'твоя цена {1}': 'your price {1}',
   'убыток −{1}': 'loss −{1}',
   'худшая серия убытков': 'worst losing streak',
-  'цена за блок': 'price per block'
+  'цена за блок': 'price per block',
+
+  'процент после 20 закрытых': 'percentage after 20 closed',
+  'в плюс': 'in profit',
+  'подписчик': 'subscriber',
+  'подписчика': 'subscribers',
+  'подписчиков': 'subscribers'
 
 });

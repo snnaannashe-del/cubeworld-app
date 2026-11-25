@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Переписка · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261125-472">
-<link rel="stylesheet" href="../shared/style.css?v=20261125-472">
-<link rel="stylesheet" href="../shared/window.css?v=20261125-472">
-<link rel="stylesheet" href="../shared/account.css?v=20261125-472">
-<script src="../shared/theme.js?v=20261125-472"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261125-472">
+<link rel="icon" href="../icons/favicon.svg?v=20261125-473">
+<link rel="stylesheet" href="../shared/style.css?v=20261125-473">
+<link rel="stylesheet" href="../shared/window.css?v=20261125-473">
+<link rel="stylesheet" href="../shared/account.css?v=20261125-473">
+<script src="../shared/theme.js?v=20261125-473"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261125-473">
 <!--
   ЛИЧНАЯ ПЕРЕПИСКА — окно поверх программы, со своим адресом.
 
-      windows/dm.html?кто=7
+      windows/dm.html?user=7
 
   Почему у переписки свой адрес, а не «левая колонка в чатах». Человек
   сворачивает разговор, уходит в ленту, возвращается — и должен попасть
@@ -30,24 +30,24 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261125-472"></script>
-<script src="../shared/ui.js?v=20261125-472"></script>
-<script src="../shared/смайлы.js?v=20261125-472"></script>
-<script src="../shared/лица.js?v=20261125-472"></script>
-<script src="../shared/эфир.js?v=20261125-472"></script>
-<script src="../shared/icons.js?v=20261125-472"></script>
-<script src="../shared/window.js?v=20261125-472"></script>
-<script src="../shared/без-копий.js?v=20261125-472"></script>
-<script src="../shared/time.js?v=20261125-472"></script>
-<script src="../shared/auth.js?v=20261125-472"></script>
-<script src="../shared/lang.js?v=20261125-472"></script>
-<script src="../shared/account.js?v=20261125-472"></script>
-<script src="../shared/shell.js?v=20261125-472"></script>
-<script src="../shared/вложения.js?v=20261125-472"></script>
-<script src="../shared/запись-голоса.js?v=20261125-472"></script>
-<script src="../shared/кнопки-сообщения.js?v=20261125-472"></script>
-<script src="../shared/кадр-ролика.js?v=20261125-472"></script>
-<script src="../shared/chat.js?v=20261125-472"></script>
+<script src="../shared/api.js?v=20261125-473"></script>
+<script src="../shared/ui.js?v=20261125-473"></script>
+<script src="../shared/смайлы.js?v=20261125-473"></script>
+<script src="../shared/лица.js?v=20261125-473"></script>
+<script src="../shared/эфир.js?v=20261125-473"></script>
+<script src="../shared/icons.js?v=20261125-473"></script>
+<script src="../shared/window.js?v=20261125-473"></script>
+<script src="../shared/без-копий.js?v=20261125-473"></script>
+<script src="../shared/time.js?v=20261125-473"></script>
+<script src="../shared/auth.js?v=20261125-473"></script>
+<script src="../shared/lang.js?v=20261125-473"></script>
+<script src="../shared/account.js?v=20261125-473"></script>
+<script src="../shared/shell.js?v=20261125-473"></script>
+<script src="../shared/вложения.js?v=20261125-473"></script>
+<script src="../shared/запись-голоса.js?v=20261125-473"></script>
+<script src="../shared/кнопки-сообщения.js?v=20261125-473"></script>
+<script src="../shared/кадр-ролика.js?v=20261125-473"></script>
+<script src="../shared/chat.js?v=20261125-473"></script>
 <script>
 'use strict';
 
@@ -55,7 +55,11 @@ CW.оболочка('chats').then(function (место) {
 
 var КТО = (function () {
   var н = null;
-  try { н = new URLSearchParams(location.search).get('кто'); } catch (е) {}
+  /* Имя в адресе по-английски; старое русское «?кто=» читаем тоже. */
+  try {
+    var вп = new URLSearchParams(location.search);
+    н = вп.get('user') || вп.get('кто');
+  } catch (е) {}
   return н ? parseInt(н, 10) : null;
 })();
 
@@ -253,10 +257,10 @@ function вСписок() { CW.уйти(CW.раздел('chats', CW.какойК
 function меню(е, кнопка) {
   CW.лист([
     { зн: CW.значок('микрофон', 16), подпись: Т('Аудиозвонок'), делать: function () {
-        CW.уйти(CW.окно('call') + '?кто=' + КТО);
+        CW.уйти(CW.окно('call') + '?user=' + КТО);
       } },
     { зн: CW.значок('камера', 16), подпись: Т('Видеозвонок'), делать: function () {
-        CW.уйти(CW.окно('call-video') + '?кто=' + КТО);
+        CW.уйти(CW.окно('call-video') + '?user=' + КТО);
       } },
     /* ── ДВА ПУНКТА ПРО КНОПКИ ──
        Всё про них знает общий файл (shared/кнопки-сообщения.js): он
@@ -414,7 +418,7 @@ function менюСообщения(м, своё, x, y) {
    — на видеозвонок отвечаем видеозвонком. */
 function перезвонить(м) {
   var видео = String(м.content || '').indexOf(':видео:') >= 0;
-  CW.уйти(CW.окно(видео ? 'call-video' : 'call') + '?кто=' + КТО);
+  CW.уйти(CW.окно(видео ? 'call-video' : 'call') + '?user=' + КТО);
 }
 
 /* ── ЗАМЕНА ФАЙЛОВ ──

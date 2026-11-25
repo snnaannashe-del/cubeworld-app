@@ -3061,6 +3061,12 @@ CW.словарь('fi', {
   'твоя цена {1}': 'sinun hintasi {1}',
   'убыток −{1}': 'tappio −{1}',
   'худшая серия убытков': 'pahin tappioputki',
-  'цена за блок': 'hinta lohkolta'
+  'цена за блок': 'hinta lohkolta',
+
+  'процент после 20 закрытых': 'prosentti 20 suljetun jälkeen',
+  'в плюс': 'plussalla',
+  'подписчик': 'tilaaja',
+  'подписчика': 'tilaajaa',
+  'подписчиков': 'tilaajaa'
 
 });
