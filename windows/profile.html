@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Портфолио · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261124-468">
-<link rel="stylesheet" href="../shared/style.css?v=20261124-468">
-<link rel="stylesheet" href="../shared/window.css?v=20261124-468">
-<link rel="stylesheet" href="../shared/account.css?v=20261124-468">
-<script src="../shared/theme.js?v=20261124-468"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261124-468">
+<link rel="icon" href="../icons/favicon.svg?v=20261125-469">
+<link rel="stylesheet" href="../shared/style.css?v=20261125-469">
+<link rel="stylesheet" href="../shared/window.css?v=20261125-469">
+<link rel="stylesheet" href="../shared/account.css?v=20261125-469">
+<script src="../shared/theme.js?v=20261125-469"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261125-469">
 <!--
   ПРОФИЛЬ: два окна.
 
@@ -310,20 +310,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261124-468"></script>
-<script src="../shared/ui.js?v=20261124-468"></script>
-<script src="../shared/смайлы.js?v=20261124-468"></script>
-<script src="../shared/лица.js?v=20261124-468"></script>
-<script src="../shared/эфир.js?v=20261124-468"></script>
-<script src="../shared/icons.js?v=20261124-468"></script>
-<script src="../shared/window.js?v=20261124-468"></script>
-<script src="../shared/продавец.js?v=20261124-468"></script>
-<script src="../shared/без-копий.js?v=20261124-468"></script>
-<script src="../shared/time.js?v=20261124-468"></script>
-<script src="../shared/auth.js?v=20261124-468"></script>
-<script src="../shared/lang.js?v=20261124-468"></script>
-<script src="../shared/account.js?v=20261124-468"></script>
-<script src="../shared/shell.js?v=20261124-468"></script>
+<script src="../shared/api.js?v=20261125-469"></script>
+<script src="../shared/ui.js?v=20261125-469"></script>
+<script src="../shared/смайлы.js?v=20261125-469"></script>
+<script src="../shared/лица.js?v=20261125-469"></script>
+<script src="../shared/эфир.js?v=20261125-469"></script>
+<script src="../shared/icons.js?v=20261125-469"></script>
+<script src="../shared/window.js?v=20261125-469"></script>
+<script src="../shared/продавец.js?v=20261125-469"></script>
+<script src="../shared/без-копий.js?v=20261125-469"></script>
+<script src="../shared/time.js?v=20261125-469"></script>
+<script src="../shared/auth.js?v=20261125-469"></script>
+<script src="../shared/lang.js?v=20261125-469"></script>
+<script src="../shared/account.js?v=20261125-469"></script>
+<script src="../shared/shell.js?v=20261125-469"></script>
 <script>
 'use strict';
 
@@ -635,7 +635,7 @@ function спроситьБлокировку() {
   var имя = Я.display_name || номерUID();
   if (Я.заблокирован) { блокировать(false); return; }
   CW.лист([
-    { заголовок: Т('Заблокировать «') + имя + '»?' },
+    { заголовок: Т.с('Заблокировать «{имя}»?', { имя: имя }) },
     { зн: CW.значок('нельзя', 16), подпись: Т('Заблокировать'), опасная: true,
       делать: function () { блокировать(true); } },
     { зн: CW.значок('назад', 16), подпись: Т('Отмена') }
@@ -1003,8 +1003,7 @@ function пустое() {
   if (фильтр === 'истории') {
     var и = ок('div', 'про-пусто');
     и.innerHTML = '<div class="круг">' + зн('часы') + '</div>'
-                + '<div class="слово">' + CW.безопасно(Т('Историй нет')) + '</div>'
-                + '<div class="под">' + CW.безопасно(Т('История живёт сутки и пропадает сама.')) + '</div>';
+                + '<div class="слово">' + CW.безопасно(Т('Историй нет')) + '</div>';
     return и;
   }
   if (фильтр === 'сохранённое' && ЧУЖОЙ) {
@@ -1019,13 +1018,13 @@ function пустое() {
     : фильтр === 'репосты'
       ? (шорт ? 'Нет репостов видео' : 'Нет репостов')
       : (шорт ? 'Нет коротких видео' : 'Нет постов'));
-  /* «Опубликуй первое» — это разговор с собой. В чужом портфолио такая
-     строка советует человеку публиковать за другого. */
-  var под = (фильтр === 'мои' && !ЧУЖОЙ)
-    ? Т('Опубликуй первое: оно появится здесь.') : '';
+  /* Второй строчки под кругом больше нет. Она говорила очевидное -
+     «опубликуй первое, оно появится здесь», «история живёт сутки», -
+     и Анна попросила её убрать: круг и слово под ним уже сказали всё.
+     Пустое место читается спокойнее, чем совет, за которым ничего не
+     следует. */
   у.innerHTML = '<div class="круг">' + зн(шорт ? 'плёнка' : 'клетки') + '</div>'
-              + '<div class="слово">' + CW.безопасно(слово) + '</div>'
-              + (под ? '<div class="под">' + CW.безопасно(под) + '</div>' : '');
+              + '<div class="слово">' + CW.безопасно(слово) + '</div>';
   return у;
 }
 
@@ -1226,7 +1225,8 @@ function правкаОкно() {
     };
     гнездоБизнеса.appendChild(добавить);
 
-    гнездоБизнеса.appendChild(ок('div', 'пр-подпись', зн('место') + ' Адрес'));
+    гнездоБизнеса.appendChild(ок('div', 'пр-подпись',
+      зн('место') + ' ' + CW.безопасно(Т('Адрес'))));
     var адрес = ок('div', 'пр-поле',
       '<input id="пр-адрес" maxlength="200" placeholder="' + CW.безопасно(Т('Город, улица или онлайн')) + '">');
     гнездоБизнеса.appendChild(адрес);
@@ -1459,8 +1459,8 @@ document.body.appendChild(полеЛица);
   ужать(ф, 640).then(function (строка) {
     новоеЛицо = строка;
     лицоВнутрь(null);
-    CW.сказать('Фото выбрано. Не забудь «Сохранить»');
-  }).catch(function () { CW.сказать('Эту картинку прочитать не вышло'); });
+    CW.сказать(Т('Фото выбрано. Не забудь «Сохранить»'));
+  }).catch(function () { CW.сказать(Т('Эту картинку прочитать не вышло')); });
 };
 
 /* ── ЛИЦО: СМАЙЛ ИЛИ СВОЁ ФОТО ──

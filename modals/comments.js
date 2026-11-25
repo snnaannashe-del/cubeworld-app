@@ -346,11 +346,13 @@ CW.модаль('comments', function (данные) {
       var свернуть = document.createElement('button');
       свернуть.type = 'button';
       свернуть.className = 'км-свернуть';
-      свернуть.textContent = Т('▼ Показать ответы (') + ответы.length + ')';
+      свернуть.textContent = Т.с('▼ Показать ответы ({н})',
+                                 { н: ответы.length });
       свернуть.onclick = function () {
         var спрятано = где.classList.toggle('спрятано');
         свернуть.textContent = спрятано
-          ? ('▼ Показать ответы (' + ответы.length + ')') : '▲ Свернуть';
+          ? Т.с('▼ Показать ответы ({н})', { н: ответы.length })
+          : Т('▲ Свернуть');
       };
       в.appendChild(свернуть);
     }

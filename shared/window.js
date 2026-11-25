@@ -900,7 +900,7 @@
       var с = документ.createElement('script');
       с.src = CW.свежий(CW.путь(путь));
       с.onload = function () { готово(); };
-      с.onerror = function () { беда(new Error(Т('не приехал ') + путь)); };
+      с.onerror = function () { беда(new Error(Т.с('не приехал {путь}', { путь: путь }))); };
       документ.head.appendChild(с);
     });
     return ПРИЕХАЛО[путь];

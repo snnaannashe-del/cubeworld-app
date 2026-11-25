@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Сигналы · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261124-468">
-<link rel="stylesheet" href="shared/style.css?v=20261124-468">
-<link rel="stylesheet" href="shared/window.css?v=20261124-468">
-<link rel="stylesheet" href="shared/account.css?v=20261124-468">
-<script src="shared/theme.js?v=20261124-468"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261124-468">
+<link rel="icon" href="icons/favicon.svg?v=20261125-469">
+<link rel="stylesheet" href="shared/style.css?v=20261125-469">
+<link rel="stylesheet" href="shared/window.css?v=20261125-469">
+<link rel="stylesheet" href="shared/account.css?v=20261125-469">
+<script src="shared/theme.js?v=20261125-469"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-469">
 <!--
   СИГНАЛЫ КУБА.
 
@@ -277,19 +277,19 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261124-468"></script>
-<script src="shared/ui.js?v=20261124-468"></script>
-<script src="shared/смайлы.js?v=20261124-468"></script>
-<script src="shared/лица.js?v=20261124-468"></script>
-<script src="shared/эфир.js?v=20261124-468"></script>
-<script src="shared/icons.js?v=20261124-468"></script>
-<script src="shared/window.js?v=20261124-468"></script>
-<script src="shared/без-копий.js?v=20261124-468"></script>
-<script src="shared/time.js?v=20261124-468"></script>
-<script src="shared/auth.js?v=20261124-468"></script>
-<script src="shared/lang.js?v=20261124-468"></script>
-<script src="shared/account.js?v=20261124-468"></script>
-<script src="shared/shell.js?v=20261124-468"></script>
+<script src="shared/api.js?v=20261125-469"></script>
+<script src="shared/ui.js?v=20261125-469"></script>
+<script src="shared/смайлы.js?v=20261125-469"></script>
+<script src="shared/лица.js?v=20261125-469"></script>
+<script src="shared/эфир.js?v=20261125-469"></script>
+<script src="shared/icons.js?v=20261125-469"></script>
+<script src="shared/window.js?v=20261125-469"></script>
+<script src="shared/без-копий.js?v=20261125-469"></script>
+<script src="shared/time.js?v=20261125-469"></script>
+<script src="shared/auth.js?v=20261125-469"></script>
+<script src="shared/lang.js?v=20261125-469"></script>
+<script src="shared/account.js?v=20261125-469"></script>
+<script src="shared/shell.js?v=20261125-469"></script>
 <script>
 'use strict';
 
@@ -448,9 +448,10 @@ function показать() {
   var список = отобранные();
   if (!список.length) {
     тело.appendChild(кусок('пусто-строка',
-      С.ищем ? ('Ничего не нашлось по запросу «' + CW.безопасно(С.ищем) + '».')
+      С.ищем ? CW.безопасно(Т.с('Ничего не нашлось по запросу «{что}».',
+                                { что: С.ищем }))
              : (С.все.length
-                 ? 'В этом отборе сигналов нет.'
+                 ? CW.безопасно(Т('В этом отборе сигналов нет.'))
                  : '' + CW.безопасно(Т('В этом кубе ещё не было сигналов.')) + '<br>' + CW.безопасно(Т('Нажми ＋ и опубликуй первый.')) + '')));
     return;
   }
@@ -628,7 +629,8 @@ function когдаОткроется(с) {
    ═══════════════════════════════════════════════════════════════════════ */
 function спроситьЗакрытие(с, кнопка) {
   CW.лист([
-    { заголовок: Т('Закрыть ') + (с.pair || 'сигнал') + ' по рынку?' },
+    { заголовок: Т.с('Закрыть {пара} по рынку?',
+                     { пара: с.pair || Т('сигнал') }) },
     { зн: CW.значок('галка', 16), подпись: Т('Закрыть'), опасная: true, делать: function () {
         кнопка.disabled = true;
         кнопка.textContent = Т('Закрываю…');

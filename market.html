@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Маркетплейс · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261124-468">
-<link rel="stylesheet" href="shared/style.css?v=20261124-468">
-<link rel="stylesheet" href="shared/window.css?v=20261124-468">
-<link rel="stylesheet" href="shared/account.css?v=20261124-468">
-<script src="shared/theme.js?v=20261124-468"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261124-468">
+<link rel="icon" href="icons/favicon.svg?v=20261125-469">
+<link rel="stylesheet" href="shared/style.css?v=20261125-469">
+<link rel="stylesheet" href="shared/window.css?v=20261125-469">
+<link rel="stylesheet" href="shared/account.css?v=20261125-469">
+<script src="shared/theme.js?v=20261125-469"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-469">
 <!--
   МАРКЕТПЛЕЙС.
 
@@ -419,21 +419,21 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261124-468"></script>
-<script src="shared/ui.js?v=20261124-468"></script>
-<script src="shared/смайлы.js?v=20261124-468"></script>
-<script src="shared/лица.js?v=20261124-468"></script>
-<script src="shared/эфир.js?v=20261124-468"></script>
-<script src="shared/icons.js?v=20261124-468"></script>
-<script src="shared/window.js?v=20261124-468"></script>
-<script src="shared/продавец.js?v=20261124-468"></script>
-<script src="shared/корзина.js?v=20261124-468"></script>
-<script src="shared/без-копий.js?v=20261124-468"></script>
-<script src="shared/time.js?v=20261124-468"></script>
-<script src="shared/auth.js?v=20261124-468"></script>
-<script src="shared/lang.js?v=20261124-468"></script>
-<script src="shared/account.js?v=20261124-468"></script>
-<script src="shared/shell.js?v=20261124-468"></script>
+<script src="shared/api.js?v=20261125-469"></script>
+<script src="shared/ui.js?v=20261125-469"></script>
+<script src="shared/смайлы.js?v=20261125-469"></script>
+<script src="shared/лица.js?v=20261125-469"></script>
+<script src="shared/эфир.js?v=20261125-469"></script>
+<script src="shared/icons.js?v=20261125-469"></script>
+<script src="shared/window.js?v=20261125-469"></script>
+<script src="shared/продавец.js?v=20261125-469"></script>
+<script src="shared/корзина.js?v=20261125-469"></script>
+<script src="shared/без-копий.js?v=20261125-469"></script>
+<script src="shared/time.js?v=20261125-469"></script>
+<script src="shared/auth.js?v=20261125-469"></script>
+<script src="shared/lang.js?v=20261125-469"></script>
+<script src="shared/account.js?v=20261125-469"></script>
+<script src="shared/shell.js?v=20261125-469"></script>
 <script>
 'use strict';
 
@@ -1192,7 +1192,8 @@ function нарисоватьОписание(куда, т) {
   }
   if (вещь) {
     ценаСтрока.appendChild(ок('span', 'знач-состояния',
-      т.qty > 0 ? ('осталось ' + т.qty + ' шт') : 'разобрали'));
+      т.qty > 0 ? Т.с('осталось {н} шт', { н: т.qty })
+                : Т('разобрали')));
   }
   куда.appendChild(ценаСтрока);
 
@@ -1213,7 +1214,8 @@ function нарисоватьОписание(куда, т) {
 
   if (вещь && т.shipping) {
     куда.appendChild(ок('div', 'замечание',
-      '<b>' + CW.безопасно(Т('Доставка.')) + '</b> ' + CW.безопасно(т.shipping)));
+      '<b>' + CW.безопасно(Т('Доставка.')) + '</b> '
+      + CW.безопасно(т.shipping)));   /* текст доставки пишет продавец */
   }
 
   /* цифровой товар: что получено */
@@ -1278,8 +1280,9 @@ function действия(т) {
       return ряд;
     }
     var цена = Number(т.price || 0);
-    ряд.appendChild(кнопка(цена > 0 ? ('Купить за ' + деньги(цена) + ' CUBE')
-                                    : 'Забрать бесплатно',
+    ряд.appendChild(кнопка(цена > 0
+        ? Т.с('Купить за {цена} CUBE', { цена: деньги(цена) })
+        : Т('Забрать бесплатно'),
       'главная', function () { купить(т); }));
     ряд.appendChild(вКорзину(т, 'market'));
     return ряд;
@@ -1327,11 +1330,13 @@ function действия(т) {
      той цене. Честнее не показывать кнопку вовсе. */
   if (String(т.currency || 'CUBE').toUpperCase() !== 'CUBE') {
     ряд.appendChild(ок('div', 'замечание',
-      Т('Цена выставлена в ') + CW.безопасно(т.currency) + ', а площадка считает '
-      + 'в CUBE. Купить отсюда нельзя, договаривайтесь с продавцом.'));
+      Т.с('Цена выставлена в {валюта}, а площадка считает в CUBE. '
+        + 'Купить отсюда нельзя, договаривайтесь с продавцом.',
+          { валюта: CW.безопасно(т.currency) })));
     return ряд;
   }
-  ряд.appendChild(кнопка('Купить за ' + деньги(т.price) + ' CUBE', 'главная',
+  ряд.appendChild(кнопка(Т.с('Купить за {цена} CUBE',
+                            { цена: деньги(т.price) }), 'главная',
     function () { купить(т); }));
   ряд.appendChild(вКорзину(т, 'shop'));
   return ряд;
@@ -1346,7 +1351,7 @@ function действия(т) {
    ли их два. */
 function вКорзину(т, род) {
   var есть = CW.корзина && CW.корзина.есть(род, т.id);
-  var б = кнопка(есть ? 'Убрать из корзины' : 'В корзину', '', function () {
+  var б = кнопка(Т(есть ? 'Убрать из корзины' : 'В корзину'), '', function () {
     if (!CW.корзина) return;
     if (CW.корзина.есть(род, т.id)) {
       CW.корзина.убрать(род + ':' + т.id);
@@ -1408,7 +1413,7 @@ function переключитьПродажу(т) {
 
 function удалить(т) {
   CW.лист([
-    { заголовок: Т('Удалить «') + (т.title || '') + '»?' },
+    { заголовок: Т.с('Удалить «{что}»?', { что: т.title || '' }) },
     { зн: CW.значок('урна', 16), подпись: Т('Удалить'), опасная: true, делать: function () {
         CW.спросить(корень() + т.id, { способ: 'DELETE' })
           .then(function (о) {
@@ -1570,8 +1575,9 @@ function нарисоватьЗаказы() {
     var у = ок('div', 'пусто-рынка');
     у.innerHTML = '<div class="зн">' + CW.значок(С.вид === 'sold' ? 'монета' : 'тележка')
                 + '</div><div class="слова">'
-                + (С.вид === 'sold' ? 'Твои вещи пока никто не заказывал.'
-                                    : 'Ты пока ничего здесь не покупал.')
+                + CW.безопасно(Т(С.вид === 'sold'
+                    ? 'Твои вещи пока никто не заказывал.'
+                    : 'Ты пока ничего здесь не покупал.'))
                 + '</div>';
     списком.appendChild(у);
     return;
@@ -1736,7 +1742,7 @@ function взятьФайл(что, дальше) {
 }
 
 function послатьФайл(путь, ф, т) {
-  CW.сказать(Т('Загружаю ') + ф.name + '…', 8000);
+  CW.сказать(Т.с('Загружаю {имя}…', { имя: ф.name }), 8000);
   var пачка = new FormData();
   пачка.append('file', ф);
   CW.спросить(путь, { способ: 'POST', тело: пачка, сроком: 120000 })

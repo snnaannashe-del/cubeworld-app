@@ -103,7 +103,8 @@ CW.модаль('new-file', function (данные) {
       + '<div class="ряд"><input type="text" maxlength="64" spellcheck="false">'
       + '<button type="button" class="кнопка главная">' + CW.безопасно(Т('Создать')) + '</button></div>'
       + '<div class="беда"></div>';
-    гнездо.querySelector('label').textContent = Т('Имя файла · ') + Т(в.имя);
+    гнездо.querySelector('label').textContent =
+      Т.с('Имя файла · {что}', { что: Т(в.имя) });
     М.тело.insertBefore(гнездо, М.тело.firstChild);
 
     var поле = гнездо.querySelector('input');
@@ -112,7 +113,9 @@ CW.модаль('new-file', function (данные) {
        действия. */
     var кн = гнездо.querySelector('.ряд .кнопка');
     var беда = гнездо.querySelector('.беда');
-    поле.value = 'Новый.' + в.к;
+    /* Имя по умолчанию тоже на языке человека: «Новый.svg» на
+       английском экране читался как чужая надпись. */
+    поле.value = Т('Новый') + '.' + в.к;
     поле.focus();
     поле.setSelectionRange(0, поле.value.length - в.к.length - 1);
 

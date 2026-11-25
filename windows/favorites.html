@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Избранное · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261124-468">
-<link rel="stylesheet" href="../shared/style.css?v=20261124-468">
-<link rel="stylesheet" href="../shared/window.css?v=20261124-468">
-<link rel="stylesheet" href="../shared/account.css?v=20261124-468">
-<script src="../shared/theme.js?v=20261124-468"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261124-468">
+<link rel="icon" href="../icons/favicon.svg?v=20261125-469">
+<link rel="stylesheet" href="../shared/style.css?v=20261125-469">
+<link rel="stylesheet" href="../shared/window.css?v=20261125-469">
+<link rel="stylesheet" href="../shared/account.css?v=20261125-469">
+<script src="../shared/theme.js?v=20261125-469"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261125-469">
 <!--
   ИЗБРАННОЕ — стоячее окно шириной 10 см, как портфолио и правка профиля.
 
@@ -58,24 +58,24 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261124-468"></script>
-<script src="../shared/ui.js?v=20261124-468"></script>
-<script src="../shared/смайлы.js?v=20261124-468"></script>
-<script src="../shared/лица.js?v=20261124-468"></script>
-<script src="../shared/эфир.js?v=20261124-468"></script>
-<script src="../shared/icons.js?v=20261124-468"></script>
-<script src="../shared/window.js?v=20261124-468"></script>
-<script src="../shared/без-копий.js?v=20261124-468"></script>
-<script src="../shared/time.js?v=20261124-468"></script>
-<script src="../shared/auth.js?v=20261124-468"></script>
-<script src="../shared/lang.js?v=20261124-468"></script>
-<script src="../shared/account.js?v=20261124-468"></script>
-<script src="../shared/shell.js?v=20261124-468"></script>
-<script src="../shared/вложения.js?v=20261124-468"></script>
-<script src="../shared/запись-голоса.js?v=20261124-468"></script>
-<script src="../shared/кнопки-сообщения.js?v=20261124-468"></script>
-<script src="../shared/кадр-ролика.js?v=20261124-468"></script>
-<script src="../shared/chat.js?v=20261124-468"></script>
+<script src="../shared/api.js?v=20261125-469"></script>
+<script src="../shared/ui.js?v=20261125-469"></script>
+<script src="../shared/смайлы.js?v=20261125-469"></script>
+<script src="../shared/лица.js?v=20261125-469"></script>
+<script src="../shared/эфир.js?v=20261125-469"></script>
+<script src="../shared/icons.js?v=20261125-469"></script>
+<script src="../shared/window.js?v=20261125-469"></script>
+<script src="../shared/без-копий.js?v=20261125-469"></script>
+<script src="../shared/time.js?v=20261125-469"></script>
+<script src="../shared/auth.js?v=20261125-469"></script>
+<script src="../shared/lang.js?v=20261125-469"></script>
+<script src="../shared/account.js?v=20261125-469"></script>
+<script src="../shared/shell.js?v=20261125-469"></script>
+<script src="../shared/вложения.js?v=20261125-469"></script>
+<script src="../shared/запись-голоса.js?v=20261125-469"></script>
+<script src="../shared/кнопки-сообщения.js?v=20261125-469"></script>
+<script src="../shared/кадр-ролика.js?v=20261125-469"></script>
+<script src="../shared/chat.js?v=20261125-469"></script>
 <script>
 'use strict';
 
@@ -244,8 +244,9 @@ document.body.appendChild(полеФайла);
   var документом = полеФайла.dataset.документом === '1';
   полеФайла.value = '';
   if (все.length > ЗАРАЗ) {
-    CW.сказать(Т('За раз берём не больше ') + ЗАРАЗ + ' файлов. Остальные '
-             + (все.length - ЗАРАЗ) + ' - следующей отправкой.', 7000);
+    CW.сказать(Т.с('За раз берём не больше {предел} файлов. '
+                 + 'Остальные {ещё} - следующей отправкой.',
+                   { предел: ЗАРАЗ, ещё: все.length - ЗАРАЗ }), 7000);
     все = все.slice(0, ЗАРАЗ);
   }
   if (все.length) взятьФайлы(все, документом);
@@ -802,7 +803,8 @@ function взятьФайлы(файлы, документом) {
     if (ф.size > 900 * 1024) { тяжёлых++; следующий(и + 1); return; }
     var чтец = new FileReader();
     чтец.onerror = function () {
-      CW.сказать(Т('Файл «') + (ф.name || '') + '» прочитать не вышло');
+      CW.сказать(Т.с('Файл «{имя}» прочитать не вышло',
+                     { имя: ф.name || '' }));
       следующий(и + 1);
     };
     чтец.onload = function () {

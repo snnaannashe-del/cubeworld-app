@@ -264,7 +264,7 @@ CW.модаль('file', function (данные) {
       if (!CW.книги.умеем(ФАЙЛ.kind)) return null;
       return fetch(адрес)
         .then(function (о) {
-          if (!о.ok) throw new Error(Т('хранилище ответило ') + о.status);
+          if (!о.ok) throw new Error(Т.с('хранилище ответило {код}', { код: о.status }));
           return о.arrayBuffer();
         })
         .then(function (б) {

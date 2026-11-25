@@ -1043,7 +1043,8 @@
         var писарь;
         try {
           писарь = new окно.MediaRecorder(поток, вид ? { mimeType: вид } : undefined);
-        } catch (е) { беда(new Error(Т('Браузер отказался писать: ') + е.message)); return; }
+        } catch (е) { беда(new Error(Т.с('Браузер отказался писать: {беда}',
+                                     { беда: е.message }))); return; }
 
         var куски = [];
         писарь.ondataavailable = function (е) { if (е.data && е.data.size) куски.push(е.data); };

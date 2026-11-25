@@ -77,7 +77,8 @@
     }
     return откуда(т).then(function (из) {
       if (из === язык) {
-        throw new Error(Т('Это уже ') + имяЯзыка(язык).toLowerCase());
+        throw new Error(Т.с('Это уже {язык}',
+                            { язык: имяЯзыка(язык).toLowerCase() }));
       }
       return завести(из, язык);
     }).then(function (п) {

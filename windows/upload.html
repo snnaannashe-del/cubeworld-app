@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Загрузка видео · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261124-468">
-<link rel="stylesheet" href="../shared/style.css?v=20261124-468">
-<link rel="stylesheet" href="../shared/window.css?v=20261124-468">
-<link rel="stylesheet" href="../shared/account.css?v=20261124-468">
-<script src="../shared/theme.js?v=20261124-468"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261124-468">
+<link rel="icon" href="../icons/favicon.svg?v=20261125-469">
+<link rel="stylesheet" href="../shared/style.css?v=20261125-469">
+<link rel="stylesheet" href="../shared/window.css?v=20261125-469">
+<link rel="stylesheet" href="../shared/account.css?v=20261125-469">
+<script src="../shared/theme.js?v=20261125-469"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261125-469">
 <!--
   ЗАГРУЗКА ВИДЕО — окно поверх программы.
 
@@ -103,19 +103,19 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261124-468"></script>
-<script src="../shared/ui.js?v=20261124-468"></script>
-<script src="../shared/смайлы.js?v=20261124-468"></script>
-<script src="../shared/лица.js?v=20261124-468"></script>
-<script src="../shared/эфир.js?v=20261124-468"></script>
-<script src="../shared/icons.js?v=20261124-468"></script>
-<script src="../shared/window.js?v=20261124-468"></script>
-<script src="../shared/без-копий.js?v=20261124-468"></script>
-<script src="../shared/time.js?v=20261124-468"></script>
-<script src="../shared/auth.js?v=20261124-468"></script>
-<script src="../shared/lang.js?v=20261124-468"></script>
-<script src="../shared/account.js?v=20261124-468"></script>
-<script src="../shared/shell.js?v=20261124-468"></script>
+<script src="../shared/api.js?v=20261125-469"></script>
+<script src="../shared/ui.js?v=20261125-469"></script>
+<script src="../shared/смайлы.js?v=20261125-469"></script>
+<script src="../shared/лица.js?v=20261125-469"></script>
+<script src="../shared/эфир.js?v=20261125-469"></script>
+<script src="../shared/icons.js?v=20261125-469"></script>
+<script src="../shared/window.js?v=20261125-469"></script>
+<script src="../shared/без-копий.js?v=20261125-469"></script>
+<script src="../shared/time.js?v=20261125-469"></script>
+<script src="../shared/auth.js?v=20261125-469"></script>
+<script src="../shared/lang.js?v=20261125-469"></script>
+<script src="../shared/account.js?v=20261125-469"></script>
+<script src="../shared/shell.js?v=20261125-469"></script>
 <script>
 'use strict';
 
@@ -227,11 +227,13 @@ function шагВыбрать() {
 
 function взятьФайл(ф) {
   if (!/^video\//.test(ф.type)) {
-    CW.сказать(Т('Это не видео: ') + (ф.type || 'непонятный файл'));
+    CW.сказать(Т.с('Это не видео: {тип}',
+                   { тип: ф.type || Т('непонятный файл') }));
     return;
   }
   if (ф.size > ПРЕДЕЛ_МБ * 1024 * 1024) {
-    CW.сказать(Т('Ролик больше ') + ПРЕДЕЛ_МБ + ' МБ: такой пока не возьму');
+    CW.сказать(Т.с('Ролик больше {н} МБ: такой пока не возьму',
+                   { н: ПРЕДЕЛ_МБ }));
     return;
   }
 
@@ -301,8 +303,8 @@ function шагОписать() {
   };
 
   видео.onseeked = function () {
-    подпись.textContent = Т('Кадр на ') + мигом(видео.currentTime)
-                        + ': он станет обложкой';
+    подпись.textContent = Т.с('Кадр на {миг}: он станет обложкой',
+                              { миг: мигом(видео.currentTime) });
     снятьКадр(видео);
   };
 

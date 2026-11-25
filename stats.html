@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Аналитика · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261124-468">
-<link rel="stylesheet" href="shared/style.css?v=20261124-468">
-<link rel="stylesheet" href="shared/window.css?v=20261124-468">
-<link rel="stylesheet" href="shared/account.css?v=20261124-468">
-<script src="shared/theme.js?v=20261124-468"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261124-468">
+<link rel="icon" href="icons/favicon.svg?v=20261125-469">
+<link rel="stylesheet" href="shared/style.css?v=20261125-469">
+<link rel="stylesheet" href="shared/window.css?v=20261125-469">
+<link rel="stylesheet" href="shared/account.css?v=20261125-469">
+<script src="shared/theme.js?v=20261125-469"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-469">
 <!--
   АНАЛИТИКА КУБА.
 
@@ -132,19 +132,19 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261124-468"></script>
-<script src="shared/ui.js?v=20261124-468"></script>
-<script src="shared/смайлы.js?v=20261124-468"></script>
-<script src="shared/лица.js?v=20261124-468"></script>
-<script src="shared/эфир.js?v=20261124-468"></script>
-<script src="shared/icons.js?v=20261124-468"></script>
-<script src="shared/window.js?v=20261124-468"></script>
-<script src="shared/без-копий.js?v=20261124-468"></script>
-<script src="shared/time.js?v=20261124-468"></script>
-<script src="shared/auth.js?v=20261124-468"></script>
-<script src="shared/lang.js?v=20261124-468"></script>
-<script src="shared/account.js?v=20261124-468"></script>
-<script src="shared/shell.js?v=20261124-468"></script>
+<script src="shared/api.js?v=20261125-469"></script>
+<script src="shared/ui.js?v=20261125-469"></script>
+<script src="shared/смайлы.js?v=20261125-469"></script>
+<script src="shared/лица.js?v=20261125-469"></script>
+<script src="shared/эфир.js?v=20261125-469"></script>
+<script src="shared/icons.js?v=20261125-469"></script>
+<script src="shared/window.js?v=20261125-469"></script>
+<script src="shared/без-копий.js?v=20261125-469"></script>
+<script src="shared/time.js?v=20261125-469"></script>
+<script src="shared/auth.js?v=20261125-469"></script>
+<script src="shared/lang.js?v=20261125-469"></script>
+<script src="shared/account.js?v=20261125-469"></script>
+<script src="shared/shell.js?v=20261125-469"></script>
 <script>
 'use strict';
 
@@ -173,9 +173,9 @@ function спросить() {
       if (е.код === 402) { тело.appendChild(кускомЗакрыто(е.message)); return; }
       var б = document.createElement('div');
       б.className = 'беда';
-      б.textContent = е.сеть ? 'Нет связи с сервером'
-                   : е.код === 403 ? 'Этот куб не твой: аналитика закрыта'
-                   : (е.message || 'Не вышло посчитать');
+      б.textContent = е.сеть ? Т('Нет связи с сервером')
+                   : е.код === 403 ? Т('Этот куб не твой: аналитика закрыта')
+                   : (е.message || Т('Не вышло посчитать'));
       тело.appendChild(б);
     });
 }
@@ -197,7 +197,7 @@ function показать(д) {
   }
 
   тело.appendChild(кускомЧисла(д));
-  тело.appendChild(кусок('раздел', 'Активность за 7 дней'));
+  тело.appendChild(кусок('раздел', CW.безопасно(Т('Активность за 7 дней'))));
   тело.appendChild(кускомНеделя(д));
   тело.appendChild(кусок('раздел',
       '<span class="знак">' + CW.значок('кубок') + '</span>' + CW.безопасно(Т('Топ участников куба')) + ''));
@@ -215,18 +215,26 @@ function кускомЧисла(д) {
   var новыеЧас = Number(д.new_hour || 0);
 
   var ряды = [
+    /* Подпись под числом собиралась плюсом: «всего » + число + слово.
+       По-английски из этого выходило «всего 6 members» - половина
+       по-русски. Анна сняла это на снимке. Теперь каждая подпись -
+       целая фраза со вставкой. */
     { зн: 'люди', цвет: 'var(--зелёный)', знач: сейчас,
       имя: 'Участников сейчас',
-      тихо: 'всего ' + всего + ' ' + склонение(всего, 'участник', 'участника', 'участников') },
+      тихо: Т.с('всего {н} {слово}',
+                { н: всего,
+                  слово: склонение(всего, 'участник', 'участника', 'участников') }) },
     { зн: 'лист', цвет: 'var(--синий)', знач: посты,
       имя: 'Постов в кубе',
-      тихо: сегодня ? 'сегодня +' + сегодня : 'сегодня новых нет' },
+      тихо: сегодня ? Т.с('сегодня +{н}', { н: сегодня })
+                    : Т('сегодня новых нет') },
     { зн: 'речь', цвет: '#22d3ee', знач: сообщ,
       имя: 'Сообщений всего',
-      тихо: заЧас ? 'за час +' + заЧас : 'за час тихо' },
+      тихо: заЧас ? Т.с('за час +{н}', { н: заЧас }) : Т('за час тихо') },
     { зн: 'человек', цвет: 'var(--сирень)', знач: неделя,
       имя: 'Новых за неделю',
-      тихо: новыеЧас ? 'за час +' + новыеЧас : 'за час никто не заходил' }
+      тихо: новыеЧас ? Т.с('за час +{н}', { н: новыеЧас })
+                     : Т('за час никто не заходил') }
   ];
 
   var где = кусок('числа');
@@ -235,7 +243,7 @@ function кускомЧисла(д) {
         '<div class="знак" style="color:' + р.цвет + '">' + CW.значок(р.зн) + '</div>'
       + '<div class="значение' + (р.знач ? '' : ' пусто') + '">'
       +   CW.число(р.знач) + '</div>'
-      + '<div class="подпись">' + р.имя + '</div>'
+      + '<div class="подпись">' + CW.безопасно(Т(р.имя)) + '</div>'
       + '<div class="тихо">' + CW.безопасно(р.тихо) + '</div>'));
   });
   return где;
@@ -316,8 +324,17 @@ function кускомТоп(д) {
   люди.forEach(function (ч, и) {
     var посты = Number(ч.posts || 0), сообщ = Number(ч.messages || 0);
     var чем = [];
-    if (посты) чем.push(посты + ' ' + склонение(посты, 'пост', 'поста', 'постов'));
-    if (сообщ) чем.push(сообщ + ' ' + склонение(сообщ, 'сообщение', 'сообщения', 'сообщений'));
+    if (посты) {
+      чем.push(Т.с('{н} {слово}',
+                   { н: посты,
+                     слово: склонение(посты, 'пост', 'поста', 'постов') }));
+    }
+    if (сообщ) {
+      чем.push(Т.с('{н} {слово}',
+                   { н: сообщ,
+                     слово: склонение(сообщ, 'сообщение', 'сообщения',
+                                      'сообщений') }));
+    }
 
     где.appendChild(кусок('участник'
         + (и === 0 ? ' первый' : '')
@@ -326,7 +343,8 @@ function кускомТоп(д) {
       + '<span class="лицо cw-кружок">' + CW.значок('человек') + '</span>'
       + '<span>'
       +   '<div class="имя">' + CW.безопасно(ч.name || ('#' + ч.user_id)) + '</div>'
-      +   '<div class="чем">' + (чем.join(' · ') || 'заходил') + '</div>'
+      +   '<div class="чем">'
+      +     CW.безопасно(чем.join(' · ') || Т('заходил')) + '</div>'
       + '</span>'
       + '<span class="всего">' + (посты + сообщ) + '</span>'));
   });
@@ -339,7 +357,8 @@ function кускомЗакрыто(почему) {
   var у = кусок('закрыто',
       '<div class="знак">' + CW.значок('замок') + '</div>'
     + '<h2>' + CW.безопасно(Т('Аналитика в Сильвер и Голд')) + '</h2>'
-    + '<p>' + CW.безопасно(почему || 'На бесплатном ключе аналитика куба закрыта.')
+    + '<p>'
+    + CW.безопасно(почему || Т('На бесплатном ключе аналитика куба закрыта.'))
     + '<br>' + CW.безопасно(Т('Остальное в кубе работает как работало.')) + '</p>'
     + '<button class="кнопка главная">' + CW.безопасно(Т('Посмотреть тарифы')) + '</button>');
   у.querySelector('button').onclick = function () { CW.уйти('tariff.html?p=silver'); };
