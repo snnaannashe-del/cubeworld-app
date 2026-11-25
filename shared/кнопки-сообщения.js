@@ -623,7 +623,10 @@
         д.список.forEach(function (п) {
           var о = документ.createElement('option');
           о.value = п[0];
-          о.textContent = п[1];
+          /* Названия разделов и окон — надписи на экране. В списке
+             они лежали по-русски и такими же попадали в выпадающий
+             список даже в английском окне. */
+          о.textContent = Т(п[1]);
           у.appendChild(о);
         });
         if (!К.знач) К.знач = д.список[0][0];
@@ -633,14 +636,14 @@
         у = документ.createElement('textarea');
         у.rows = 2;
         у.maxLength = 500;
-        у.placeholder = д.намёк || '';
+        у.placeholder = Т(д.намёк || '');
         у.value = К.знач;
         у.oninput = function () { К.знач = у.value; };
       } else {
         у = документ.createElement('input');
         у.type = 'text';
         у.maxLength = 500;
-        у.placeholder = д.намёк || '';
+        у.placeholder = Т(д.намёк || '');
         у.value = К.знач;
         у.oninput = function () { К.знач = у.value; };
       }
