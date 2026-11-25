@@ -1,15 +1,15 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-тема-замок="тёмная">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Тарифы · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-485">
-<link rel="stylesheet" href="shared/style.css?v=20261125-485">
-<link rel="stylesheet" href="shared/window.css?v=20261125-485">
-<link rel="stylesheet" href="shared/lang.css?v=20261125-485">
-<link rel="stylesheet" href="shared/ключ-окно.css?v=20261125-485">
-<script src="shared/theme.js?v=20261125-485"></script>
+<link rel="icon" href="icons/favicon.svg?v=20261125-486">
+<link rel="stylesheet" href="shared/style.css?v=20261125-486">
+<link rel="stylesheet" href="shared/window.css?v=20261125-486">
+<link rel="stylesheet" href="shared/lang.css?v=20261125-486">
+<link rel="stylesheet" href="shared/ключ-окно.css?v=20261125-486">
+<script src="shared/theme.js?v=20261125-486"></script>
 <!--
   ТАРИФЫ. Промежуточная страница между титулкой и входом.
 
@@ -297,20 +297,20 @@
 </div>
 </div>
 
-<script src="shared/api.js?v=20261125-485"></script>
-<script src="shared/ui.js?v=20261125-485"></script>
-<script src="shared/смайлы.js?v=20261125-485"></script>
-<script src="shared/лица.js?v=20261125-485"></script>
-<script src="shared/эфир.js?v=20261125-485"></script>
-<script src="shared/icons.js?v=20261125-485"></script>
-<script src="shared/window.js?v=20261125-485"></script>
-<script src="shared/без-копий.js?v=20261125-485"></script>
-<script src="shared/time.js?v=20261125-485"></script>
-<script src="shared/auth.js?v=20261125-485"></script>
-<script src="shared/words.js?v=20261125-485"></script>
-<script src="shared/небо.js?v=20261125-485"></script>
-<script src="shared/lang.js?v=20261125-485"></script>
-<script src="shared/ключ-окно.js?v=20261125-485"></script>
+<script src="shared/api.js?v=20261125-486"></script>
+<script src="shared/ui.js?v=20261125-486"></script>
+<script src="shared/смайлы.js?v=20261125-486"></script>
+<script src="shared/лица.js?v=20261125-486"></script>
+<script src="shared/эфир.js?v=20261125-486"></script>
+<script src="shared/icons.js?v=20261125-486"></script>
+<script src="shared/window.js?v=20261125-486"></script>
+<script src="shared/без-копий.js?v=20261125-486"></script>
+<script src="shared/time.js?v=20261125-486"></script>
+<script src="shared/auth.js?v=20261125-486"></script>
+<script src="shared/words.js?v=20261125-486"></script>
+<script src="shared/небо.js?v=20261125-486"></script>
+<script src="shared/lang.js?v=20261125-486"></script>
+<script src="shared/ключ-окно.js?v=20261125-486"></script>
 <script>
 'use strict';
 
@@ -356,8 +356,11 @@ var ЧЕРТЫ = [
   { поле: 'analytics',    слово: 'fanalytics' },
   { поле: 'files',        слово: 'ffiles'     },
   { поле: 'mining',       слово: 'fmining'    },
-  { поле: 'rating',       слово: 'frating'    },
-  { поле: 'space',        слово: 'fspace'     }
+  /* «Рейтинг» убран с карточки: за ним в программе не стояло ничего, а
+     обещание в оплаченном тарифе должно что-то значить. Вернём строку,
+     когда возможность будет написана. */
+  { поле: 'space',        слово: 'fspace',    счёт: 'gb',   хвост: 'ГБ' },
+  { поле: 'signals',      слово: 'fsigmonth', счёт: 'signals_month' }
 ];
 
 /* Язык — общий выбор из shared/lang.js: тот же список, та же кнопка,
@@ -493,7 +496,9 @@ function черты() {
        «Маркетплейс продавец» вместо просто «Маркетплейс». Платным
        считаем тот, у кого есть цена за месяц. */
     var текст = CW.сл((ч.словоПлатно && п.month) ? ч.словоПлатно : ч.слово);
-    if (ч.счёт && п[ч.счёт] != null) текст += ': ' + п[ч.счёт];
+    if (ч.счёт && п[ч.счёт] != null) {
+      текст += ': ' + п[ч.счёт] + (ч.хвост ? ' ' + CW.сл('tgb') : '');
+    }
 
     var с = document.createElement('div');
     с.className = 'строка да';

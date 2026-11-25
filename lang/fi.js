@@ -2049,7 +2049,7 @@ CW.словарь('fi', {
   'Нужно {нужно} CUBE, на счету {есть}': 'Tarvitaan {нужно} CUBE, tilillä on {есть}',
   'Файл больше {предел} МБ': 'Tiedosto on suurempi kuin {предел} Mt',
   'Ролик в ленту не длиннее {предел} секунд': 'Syötteeseen tuleva klippi on enintään {предел} sekuntia',
-  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 10, Голд — 33.': 'Paketissa {тариф} sinulla on {предел} omaa kuutiota kerrallaan, ja ne ovat varattuja. Silver — 10, Gold — 33.',
+  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 11, Голд — 33.': 'Paketissa {тариф} sinulla on {предел} omaa kuutiota kerrallaan, ja ne ovat varattuja. Silver — 11, Gold — 33.',
   '{что}: в Сильвер и Голд. Сейчас у тебя {тариф}.': '{что}: Silverissä ja Goldissa. Nyt sinulla on {тариф}.',
   '{тариф} включается после оплаты у платёжного провайдера.': '{тариф} alkaa maksun jälkeen maksupalvelussa.',
   'Нет котировок по паре {пара}': 'Ei noteerauksia parille {пара}',
@@ -3150,6 +3150,9 @@ CW.словарь('fi', {
 
   'Не хватает {н} CUBE. Можно заплатить криптой.': '{н} CUBE puuttuu. Voit maksaa kryptolla.',
 
-  'в сети|блокчейн': 'verkossa'
+  'в сети|блокчейн': 'verkossa',
+
+  'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': '{занято} / {всего} Gt käytössä. Vapauta tilaa tai ota isompi tilaus.',
+  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Tilaus {тариф} antaa {предел} signaalia kuussa, ja ne on jo julkaistu. Laskuri nollautuu ensimmäisenä päivänä.'
 
 });

@@ -2049,7 +2049,7 @@ CW.словарь('sv', {
   'Нужно {нужно} CUBE, на счету {есть}': 'Det behövs {нужно} CUBE, på kontot finns {есть}',
   'Файл больше {предел} МБ': 'Filen är större än {предел} MB',
   'Ролик в ленту не длиннее {предел} секунд': 'En klipp till flödet är högst {предел} sekunder',
-  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 10, Голд — 33.': 'På planen {тариф} har du {предел} egna kuber samtidigt, och de är upptagna. Silver — 10, Gold — 33.',
+  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 11, Голд — 33.': 'På planen {тариф} har du {предел} egna kuber samtidigt, och de är upptagna. Silver — 11, Gold — 33.',
   '{что}: в Сильвер и Голд. Сейчас у тебя {тариф}.': '{что}: i Silver och Gold. Just nu har du {тариф}.',
   '{тариф} включается после оплаты у платёжного провайдера.': '{тариф} startar efter betalningen hos betalleverantören.',
   'Нет котировок по паре {пара}': 'Inga noteringar för paret {пара}',
@@ -3150,6 +3150,9 @@ CW.словарь('sv', {
 
   'Не хватает {н} CUBE. Можно заплатить криптой.': 'Det fattas {н} CUBE. Du kan betala med krypto.',
 
-  'в сети|блокчейн': 'i nätverket'
+  'в сети|блокчейн': 'i nätverket',
+
+  'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': '{занято} av {всего} GB upptaget. Frigör plats eller ta ett större abonnemang.',
+  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Abonnemanget {тариф} ger {предел} signaler i månaden, och de är redan lagda. Räknaren nollas den första.'
 
 });

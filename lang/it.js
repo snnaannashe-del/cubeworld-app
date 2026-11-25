@@ -2049,7 +2049,7 @@ CW.словарь('it', {
   'Нужно {нужно} CUBE, на счету {есть}': 'Servono {нужно} CUBE, sul conto ci sono {есть}',
   'Файл больше {предел} МБ': 'Il file supera {предел} MB',
   'Ролик в ленту не длиннее {предел} секунд': 'Un clip per il feed non supera {предел} secondi',
-  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 10, Голд — 33.': 'Con il piano {тариф} hai {предел} cubi tuoi alla volta, e sono occupati. Silver — 10, Gold — 33.',
+  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 11, Голд — 33.': 'Con il piano {тариф} hai {предел} cubi tuoi alla volta, e sono occupati. Silver — 11, Gold — 33.',
   '{что}: в Сильвер и Голд. Сейчас у тебя {тариф}.': '{что}: in Silver e Gold. Adesso hai {тариф}.',
   '{тариф} включается после оплаты у платёжного провайдера.': '{тариф} parte dopo il pagamento presso il fornitore.',
   'Нет котировок по паре {пара}': 'Nessuna quotazione per la coppia {пара}',
@@ -3150,6 +3150,9 @@ CW.словарь('it', {
 
   'Не хватает {н} CUBE. Можно заплатить криптой.': 'Mancano {н} CUBE. Puoi pagare in cripto.',
 
-  'в сети|блокчейн': 'sulla rete'
+  'в сети|блокчейн': 'sulla rete',
+
+  'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': '{занято} di {всего} GB occupati. Libera spazio o prendi un piano più grande.',
+  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Il piano {тариф} dà {предел} segnali al mese, e sono già pubblicati. Il contatore riparte il primo.'
 
 });

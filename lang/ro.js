@@ -2049,7 +2049,7 @@ CW.словарь('ro', {
   'Нужно {нужно} CUBE, на счету {есть}': 'Sunt necesari {нужно} CUBE, în cont sunt {есть}',
   'Файл больше {предел} МБ': 'Fișierul depășește {предел} MB',
   'Ролик в ленту не длиннее {предел} секунд': 'Un clip pentru flux nu e mai lung de {предел} secunde',
-  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 10, Голд — 33.': 'Pe abonamentul {тариф} ai {предел} cuburi ale tale deodată, și sunt ocupate. Silver — 10, Gold — 33.',
+  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 11, Голд — 33.': 'Pe abonamentul {тариф} ai {предел} cuburi ale tale deodată, și sunt ocupate. Silver — 11, Gold — 33.',
   '{что}: в Сильвер и Голд. Сейчас у тебя {тариф}.': '{что}: în Silver și Gold. Acum ai {тариф}.',
   '{тариф} включается после оплаты у платёжного провайдера.': '{тариф} pornește după plata la furnizorul de plăți.',
   'Нет котировок по паре {пара}': 'Nu există cotații pentru perechea {пара}',
@@ -3150,6 +3150,9 @@ CW.словарь('ro', {
 
   'Не хватает {н} CUBE. Можно заплатить криптой.': 'Lipsesc {н} CUBE. Poți plăti cu cripto.',
 
-  'в сети|блокчейн': 'în rețeaua'
+  'в сети|блокчейн': 'în rețeaua',
+
+  'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': 'Ocupat {занято} din {всего} GB. Eliberează loc sau ia un abonament mai mare.',
+  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Abonamentul {тариф} dă {предел} semnale pe lună, iar ele sunt deja publicate. Contorul se reia pe întâi.'
 
 });

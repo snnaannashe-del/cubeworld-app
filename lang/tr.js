@@ -2049,7 +2049,7 @@ CW.словарь('tr', {
   'Нужно {нужно} CUBE, на счету {есть}': '{нужно} CUBE gerekiyor, hesapta {есть} var',
   'Файл больше {предел} МБ': 'Dosya {предел} MB\'tan büyük',
   'Ролик в ленту не длиннее {предел} секунд': 'Akışa giren klip en fazla {предел} saniye',
-  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 10, Голд — 33.': '{тариф} paketinde aynı anda {предел} kendi küpün olur, ve onlar dolu. Silver — 10, Gold — 33.',
+  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 11, Голд — 33.': '{тариф} paketinde aynı anda {предел} kendi küpün olur, ve onlar dolu. Silver — 11, Gold — 33.',
   '{что}: в Сильвер и Голд. Сейчас у тебя {тариф}.': '{что}: Silver ve Gold\'da. Şu anda sende {тариф} var.',
   '{тариф} включается после оплаты у платёжного провайдера.': '{тариф} ödeme sağlayıcısındaki ödemeden sonra başlar.',
   'Нет котировок по паре {пара}': '{пара} çifti için kotasyon yok',
@@ -3150,6 +3150,9 @@ CW.словарь('tr', {
 
   'Не хватает {н} CUBE. Можно заплатить криптой.': '{н} CUBE eksik. Kripto ile ödeyebilirsin.',
 
-  'в сети|блокчейн': 'ağında'
+  'в сети|блокчейн': 'ağında',
+
+  'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': '{всего} GB’nin {занято} GB’si dolu. Yer aç ya da daha büyük bir tarife al.',
+  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': '{тариф} tarifesi ayda {предел} sinyal verir ve hepsi yayınlandı. Sayaç ayın birinde sıfırlanır.'
 
 });

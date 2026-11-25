@@ -2049,7 +2049,7 @@ CW.словарь('id', {
   'Нужно {нужно} CUBE, на счету {есть}': 'Perlu {нужно} CUBE, di akun ada {есть}',
   'Файл больше {предел} МБ': 'Berkas lebih besar dari {предел} MB',
   'Ролик в ленту не длиннее {предел} секунд': 'Klip untuk beranda tidak lebih dari {предел} detik',
-  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 10, Голд — 33.': 'Di paket {тариф} kamu punya {предел} kubus sendiri sekaligus, dan semuanya terpakai. Silver — 10, Gold — 33.',
+  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 11, Голд — 33.': 'Di paket {тариф} kamu punya {предел} kubus sendiri sekaligus, dan semuanya terpakai. Silver — 11, Gold — 33.',
   '{что}: в Сильвер и Голд. Сейчас у тебя {тариф}.': '{что}: di Silver dan Gold. Sekarang kamu punya {тариф}.',
   '{тариф} включается после оплаты у платёжного провайдера.': '{тариф} mulai setelah pembayaran di penyedia pembayaran.',
   'Нет котировок по паре {пара}': 'Tidak ada kuotasi untuk pasangan {пара}',
@@ -3150,6 +3150,9 @@ CW.словарь('id', {
 
   'Не хватает {н} CUBE. Можно заплатить криптой.': 'Kurang {н} CUBE. Bisa bayar dengan kripto.',
 
-  'в сети|блокчейн': 'di jaringan'
+  'в сети|блокчейн': 'di jaringan',
+
+  'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': 'Terpakai {занято} dari {всего} GB. Kosongkan tempat atau ambil paket lebih besar.',
+  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Paket {тариф} memberi {предел} sinyal sebulan, dan semuanya sudah dipasang. Hitungan kembali nol tanggal satu.'
 
 });

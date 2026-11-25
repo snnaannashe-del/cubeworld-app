@@ -2049,7 +2049,7 @@ CW.словарь('hu', {
   'Нужно {нужно} CUBE, на счету {есть}': '{нужно} CUBE kell, a számlán {есть} van',
   'Файл больше {предел} МБ': 'A fájl nagyobb {предел} MB-nál',
   'Ролик в ленту не длиннее {предел} секунд': 'A hírfolyamba szánt klip nem hosszabb {предел} másodpercnél',
-  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 10, Голд — 33.': 'A(z) {тариф} csomagban {предел} saját kockád lehet egyszerre, és foglaltak. Silver — 10, Gold — 33.',
+  'На тарифе {тариф} одновременно {предел} своих кубов, и они заняты. Сильвер — 11, Голд — 33.': 'A(z) {тариф} csomagban {предел} saját kockád lehet egyszerre, és foglaltak. Silver — 11, Gold — 33.',
   '{что}: в Сильвер и Голд. Сейчас у тебя {тариф}.': '{что}: Silverben és Goldban. Most {тариф} van nálad.',
   '{тариф} включается после оплаты у платёжного провайдера.': 'A(z) {тариф} a fizetés után indul a fizetési szolgáltatónál.',
   'Нет котировок по паре {пара}': 'Nincs jegyzés a(z) {пара} párra',
@@ -3150,6 +3150,9 @@ CW.словарь('hu', {
 
   'Не хватает {н} CUBE. Можно заплатить криптой.': 'Hiányzik {н} CUBE. Fizethetsz kriptóval.',
 
-  'в сети|блокчейн': 'hálózaton'
+  'в сети|блокчейн': 'hálózaton',
+
+  'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': '{всего} GB-ból {занято} foglalt. Szabadíts fel helyet, vagy válassz nagyobb csomagot.',
+  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'A {тариф} csomag {предел} jelzést ad havonta, és ezek már ki vannak téve. A számláló elsején nullázódik.'
 
 });
