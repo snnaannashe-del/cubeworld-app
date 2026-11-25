@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Маркетплейс · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-471">
-<link rel="stylesheet" href="shared/style.css?v=20261125-471">
-<link rel="stylesheet" href="shared/window.css?v=20261125-471">
-<link rel="stylesheet" href="shared/account.css?v=20261125-471">
-<script src="shared/theme.js?v=20261125-471"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261125-471">
+<link rel="icon" href="icons/favicon.svg?v=20261125-472">
+<link rel="stylesheet" href="shared/style.css?v=20261125-472">
+<link rel="stylesheet" href="shared/window.css?v=20261125-472">
+<link rel="stylesheet" href="shared/account.css?v=20261125-472">
+<script src="shared/theme.js?v=20261125-472"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-472">
 <!--
   МАРКЕТПЛЕЙС.
 
@@ -419,21 +419,21 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261125-471"></script>
-<script src="shared/ui.js?v=20261125-471"></script>
-<script src="shared/смайлы.js?v=20261125-471"></script>
-<script src="shared/лица.js?v=20261125-471"></script>
-<script src="shared/эфир.js?v=20261125-471"></script>
-<script src="shared/icons.js?v=20261125-471"></script>
-<script src="shared/window.js?v=20261125-471"></script>
-<script src="shared/продавец.js?v=20261125-471"></script>
-<script src="shared/корзина.js?v=20261125-471"></script>
-<script src="shared/без-копий.js?v=20261125-471"></script>
-<script src="shared/time.js?v=20261125-471"></script>
-<script src="shared/auth.js?v=20261125-471"></script>
-<script src="shared/lang.js?v=20261125-471"></script>
-<script src="shared/account.js?v=20261125-471"></script>
-<script src="shared/shell.js?v=20261125-471"></script>
+<script src="shared/api.js?v=20261125-472"></script>
+<script src="shared/ui.js?v=20261125-472"></script>
+<script src="shared/смайлы.js?v=20261125-472"></script>
+<script src="shared/лица.js?v=20261125-472"></script>
+<script src="shared/эфир.js?v=20261125-472"></script>
+<script src="shared/icons.js?v=20261125-472"></script>
+<script src="shared/window.js?v=20261125-472"></script>
+<script src="shared/продавец.js?v=20261125-472"></script>
+<script src="shared/корзина.js?v=20261125-472"></script>
+<script src="shared/без-копий.js?v=20261125-472"></script>
+<script src="shared/time.js?v=20261125-472"></script>
+<script src="shared/auth.js?v=20261125-472"></script>
+<script src="shared/lang.js?v=20261125-472"></script>
+<script src="shared/account.js?v=20261125-472"></script>
+<script src="shared/shell.js?v=20261125-472"></script>
 <script>
 'use strict';
 
@@ -821,26 +821,23 @@ function нарисоватьСписок() {
   списком.appendChild(сетка);
 }
 
-function пустое() {
-  var вещи = С.режим === 'shop';
-  var знак = 'сумка', слова;
+/* ── ПУСТАЯ ПОЛКА ──
+   Два слова и значок. Длинных объяснений здесь больше нет: Анна
+   попросила убрать. Человек и так видит, что полка пустая, а второй
+   строкой его держат в экране, из которого он уже уходит. Одно и то
+   же слово во всех разделах и на всех витринах — «Пока пусто».
 
-  if (С.вид === 'mine') {
-    знак = 'ящик';
-    слова = '' + CW.безопасно(Т('Ты пока ничего не выложил.')) + '<br>' + CW.безопасно(Т('Кнопка «Добавить товар» наверху.')) + '';
-  } else if (С.вид === 'bought') {
-    знак = 'тележка';
-    слова = Т('Ты пока ничего здесь не покупал.');
-  } else if (С.ищем) {
+   Поиск — единственное исключение: там важно, ЧТО именно не нашлось,
+   иначе человек решит, что сломалась вся витрина. */
+function пустое() {
+  var знак = 'сумка', слова = Т('Пока пусто');
+
+  if (С.вид === 'mine') знак = 'ящик';
+  else if (С.вид === 'bought') знак = 'тележка';
+  else if (С.ищем) {
     знак = 'лупа';
     слова = CW.безопасно(Т.с('По запросу «{что}» ничего не нашлось.', { что: С.ищем }));
-  } else if (вещи) {
-    слова = Т('Здесь пока пусто. Будь первым, нажми «Добавить товар».');
-  } else {
-    знак = 'дискета';
-    слова = CW.безопасно(Т('В этой категории пока пусто.')) + '<br>'
-          + CW.безопасно(Т('Выложи первым: витрина общая, товар увидят из всех кубов.'));
-  }
+  } else if (С.режим !== 'shop') знак = 'дискета';
 
   var у = ок('div', 'пусто-рынка');
   у.innerHTML = '<div class="зн">' + CW.значок(знак) + '</div>'
@@ -1022,9 +1019,13 @@ function мелочь(т) {
   if (С.режим === 'services') {
     if (т.term) части.push(т.term);
     if (т.place) части.push(имяМеста(т.place));
+    /* Страна и город идут сразу на карточке: человеку важно понять,
+       откуда везут и где делают, не открывая товар. */
+    if (т.geo) части.push(т.geo);
   } else if (С.режим === 'shop') {
     if (т.condition) части.push(имяСостояния(т.condition));
     if (т.qty > 1) части.push(Т.с('{н} шт', { н: т.qty }));
+    if (т.geo) части.push(т.geo);
   } else {
     if (т.files_count) части.push(т.files_count + ' ' + склонение(т.files_count, 'файл', 'файла', 'файлов'));
     if (т.sales) части.push(т.sales + ' ' + склонение(т.sales, 'продажа', 'продажи', 'продаж'));
@@ -1212,6 +1213,14 @@ function нарисоватьОписание(куда, т) {
     }).join('')));
   }
 
+  /* Страна и город — своей строкой и у вещи, и у услуги. Текст пишет
+     продавец, поэтому через машинку он не идёт: это его слова. */
+  if (т.geo) {
+    куда.appendChild(ок('div', 'замечание',
+      '<b>' + CW.безопасно(Т('Страна / Город.')) + '</b> '
+      + CW.безопасно(т.geo)));
+  }
+
   if (вещь && т.shipping) {
     куда.appendChild(ок('div', 'замечание',
       '<b>' + CW.безопасно(Т('Доставка.')) + '</b> '
@@ -1322,7 +1331,7 @@ function действия(т) {
   if (Number(т.price || 0) <= 0) {
     ряд.appendChild(ок('div', 'замечание',
       Т('У товара не проставлена цена, купить через площадку нельзя. ')
-      + 'Это вопрос к продавцу.'));
+      + Т('Это вопрос к продавцу.')));
     return ряд;
   }
   /* Площадка считает только в CUBE. Если продавец выставил цену в другой
@@ -1359,7 +1368,7 @@ function вКорзину(т, род) {
     } else {
       var о = CW.корзина.положить(т, род, 1);
       CW.сказать(о.беда ? о.беда
-               : (о.добавлено ? 'В корзине' : 'Уже в корзине'), 2500);
+               : (о.добавлено ? 'В корзине' : Т('Уже в корзине')), 2500);
     }
     нарисоватьВерх();
     нарисоватьТовар();
@@ -1406,7 +1415,7 @@ function переключитьПродажу(т) {
   CW.спросить(корень() + т.id + '/status', {
     способ: 'POST', тело: { status: куда }
   }).then(function () {
-    CW.сказать(куда === 'active' ? 'Товар снова на витрине' : 'Снят с витрины');
+    CW.сказать(куда === 'active' ? Т('Товар снова на витрине') : Т('Снят с витрины'));
     открыть(т.id);
   }).catch(function (е) { CW.сказать(е.message || 'Не вышло'); });
 }
@@ -1420,7 +1429,7 @@ function удалить(т) {
             CW.сказать(о && о.reason ? Т(о.reason) : Т('Удалён'));
             С.открыт = null; загрузить();
           })
-          .catch(function (е) { CW.сказать(е.message || 'Не вышло удалить'); });
+          .catch(function (е) { CW.сказать(е.message || Т('Не вышло удалить')); });
       } },
     { зн: CW.значок('стрелка', 16), подпись: Т('Оставить') }
   ]);
@@ -1611,7 +1620,7 @@ function заказ(з) {
   } else if (продавец && з.status === 'sent') {
     кнопки.appendChild(кнопка('Отменить', 'опасная', function () { двинуть(з, 'cancelled'); }));
   } else if (!продавец && з.status === 'paid') {
-    кнопки.appendChild(кнопка('Отменить заказ', 'опасная', function () { двинуть(з, 'cancelled'); }));
+    кнопки.appendChild(кнопка(Т('Отменить заказ'), 'опасная', function () { двинуть(з, 'cancelled'); }));
   } else if (!продавец && з.status === 'sent') {
     кнопки.appendChild(кнопка('Получил', 'главная', function () { двинуть(з, 'done'); }));
   }
@@ -1629,8 +1638,8 @@ function двинуть(з, куда) {
     CW.спросить('/shop/orders/' + з.id + '/status', {
       способ: 'POST', тело: { status: куда }
     }).then(function () {
-      CW.сказать({ sent: 'Отмечено: отправлено', done: 'Готово, деньги у продавца',
-                   cancelled: 'Заказ отменён, деньги вернулись' }[куда]);
+      CW.сказать({ sent: Т('Отмечено: отправлено'), done: Т('Готово, деньги у продавца'),
+                   cancelled: Т('Заказ отменён, деньги вернулись') }[куда]);
       /* Деньги шевельнулись — спрашиваем, сколько их теперь, и правим
          верхнюю полосу: своего счёта ответ о заказе не содержит. */
       CW.кто(true).then(function (я) { CW.обновитьБаланс(я && я.cube_balance); });

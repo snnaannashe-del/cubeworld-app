@@ -153,7 +153,7 @@ CW.модаль('cube-members', function (данные) {
       })
       .catch(function (е) {
         кн.disabled = false;
-        CW.сказать((е && е.message) || 'Не вышло убрать');
+        CW.сказать((е && е.message) || Т('Не вышло убрать'));
       });
   }
 

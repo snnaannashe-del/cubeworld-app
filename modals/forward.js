@@ -147,7 +147,7 @@ CW.модаль('forward', function (данные) {
       })
       .catch(function (е) {
         строка.disabled = false;
-        CW.сказать((е && е.message) || 'Не переслалось');
+        CW.сказать((е && е.message) || Т('Не переслалось'));
       });
   }
 

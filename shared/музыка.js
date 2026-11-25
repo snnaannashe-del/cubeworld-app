@@ -215,7 +215,7 @@
       if (!окно.navigator || !окно.navigator.mediaSession) return;
       var мс = окно.navigator.mediaSession;
       мс.metadata = new окно.MediaMetadata({
-        title: з.имя || 'Без имени', artist: 'CubeWorld'
+        title: з.имя || Т('Без имени'), artist: 'CubeWorld'
       });
       мс.setActionHandler('play', function () { CW.музыка.играть(з.id); });
       мс.setActionHandler('pause', function () { CW.музыка.пауза(); });
@@ -400,7 +400,7 @@
       var з = место(сейчас) >= 0 ? ПОЛКА[место(сейчас)] : null;
       return {
         id: сейчас,
-        имя: з ? (з.имя || 'Без имени') : '',
+        имя: з ? (з.имя || Т('Без имени')) : '',
         идёт: !!(звук && !звук.paused && !звук.ended),
         время: звук ? (звук.currentTime || 0) : 0,
         всего: (звук && isFinite(звук.duration)) ? (звук.duration || 0) : 0

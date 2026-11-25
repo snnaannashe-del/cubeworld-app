@@ -151,7 +151,7 @@ CW.модаль('new-file', function (данные) {
       }).catch(function (е) {
         кн.disabled = false;
         беда.textContent = е && е.сеть ? 'Нет связи с сервером'
-                                       : ((е && е.message) || 'Не создалось');
+                                       : ((е && е.message) || Т('Не создалось'));
       });
     }
   }

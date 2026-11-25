@@ -35,7 +35,7 @@
   CW.завестиКлюч = function () {
     return CW.спросить('/auth/generate', { способ: 'POST' })
       .then(function (д) {
-        if (!д || !д.key) throw CW.Беда(0, 'Сервер не выдал ключ');
+        if (!д || !д.key) throw CW.Беда(0, Т('Сервер не выдал ключ'));
         return д;      /* {key, key_prefix, key_type} */
       });
   };
