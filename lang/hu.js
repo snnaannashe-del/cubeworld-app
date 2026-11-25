@@ -3156,6 +3156,10 @@ CW.словарь('hu', {
   'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'A {тариф} csomag {предел} jelzést ad havonta, és ezek már ki vannak téve. A számláló elsején nullázódik.',
 
   'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Aktív nap beszámítva. A jutalmak és a szint a hálózati tevékenységeddel nőnek',
-  'Ещё {н} мин в сети, и день засчитается': 'Még {н} perc a hálózaton, és a nap beszámít'
+  'Ещё {н} мин в сети, и день засчитается': 'Még {н} perc a hálózaton, és a nap beszámít',
+
+  'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Szimulátor és gyakorlópálya a kriptotőzsdéhez. A megtakarított pénz megkeresett pénz. Tudásbázis és gyakorlás. Tanulj kereskedni a szimulátoron, teszt érmékkel és teszt pénzzel, és csak azután gondolj igazi tőzsdére.',
+  'В подписке': 'Az előfizetésben',
+  'Кварц пока не подключён': 'A Kvarc még nincs bekötve'
 
 });

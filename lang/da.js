@@ -3156,6 +3156,10 @@ CW.словарь('da', {
   'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Abonnementet {тариф} giver {предел} signaler om måneden, og de er allerede lagt ud. Tælleren nulstilles den første.',
 
   'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Aktiv dag talt. Belønninger og niveau vokser med din aktivitet i nettet',
-  'Ещё {н} мин в сети, и день засчитается': '{н} min mere online, så tæller dagen'
+  'Ещё {н} мин в сети, и день засчитается': '{н} min mere online, så tæller dagen',
+
+  'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'En simulator og øvebane for kryptobørsen. Sparede penge er tjente penge. Viden og øvelse. Lær at handle i simulatoren, med testmønter og testpenge, og tænk først derefter på en rigtig børs.',
+  'В подписке': 'Med i abonnementet',
+  'Кварц пока не подключён': 'Kvarc er ikke tilsluttet endnu'
 
 });

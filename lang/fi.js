@@ -3156,6 +3156,10 @@ CW.словарь('fi', {
   'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Tilaus {тариф} antaa {предел} signaalia kuussa, ja ne on jo julkaistu. Laskuri nollautuu ensimmäisenä päivänä.',
 
   'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Aktiivinen päivä laskettu. Palkkiot ja taso kasvavat verkossa olevan toimintasi mukaan',
-  'Ещё {н} мин в сети, и день засчитается': 'Vielä {н} min verkossa, niin päivä lasketaan'
+  'Ещё {н} мин в сети, и день засчитается': 'Vielä {н} min verkossa, niin päivä lasketaan',
+
+  'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Simulaattori ja harjoituskenttä kryptopörssiin. Säästetty raha on ansaittua rahaa. Tietopohja ja harjoittelu. Opi käymään kauppaa simulaattorissa, testikolikoilla ja testirahalla, ja vasta sitten mieti oikeaa pörssiä.',
+  'В подписке': 'Kuuluu tilaukseen',
+  'Кварц пока не подключён': 'Kvarcia ei ole vielä kytketty'
 
 });
