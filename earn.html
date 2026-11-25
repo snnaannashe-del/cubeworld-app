@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Заработать · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-487">
-<link rel="stylesheet" href="shared/style.css?v=20261125-487">
-<link rel="stylesheet" href="shared/window.css?v=20261125-487">
-<link rel="stylesheet" href="shared/account.css?v=20261125-487">
-<script src="shared/theme.js?v=20261125-487"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261125-487">
+<link rel="icon" href="icons/favicon.svg?v=20261125-488">
+<link rel="stylesheet" href="shared/style.css?v=20261125-488">
+<link rel="stylesheet" href="shared/window.css?v=20261125-488">
+<link rel="stylesheet" href="shared/account.css?v=20261125-488">
+<script src="shared/theme.js?v=20261125-488"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-488">
 <!--
   ЗАРАБОТАТЬ.
 
@@ -107,9 +107,10 @@
   width:4%; min-width:0; color:#22d3ee; border-radius:3px;
   position:relative; overflow:hidden;
   background:linear-gradient(90deg,var(--значок-цвет),var(--синий));
-  animation:майнинг-полнеет 50s linear infinite;
+  /* Ширину ставит разметка: это доля набранных минут, а не бег по кругу.
+     Переход нужен, чтобы при обновлении полоса доезжала, а не прыгала. */
+  transition:width .6s ease;
 }
-@keyframes майнинг-полнеет{ 0%{ width:4%; } 92%{ width:100%; } 100%{ width:100%; } }
 .майнинг .жёлоб i::after{
   content:''; position:absolute; top:0; bottom:0; left:0; width:45%;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
@@ -262,20 +263,20 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261125-487"></script>
-<script src="shared/ui.js?v=20261125-487"></script>
-<script src="shared/смайлы.js?v=20261125-487"></script>
-<script src="shared/лица.js?v=20261125-487"></script>
-<script src="shared/эфир.js?v=20261125-487"></script>
-<script src="shared/icons.js?v=20261125-487"></script>
-<script src="shared/window.js?v=20261125-487"></script>
-<script src="shared/без-копий.js?v=20261125-487"></script>
-<script src="shared/time.js?v=20261125-487"></script>
-<script src="shared/auth.js?v=20261125-487"></script>
-<script src="shared/lang.js?v=20261125-487"></script>
-<script src="shared/account.js?v=20261125-487"></script>
-<script src="shared/shell.js?v=20261125-487"></script>
-<script src="shared/wallets.js?v=20261125-487"></script>
+<script src="shared/api.js?v=20261125-488"></script>
+<script src="shared/ui.js?v=20261125-488"></script>
+<script src="shared/смайлы.js?v=20261125-488"></script>
+<script src="shared/лица.js?v=20261125-488"></script>
+<script src="shared/эфир.js?v=20261125-488"></script>
+<script src="shared/icons.js?v=20261125-488"></script>
+<script src="shared/window.js?v=20261125-488"></script>
+<script src="shared/без-копий.js?v=20261125-488"></script>
+<script src="shared/time.js?v=20261125-488"></script>
+<script src="shared/auth.js?v=20261125-488"></script>
+<script src="shared/lang.js?v=20261125-488"></script>
+<script src="shared/account.js?v=20261125-488"></script>
+<script src="shared/shell.js?v=20261125-488"></script>
+<script src="shared/wallets.js?v=20261125-488"></script>
 <script>
 'use strict';
 
@@ -395,28 +396,42 @@ function кускомМайнинг() {
   var счёт = С.сегодня.counters || {};
   var минут = Number(счёт.online_minutes || 0);
 
-  /* «онлайн» — это не красивое слово, а условие: сервер засчитывает
-     день только после min_minutes в сети. Само число минут на экран
-     больше не выводим, но признак «идёт или ждёт» остаётся честным. */
-  var порог = Number(С.сегодня.min_minutes || 0);
-  var вСети = минут >= порог;
+  /* Слово в скобках — «online», и одно на все языки. Человек, у которого
+     экран открыт, в сети прямо сейчас: ping уходит раз в минуту, сервер
+     его считает, и писать ему «ждёт» значит врать в глаза. «Ждёт» стояло
+     потому, что проверяли не присутствие, а набранный порог — а это
+     разные вещи, и путать их не надо.
 
-  /* Полоса ничего не считает — она идёт всегда, пока открыт экран, и
-     это нарочно: так же сделано в боевой. Если бы полоса показывала
-     минуты, она почти всё время стояла бы на месте, и «майнинг»
-     выглядел бы выключенным. */
+     Порог живёт ниже, в полосе и подписи: там и видно, сколько минут
+     осталось до засчитанного дня. */
+  var порог = Number(С.сегодня.min_minutes || 0);
+  var засчитан = !!С.сегодня.active;
+
+  /* Полоса теперь считает. Прежде она просто ехала по кругу пятьдесят
+     секунд — красиво и бессмысленно: человек не мог понять, работает
+     майнинг или нет, и сколько ещё быть в сети. Теперь это доля
+     набранных минут от порога, а когда день засчитан — полная полоса,
+     и блик по ней идёт дальше, чтобы было видно: майнинг не кончился. */
+  var доля = засчитан ? 100
+           : (порог > 0 ? Math.max(4, Math.min(100, Math.round(минут * 100 / порог)))
+                        : 4);
+  var осталось = Math.max(0, порог - минут);
+
+  var подпись = засчитан
+    ? Т('Активный день засчитан. Награды и уровень растут от вашей активности в сети')
+    : (осталось > 0
+        ? Т.с('Ещё {н} мин в сети, и день засчитается', { н: осталось })
+        : Т('Награды и уровень растут от вашей') + ' ' + Т('активности в сети'));
+
   return кусок('майнинг',
       '<div class="надпись">'
     +   '<span class="знак">' + CW.значок('кирка') + '</span>'
     +   CW.безопасно(Т('Майнинг Cube'))
-    +   '<span class="состояние">(' + CW.безопасно(Т(вСети ? 'онлайн' : 'ждёт')) + ')</span>'
+    +   '<span class="состояние">(online)</span>'
     + '</div>'
-    + '<div class="жёлоб"><i></i></div>'
-    /* Строка слово в слово как в боевой — и больше здесь ничего нет.
-       Минуты в сети отсюда убраны по просьбе: блок должен выглядеть
-       точно так же. */
-    + '<div class="под">' + CW.безопасно(Т('Награды и уровень растут от вашей')) + ' '
-    +   '' + CW.безопасно(Т('активности в сети')) + '</div>');
+    + '<div class="жёлоб"><i class="' + (засчитан ? 'полон' : 'растёт')
+    +   '" style="width:' + доля + '%"></i></div>'
+    + '<div class="под">' + CW.безопасно(подпись) + '</div>');
 }
 
 /* ── три числа ── */

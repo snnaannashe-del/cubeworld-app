@@ -3153,6 +3153,9 @@ CW.словарь('id', {
   'в сети|блокчейн': 'di jaringan',
 
   'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': 'Terpakai {занято} dari {всего} GB. Kosongkan tempat atau ambil paket lebih besar.',
-  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Paket {тариф} memberi {предел} sinyal sebulan, dan semuanya sudah dipasang. Hitungan kembali nol tanggal satu.'
+  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Paket {тариф} memberi {предел} sinyal sebulan, dan semuanya sudah dipasang. Hitungan kembali nol tanggal satu.',
+
+  'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Hari aktif dihitung. Hadiah dan tingkat tumbuh dari keaktifanmu di jaringan',
+  'Ещё {н} мин в сети, и день засчитается': '{н} menit lagi daring, hari akan dihitung'
 
 });

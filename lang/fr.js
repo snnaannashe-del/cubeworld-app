@@ -3156,6 +3156,9 @@ CW.словарь('fr', {
   'в сети|блокчейн': 'sur le réseau',
 
   'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': '{занято} Go sur {всего} occupés. Libère de la place ou prends un forfait plus grand.',
-  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Le forfait {тариф} donne {предел} signaux par mois, et ils sont déjà publiés. Le compteur repart le premier.'
+  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Le forfait {тариф} donne {предел} signaux par mois, et ils sont déjà publiés. Le compteur repart le premier.',
+
+  'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Journée active comptée. Les récompenses et le niveau montent avec ton activité sur le réseau',
+  'Ещё {н} мин в сети, и день засчитается': 'Encore {н} min en ligne et la journée compte'
 
 });

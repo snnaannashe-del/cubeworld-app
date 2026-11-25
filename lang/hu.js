@@ -3153,6 +3153,9 @@ CW.словарь('hu', {
   'в сети|блокчейн': 'hálózaton',
 
   'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': '{всего} GB-ból {занято} foglalt. Szabadíts fel helyet, vagy válassz nagyobb csomagot.',
-  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'A {тариф} csomag {предел} jelzést ad havonta, és ezek már ki vannak téve. A számláló elsején nullázódik.'
+  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'A {тариф} csomag {предел} jelzést ad havonta, és ezek már ki vannak téve. A számláló elsején nullázódik.',
+
+  'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Aktív nap beszámítva. A jutalmak és a szint a hálózati tevékenységeddel nőnek',
+  'Ещё {н} мин в сети, и день засчитается': 'Még {н} perc a hálózaton, és a nap beszámít'
 
 });

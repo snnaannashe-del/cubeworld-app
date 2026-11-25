@@ -3153,6 +3153,9 @@ CW.словарь('tr', {
   'в сети|блокчейн': 'ağında',
 
   'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': '{всего} GB’nin {занято} GB’si dolu. Yer aç ya da daha büyük bir tarife al.',
-  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': '{тариф} tarifesi ayda {предел} sinyal verir ve hepsi yayınlandı. Sayaç ayın birinde sıfırlanır.'
+  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': '{тариф} tarifesi ayda {предел} sinyal verir ve hepsi yayınlandı. Sayaç ayın birinde sıfırlanır.',
+
+  'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Etkin gün sayıldı. Ödüller ve düzey ağdaki etkinliğinizle büyür',
+  'Ещё {н} мин в сети, и день засчитается': '{н} dakika daha çevrimiçi, gün sayılacak'
 
 });

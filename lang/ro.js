@@ -3153,6 +3153,9 @@ CW.словарь('ro', {
   'в сети|блокчейн': 'în rețeaua',
 
   'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': 'Ocupat {занято} din {всего} GB. Eliberează loc sau ia un abonament mai mare.',
-  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Abonamentul {тариф} dă {предел} semnale pe lună, iar ele sunt deja publicate. Contorul se reia pe întâi.'
+  'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Abonamentul {тариф} dă {предел} semnale pe lună, iar ele sunt deja publicate. Contorul se reia pe întâi.',
+
+  'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Zi activă socotită. Răsplățile și nivelul cresc cu activitatea ta în rețea',
+  'Ещё {н} мин в сети, и день засчитается': 'Încă {н} min online și ziua se socotește'
 
 });
