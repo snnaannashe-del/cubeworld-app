@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Уведомления · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261124-467">
-<link rel="stylesheet" href="../shared/style.css?v=20261124-467">
-<link rel="stylesheet" href="../shared/window.css?v=20261124-467">
-<link rel="stylesheet" href="../shared/account.css?v=20261124-467">
-<script src="../shared/theme.js?v=20261124-467"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261124-467">
+<link rel="icon" href="../icons/favicon.svg?v=20261124-468">
+<link rel="stylesheet" href="../shared/style.css?v=20261124-468">
+<link rel="stylesheet" href="../shared/window.css?v=20261124-468">
+<link rel="stylesheet" href="../shared/account.css?v=20261124-468">
+<script src="../shared/theme.js?v=20261124-468"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261124-468">
 <!--
   УВЕДОМЛЕНИЯ — окно поверх программы. То же, что в меню под
   колокольчиком, но целым списком и с объяснением внизу.
@@ -80,20 +80,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261124-467"></script>
-<script src="../shared/ui.js?v=20261124-467"></script>
-<script src="../shared/смайлы.js?v=20261124-467"></script>
-<script src="../shared/лица.js?v=20261124-467"></script>
-<script src="../shared/эфир.js?v=20261124-467"></script>
-<script src="../shared/icons.js?v=20261124-467"></script>
-<script src="../shared/window.js?v=20261124-467"></script>
-<script src="../shared/без-копий.js?v=20261124-467"></script>
-<script src="../shared/time.js?v=20261124-467"></script>
-<script src="../shared/auth.js?v=20261124-467"></script>
-<script src="../shared/lang.js?v=20261124-467"></script>
-<script src="../shared/account.js?v=20261124-467"></script>
-<script src="../shared/вести.js?v=20261124-467"></script>
-<script src="../shared/shell.js?v=20261124-467"></script>
+<script src="../shared/api.js?v=20261124-468"></script>
+<script src="../shared/ui.js?v=20261124-468"></script>
+<script src="../shared/смайлы.js?v=20261124-468"></script>
+<script src="../shared/лица.js?v=20261124-468"></script>
+<script src="../shared/эфир.js?v=20261124-468"></script>
+<script src="../shared/icons.js?v=20261124-468"></script>
+<script src="../shared/window.js?v=20261124-468"></script>
+<script src="../shared/без-копий.js?v=20261124-468"></script>
+<script src="../shared/time.js?v=20261124-468"></script>
+<script src="../shared/auth.js?v=20261124-468"></script>
+<script src="../shared/lang.js?v=20261124-468"></script>
+<script src="../shared/account.js?v=20261124-468"></script>
+<script src="../shared/вести.js?v=20261124-468"></script>
+<script src="../shared/shell.js?v=20261124-468"></script>
 <script>
 'use strict';
 
@@ -170,7 +170,12 @@ function строка(с) {
   б.appendChild(ок('span', 'точка'));
 
   if (с.кружок) {
-    б.appendChild(CW.кружок({ размер: 40, снимок: с.кружок.снимок,
+    /* «кто» и «версия» тут когда-то не передавались, и у человека без
+       фотографии вместо цветного кружка с буквой был серый пустой
+       круг: цвет и букву кружок берёт из номера. */
+    б.appendChild(CW.кружок({ размер: 40, кто: с.кружок.кто,
+                              снимок: с.кружок.снимок,
+                              версия: с.кружок.версия,
                               значок: с.кружок.значок }));
   } else {
     var зн = ок('div', 'ок-знак');
@@ -214,7 +219,14 @@ function хвост() {
     + '<br><br>'
     + CW.безопасно(Т('Переписки здесь нет намеренно: кто что написал, видно в чатах. '
       + 'Лайков, комментариев и ответов пока нет: сервер их не записывает. '
-      + 'Как начнёт: они появятся здесь сами, отдельно делать ничего не придётся.'));
+      + 'Как начнёт: они появятся здесь сами, отдельно делать ничего не придётся.'))
+    /* Одно исключение, и о нём надо сказать прямо, иначе абзац выше
+       врёт: пропущенный звонок сюда попадает. Отдельной фразой, а не
+       внутри прежней, чтобы не трогать строку, уже переведённую на 27
+       языков. */
+    + '<br><br>'
+    + CW.безопасно(Т('Одно исключение — пропущенный звонок. Письмо дождётся, '
+      + 'а звонок уже кончился, и сказать о нём надо сразу.'));
   ОКНО.тело.appendChild(х);
 }
 

@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Портфолио · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261124-467">
-<link rel="stylesheet" href="../shared/style.css?v=20261124-467">
-<link rel="stylesheet" href="../shared/window.css?v=20261124-467">
-<link rel="stylesheet" href="../shared/account.css?v=20261124-467">
-<script src="../shared/theme.js?v=20261124-467"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261124-467">
+<link rel="icon" href="../icons/favicon.svg?v=20261124-468">
+<link rel="stylesheet" href="../shared/style.css?v=20261124-468">
+<link rel="stylesheet" href="../shared/window.css?v=20261124-468">
+<link rel="stylesheet" href="../shared/account.css?v=20261124-468">
+<script src="../shared/theme.js?v=20261124-468"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261124-468">
 <!--
   ПРОФИЛЬ: два окна.
 
@@ -310,20 +310,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261124-467"></script>
-<script src="../shared/ui.js?v=20261124-467"></script>
-<script src="../shared/смайлы.js?v=20261124-467"></script>
-<script src="../shared/лица.js?v=20261124-467"></script>
-<script src="../shared/эфир.js?v=20261124-467"></script>
-<script src="../shared/icons.js?v=20261124-467"></script>
-<script src="../shared/window.js?v=20261124-467"></script>
-<script src="../shared/продавец.js?v=20261124-467"></script>
-<script src="../shared/без-копий.js?v=20261124-467"></script>
-<script src="../shared/time.js?v=20261124-467"></script>
-<script src="../shared/auth.js?v=20261124-467"></script>
-<script src="../shared/lang.js?v=20261124-467"></script>
-<script src="../shared/account.js?v=20261124-467"></script>
-<script src="../shared/shell.js?v=20261124-467"></script>
+<script src="../shared/api.js?v=20261124-468"></script>
+<script src="../shared/ui.js?v=20261124-468"></script>
+<script src="../shared/смайлы.js?v=20261124-468"></script>
+<script src="../shared/лица.js?v=20261124-468"></script>
+<script src="../shared/эфир.js?v=20261124-468"></script>
+<script src="../shared/icons.js?v=20261124-468"></script>
+<script src="../shared/window.js?v=20261124-468"></script>
+<script src="../shared/продавец.js?v=20261124-468"></script>
+<script src="../shared/без-копий.js?v=20261124-468"></script>
+<script src="../shared/time.js?v=20261124-468"></script>
+<script src="../shared/auth.js?v=20261124-468"></script>
+<script src="../shared/lang.js?v=20261124-468"></script>
+<script src="../shared/account.js?v=20261124-468"></script>
+<script src="../shared/shell.js?v=20261124-468"></script>
 <script>
 'use strict';
 
@@ -1076,7 +1076,9 @@ function правкаОкно() {
 
   function нарисоватьUID() {
     переключить.innerHTML = зн(черновик.uidВидно ? 'глаз' : 'глазнет')
-      + '<span>' + (черновик.uidВидно ? 'Скрыть UID' : 'Показать UID') + '</span>';
+      + '<span>' + CW.безопасно(Т(черновик.uidВидно ? 'Скрыть UID'
+                                                    : 'Показать UID'))
+      + '</span>';
     строкаUID.style.display = черновик.uidВидно ? 'block' : 'none';
   }
   переключить.onclick = function () {
@@ -1188,8 +1190,9 @@ function правкаОкно() {
       гнездоОписания.appendChild(шапка);
       var опис = ок('div', 'пр-поле',
         '<textarea id="пр-опис" maxlength="' + предел + '" placeholder="'
-        + (вид === 'business' ? 'Опишите ваш бизнес'
-                              : 'Пару слов о себе…') + '"></textarea>');
+        + CW.безопасно(Т(вид === 'business' ? 'Опишите ваш бизнес'
+                                            : 'Пару слов о себе…'))
+        + '"></textarea>');
       гнездоОписания.appendChild(опис);
       var счётчик = ок('div', 'пр-счётчик');
       гнездоОписания.appendChild(счётчик);
