@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Переписка · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261125-501">
-<link rel="stylesheet" href="../shared/style.css?v=20261125-501">
-<link rel="stylesheet" href="../shared/window.css?v=20261125-501">
-<link rel="stylesheet" href="../shared/account.css?v=20261125-501">
-<script src="../shared/theme.js?v=20261125-501"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261125-501">
+<link rel="icon" href="../icons/favicon.svg?v=20261125-502">
+<link rel="stylesheet" href="../shared/style.css?v=20261125-502">
+<link rel="stylesheet" href="../shared/window.css?v=20261125-502">
+<link rel="stylesheet" href="../shared/account.css?v=20261125-502">
+<script src="../shared/theme.js?v=20261125-502"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261125-502">
 <!--
   ЛИЧНАЯ ПЕРЕПИСКА — окно поверх программы, со своим адресом.
 
@@ -30,24 +30,24 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261125-501"></script>
-<script src="../shared/ui.js?v=20261125-501"></script>
-<script src="../shared/смайлы.js?v=20261125-501"></script>
-<script src="../shared/лица.js?v=20261125-501"></script>
-<script src="../shared/эфир.js?v=20261125-501"></script>
-<script src="../shared/icons.js?v=20261125-501"></script>
-<script src="../shared/window.js?v=20261125-501"></script>
-<script src="../shared/без-копий.js?v=20261125-501"></script>
-<script src="../shared/time.js?v=20261125-501"></script>
-<script src="../shared/auth.js?v=20261125-501"></script>
-<script src="../shared/lang.js?v=20261125-501"></script>
-<script src="../shared/account.js?v=20261125-501"></script>
-<script src="../shared/shell.js?v=20261125-501"></script>
-<script src="../shared/вложения.js?v=20261125-501"></script>
-<script src="../shared/запись-голоса.js?v=20261125-501"></script>
-<script src="../shared/кнопки-сообщения.js?v=20261125-501"></script>
-<script src="../shared/кадр-ролика.js?v=20261125-501"></script>
-<script src="../shared/chat.js?v=20261125-501"></script>
+<script src="../shared/api.js?v=20261125-502"></script>
+<script src="../shared/ui.js?v=20261125-502"></script>
+<script src="../shared/смайлы.js?v=20261125-502"></script>
+<script src="../shared/лица.js?v=20261125-502"></script>
+<script src="../shared/эфир.js?v=20261125-502"></script>
+<script src="../shared/icons.js?v=20261125-502"></script>
+<script src="../shared/window.js?v=20261125-502"></script>
+<script src="../shared/без-копий.js?v=20261125-502"></script>
+<script src="../shared/time.js?v=20261125-502"></script>
+<script src="../shared/auth.js?v=20261125-502"></script>
+<script src="../shared/lang.js?v=20261125-502"></script>
+<script src="../shared/account.js?v=20261125-502"></script>
+<script src="../shared/shell.js?v=20261125-502"></script>
+<script src="../shared/вложения.js?v=20261125-502"></script>
+<script src="../shared/запись-голоса.js?v=20261125-502"></script>
+<script src="../shared/кнопки-сообщения.js?v=20261125-502"></script>
+<script src="../shared/кадр-ролика.js?v=20261125-502"></script>
+<script src="../shared/chat.js?v=20261125-502"></script>
 <script>
 'use strict';
 
@@ -553,9 +553,19 @@ function удалитьСообщение(м, своё) {
     сказать: Т('Сообщение удалено'),
     ещё: Т(своё ? 'Уйдёт у обоих.' : 'Уйдёт только у тебя.'),
     делать: function () {
+      /* Пыль и удаление идут разом: ждать ответа сервера, чтобы начать
+         рассыпать, значит показать человеку задержку сети. Перерисовку
+         делаем, когда кончилось и то и другое. Не вышло удалить —
+         всё равно перерисовываем: пузырь вернётся на место, и человек
+         увидит, что ничего не произошло. */
+      var пыль = (CW.нужен ? CW.нужен('shared/развеять.js') : Promise.reject())
+        .then(function () { return CW.развеятьПузырь(м.id); })
+        .catch(function () {});
       return CW.спросить('/dm/message/' + м.id + (своё ? '?both=1' : ''),
                          { способ: 'DELETE' })
-        .then(function () { П.обновить(); });
+        .then(function () { return пыль; })
+        .then(function () { П.обновить(); })
+        .catch(function (е) { П.обновить(); throw е; });
     }
   });
 }
