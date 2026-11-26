@@ -3186,4 +3186,19 @@ CW.словарь('sv', {
 
   /* не хватает и минут, и дела */
 
+
+  /* вид удаления в чатах */
+  'Вид удаления в чатах': 'Raderingseffekt i chattar',
+  'Виды не загрузились': 'Effekterna laddades inte',
+  'Воронка': 'Virvel',
+  'Исчезание': 'Uttoning',
+  'Нажмите вид — покажу': 'Tryck på en effekt — så visar jag den',
+  'Один вид на чаты, группы и избранное': 'En effekt för chattar, grupper och sparade',
+  'Осыпание': 'Smulning',
+  'Помехи': 'Störningar',
+  'Пыль': 'Damm',
+  'Сгорание': 'Förbränning',
+  'Так исчезнет удалённое': 'Så försvinner det raderade',
+  'Улёт': 'Svep bort',
+
 });

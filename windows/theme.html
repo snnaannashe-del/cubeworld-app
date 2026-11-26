@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Оформление · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261125-503">
-<link rel="stylesheet" href="../shared/style.css?v=20261125-503">
-<link rel="stylesheet" href="../shared/window.css?v=20261125-503">
-<link rel="stylesheet" href="../shared/account.css?v=20261125-503">
-<script src="../shared/theme.js?v=20261125-503"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261125-503">
+<link rel="icon" href="../icons/favicon.svg?v=20261126-504">
+<link rel="stylesheet" href="../shared/style.css?v=20261126-504">
+<link rel="stylesheet" href="../shared/window.css?v=20261126-504">
+<link rel="stylesheet" href="../shared/account.css?v=20261126-504">
+<script src="../shared/theme.js?v=20261126-504"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261126-504">
 <!--
   ОФОРМЛЕНИЕ — окно поверх программы.
   /home/claude/новое/cubeworld-app/windows/theme.html
@@ -363,6 +363,37 @@ html[data-цена-цвет="свой"] .оф-курс .цена{ color:var(--ц
 .оф-размер .А{ display:block; font-weight:600; margin-bottom:4px; }
 .оф-размер .п{ display:block; font-size:0.7333rem; }
 
+/* ── вид удаления ── */
+.оф-уд-поле{ padding:0 16px; }
+/* Образец, на котором показывают выбранный вид. Похож на строку
+   сообщения нарочно: человек должен увидеть, как исчезнет именно то,
+   что он удаляет, а не отвлечённый квадратик. */
+.оф-уд-образец{
+  display:flex; align-items:center; gap:10px; overflow:hidden;
+  border:1px solid var(--край); border-radius:14px;
+  padding:10px 12px; margin-bottom:10px;
+  background:rgba(128,128,128,.08);
+}
+.оф-уд-образец .кружок{
+  width:34px; height:34px; border-radius:50%; flex:none;
+  background:linear-gradient(135deg, var(--синий), #8b5cf6);
+}
+.оф-уд-образец b{ display:block; font-size:0.8rem; color:var(--текст); }
+.оф-уд-образец span{ display:block; font-size:0.7333rem; color:var(--текст2); }
+.оф-удаления{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+.оф-уд{
+  display:flex; align-items:center; justify-content:space-between; gap:6px;
+  border:1.5px solid var(--край); background:none; cursor:pointer;
+  border-radius:12px; padding:11px 10px; color:var(--текст2);
+  font-family:var(--шрифт); font-size:0.7333rem; text-align:left;
+}
+.оф-уд:hover{ border-color:var(--край2); color:var(--текст); }
+.оф-уд.выбран{ border-color:var(--синий); color:var(--синий); }
+/* Треугольник «покажу»: подсказывает, что плитка не только выбирает,
+   но и проигрывает вид на образце. */
+.оф-уд em{ font-style:normal; opacity:.45; font-size:0.6667rem; }
+.оф-уд.выбран em{ opacity:.9; }
+
 .оф-поле{ padding:0 16px; }
 .оф-строка{ padding:0 16px; }
 
@@ -383,21 +414,21 @@ html[data-цена-цвет="свой"] .оф-курс .цена{ color:var(--ц
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261125-503"></script>
-<script src="../shared/ui.js?v=20261125-503"></script>
-<script src="../shared/смайлы.js?v=20261125-503"></script>
-<script src="../shared/лица.js?v=20261125-503"></script>
-<script src="../shared/эфир.js?v=20261125-503"></script>
-<script src="../shared/icons.js?v=20261125-503"></script>
-<script src="../shared/window.js?v=20261125-503"></script>
-<script src="../shared/без-копий.js?v=20261125-503"></script>
-<script src="../shared/time.js?v=20261125-503"></script>
-<script src="../shared/auth.js?v=20261125-503"></script>
-<script src="../shared/lang.js?v=20261125-503"></script>
-<script src="../shared/account.js?v=20261125-503"></script>
-<script src="../shared/shell.js?v=20261125-503"></script>
-<script src="../shared/words.js?v=20261125-503"></script>
-<script src="../shared/голос.js?v=20261125-503"></script>
+<script src="../shared/api.js?v=20261126-504"></script>
+<script src="../shared/ui.js?v=20261126-504"></script>
+<script src="../shared/смайлы.js?v=20261126-504"></script>
+<script src="../shared/лица.js?v=20261126-504"></script>
+<script src="../shared/эфир.js?v=20261126-504"></script>
+<script src="../shared/icons.js?v=20261126-504"></script>
+<script src="../shared/window.js?v=20261126-504"></script>
+<script src="../shared/без-копий.js?v=20261126-504"></script>
+<script src="../shared/time.js?v=20261126-504"></script>
+<script src="../shared/auth.js?v=20261126-504"></script>
+<script src="../shared/lang.js?v=20261126-504"></script>
+<script src="../shared/account.js?v=20261126-504"></script>
+<script src="../shared/shell.js?v=20261126-504"></script>
+<script src="../shared/words.js?v=20261126-504"></script>
+<script src="../shared/голос.js?v=20261126-504"></script>
 <script>
 'use strict';
 
@@ -474,6 +505,7 @@ function нарисовать() {
   /* Размер текста и движение стоят внизу нарочно: это две вещи, которые
      выбирают один раз и больше не трогают. */
   раздел(т, Т('Размер текста'),   размерТекста(с));
+  раздел(т, Т('Вид удаления в чатах'), видУдаления(с));
   раздел(т, Т('Движение'),        движение(с));
   раздел(т, Т('Рекламы в блоках меню'), полкаСправа(с));
 
@@ -1211,6 +1243,67 @@ function размерТекста(с) {
       размеры.appendChild(б);
     });
   гнездо.appendChild(размеры);
+
+  return гнездо;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ВИД УДАЛЕНИЯ В ЧАТАХ
+
+   Десять видов, которыми исчезает удалённое сообщение. Выбор один на
+   три места сразу — чаты, группы и избранное: это не три разных
+   удаления, а одно, и настраивать его трижды было бы глупостью.
+
+   Плитка не только выбирает, но и ПОКАЗЫВАЕТ. Иначе выбирать не из
+   чего: по словам «воронка» и «растворение» никто не угадает, что
+   увидит, а проверять каждый вид, удаляя настоящие сообщения, —
+   издевательство. Поэтому над плитками стоит образец, похожий на
+   строку сообщения, и каждое нажатие проигрывает вид на нём.
+
+   Здесь нарочно НЕ зовётся `сменить`: она перерисовывает всё окно, и
+   образец исчез бы вместе с показом на первом же кадре. Запоминаем
+   выбор сами и сами переставляем подсветку — перерисовывать тут
+   нечего.
+
+   Сами виды живут в shared/развеять.js. Он приезжает по требованию:
+   пока человек не открыл этот раздел и ничего не удалил, файл
+   странице не нужен.
+   ═══════════════════════════════════════════════════════════════════════ */
+function видУдаления(с) {
+  var гнездо = ок('div', 'оф-уд-поле');
+  гнездо.appendChild(мелко(Т('Один вид на чаты, группы и избранное')));
+
+  var образец = ок('div', 'оф-уд-образец');
+  образец.innerHTML = '<div class="кружок"></div><div><b>'
+                    + CW.безопасно(Т('Так исчезнет удалённое')) + '</b><span>'
+                    + CW.безопасно(Т('Нажмите вид — покажу')) + '</span></div>';
+  гнездо.appendChild(образец);
+
+  var сетка = ок('div', 'оф-удаления');
+  гнездо.appendChild(сетка);
+
+  var выбран = с.удаление || 'пыль';
+  var занято = false;      /* пока показываем — второй показ не начинаем */
+
+  CW.нужен('shared/развеять.js').then(function () {
+    CW.видыУдаления().forEach(function (в) {
+      var б = ок('button', 'оф-уд' + (выбран === в.ключ ? ' выбран' : ''));
+      б.innerHTML = '<span>' + CW.безопасно(Т(в.имя)) + '</span><em>&#9654;</em>';
+      б.onclick = function () {
+        выбран = в.ключ;
+        О.поставить({ удаление: в.ключ });
+        var все = сетка.querySelectorAll('.оф-уд');
+        for (var и = 0; и < все.length; и++) все[и].classList.remove('выбран');
+        б.classList.add('выбран');
+        if (занято) return;
+        занято = true;
+        CW.развеятьПоказ(образец, в.ключ).then(function () { занято = false; });
+      };
+      сетка.appendChild(б);
+    });
+  }).catch(function () {
+    гнездо.appendChild(мелко(Т('Виды не загрузились')));
+  });
 
   return гнездо;
 }

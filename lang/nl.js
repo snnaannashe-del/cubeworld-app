@@ -3186,4 +3186,19 @@ CW.словарь('nl', {
 
   /* не хватает и минут, и дела */
 
+
+  /* вид удаления в чатах */
+  'Вид удаления в чатах': 'Verwijderstijl in chats',
+  'Виды не загрузились': 'Stijlen niet geladen',
+  'Воронка': 'Draaikolk',
+  'Исчезание': 'Vervagen',
+  'Нажмите вид — покажу': 'Tik op een stijl — ik laat hem zien',
+  'Один вид на чаты, группы и избранное': 'Eén stijl voor chats, groepen en bewaard',
+  'Осыпание': 'Verkruimelen',
+  'Помехи': 'Storing',
+  'Пыль': 'Stof',
+  'Сгорание': 'Verbranden',
+  'Так исчезнет удалённое': 'Zo verdwijnt wat je verwijdert',
+  'Улёт': 'Wegvegen',
+
 });

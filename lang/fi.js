@@ -3186,4 +3186,19 @@ CW.словарь('fi', {
 
   /* не хватает и минут, и дела */
 
+
+  /* вид удаления в чатах */
+  'Вид удаления в чатах': 'Poiston tyyli keskusteluissa',
+  'Виды не загрузились': 'Tyylit eivät latautuneet',
+  'Воронка': 'Pyörre',
+  'Исчезание': 'Häivytys',
+  'Нажмите вид — покажу': 'Napauta tyyliä — näytän sen',
+  'Один вид на чаты, группы и избранное': 'Yksi tyyli keskusteluihin, ryhmiin ja tallennettuihin',
+  'Осыпание': 'Murentuminen',
+  'Помехи': 'Häiriö',
+  'Пыль': 'Pöly',
+  'Сгорание': 'Palaminen',
+  'Так исчезнет удалённое': 'Näin poistettu katoaa',
+  'Улёт': 'Pyyhkäisy',
+
 });

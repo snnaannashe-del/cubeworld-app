@@ -3308,4 +3308,19 @@ CW.словарь('en', {
 
   /* не хватает и минут, и дела */
 
+
+  /* вид удаления в чатах */
+  'Вид удаления в чатах': 'Delete animation in chats',
+  'Виды не загрузились': 'Styles did not load',
+  'Воронка': 'Vortex',
+  'Исчезание': 'Fade out',
+  'Нажмите вид — покажу': 'Tap a style — I will show it',
+  'Один вид на чаты, группы и избранное': 'One style for chats, groups and saved',
+  'Осыпание': 'Crumble',
+  'Помехи': 'Glitch',
+  'Пыль': 'Dust',
+  'Сгорание': 'Burn',
+  'Так исчезнет удалённое': 'This is how deleted messages vanish',
+  'Улёт': 'Swipe away',
+
 });

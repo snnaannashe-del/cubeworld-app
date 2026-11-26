@@ -3186,4 +3186,19 @@ CW.словарь('ro', {
 
   /* не хватает и минут, и дела */
 
+
+  /* вид удаления в чатах */
+  'Вид удаления в чатах': 'Stilul de ștergere în conversații',
+  'Виды не загрузились': 'Stilurile nu s-au încărcat',
+  'Воронка': 'Vârtej',
+  'Исчезание': 'Estompare',
+  'Нажмите вид — покажу': 'Atinge un stil — ți-l arăt',
+  'Один вид на чаты, группы и избранное': 'Un singur stil pentru conversații, grupuri și salvate',
+  'Осыпание': 'Fărâmițare',
+  'Помехи': 'Perturbări',
+  'Пыль': 'Praf',
+  'Сгорание': 'Ardere',
+  'Так исчезнет удалённое': 'Așa dispare ce ai șters',
+  'Улёт': 'Alunecare',
+
 });

@@ -3186,4 +3186,19 @@ CW.словарь('hu', {
 
   /* не хватает и минут, и дела */
 
+
+  /* вид удаления в чатах */
+  'Вид удаления в чатах': 'Törlés módja a csevegésekben',
+  'Виды не загрузились': 'A módok nem töltődtek be',
+  'Воронка': 'Örvény',
+  'Исчезание': 'Elhalványulás',
+  'Нажмите вид — покажу': 'Érintsen meg egy módot — megmutatom',
+  'Один вид на чаты, группы и избранное': 'Egy mód a csevegésekhez, csoportokhoz és mentettekhez',
+  'Осыпание': 'Omlás',
+  'Помехи': 'Zavar',
+  'Пыль': 'Por',
+  'Сгорание': 'Elégés',
+  'Так исчезнет удалённое': 'Így tűnik el a törölt',
+  'Улёт': 'Elsöprés',
+
 });

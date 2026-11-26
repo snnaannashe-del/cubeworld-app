@@ -3186,4 +3186,19 @@ CW.словарь('id', {
 
   /* не хватает и минут, и дела */
 
+
+  /* вид удаления в чатах */
+  'Вид удаления в чатах': 'Gaya penghapusan di obrolan',
+  'Виды не загрузились': 'Gaya gagal dimuat',
+  'Воронка': 'Pusaran',
+  'Исчезание': 'Memudar',
+  'Нажмите вид — покажу': 'Ketuk sebuah gaya — akan saya tunjukkan',
+  'Один вид на чаты, группы и избранное': 'Satu gaya untuk obrolan, grup, dan tersimpan',
+  'Осыпание': 'Runtuh',
+  'Помехи': 'Gangguan',
+  'Пыль': 'Debu',
+  'Сгорание': 'Terbakar',
+  'Так исчезнет удалённое': 'Begini pesan terhapus menghilang',
+  'Улёт': 'Usap pergi',
+
 });

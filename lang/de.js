@@ -3195,4 +3195,19 @@ CW.словарь('de', {
 
   /* не хватает и минут, и дела */
 
+
+  /* вид удаления в чатах */
+  'Вид удаления в чатах': 'Löschanimation in Chats',
+  'Виды не загрузились': 'Arten nicht geladen',
+  'Воронка': 'Strudel',
+  'Исчезание': 'Ausblenden',
+  'Нажмите вид — покажу': 'Art antippen — ich zeige sie',
+  'Один вид на чаты, группы и избранное': 'Eine Art für Chats, Gruppen und Favoriten',
+  'Осыпание': 'Zerbröseln',
+  'Помехи': 'Störung',
+  'Пыль': 'Staub',
+  'Сгорание': 'Verbrennen',
+  'Так исчезнет удалённое': 'So verschwindet Gelöschtes',
+  'Улёт': 'Wegwischen',
+
 });

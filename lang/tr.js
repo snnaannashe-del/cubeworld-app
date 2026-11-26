@@ -3186,4 +3186,19 @@ CW.словарь('tr', {
 
   /* не хватает и минут, и дела */
 
+
+  /* вид удаления в чатах */
+  'Вид удаления в чатах': 'Sohbetlerde silme biçimi',
+  'Виды не загрузились': 'Biçimler yüklenmedi',
+  'Воронка': 'Girdap',
+  'Исчезание': 'Solma',
+  'Нажмите вид — покажу': 'Bir biçime dokunun — göstereyim',
+  'Один вид на чаты, группы и избранное': 'Sohbetler, gruplar ve kaydedilenler için tek biçim',
+  'Осыпание': 'Ufalanma',
+  'Помехи': 'Parazit',
+  'Пыль': 'Toz',
+  'Сгорание': 'Yanma',
+  'Так исчезнет удалённое': 'Silinen böyle kaybolur',
+  'Улёт': 'Kaydırma',
+
 });
