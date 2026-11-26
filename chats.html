@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Чаты · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-499">
-<link rel="stylesheet" href="shared/style.css?v=20261125-499">
-<link rel="stylesheet" href="shared/window.css?v=20261125-499">
-<link rel="stylesheet" href="shared/account.css?v=20261125-499">
-<script src="shared/theme.js?v=20261125-499"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261125-499">
+<link rel="icon" href="icons/favicon.svg?v=20261125-500">
+<link rel="stylesheet" href="shared/style.css?v=20261125-500">
+<link rel="stylesheet" href="shared/window.css?v=20261125-500">
+<link rel="stylesheet" href="shared/account.css?v=20261125-500">
+<script src="shared/theme.js?v=20261125-500"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-500">
 <!--
   ЧАТЫ.
 
@@ -186,25 +186,25 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261125-499"></script>
-<script src="shared/ui.js?v=20261125-499"></script>
-<script src="shared/смайлы.js?v=20261125-499"></script>
-<script src="shared/лица.js?v=20261125-499"></script>
-<script src="shared/эфир.js?v=20261125-499"></script>
-<script src="shared/icons.js?v=20261125-499"></script>
-<script src="shared/window.js?v=20261125-499"></script>
-<script src="shared/без-копий.js?v=20261125-499"></script>
-<script src="shared/time.js?v=20261125-499"></script>
-<script src="shared/auth.js?v=20261125-499"></script>
-<script src="shared/lang.js?v=20261125-499"></script>
-<script src="shared/account.js?v=20261125-499"></script>
-<script src="shared/shell.js?v=20261125-499"></script>
-<script src="shared/вложения.js?v=20261125-499"></script>
-<script src="shared/запись-голоса.js?v=20261125-499"></script>
-<script src="shared/кнопки-сообщения.js?v=20261125-499"></script>
-<script src="shared/chat.js?v=20261125-499"></script>
-<script src="shared/shelf.js?v=20261125-499"></script>
-<script src="shared/архив.js?v=20261125-499"></script>
+<script src="shared/api.js?v=20261125-500"></script>
+<script src="shared/ui.js?v=20261125-500"></script>
+<script src="shared/смайлы.js?v=20261125-500"></script>
+<script src="shared/лица.js?v=20261125-500"></script>
+<script src="shared/эфир.js?v=20261125-500"></script>
+<script src="shared/icons.js?v=20261125-500"></script>
+<script src="shared/window.js?v=20261125-500"></script>
+<script src="shared/без-копий.js?v=20261125-500"></script>
+<script src="shared/time.js?v=20261125-500"></script>
+<script src="shared/auth.js?v=20261125-500"></script>
+<script src="shared/lang.js?v=20261125-500"></script>
+<script src="shared/account.js?v=20261125-500"></script>
+<script src="shared/shell.js?v=20261125-500"></script>
+<script src="shared/вложения.js?v=20261125-500"></script>
+<script src="shared/запись-голоса.js?v=20261125-500"></script>
+<script src="shared/кнопки-сообщения.js?v=20261125-500"></script>
+<script src="shared/chat.js?v=20261125-500"></script>
+<script src="shared/shelf.js?v=20261125-500"></script>
+<script src="shared/архив.js?v=20261125-500"></script>
 <script>
 'use strict';
 
@@ -495,9 +495,17 @@ function убратьПоДолгому(узел, п) {
 
   function спросить() {
     if (!CW.архив) return;
-    CW.архив.положить(п.peer_id, CW.имяЧеловека(п));
-    CW.сказать(Т('Убрано в архив'));
-    показатьСписок();
+    /* Строка уходит в архив не щелчком, а пылью: человек видит, ЧТО
+       именно он убрал. Данные трогаем после — иначе список
+       перерисуется раньше, чем пыль улетит. */
+    (CW.нужен ? CW.нужен('shared/развеять.js') : Promise.reject())
+      .then(function () { return CW.развеять(узел); })
+      .catch(function () {})
+      .then(function () {
+        CW.архив.положить(п.peer_id, CW.имяЧеловека(п));
+        CW.сказать(Т('Убрано в архив'));
+        показатьСписок();
+      });
   }
 }
 
