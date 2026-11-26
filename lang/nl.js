@@ -122,7 +122,7 @@ CW.словарь('nl', {
 'Движений по счёту ещё не было.': 'Er zijn nog geen mutaties op de rekening.',
 'День и ночь': 'Dag en nacht',
 'Держим солнце впереди, у края дня': 'Met de zon vooruit, op de rand van de dag',
-'Для тебя': 'Voor jou',
+'Рек': 'Rec',
 'До': 'Tot',
 'Добавить': 'Toevoegen',
 'Добавить ещё': 'Nog een toevoegen',
@@ -3152,8 +3152,6 @@ CW.словарь('nl', {
   'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': '{занято} van {всего} GB vol. Maak ruimte vrij of neem een groter tarief.',
   'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Het tarief {тариф} geeft {предел} signalen per maand, en die zijn al geplaatst. De teller begint op de eerste opnieuw.',
 
-  'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Actieve dag geteld. Beloningen en niveau groeien met je activiteit op het netwerk',
-  'Ещё {н} мин в сети, и день засчитается': 'Nog {н} min online en de dag telt',
 
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Een simulator en oefenterrein voor de cryptobeurs. Gespaard geld is verdiend geld. Kennis en oefening. Leer handelen op de simulator, met testmunten en testgeld, en denk pas daarna aan een echte beurs.',
   'В подписке': 'In het abonnement',
@@ -3184,10 +3182,8 @@ CW.словарь('nl', {
 
 
   /* минуты набраны, но нужно дело */
-  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'De minuten zijn er. Nog één ding: een bericht, een post of een reactie',
 
 
   /* не хватает и минут, и дела */
-  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': 'Nog {н} min online en één ding: een bericht, een post of een reactie',
 
 });

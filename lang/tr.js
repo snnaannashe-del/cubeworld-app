@@ -122,7 +122,7 @@ CW.словарь('tr', {
 'Движений по счёту ещё не было.': 'Hesapta henüz hareket olmadı.',
 'День и ночь': 'Gündüz ve gece',
 'Держим солнце впереди, у края дня': 'Güneş önümüzde, günün kıyısında',
-'Для тебя': 'Senin için',
+'Рек': 'Rec',
 'До': 'Bitiş',
 'Добавить': 'Ekle',
 'Добавить ещё': 'Bir tane daha ekle',
@@ -3152,8 +3152,6 @@ CW.словарь('tr', {
   'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': '{всего} GB’nin {занято} GB’si dolu. Yer aç ya da daha büyük bir tarife al.',
   'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': '{тариф} tarifesi ayda {предел} sinyal verir ve hepsi yayınlandı. Sayaç ayın birinde sıfırlanır.',
 
-  'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Etkin gün sayıldı. Ödüller ve düzey ağdaki etkinliğinizle büyür',
-  'Ещё {н} мин в сети, и день засчитается': '{н} dakika daha çevrimiçi, gün sayılacak',
 
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Kripto borsası için simülatör ve alıştırma alanı. Korunan para, kazanılan paradır. Bilgi tabanı ve uygulama. Önce simülatörde, test paralarıyla alım satımı öğren, gerçek borsayı ancak sonra düşün.',
   'В подписке': 'Abonelikte',
@@ -3184,10 +3182,8 @@ CW.словарь('tr', {
 
 
   /* минуты набраны, но нужно дело */
-  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Dakikalar tamam. Geriye bir iş kaldı: bir mesaj, bir gönderi ya da bir tepki',
 
 
   /* не хватает и минут, и дела */
-  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': '{н} dakika daha çevrimiçi ve bir iş: bir mesaj, bir gönderi ya da bir tepki',
 
 });

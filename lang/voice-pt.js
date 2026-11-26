@@ -98,8 +98,8 @@ CW.словарь('pt', {
     'O separador Shorts',
   'Вкладка «Посты»':
     'O separador Publicações',
-  'Вкладка «Для тебя»':
-    'O separador Para ti',
+  'Вкладка «Рек»':
+    'O separador Rec',
   'Вкладка «Топ»':
     'O separador Top',
   'Следующая запись':

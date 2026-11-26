@@ -98,8 +98,8 @@ CW.словарь('it', {
     'La scheda Shorts',
   'Вкладка «Посты»':
     'La scheda Post',
-  'Вкладка «Для тебя»':
-    'La scheda Per te',
+  'Вкладка «Рек»':
+    'La scheda Rec',
   'Вкладка «Топ»':
     'La scheda Top',
   'Следующая запись':

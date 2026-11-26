@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Лента · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-496">
-<link rel="stylesheet" href="shared/style.css?v=20261125-496">
-<link rel="stylesheet" href="shared/window.css?v=20261125-496">
-<link rel="stylesheet" href="shared/account.css?v=20261125-496">
-<script src="shared/theme.js?v=20261125-496"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261125-496">
+<link rel="icon" href="icons/favicon.svg?v=20261125-498">
+<link rel="stylesheet" href="shared/style.css?v=20261125-498">
+<link rel="stylesheet" href="shared/window.css?v=20261125-498">
+<link rel="stylesheet" href="shared/account.css?v=20261125-498">
+<script src="shared/theme.js?v=20261125-498"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-498">
 <!--
   ЛЕНТА.
 
@@ -367,20 +367,20 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261125-496"></script>
-<script src="shared/ui.js?v=20261125-496"></script>
-<script src="shared/смайлы.js?v=20261125-496"></script>
-<script src="shared/лица.js?v=20261125-496"></script>
-<script src="shared/эфир.js?v=20261125-496"></script>
-<script src="shared/icons.js?v=20261125-496"></script>
-<script src="shared/window.js?v=20261125-496"></script>
-<script src="shared/без-копий.js?v=20261125-496"></script>
-<script src="shared/time.js?v=20261125-496"></script>
-<script src="shared/auth.js?v=20261125-496"></script>
-<script src="shared/lang.js?v=20261125-496"></script>
-<script src="shared/account.js?v=20261125-496"></script>
-<script src="shared/shell.js?v=20261125-496"></script>
-<script src="shared/shelf.js?v=20261125-496"></script>
+<script src="shared/api.js?v=20261125-498"></script>
+<script src="shared/ui.js?v=20261125-498"></script>
+<script src="shared/смайлы.js?v=20261125-498"></script>
+<script src="shared/лица.js?v=20261125-498"></script>
+<script src="shared/эфир.js?v=20261125-498"></script>
+<script src="shared/icons.js?v=20261125-498"></script>
+<script src="shared/window.js?v=20261125-498"></script>
+<script src="shared/без-копий.js?v=20261125-498"></script>
+<script src="shared/time.js?v=20261125-498"></script>
+<script src="shared/auth.js?v=20261125-498"></script>
+<script src="shared/lang.js?v=20261125-498"></script>
+<script src="shared/account.js?v=20261125-498"></script>
+<script src="shared/shell.js?v=20261125-498"></script>
+<script src="shared/shelf.js?v=20261125-498"></script>
 <script>
 'use strict';
 
@@ -396,7 +396,10 @@ CW.оболочка('feed').then(function (место) {
 var ВКЛАДКИ = [
   { имя: 'shorts', подпись: Т('Шортс'),    вид: 'short' },
   { имя: 'post',   подпись: Т('Посты'),    вид: 'пост'  },
-  { имя: 'rec',    подпись: Т('Для тебя'), вид: 'все'   },
+  /* «Рек» — сокращение от «рекомендации», так назвала Анна. На других
+     языках стоит «Rec»: вкладке нужно короткое слово, и переводить его
+     не надо, как CUBE и Key 2. */
+  { имя: 'rec',    подпись: Т('Рек'), вид: 'все'   },
   { имя: 'top',    подпись: Т('Топ'),      вид: 'все'   }
 ];
 

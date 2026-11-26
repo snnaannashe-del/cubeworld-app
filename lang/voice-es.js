@@ -98,8 +98,8 @@ CW.словарь('es', {
     'La pestaña Shorts',
   'Вкладка «Посты»':
     'La pestaña Publicaciones',
-  'Вкладка «Для тебя»':
-    'La pestaña Para ti',
+  'Вкладка «Рек»':
+    'La pestaña Rec',
   'Вкладка «Топ»':
     'La pestaña Top',
   'Следующая запись':

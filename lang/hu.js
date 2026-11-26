@@ -122,7 +122,7 @@ CW.словарь('hu', {
 'Движений по счёту ещё не было.': 'A számlán még nem volt mozgás.',
 'День и ночь': 'Nap és éjszaka',
 'Держим солнце впереди, у края дня': 'A napot elöl tartjuk, a nappal szélén',
-'Для тебя': 'Neked',
+'Рек': 'Rec',
 'До': 'Eddig',
 'Добавить': 'Hozzáadás',
 'Добавить ещё': 'Még egyet',
@@ -3152,8 +3152,6 @@ CW.словарь('hu', {
   'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': '{всего} GB-ból {занято} foglalt. Szabadíts fel helyet, vagy válassz nagyobb csomagot.',
   'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'A {тариф} csomag {предел} jelzést ad havonta, és ezek már ki vannak téve. A számláló elsején nullázódik.',
 
-  'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Aktív nap beszámítva. A jutalmak és a szint a hálózati tevékenységeddel nőnek',
-  'Ещё {н} мин в сети, и день засчитается': 'Még {н} perc a hálózaton, és a nap beszámít',
 
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Szimulátor és gyakorlópálya a kriptotőzsdéhez. A megtakarított pénz megkeresett pénz. Tudásbázis és gyakorlás. Tanulj kereskedni a szimulátoron, teszt érmékkel és teszt pénzzel, és csak azután gondolj igazi tőzsdére.',
   'В подписке': 'Az előfizetésben',
@@ -3184,10 +3182,8 @@ CW.словарь('hu', {
 
 
   /* минуты набраны, но нужно дело */
-  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'A percek megvannak. Egy dolog maradt: egy üzenet, egy bejegyzés vagy egy reakció',
 
 
   /* не хватает и минут, и дела */
-  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': 'Még {н} perc online és egy dolog: egy üzenet, egy bejegyzés vagy egy reakció',
 
 });

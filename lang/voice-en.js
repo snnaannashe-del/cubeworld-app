@@ -83,7 +83,7 @@ CW.словарь('en', {
   'Свайп: обмен': 'Swap: exchange',
   'Вкладка «Шортс»': 'The Shorts tab',
   'Вкладка «Посты»': 'The Posts tab',
-  'Вкладка «Для тебя»': 'The For you tab',
+  'Вкладка «Рек»': 'The Rec tab',
   'Вкладка «Топ»': 'The Top tab',
   'Следующая запись': 'Next post',
   'Предыдущая запись': 'Previous post',

@@ -98,8 +98,8 @@ CW.словарь('de', {
     'Der Tab Shorts',
   'Вкладка «Посты»':
     'Der Tab Beiträge',
-  'Вкладка «Для тебя»':
-    'Der Tab Für dich',
+  'Вкладка «Рек»':
+    'Der Tab Rec',
   'Вкладка «Топ»':
     'Der Tab Top',
   'Следующая запись':

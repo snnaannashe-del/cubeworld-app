@@ -98,8 +98,8 @@ CW.словарь('fr', {
     'L’onglet Shorts',
   'Вкладка «Посты»':
     'L’onglet Publications',
-  'Вкладка «Для тебя»':
-    'L’onglet Pour toi',
+  'Вкладка «Рек»':
+    'L’onglet Rec',
   'Вкладка «Топ»':
     'L’onglet Top',
   'Следующая запись':

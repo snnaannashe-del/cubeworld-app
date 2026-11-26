@@ -98,8 +98,8 @@ CW.словарь('fi', {
     'Shorts-välilehti',
   'Вкладка «Посты»':
     'Julkaisut-välilehti',
-  'Вкладка «Для тебя»':
-    'Sinulle-välilehti',
+  'Вкладка «Рек»':
+    'Rec-välilehti',
   'Вкладка «Топ»':
     'Top-välilehti',
   'Следующая запись':

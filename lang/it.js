@@ -122,7 +122,7 @@ CW.словарь('it', {
 'Движений по счёту ещё не было.': 'Non ci sono ancora movimenti sul conto.',
 'День и ночь': 'Giorno e notte',
 'Держим солнце впереди, у края дня': 'Con il sole davanti, sul bordo del giorno',
-'Для тебя': 'Per te',
+'Рек': 'Rec',
 'До': 'Fino a',
 'Добавить': 'Aggiungi',
 'Добавить ещё': 'Aggiungine un’altra',
@@ -3152,8 +3152,6 @@ CW.словарь('it', {
   'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': '{занято} di {всего} GB occupati. Libera spazio o prendi un piano più grande.',
   'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Il piano {тариф} dà {предел} segnali al mese, e sono già pubblicati. Il contatore riparte il primo.',
 
-  'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Giornata attiva contata. Premi e livello crescono con la tua attività in rete',
-  'Ещё {н} мин в сети, и день засчитается': 'Ancora {н} min in rete e la giornata conta',
 
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Un simulatore e un campo di pratica per la borsa cripto. Il denaro risparmiato è denaro guadagnato. Conoscenza e pratica. Impara a fare trading sul simulatore, con monete e denaro di prova, e solo dopo pensa a uscire su una borsa vera.',
   'В подписке': 'Nell\'abbonamento',
@@ -3184,10 +3182,8 @@ CW.словарь('it', {
 
 
   /* минуты набраны, но нужно дело */
-  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'I minuti ci sono. Manca una cosa: un messaggio, un post o una reazione',
 
 
   /* не хватает и минут, и дела */
-  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': 'Ancora {н} min online e una cosa: un messaggio, un post o una reazione',
 
 });

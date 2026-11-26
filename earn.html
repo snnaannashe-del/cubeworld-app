@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Заработать · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-496">
-<link rel="stylesheet" href="shared/style.css?v=20261125-496">
-<link rel="stylesheet" href="shared/window.css?v=20261125-496">
-<link rel="stylesheet" href="shared/account.css?v=20261125-496">
-<script src="shared/theme.js?v=20261125-496"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261125-496">
+<link rel="icon" href="icons/favicon.svg?v=20261125-498">
+<link rel="stylesheet" href="shared/style.css?v=20261125-498">
+<link rel="stylesheet" href="shared/window.css?v=20261125-498">
+<link rel="stylesheet" href="shared/account.css?v=20261125-498">
+<script src="shared/theme.js?v=20261125-498"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-498">
 <!--
   ЗАРАБОТАТЬ.
 
@@ -107,10 +107,9 @@
   width:4%; min-width:0; color:#22d3ee; border-radius:3px;
   position:relative; overflow:hidden;
   background:linear-gradient(90deg,var(--значок-цвет),var(--синий));
-  /* Ширину ставит разметка: это доля набранных минут, а не бег по кругу.
-     Переход нужен, чтобы при обновлении полоса доезжала, а не прыгала. */
-  transition:width .6s ease;
+  animation:майнинг-полнеет 50s linear infinite;
 }
+@keyframes майнинг-полнеет{ 0%{ width:4%; } 92%{ width:100%; } 100%{ width:100%; } }
 .майнинг .жёлоб i::after{
   content:''; position:absolute; top:0; bottom:0; left:0; width:45%;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
@@ -263,20 +262,20 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261125-496"></script>
-<script src="shared/ui.js?v=20261125-496"></script>
-<script src="shared/смайлы.js?v=20261125-496"></script>
-<script src="shared/лица.js?v=20261125-496"></script>
-<script src="shared/эфир.js?v=20261125-496"></script>
-<script src="shared/icons.js?v=20261125-496"></script>
-<script src="shared/window.js?v=20261125-496"></script>
-<script src="shared/без-копий.js?v=20261125-496"></script>
-<script src="shared/time.js?v=20261125-496"></script>
-<script src="shared/auth.js?v=20261125-496"></script>
-<script src="shared/lang.js?v=20261125-496"></script>
-<script src="shared/account.js?v=20261125-496"></script>
-<script src="shared/shell.js?v=20261125-496"></script>
-<script src="shared/wallets.js?v=20261125-496"></script>
+<script src="shared/api.js?v=20261125-498"></script>
+<script src="shared/ui.js?v=20261125-498"></script>
+<script src="shared/смайлы.js?v=20261125-498"></script>
+<script src="shared/лица.js?v=20261125-498"></script>
+<script src="shared/эфир.js?v=20261125-498"></script>
+<script src="shared/icons.js?v=20261125-498"></script>
+<script src="shared/window.js?v=20261125-498"></script>
+<script src="shared/без-копий.js?v=20261125-498"></script>
+<script src="shared/time.js?v=20261125-498"></script>
+<script src="shared/auth.js?v=20261125-498"></script>
+<script src="shared/lang.js?v=20261125-498"></script>
+<script src="shared/account.js?v=20261125-498"></script>
+<script src="shared/shell.js?v=20261125-498"></script>
+<script src="shared/wallets.js?v=20261125-498"></script>
 <script>
 'use strict';
 
@@ -451,55 +450,6 @@ function перечитать() {
   });
 }
 
-/* ── ПОЛОСА МАЙНИНГА ЖИВАЯ ──────────────────────────────────────────
-   Минуты в сети растут на сервере от ping раз в минуту (shared/api.js),
-   а этот экран читал их ровно один раз — при открытии. Полоса стояла
-   на месте, «Ещё 3 мин в сети» не убывало, и человек видел замерший
-   майнинг. Поймано Анной на живом сайте.
-
-   Раз в минуту переспрашиваем один лёгкий узел — /rewards/today — и
-   меняем ТОЛЬКО ширину полосы и подпись под ней. Перерисовывать весь
-   экран нельзя: он длинный, и прокрутка прыгала бы под руками каждую
-   минуту.
-
-   Ширину ставим тому же узлу, а не новому: у него в стилях
-   transition .6s, и полоса доезжает плавно, а не скачет.
-
-   Молчим в двух случаях: вкладка не на виду (там и ping молчит, минуты
-   не растут, спрашивать нечего) и день уже засчитан — полоса полна,
-   дальше ей некуда. */
-function обновитьПолосу() {
-  var у = тело.querySelector('.майнинг');
-  if (!у) return;
-  var свежая = кускомМайнинг();
-  var старая = у.querySelector('.жёлоб i');
-  var новая = свежая.querySelector('.жёлоб i');
-  if (старая && новая) {
-    старая.className = новая.className;
-    старая.style.width = новая.style.width;
-  }
-  var под = у.querySelector('.под');
-  var новПод = свежая.querySelector('.под');
-  if (под && новПод) под.textContent = новПод.textContent;
-}
-
-(function полосаЖивая() {
-  var часы = null;
-  function шаг() {
-    if (document.hidden || С.сегодня.active) return;
-    CW.спросить('/rewards/today', { тихо: true })
-      .then(function (д) { if (д) { С.сегодня = д; обновитьПолосу(); } })
-      .catch(function () { /* нет связи — следующая минута своё возьмёт */ });
-  }
-  function завести() { if (!часы) часы = window.setInterval(шаг, 60000); }
-  function погасить() { if (часы) { window.clearInterval(часы); часы = null; } }
-  document.addEventListener('visibilitychange', function () {
-    if (document.hidden) погасить();
-    else { завести(); шаг(); }
-  });
-  завести();
-})();
-
 /* ── майнинг ── */
 function кускомМайнинг() {
   var счёт = С.сегодня.counters || {};
@@ -511,61 +461,24 @@ function кускомМайнинг() {
      потому, что проверяли не присутствие, а набранный порог — а это
      разные вещи, и путать их не надо.
 
-     Порог живёт ниже, в полосе и подписи: там и видно, сколько минут
-     осталось до засчитанного дня. */
-  var порог = Number(С.сегодня.min_minutes || 0);
-  var засчитан = !!С.сегодня.active;
+     Это единственное, о чём просила Анна. Всё остальное в этом куске —
+     разметка, подпись и полоса — стоит ровно так, как стояло в боевой.
 
-  /* ── ПОЛОСА МЕРЯЕТ ВЕСЬ ДЕНЬ, А НЕ ОДНИ МИНУТЫ ──
-     Сервер засчитывает день по двум условиям сразу: минуты в сети И хоть
-     одно дело — сообщение, голосовое, пост, полученная реакция или
-     приглашённый, который оплатил.
-
-     Пока полоса считала одни минуты, она набиралась за пять минут после
-     входа и дальше весь день стояла на месте: человек смотрел на неё и
-     видел сломанный майнинг. Поймано Анной дважды.
-
-     Теперь минуты — это шесть десятых полосы, дело — остальные четыре.
-     Сделал что-нибудь, и полоса на глазах доезжает до края. Названия
-     столбцов те же, что складывает сервер (_REAL_COLS в database.py):
-     разойдутся — полоса начнёт врать, и это место надо править вместе
-     с сервером. */
-  var дела = (Number(счёт.messages_sent || 0) + Number(счёт.voice_messages || 0)
-            + Number(счёт.posts_created || 0) + Number(счёт.reactions_received || 0)
-            + Number(счёт.invites_converted || 0));
-  var естьДело = дела > 0;
-
-  /* Полоса теперь считает. Прежде она просто ехала по кругу пятьдесят
-     секунд — красиво и бессмысленно: человек не мог понять, работает
-     майнинг или нет, и сколько ещё быть в сети. Теперь это доля
-     набранных минут от порога, а когда день засчитан — полная полоса,
-     и блик по ней идёт дальше, чтобы было видно: майнинг не кончился. */
-  var доляМинут = порог > 0 ? Math.min(1, минут / порог) : 1;
-  var доля = засчитан ? 100
-           : Math.max(4, Math.min(96, Math.round(60 * доляМинут + (естьДело ? 36 : 0))));
-  var осталось = Math.max(0, порог - минут);
-
-  var подпись;
-  if (засчитан) {
-    подпись = Т('Активный день засчитан. Награды и уровень растут от вашей активности в сети');
-  } else if (осталось > 0 && естьДело) {
-    подпись = Т.с('Ещё {н} мин в сети, и день засчитается', { н: осталось });
-  } else if (осталось > 0) {
-    подпись = Т.с('Ещё {н} мин в сети и любое дело: сообщение, пост или реакция',
-                  { н: осталось });
-  } else {
-    подпись = Т('Минуты набраны. Осталось любое дело: сообщение, пост или реакция');
-  }
-
+     Полоса ничего не считает: она идёт всегда, пока открыт экран. Я
+     однажды заменил её счётчиком минут, решив, что так честнее, — но
+     меня об этом не просили, и считать она стала то, что почти весь
+     день стоит на месте. Вернул как было: 50 секунд на полный проход,
+     потом заново, и блик поверх. Числа живут ниже, в трёх ячейках и в
+     списке наград, — там им и место. */
   return кусок('майнинг',
       '<div class="надпись">'
     +   '<span class="знак">' + CW.значок('кирка') + '</span>'
     +   CW.безопасно(Т('Майнинг Cube'))
     +   '<span class="состояние">(online)</span>'
     + '</div>'
-    + '<div class="жёлоб"><i class="' + (засчитан ? 'полон' : 'растёт')
-    +   '" style="width:' + доля + '%"></i></div>'
-    + '<div class="под">' + CW.безопасно(подпись) + '</div>');
+    + '<div class="жёлоб"><i></i></div>'
+    + '<div class="под">' + CW.безопасно(Т('Награды и уровень растут от вашей')) + ' '
+    +   '' + CW.безопасно(Т('активности в сети')) + '</div>');
 }
 
 /* ── три числа ── */

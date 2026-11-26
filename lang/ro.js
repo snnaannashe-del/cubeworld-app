@@ -122,7 +122,7 @@ CW.словарь('ro', {
 'Движений по счёту ещё не было.': 'Nu au fost încă mișcări în cont.',
 'День и ночь': 'Zi și noapte',
 'Держим солнце впереди, у края дня': 'Ținem soarele în față, la marginea zilei',
-'Для тебя': 'Pentru tine',
+'Рек': 'Rec',
 'До': 'Până la',
 'Добавить': 'Adaugă',
 'Добавить ещё': 'Adaugă încă',
@@ -3152,8 +3152,6 @@ CW.словарь('ro', {
   'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': 'Ocupat {занято} din {всего} GB. Eliberează loc sau ia un abonament mai mare.',
   'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'Abonamentul {тариф} dă {предел} semnale pe lună, iar ele sunt deja publicate. Contorul se reia pe întâi.',
 
-  'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Zi activă socotită. Răsplățile și nivelul cresc cu activitatea ta în rețea',
-  'Ещё {н} мин в сети, и день засчитается': 'Încă {н} min online și ziua se socotește',
 
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Un simulator și un teren de antrenament pentru bursa cripto. Banii păstrați sunt bani câștigați. Bază de cunoștințe și practică. Învață să tranzacționezi pe simulator, cu monede și bani de test, și abia apoi gândește-te la o bursă adevărată.',
   'В подписке': 'În abonament',
@@ -3184,10 +3182,8 @@ CW.словарь('ro', {
 
 
   /* минуты набраны, но нужно дело */
-  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Minutele sunt strânse. A mai rămas un lucru: un mesaj, o postare sau o reacție',
 
 
   /* не хватает и минут, и дела */
-  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': 'Încă {н} min online și un lucru: un mesaj, o postare sau o reacție',
 
 });

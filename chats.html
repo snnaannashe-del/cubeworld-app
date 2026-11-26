@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Чаты · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-496">
-<link rel="stylesheet" href="shared/style.css?v=20261125-496">
-<link rel="stylesheet" href="shared/window.css?v=20261125-496">
-<link rel="stylesheet" href="shared/account.css?v=20261125-496">
-<script src="shared/theme.js?v=20261125-496"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261125-496">
+<link rel="icon" href="icons/favicon.svg?v=20261125-498">
+<link rel="stylesheet" href="shared/style.css?v=20261125-498">
+<link rel="stylesheet" href="shared/window.css?v=20261125-498">
+<link rel="stylesheet" href="shared/account.css?v=20261125-498">
+<script src="shared/theme.js?v=20261125-498"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-498">
 <!--
   ЧАТЫ.
 
@@ -159,11 +159,11 @@
 /* Доля та же, что у всех кружков программы (shared/style.css). */
 .сторис-человек .круг svg{ width:60%; height:60%; }
 .сторис-человек.своя .круг{ background:rgba(0,153,255,.12); }
-.сторис-человек.есть .круг::after{
-  content:''; position:absolute; right:0; bottom:0;
-  width:11px; height:11px; border-radius:50%;
-  background:var(--синий); border:2px solid var(--фон);
-}
+/* Здесь стояла синяя точка «не смотрел» в углу кружка. У кружка
+   overflow:hidden, и точка обрезалась его круглым краем — на экране
+   оставался кусок синего круга, похожий на брак отрисовки. Убрана по
+   слову Анны. Непросмотренное и без неё видно: просмотренные кружки
+   приглушены (.смотрели ниже). */
 .сторис-человек.смотрели{ opacity:.55; }
 /* Своя сторис уже есть: в кружке её кадр, а добавить новую — плюсом в
    углу. Он маленький нарочно: нажимают его реже, чем смотрят своё. */
@@ -186,25 +186,25 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261125-496"></script>
-<script src="shared/ui.js?v=20261125-496"></script>
-<script src="shared/смайлы.js?v=20261125-496"></script>
-<script src="shared/лица.js?v=20261125-496"></script>
-<script src="shared/эфир.js?v=20261125-496"></script>
-<script src="shared/icons.js?v=20261125-496"></script>
-<script src="shared/window.js?v=20261125-496"></script>
-<script src="shared/без-копий.js?v=20261125-496"></script>
-<script src="shared/time.js?v=20261125-496"></script>
-<script src="shared/auth.js?v=20261125-496"></script>
-<script src="shared/lang.js?v=20261125-496"></script>
-<script src="shared/account.js?v=20261125-496"></script>
-<script src="shared/shell.js?v=20261125-496"></script>
-<script src="shared/вложения.js?v=20261125-496"></script>
-<script src="shared/запись-голоса.js?v=20261125-496"></script>
-<script src="shared/кнопки-сообщения.js?v=20261125-496"></script>
-<script src="shared/chat.js?v=20261125-496"></script>
-<script src="shared/shelf.js?v=20261125-496"></script>
-<script src="shared/архив.js?v=20261125-496"></script>
+<script src="shared/api.js?v=20261125-498"></script>
+<script src="shared/ui.js?v=20261125-498"></script>
+<script src="shared/смайлы.js?v=20261125-498"></script>
+<script src="shared/лица.js?v=20261125-498"></script>
+<script src="shared/эфир.js?v=20261125-498"></script>
+<script src="shared/icons.js?v=20261125-498"></script>
+<script src="shared/window.js?v=20261125-498"></script>
+<script src="shared/без-копий.js?v=20261125-498"></script>
+<script src="shared/time.js?v=20261125-498"></script>
+<script src="shared/auth.js?v=20261125-498"></script>
+<script src="shared/lang.js?v=20261125-498"></script>
+<script src="shared/account.js?v=20261125-498"></script>
+<script src="shared/shell.js?v=20261125-498"></script>
+<script src="shared/вложения.js?v=20261125-498"></script>
+<script src="shared/запись-голоса.js?v=20261125-498"></script>
+<script src="shared/кнопки-сообщения.js?v=20261125-498"></script>
+<script src="shared/chat.js?v=20261125-498"></script>
+<script src="shared/shelf.js?v=20261125-498"></script>
+<script src="shared/архив.js?v=20261125-498"></script>
 <script>
 'use strict';
 

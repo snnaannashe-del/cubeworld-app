@@ -98,8 +98,8 @@ CW.словарь('tr', {
     'Shorts sekmesi',
   'Вкладка «Посты»':
     'Gönderiler sekmesi',
-  'Вкладка «Для тебя»':
-    'Senin için sekmesi',
+  'Вкладка «Рек»':
+    'Rec sekmesi',
   'Вкладка «Топ»':
     'En iyiler sekmesi',
   'Следующая запись':

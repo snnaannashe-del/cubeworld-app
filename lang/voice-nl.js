@@ -98,8 +98,8 @@ CW.словарь('nl', {
     'Het tabblad Shorts',
   'Вкладка «Посты»':
     'Het tabblad Berichten',
-  'Вкладка «Для тебя»':
-    'Het tabblad Voor jou',
+  'Вкладка «Рек»':
+    'Het tabblad Rec',
   'Вкладка «Топ»':
     'Het tabblad Top',
   'Следующая запись':

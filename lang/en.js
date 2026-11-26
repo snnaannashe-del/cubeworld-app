@@ -107,7 +107,7 @@ CW.словарь('en', {
   /* вкладки и шапка */
   'Шортс':      'Shorts',
   'Посты':      'Posts',
-  'Для тебя':   'For you',
+  'Рек':   'Rec',
   'Топ':        'Top',
   'Поиск по ленте':   'Search the feed',
   'Скрыть шапку':     'Hide the header',
@@ -3274,8 +3274,6 @@ CW.словарь('en', {
   'Занято {занято} из {всего} ГБ. Освободи место или возьми тариф побольше.': '{занято} of {всего} GB used. Free up space or take a bigger plan.',
   'На тарифе {тариф} {предел} сигналов в месяц, и они уже выложены. Счётчик обнулится первого числа.': 'The {тариф} plan gives {предел} signals a month, and they are already posted. The counter resets on the first.',
 
-  'Активный день засчитан. Награды и уровень растут от вашей активности в сети': 'Active day counted. Rewards and level grow with your activity on the network',
-  'Ещё {н} мин в сети, и день засчитается': '{н} more minutes online and the day counts',
 
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'A simulator and training ground for the crypto exchange. Money saved is money earned. A body of knowledge and practice. Learn to trade on the simulator, on test coins and test money, and only then think about going out to a real exchange.',
   'В подписке': 'In the subscription',
@@ -3306,10 +3304,8 @@ CW.словарь('en', {
 
 
   /* минуты набраны, но нужно дело */
-  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Minutes are in. One thing left: a message, a post or a reaction',
 
 
   /* не хватает и минут, и дела */
-  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': '{н} more minutes online and one thing: a message, a post or a reaction',
 
 });

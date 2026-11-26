@@ -98,8 +98,8 @@ CW.словарь('pl', {
     'Zakładka Shorty',
   'Вкладка «Посты»':
     'Zakładka Posty',
-  'Вкладка «Для тебя»':
-    'Zakładka Dla ciebie',
+  'Вкладка «Рек»':
+    'Zakładka Rec',
   'Вкладка «Топ»':
     'Zakładka Top',
   'Следующая запись':
