@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Маркетплейс · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-492">
-<link rel="stylesheet" href="shared/style.css?v=20261125-492">
-<link rel="stylesheet" href="shared/window.css?v=20261125-492">
-<link rel="stylesheet" href="shared/account.css?v=20261125-492">
-<script src="shared/theme.js?v=20261125-492"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261125-492">
+<link rel="icon" href="icons/favicon.svg?v=20261125-494">
+<link rel="stylesheet" href="shared/style.css?v=20261125-494">
+<link rel="stylesheet" href="shared/window.css?v=20261125-494">
+<link rel="stylesheet" href="shared/account.css?v=20261125-494">
+<script src="shared/theme.js?v=20261125-494"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-494">
 <!--
   МАРКЕТПЛЕЙС.
 
@@ -419,21 +419,21 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261125-492"></script>
-<script src="shared/ui.js?v=20261125-492"></script>
-<script src="shared/смайлы.js?v=20261125-492"></script>
-<script src="shared/лица.js?v=20261125-492"></script>
-<script src="shared/эфир.js?v=20261125-492"></script>
-<script src="shared/icons.js?v=20261125-492"></script>
-<script src="shared/window.js?v=20261125-492"></script>
-<script src="shared/продавец.js?v=20261125-492"></script>
-<script src="shared/корзина.js?v=20261125-492"></script>
-<script src="shared/без-копий.js?v=20261125-492"></script>
-<script src="shared/time.js?v=20261125-492"></script>
-<script src="shared/auth.js?v=20261125-492"></script>
-<script src="shared/lang.js?v=20261125-492"></script>
-<script src="shared/account.js?v=20261125-492"></script>
-<script src="shared/shell.js?v=20261125-492"></script>
+<script src="shared/api.js?v=20261125-494"></script>
+<script src="shared/ui.js?v=20261125-494"></script>
+<script src="shared/смайлы.js?v=20261125-494"></script>
+<script src="shared/лица.js?v=20261125-494"></script>
+<script src="shared/эфир.js?v=20261125-494"></script>
+<script src="shared/icons.js?v=20261125-494"></script>
+<script src="shared/window.js?v=20261125-494"></script>
+<script src="shared/продавец.js?v=20261125-494"></script>
+<script src="shared/корзина.js?v=20261125-494"></script>
+<script src="shared/без-копий.js?v=20261125-494"></script>
+<script src="shared/time.js?v=20261125-494"></script>
+<script src="shared/auth.js?v=20261125-494"></script>
+<script src="shared/lang.js?v=20261125-494"></script>
+<script src="shared/account.js?v=20261125-494"></script>
+<script src="shared/shell.js?v=20261125-494"></script>
 <script>
 'use strict';
 
@@ -1269,6 +1269,12 @@ function действия(т) {
   if (т.mine) {
     ряд.appendChild(кнопка(т.status === 'active' ? Т('Снять с витрины') : Т('Вернуть в продажу'),
       '', function () { переключитьПродажу(т); }));
+    /* Поднять наверх витрины. Только то, что стоит в продаже: поднимать
+       снятое бессмысленно, и сервер такое не примет. Сколько поднятий
+       осталось в этом месяце, говорит сам ответ. */
+    if (т.status === 'active') {
+      ряд.appendChild(кнопка(Т('Поднять'), '', function () { поднять(т); }));
+    }
     if (услуга) {
       ряд.appendChild(кнопка(Т('Добавить снимок'), '', function () { приложитьСнимок(т); }));
       ряд.appendChild(кнопка(Т('Удалить'), 'опасная', function () { удалить(т); }));
@@ -1408,6 +1414,22 @@ function послеСоздания(о) {
   С.вид = 'mine';
   нарисоватьВерх();
   if (о && о.id) открыть(о.id); else загрузить();
+}
+
+/* ── ПОДНЯТЬ ОБЪЯВЛЕНИЕ ──
+   Витрина сортируется по дате поднятия, поэтому поднятие — это просто
+   новая дата. Сколько раз в месяц можно, решает тариф; отказ приезжает
+   понятной фразой (402 «нужен тариф» или 429 «на этот месяц всё»), и
+   показываем её как есть, не пересказывая своими словами. */
+function поднять(т) {
+  CW.спросить(корень() + т.id + '/bump', { способ: 'POST' })
+    .then(function (о) {
+      var осталось = (о && о.left != null) ? Number(о.left) : null;
+      CW.сказать(осталось == null ? Т('Поднято')
+                 : Т('Поднято') + '. ' + Т.с('Осталось поднятий: {н}', { н: осталось }));
+      загрузить();
+    })
+    .catch(function (е) { CW.сказать(е.message || 'Не вышло'); });
 }
 
 function переключитьПродажу(т) {

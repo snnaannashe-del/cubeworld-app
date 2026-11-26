@@ -142,12 +142,12 @@ CW.словарь('id', {
     'Free dasar, Silver lebih luas, Gold memberi lebih banyak kubus dan statistik. Kunci dinaikkan dengan CUBE di Toko kunci.',
   'Что даёт Premium?':
     'Apa yang diberikan Premium?',
-  'Долю в фонде наград по вкладу за месяц, подключение внешних кошельков для отображения, статистику и рейтинг, приоритет в сигналах, значок в профиле и чате, закрытые Premium-кубы.':
-    'Bagian dari dana imbalan sesuai sumbanganmu dalam sebulan, dompet luar yang disambungkan untuk ditampilkan, statistik dan peringkat, prioritas dalam sinyal, lencana di profil dan obrolan, serta kubus Premium yang tertutup.',
+  'Долю в фонде наград, эфиры, свои сигналы, аналитику куба, создание файлов, продажу на маркетплейсе, чаевые и подарки, больше кубов и больше места под файлы. Полный список — в «Документах».':
+    'Bagian dana hadiah, siaran langsung, sinyal sendiri, analitik kubus, membuat berkas, jualan di pasar, tip dan hadiah, lebih banyak kubus dan lebih banyak tempat. Daftar lengkapnya ada di «Dokumen».',
   'Сколько стоит подписка?':
     'Berapa harga langganannya?',
-  '$6.99 в месяц или $59.99 в год.':
-    '$6.99 sebulan atau $59.99 setahun.',
+  'Сильвер — 14 CUBE в месяц или 120 CUBE за год. Голд — 30 CUBE в месяц или 252 CUBE за год. Точные цифры всегда в окне подписки.':
+    'Perak 14 CUBE sebulan atau 120 CUBE setahun. Emas 30 CUBE sebulan atau 252 CUBE setahun. Angka pastinya selalu ada di jendela langganan.',
   'Как отменить подписку?':
     'Bagaimana membatalkan langganan?',
   'В любой момент: она доработает оплаченный срок и не продлится. Оплаченное за текущий срок не возвращается, кроме случаев, когда возврат требует закон.':

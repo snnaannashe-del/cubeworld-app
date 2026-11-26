@@ -336,7 +336,6 @@ CW.словарь('fi', {
 'Оставить': 'Jätä',
 'Остальное в кубе работает как работало.': 'Muu kuutiossa toimii kuten ennen.',
 'Остаться': 'Pysy',
-'От ${цена} в месяц': 'Alkaen ${цена} kuussa',
 'Ответить': 'Vastaa',
 'Отклонить': 'Hylkää',
 'Открытые': 'Avoimet',
@@ -1483,7 +1482,6 @@ CW.словарь('fi', {
   'Подписка есть: награды начисляются. Полный доступ к инструментам: общение, публикации, сообщества и своё цифровое пространство.': 'Tilaus on: palkkiot kertyvät. Täysi pääsy',
   'ждёт': 'odottaa',
   'онлайн': 'verkossa',
-  '${цена}/мес': '${цена}/kk',
   'XP растёт от того же, за что идут награды:': 'XP kasvaa samasta, mistä palkkiotkin tulevat:',
   '{закрытых} закрытых · {процент}% в плюс · при равной ставке {сумма} · худшая серия убытков {серия}': '{закрытых} suljettua · {процент}% plussalla · samalla panoksella',
   '{закрытых} закрытых · процент покажем после {всего} (осталось {надо})': '{закрытых} suljettua · prosentin näytämme {всего} jälkeen',
@@ -3138,7 +3136,6 @@ CW.словарь('fi', {
   'Кнопка': 'Painike',
 
   'Оплатить криптой': 'Maksa kryptolla',
-  'Оплатить криптой · ${сумма}': 'Maksa kryptolla · ${сумма}',
   'Чем платить': 'Millä maksat',
   'Приём оплаты криптой ещё не подключён': 'Kryptomaksua ei ole vielä kytketty',
   'Не удалось получить список монет': 'Kolikkolistaa ei saatu haettua',
@@ -3161,5 +3158,28 @@ CW.словарь('fi', {
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Simulaattori ja harjoituskenttä kryptopörssiin. Säästetty raha on ansaittua rahaa. Tietopohja ja harjoittelu. Opi käymään kauppaa simulaattorissa, testikolikoilla ja testirahalla, ja vasta sitten mieti oikeaa pörssiä.',
   'В подписке': 'Kuuluu tilaukseen',
   'Кварц пока не подключён': 'Kvarcia ei ole vielä kytketty',
+
+
+  /* значок тарифа и поднятие объявления */
+  'Тариф': 'Tilaus',
+  'Поднять': 'Nosta',
+  'Поднято': 'Nostettu',
+  'Осталось поднятий: {н}': 'Nostoja jäljellä: {н}',
+  'Чаевые и подарки': 'Tipit ja lahjat',
+  'Продажа на маркетплейсе': 'Myynti torilla',
+  'Поднятие объявления': 'Ilmoituksen nosto',
+  'Создание файлов': 'Tiedostojen luonti',
+  'Свои сигналы': 'Omat signaalit',
+  'На тарифе {тариф} {предел} объявлений в месяц, и они уже выставлены. Счётчик обнулится первого числа.': 'Tilaus {тариф} antaa {предел} ilmoitusta kuussa, ja ne ovat jo esillä. Laskuri nollautuu ensimmäisenä.',
+  'На тарифе {тариф} {предел} поднятий в месяц, и они уже использованы. Счётчик обнулится первого числа.': 'Tilaus {тариф} antaa {предел} nostoa kuussa, ja ne on jo käytetty. Laskuri nollautuu ensimmäisenä.',
+
+
+  /* цены в CUBE и записка про цену */
+  'От {цена} CUBE в месяц': 'Alkaen {цена} CUBE kuussa',
+  '{цена} CUBE/мес': '{цена} CUBE/kk',
+  'Про цену': 'Hinnasta',
+  'Цена CUBE закреплена: 1 CUBE = {цена}': 'CUBEn hinta on kiinteä: 1 CUBE = {цена}',
+  'Цена CUBE закреплена': 'CUBEn hinta on kiinteä',
+  'Это внутренняя величина площадки, а не биржевой курс': 'Tämä on alustan oma suure, ei pörssikurssi',
 
 });

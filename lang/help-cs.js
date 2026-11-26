@@ -142,12 +142,12 @@ CW.словарь('cs', {
     'Free je základ, Silver je rozšíření, Gold dává víc kostek a statistiky. Klíč se zvyšuje za CUBE v Obchodu s klíči.',
   'Что даёт Premium?':
     'Co dává Premium?',
-  'Долю в фонде наград по вкладу за месяц, подключение внешних кошельков для отображения, статистику и рейтинг, приоритет в сигналах, значок в профиле и чате, закрытые Premium-кубы.':
-    'Podíl z fondu odměn podle tvého přínosu za měsíc, připojení externích peněženek pro zobrazení, statistiky a žebříček, přednost v signálech, odznak v profilu a v chatu, uzavřené Premium kostky.',
+  'Долю в фонде наград, эфиры, свои сигналы, аналитику куба, создание файлов, продажу на маркетплейсе, чаевые и подарки, больше кубов и больше места под файлы. Полный список — в «Документах».':
+    'Podíl na fondu odměn, přenosy, vlastní signály, analytiku kostky, zakládání souborů, prodej na tržišti, dýška a dárky, víc kostek a víc místa. Celý seznam je v «Dokumentech».',
   'Сколько стоит подписка?':
     'Kolik stojí předplatné?',
-  '$6.99 в месяц или $59.99 в год.':
-    '$6.99 měsíčně nebo $59.99 ročně.',
+  'Сильвер — 14 CUBE в месяц или 120 CUBE за год. Голд — 30 CUBE в месяц или 252 CUBE за год. Точные цифры всегда в окне подписки.':
+    'Stříbro stojí 14 CUBE měsíčně nebo 120 CUBE za rok. Zlato 30 CUBE měsíčně nebo 252 CUBE za rok. Přesná čísla jsou vždy v okně předplatného.',
   'Как отменить подписку?':
     'Jak zrušit předplatné?',
   'В любой момент: она доработает оплаченный срок и не продлится. Оплаченное за текущий срок не возвращается, кроме случаев, когда возврат требует закон.':

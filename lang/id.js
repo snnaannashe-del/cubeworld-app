@@ -336,7 +336,6 @@ CW.словарь('id', {
 'Оставить': 'Biarkan',
 'Остальное в кубе работает как работало.': 'Sisanya di kubus berjalan seperti biasa.',
 'Остаться': 'Tetap',
-'От ${цена} в месяц': 'Mulai ${цена} per bulan',
 'Ответить': 'Balas',
 'Отклонить': 'Tolak',
 'Открытые': 'Terbuka',
@@ -1483,7 +1482,6 @@ CW.словарь('id', {
   'Подписка есть: награды начисляются. Полный доступ к инструментам: общение, публикации, сообщества и своё цифровое пространство.': 'Langganan ada: hadiah bertambah. Akses penuh',
   'ждёт': 'menunggu',
   'онлайн': 'daring',
-  '${цена}/мес': '${цена}/bln',
   'XP растёт от того же, за что идут награды:': 'XP tumbuh dari hal yang sama dengan hadiah:',
   '{закрытых} закрытых · {процент}% в плюс · при равной ставке {сумма} · худшая серия убытков {серия}': '{закрытых} ditutup · {процент}% di atas · pada taruhan yang sama',
   '{закрытых} закрытых · процент покажем после {всего} (осталось {надо})': '{закрытых} ditutup · persennya kami tampilkan setelah {всего}',
@@ -3138,7 +3136,6 @@ CW.словарь('id', {
   'Кнопка': 'Tombol',
 
   'Оплатить криптой': 'Bayar dengan kripto',
-  'Оплатить криптой · ${сумма}': 'Bayar dengan kripto · ${сумма}',
   'Чем платить': 'Bayar pakai apa',
   'Приём оплаты криптой ещё не подключён': 'Pembayaran kripto belum tersambung',
   'Не удалось получить список монет': 'Daftar koin tidak bisa dimuat',
@@ -3161,5 +3158,28 @@ CW.словарь('id', {
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Simulator dan tempat latihan untuk bursa kripto. Uang yang terjaga adalah uang yang didapat. Dasar pengetahuan dan latihan. Belajarlah berdagang di simulator, dengan koin dan uang uji, baru setelah itu pikirkan bursa sungguhan.',
   'В подписке': 'Termasuk langganan',
   'Кварц пока не подключён': 'Kvarc belum tersambung',
+
+
+  /* значок тарифа и поднятие объявления */
+  'Тариф': 'Paket',
+  'Поднять': 'Angkat',
+  'Поднято': 'Terangkat',
+  'Осталось поднятий: {н}': 'Sisa pengangkatan: {н}',
+  'Чаевые и подарки': 'Tip dan hadiah',
+  'Продажа на маркетплейсе': 'Jualan di pasar',
+  'Поднятие объявления': 'Mengangkat iklan',
+  'Создание файлов': 'Membuat berkas',
+  'Свои сигналы': 'Sinyal sendiri',
+  'На тарифе {тариф} {предел} объявлений в месяц, и они уже выставлены. Счётчик обнулится первого числа.': 'Paket {тариф} memberi {предел} iklan sebulan, dan iklan itu sudah terpasang. Hitungan kembali nol pada tanggal satu.',
+  'На тарифе {тариф} {предел} поднятий в месяц, и они уже использованы. Счётчик обнулится первого числа.': 'Paket {тариф} memberi {предел} pengangkatan sebulan, dan semuanya sudah terpakai. Hitungan kembali nol pada tanggal satu.',
+
+
+  /* цены в CUBE и записка про цену */
+  'От {цена} CUBE в месяц': 'Mulai {цена} CUBE sebulan',
+  '{цена} CUBE/мес': '{цена} CUBE/bln',
+  'Про цену': 'Tentang harga',
+  'Цена CUBE закреплена: 1 CUBE = {цена}': 'Harga CUBE tetap: 1 CUBE = {цена}',
+  'Цена CUBE закреплена': 'Harga CUBE tetap',
+  'Это внутренняя величина площадки, а не биржевой курс': 'Ini ukuran milik situs, bukan kurs bursa',
 
 });

@@ -142,12 +142,12 @@ CW.словарь('nl', {
     'Free is de basis, Silver is uitgebreid, Gold geeft meer kubussen en statistieken. De sleutel verhoog je met CUBE in de Sleutelwinkel.',
   'Что даёт Premium?':
     'Wat geeft Premium?',
-  'Долю в фонде наград по вкладу за месяц, подключение внешних кошельков для отображения, статистику и рейтинг, приоритет в сигналах, значок в профиле и чате, закрытые Premium-кубы.':
-    'Een deel van de beloningspot naar je bijdrage van de maand, externe wallets gekoppeld om te tonen, statistieken en een ranglijst, voorrang bij de signalen, een insigne in je profiel en in de chat, en gesloten Premium-kubussen.',
+  'Долю в фонде наград, эфиры, свои сигналы, аналитику куба, создание файлов, продажу на маркетплейсе, чаевые и подарки, больше кубов и больше места под файлы. Полный список — в «Документах».':
+    'Een deel van het beloningsfonds, uitzendingen, eigen signalen, kubusanalyse, bestanden aanmaken, verkopen op de markt, tips en cadeaus, meer kubussen en meer ruimte. De hele lijst staat in «Documenten».',
   'Сколько стоит подписка?':
     'Wat kost het abonnement?',
-  '$6.99 в месяц или $59.99 в год.':
-    '$6.99 per maand of $59.99 per jaar.',
+  'Сильвер — 14 CUBE в месяц или 120 CUBE за год. Голд — 30 CUBE в месяц или 252 CUBE за год. Точные цифры всегда в окне подписки.':
+    'Zilver kost 14 CUBE per maand of 120 CUBE per jaar. Goud 30 CUBE per maand of 252 CUBE per jaar. De precieze bedragen staan altijd in het abonnementsvenster.',
   'Как отменить подписку?':
     'Hoe zeg ik het abonnement op?',
   'В любой момент: она доработает оплаченный срок и не продлится. Оплаченное за текущий срок не возвращается, кроме случаев, когда возврат требует закон.':

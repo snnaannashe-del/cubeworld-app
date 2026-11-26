@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Заработать · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-492">
-<link rel="stylesheet" href="shared/style.css?v=20261125-492">
-<link rel="stylesheet" href="shared/window.css?v=20261125-492">
-<link rel="stylesheet" href="shared/account.css?v=20261125-492">
-<script src="shared/theme.js?v=20261125-492"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261125-492">
+<link rel="icon" href="icons/favicon.svg?v=20261125-494">
+<link rel="stylesheet" href="shared/style.css?v=20261125-494">
+<link rel="stylesheet" href="shared/window.css?v=20261125-494">
+<link rel="stylesheet" href="shared/account.css?v=20261125-494">
+<script src="shared/theme.js?v=20261125-494"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-494">
 <!--
   ЗАРАБОТАТЬ.
 
@@ -263,20 +263,20 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261125-492"></script>
-<script src="shared/ui.js?v=20261125-492"></script>
-<script src="shared/смайлы.js?v=20261125-492"></script>
-<script src="shared/лица.js?v=20261125-492"></script>
-<script src="shared/эфир.js?v=20261125-492"></script>
-<script src="shared/icons.js?v=20261125-492"></script>
-<script src="shared/window.js?v=20261125-492"></script>
-<script src="shared/без-копий.js?v=20261125-492"></script>
-<script src="shared/time.js?v=20261125-492"></script>
-<script src="shared/auth.js?v=20261125-492"></script>
-<script src="shared/lang.js?v=20261125-492"></script>
-<script src="shared/account.js?v=20261125-492"></script>
-<script src="shared/shell.js?v=20261125-492"></script>
-<script src="shared/wallets.js?v=20261125-492"></script>
+<script src="shared/api.js?v=20261125-494"></script>
+<script src="shared/ui.js?v=20261125-494"></script>
+<script src="shared/смайлы.js?v=20261125-494"></script>
+<script src="shared/лица.js?v=20261125-494"></script>
+<script src="shared/эфир.js?v=20261125-494"></script>
+<script src="shared/icons.js?v=20261125-494"></script>
+<script src="shared/window.js?v=20261125-494"></script>
+<script src="shared/без-копий.js?v=20261125-494"></script>
+<script src="shared/time.js?v=20261125-494"></script>
+<script src="shared/auth.js?v=20261125-494"></script>
+<script src="shared/lang.js?v=20261125-494"></script>
+<script src="shared/account.js?v=20261125-494"></script>
+<script src="shared/shell.js?v=20261125-494"></script>
+<script src="shared/wallets.js?v=20261125-494"></script>
 <script>
 'use strict';
 
@@ -351,7 +351,8 @@ function показать() {
 /* ── подписка ── */
 function кускомПодписка() {
   var есть = !!С.стат.is_premium;
-  var цена = (С.планы && С.планы.silver && С.планы.silver.month) || null;
+  /* Цена в CUBE: доллара на витрине больше нет. */
+  var цена = (С.планы && С.планы.silver && С.планы.silver.month_cube) || null;
 
   var у = кусок('подписка' + (есть ? ' есть' : ''),
       '<div class="текст">'
@@ -360,14 +361,14 @@ function кускомПодписка() {
     +   '<p>' + CW.безопасно(есть
           ? Т('Подписка есть: награды начисляются. Полный доступ к инструментам: '
             + 'общение, публикации, сообщества и своё цифровое пространство.')
-          : (цена ? Т.с('От ${цена} в месяц', { цена: цена }) : Т('Подписка'))
+          : (цена ? Т.с('От {цена} CUBE в месяц', { цена: цена }) : Т('Подписка'))
             + Т(': полный доступ к инструментам современной социальной сети. '
             + 'Общайтесь, публикуйте контент, создавайте сообщества и '
             + 'управляйте своим цифровым пространством.'))
     +   '</p>'
     + '</div>'
     + '<button class="цена">' + CW.безопасно(есть ? Т('подключена')
-        : (цена ? Т.с('${цена}/мес', { цена: цена }) : Т('смотреть'))) + '</button>');
+        : (цена ? Т.с('{цена} CUBE/мес', { цена: цена }) : Т('смотреть'))) + '</button>');
 
   /* Кнопка открывает окно подписки прямо здесь, а не уводит на
      страницу тарифов: в боевой нажатие на «$6.99/мес» показывает

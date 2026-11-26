@@ -142,12 +142,12 @@ CW.словарь('de', {
     'Free ist die Grundlage, Silver ist erweitert, Gold gibt mehr Würfel und Statistik. Der Schlüssel wird mit CUBE im Schlüsselshop erhöht.',
   'Что даёт Premium?':
     'Was gibt Premium?',
-  'Долю в фонде наград по вкладу за месяц, подключение внешних кошельков для отображения, статистику и рейтинг, приоритет в сигналах, значок в профиле и чате, закрытые Premium-кубы.':
-    'Einen Anteil am Belohnungstopf nach deinem Beitrag im Monat, angebundene externe Wallets zur Anzeige, Statistik und Rangliste, Vorrang bei den Signalen, ein Abzeichen im Profil und im Chat, geschlossene Premium-Würfel.',
+  'Долю в фонде наград, эфиры, свои сигналы, аналитику куба, создание файлов, продажу на маркетплейсе, чаевые и подарки, больше кубов и больше места под файлы. Полный список — в «Документах».':
+    'Einen Anteil am Belohnungsfonds, Live-Sendungen, eigene Signale, Würfel-Analyse, Dateien anlegen, Verkauf auf dem Marktplatz, Trinkgeld und Geschenke, mehr Würfel und mehr Platz für Dateien. Die ganze Liste steht in «Dokumente».',
   'Сколько стоит подписка?':
     'Was kostet das Abo?',
-  '$6.99 в месяц или $59.99 в год.':
-    '$6.99 im Monat oder $59.99 im Jahr.',
+  'Сильвер — 14 CUBE в месяц или 120 CUBE за год. Голд — 30 CUBE в месяц или 252 CUBE за год. Точные цифры всегда в окне подписки.':
+    'Silber kostet 14 CUBE im Monat oder 120 CUBE im Jahr. Gold 30 CUBE im Monat oder 252 CUBE im Jahr. Die genauen Zahlen stehen immer im Abo-Fenster.',
   'Как отменить подписку?':
     'Wie kündige ich das Abo?',
   'В любой момент: она доработает оплаченный срок и не продлится. Оплаченное за текущий срок не возвращается, кроме случаев, когда возврат требует закон.':

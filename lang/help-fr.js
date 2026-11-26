@@ -142,12 +142,12 @@ CW.словарь('fr', {
     'Free c’est la base, Silver c’est étendu, Gold donne plus de cubes et des statistiques. La clé se monte avec des CUBE dans la Boutique de clés.',
   'Что даёт Premium?':
     'Qu’apporte Premium ?',
-  'Долю в фонде наград по вкладу за месяц, подключение внешних кошельков для отображения, статистику и рейтинг, приоритет в сигналах, значок в профиле и чате, закрытые Premium-кубы.':
-    'Une part du fonds de récompenses selon ta contribution du mois, des portefeuilles externes rattachés pour l’affichage, des statistiques et un classement, la priorité dans les signaux, un badge dans le profil et les discussions, et des cubes Premium fermés.',
+  'Долю в фонде наград, эфиры, свои сигналы, аналитику куба, создание файлов, продажу на маркетплейсе, чаевые и подарки, больше кубов и больше места под файлы. Полный список — в «Документах».':
+    'Une part du fonds de récompenses, les directs, tes propres signaux, l’analyse du cube, la création de fichiers, la vente sur la place de marché, les pourboires et cadeaux, plus de cubes et plus de place. La liste complète est dans « Documents ».',
   'Сколько стоит подписка?':
     'Combien coûte l’abonnement ?',
-  '$6.99 в месяц или $59.99 в год.':
-    '6,99 $ par mois ou 59,99 $ par an.',
+  'Сильвер — 14 CUBE в месяц или 120 CUBE за год. Голд — 30 CUBE в месяц или 252 CUBE за год. Точные цифры всегда в окне подписки.':
+    'Argent, c’est 14 CUBE par mois ou 120 CUBE pour l’année. Or, 30 CUBE par mois ou 252 CUBE pour l’année. Les chiffres exacts sont toujours dans la fenêtre d’abonnement.',
   'Как отменить подписку?':
     'Comment annuler l’abonnement ?',
   'В любой момент: она доработает оплаченный срок и не продлится. Оплаченное за текущий срок не возвращается, кроме случаев, когда возврат требует закон.':

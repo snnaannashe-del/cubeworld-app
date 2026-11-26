@@ -142,12 +142,12 @@ CW.словарь('tr', {
     'Free temel, Silver geniş, Gold daha çok küp ve istatistik verir. Anahtar, Anahtar mağazasında CUBE ile yükseltilir.',
   'Что даёт Premium?':
     'Premium ne verir?',
-  'Долю в фонде наград по вкладу за месяц, подключение внешних кошельков для отображения, статистику и рейтинг, приоритет в сигналах, значок в профиле и чате, закрытые Premium-кубы.':
-    'Ayki katkına göre ödül havuzundan pay, gösterim için bağlanan dış cüzdanlar, istatistik ve sıralama, sinyallerde öncelik, profilde ve sohbette rozet, kapalı Premium küpler.',
+  'Долю в фонде наград, эфиры, свои сигналы, аналитику куба, создание файлов, продажу на маркетплейсе, чаевые и подарки, больше кубов и больше места под файлы. Полный список — в «Документах».':
+    'Ödül fonundan pay, canlı yayın, kendi sinyallerin, küp çözümlemesi, dosya oluşturma, pazarda satış, bahşiş ve hediyeler, daha çok küp ve daha çok yer. Tam liste «Belgeler»de.',
   'Сколько стоит подписка?':
     'Abonelik ne kadar?',
-  '$6.99 в месяц или $59.99 в год.':
-    'Ayda $6.99 ya da yılda $59.99.',
+  'Сильвер — 14 CUBE в месяц или 120 CUBE за год. Голд — 30 CUBE в месяц или 252 CUBE за год. Точные цифры всегда в окне подписки.':
+    'Gümüş ayda 14 CUBE ya da yılda 120 CUBE. Altın ayda 30 CUBE ya da yılda 252 CUBE. Kesin sayılar her zaman abonelik penceresinde.',
   'Как отменить подписку?':
     'Aboneliği nasıl iptal ederim?',
   'В любой момент: она доработает оплаченный срок и не продлится. Оплаченное за текущий срок не возвращается, кроме случаев, когда возврат требует закон.':

@@ -142,12 +142,12 @@ CW.словарь('hu', {
     'A Free az alap, a Silver bővített, a Gold több kockát és statisztikát ad. A kulcs CUBE-ért emelhető a Kulcsboltban.',
   'Что даёт Premium?':
     'Mit ad a Premium?',
-  'Долю в фонде наград по вкладу за месяц, подключение внешних кошельков для отображения, статистику и рейтинг, приоритет в сигналах, значок в профиле и чате, закрытые Premium-кубы.':
-    'Részt a jutalomalapból a havi hozzájárulásod szerint, külső tárcák bekötését megjelenítésre, statisztikát és rangsort, elsőbbséget a jelzéseknél, jelvényt a profilban és a csevegésben, zárt Premium kockákat.',
+  'Долю в фонде наград, эфиры, свои сигналы, аналитику куба, создание файлов, продажу на маркетплейсе, чаевые и подарки, больше кубов и больше места под файлы. Полный список — в «Документах».':
+    'Részesedést a jutalomalapból, élő adásokat, saját jelzéseket, kockaelemzést, fájlok létrehozását, eladást a piactéren, borravalót és ajándékot, több kockát és több helyet. A teljes lista a «Dokumentumok» között van.',
   'Сколько стоит подписка?':
     'Mennyibe kerül az előfizetés?',
-  '$6.99 в месяц или $59.99 в год.':
-    '$6.99 havonta vagy $59.99 évente.',
+  'Сильвер — 14 CUBE в месяц или 120 CUBE за год. Голд — 30 CUBE в месяц или 252 CUBE за год. Точные цифры всегда в окне подписки.':
+    'Az Ezüst havi 14 CUBE vagy évi 120 CUBE. Az Arany havi 30 CUBE vagy évi 252 CUBE. A pontos számok mindig az előfizetés ablakában vannak.',
   'Как отменить подписку?':
     'Hogyan mondom le az előfizetést?',
   'В любой момент: она доработает оплаченный срок и не продлится. Оплаченное за текущий срок не возвращается, кроме случаев, когда возврат требует закон.':

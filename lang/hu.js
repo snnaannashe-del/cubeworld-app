@@ -336,7 +336,6 @@ CW.словарь('hu', {
 'Оставить': 'Marad',
 'Остальное в кубе работает как работало.': 'A kocka többi része úgy működik, mint eddig.',
 'Остаться': 'Maradok',
-'От ${цена} в месяц': '${цена}-tól havonta',
 'Ответить': 'Válasz',
 'Отклонить': 'Elutasítás',
 'Открытые': 'Nyitottak',
@@ -1483,7 +1482,6 @@ CW.словарь('hu', {
   'Подписка есть: награды начисляются. Полный доступ к инструментам: общение, публикации, сообщества и своё цифровое пространство.': 'Van előfizetés: a jutalmak jóváíródnak. Teljes hozzáférés',
   'ждёт': 'vár',
   'онлайн': 'online',
-  '${цена}/мес': '${цена}/hó',
   'XP растёт от того же, за что идут награды:': 'Az XP ugyanattól nő, amiért a jutalmak járnak:',
   '{закрытых} закрытых · {процент}% в плюс · при равной ставке {сумма} · худшая серия убытков {серия}': '{закрытых} lezárt · {процент}% pluszban · azonos tét mellett',
   '{закрытых} закрытых · процент покажем после {всего} (осталось {надо})': '{закрытых} lezárt · a százalékot {всего} után mutatjuk meg',
@@ -3138,7 +3136,6 @@ CW.словарь('hu', {
   'Кнопка': 'Gomb',
 
   'Оплатить криптой': 'Fizetés kriptóval',
-  'Оплатить криптой · ${сумма}': 'Fizetés kriptóval · ${сумма}',
   'Чем платить': 'Mivel fizetsz',
   'Приём оплаты криптой ещё не подключён': 'A kriptós fizetés még nincs bekötve',
   'Не удалось получить список монет': 'Az érmelistát nem sikerült betölteni',
@@ -3161,5 +3158,28 @@ CW.словарь('hu', {
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Szimulátor és gyakorlópálya a kriptotőzsdéhez. A megtakarított pénz megkeresett pénz. Tudásbázis és gyakorlás. Tanulj kereskedni a szimulátoron, teszt érmékkel és teszt pénzzel, és csak azután gondolj igazi tőzsdére.',
   'В подписке': 'Az előfizetésben',
   'Кварц пока не подключён': 'A Kvarc még nincs bekötve',
+
+
+  /* значок тарифа и поднятие объявления */
+  'Тариф': 'Csomag',
+  'Поднять': 'Kiemelés',
+  'Поднято': 'Kiemelve',
+  'Осталось поднятий: {н}': 'Hátralévő kiemelés: {н}',
+  'Чаевые и подарки': 'Borravaló és ajándék',
+  'Продажа на маркетплейсе': 'Eladás a piactéren',
+  'Поднятие объявления': 'Hirdetés kiemelése',
+  'Создание файлов': 'Fájlok létrehozása',
+  'Свои сигналы': 'Saját jelzések',
+  'На тарифе {тариф} {предел} объявлений в месяц, и они уже выставлены. Счётчик обнулится первого числа.': 'A {тариф} csomag {предел} hirdetést ad havonta, és azok már kint vannak. A számláló elsején nullázódik.',
+  'На тарифе {тариф} {предел} поднятий в месяц, и они уже использованы. Счётчик обнулится первого числа.': 'A {тариф} csomag {предел} kiemelést ad havonta, és azok már elfogytak. A számláló elsején nullázódik.',
+
+
+  /* цены в CUBE и записка про цену */
+  'От {цена} CUBE в месяц': 'Havi {цена} CUBE-tól',
+  '{цена} CUBE/мес': '{цена} CUBE/hó',
+  'Про цену': 'Az árról',
+  'Цена CUBE закреплена: 1 CUBE = {цена}': 'A CUBE ára rögzített: 1 CUBE = {цена}',
+  'Цена CUBE закреплена': 'A CUBE ára rögzített',
+  'Это внутренняя величина площадки, а не биржевой курс': 'Ez a felület saját mérőszáma, nem tőzsdei árfolyam',
 
 });

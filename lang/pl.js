@@ -336,7 +336,6 @@ CW.словарь('pl', {
 'Оставить': 'Zostaw',
 'Остальное в кубе работает как работало.': 'Reszta w kostce działa jak wcześniej.',
 'Остаться': 'Zostań',
-'От ${цена} в месяц': 'Od ${цена} miesięcznie',
 'Ответить': 'Odpowiedz',
 'Отклонить': 'Odrzuć',
 'Открытые': 'Otwarte',
@@ -1483,7 +1482,6 @@ CW.словарь('pl', {
   'Подписка есть: награды начисляются. Полный доступ к инструментам: общение, публикации, сообщества и своё цифровое пространство.': 'Subskrypcja jest: nagrody się naliczają. Pełny dostęp',
   'ждёт': 'czeka',
   'онлайн': 'online',
-  '${цена}/мес': '${цена}/mies.',
   'XP растёт от того же, за что идут награды:': 'XP rośnie od tego samego, za co idą nagrody:',
   '{закрытых} закрытых · {процент}% в плюс · при равной ставке {сумма} · худшая серия убытков {серия}': '{закрытых} zamkniętych · {процент}% na plusie · przy równej stawce',
   '{закрытых} закрытых · процент покажем после {всего} (осталось {надо})': '{закрытых} zamkniętych · procent pokażemy po {всего}',
@@ -3138,7 +3136,6 @@ CW.словарь('pl', {
   'Кнопка': 'Przycisk',
 
   'Оплатить криптой': 'Zapłać kryptowalutą',
-  'Оплатить криптой · ${сумма}': 'Zapłać kryptowalutą · ${сумма}',
   'Чем платить': 'Czym zapłacić',
   'Приём оплаты криптой ещё не подключён': 'Płatność kryptowalutą nie jest jeszcze podłączona',
   'Не удалось получить список монет': 'Nie udało się pobrać listy monet',
@@ -3161,5 +3158,28 @@ CW.словарь('pl', {
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Symulator i trenażer dla giełdy kryptowalut. Zaoszczędzone pieniądze to zarobione pieniądze. Baza wiedzy i praktyka. Naucz się handlować na symulatorze, na testowych monetach i pieniądzach, a dopiero potem myśl o wyjściu na prawdziwą giełdę.',
   'В подписке': 'W subskrypcji',
   'Кварц пока не подключён': 'Kvarc nie jest jeszcze podłączony',
+
+
+  /* значок тарифа и поднятие объявления */
+  'Тариф': 'Taryfa',
+  'Поднять': 'Podbij',
+  'Поднято': 'Podbite',
+  'Осталось поднятий: {н}': 'Pozostało podbić: {н}',
+  'Чаевые и подарки': 'Napiwki i prezenty',
+  'Продажа на маркетплейсе': 'Sprzedaż na targowisku',
+  'Поднятие объявления': 'Podbicie ogłoszenia',
+  'Создание файлов': 'Tworzenie plików',
+  'Свои сигналы': 'Własne sygnały',
+  'На тарифе {тариф} {предел} объявлений в месяц, и они уже выставлены. Счётчик обнулится первого числа.': 'Taryfa {тариф} daje {предел} ogłoszeń miesięcznie, a one już stoją. Licznik zeruje się pierwszego.',
+  'На тарифе {тариф} {предел} поднятий в месяц, и они уже использованы. Счётчик обнулится первого числа.': 'Taryfa {тариф} daje {предел} podbić miesięcznie, a one są już zużyte. Licznik zeruje się pierwszego.',
+
+
+  /* цены в CUBE и записка про цену */
+  'От {цена} CUBE в месяц': 'Od {цена} CUBE miesięcznie',
+  '{цена} CUBE/мес': '{цена} CUBE/mies.',
+  'Про цену': 'O cenie',
+  'Цена CUBE закреплена: 1 CUBE = {цена}': 'Cena CUBE jest stała: 1 CUBE = {цена}',
+  'Цена CUBE закреплена': 'Cena CUBE jest stała',
+  'Это внутренняя величина площадки, а не биржевой курс': 'To wielkość wewnętrzna platformy, a nie kurs giełdowy',
 
 });

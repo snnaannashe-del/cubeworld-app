@@ -336,7 +336,6 @@ CW.словарь('ro', {
 'Оставить': 'Lasă',
 'Остальное в кубе работает как работало.': 'Restul cubului funcționează ca înainte.',
 'Остаться': 'Rămâi',
-'От ${цена} в месяц': 'De la ${цена} pe lună',
 'Ответить': 'Răspunde',
 'Отклонить': 'Respinge',
 'Открытые': 'Deschise',
@@ -1483,7 +1482,6 @@ CW.словарь('ro', {
   'Подписка есть: награды начисляются. Полный доступ к инструментам: общение, публикации, сообщества и своё цифровое пространство.': 'Există abonament: recompensele se acordă. Acces complet',
   'ждёт': 'așteaptă',
   'онлайн': 'online',
-  '${цена}/мес': '${цена}/lună',
   'XP растёт от того же, за что идут награды:': 'XP crește din aceleași lucruri pentru care vin recompensele:',
   '{закрытых} закрытых · {процент}% в плюс · при равной ставке {сумма} · худшая серия убытков {серия}': '{закрытых} închise · {процент}% pe plus · la mize egale',
   '{закрытых} закрытых · процент покажем после {всего} (осталось {надо})': '{закрытых} închise · procentul îl arătăm după {всего}',
@@ -3138,7 +3136,6 @@ CW.словарь('ro', {
   'Кнопка': 'Buton',
 
   'Оплатить криптой': 'Plătește cu cripto',
-  'Оплатить криптой · ${сумма}': 'Plătește cu cripto · ${сумма}',
   'Чем платить': 'Cu ce plătești',
   'Приём оплаты криптой ещё не подключён': 'Plata cu cripto nu este încă conectată',
   'Не удалось получить список монет': 'Lista de monede nu a putut fi încărcată',
@@ -3161,5 +3158,28 @@ CW.словарь('ro', {
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Un simulator și un teren de antrenament pentru bursa cripto. Banii păstrați sunt bani câștigați. Bază de cunoștințe și practică. Învață să tranzacționezi pe simulator, cu monede și bani de test, și abia apoi gândește-te la o bursă adevărată.',
   'В подписке': 'În abonament',
   'Кварц пока не подключён': 'Kvarc încă nu este conectat',
+
+
+  /* значок тарифа и поднятие объявления */
+  'Тариф': 'Abonament',
+  'Поднять': 'Ridică',
+  'Поднято': 'Ridicat',
+  'Осталось поднятий: {н}': 'Ridicări rămase: {н}',
+  'Чаевые и подарки': 'Bacșiș și cadouri',
+  'Продажа на маркетплейсе': 'Vânzare în piață',
+  'Поднятие объявления': 'Ridicarea unui anunț',
+  'Создание файлов': 'Creare de fișiere',
+  'Свои сигналы': 'Semnalele tale',
+  'На тарифе {тариф} {предел} объявлений в месяц, и они уже выставлены. Счётчик обнулится первого числа.': 'Abonamentul {тариф} dă {предел} anunțuri pe lună și sunt deja puse. Numărătoarea pornește din nou la întâi.',
+  'На тарифе {тариф} {предел} поднятий в месяц, и они уже использованы. Счётчик обнулится первого числа.': 'Abonamentul {тариф} dă {предел} ridicări pe lună și sunt deja folosite. Numărătoarea pornește din nou la întâi.',
+
+
+  /* цены в CUBE и записка про цену */
+  'От {цена} CUBE в месяц': 'De la {цена} CUBE pe lună',
+  '{цена} CUBE/мес': '{цена} CUBE/lună',
+  'Про цену': 'Despre preț',
+  'Цена CUBE закреплена: 1 CUBE = {цена}': 'Prețul CUBE este fix: 1 CUBE = {цена}',
+  'Цена CUBE закреплена': 'Prețul CUBE este fix',
+  'Это внутренняя величина площадки, а не биржевой курс': 'Este o mărime proprie a site-ului, nu un curs de bursă',
 
 });

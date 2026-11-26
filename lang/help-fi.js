@@ -142,12 +142,12 @@ CW.словарь('fi', {
     'Free on perusta, Silver on laajennettu, Gold antaa enemmän kuutioita ja analytiikkaa. Avain päivitetään CUBEilla avainkaupassa.',
   'Что даёт Premium?':
     'Mitä Premium antaa?',
-  'Долю в фонде наград по вкладу за месяц, подключение внешних кошельков для отображения, статистику и рейтинг, приоритет в сигналах, значок в профиле и чате, закрытые Premium-кубы.':
-    'Osuuden palkkiopotista sen mukaan, paljonko olet kuussa tuonut, ulkoiset lompakot liitettynä näkyviin, tilastot ja listasijoituksen, etuoikeuden signaaleissa, merkin profiiliin ja keskusteluihin, sekä suljetut Premium-kuutiot.',
+  'Долю в фонде наград, эфиры, свои сигналы, аналитику куба, создание файлов, продажу на маркетплейсе, чаевые и подарки, больше кубов и больше места под файлы. Полный список — в «Документах».':
+    'Osuuden palkkiorahastosta, lähetykset, omat signaalit, kuution analyysin, tiedostojen luonnin, myynnin torilla, tipit ja lahjat, enemmän kuutioita ja enemmän tilaa. Koko lista on «Asiakirjoissa».',
   'Сколько стоит подписка?':
     'Paljonko tilaus maksaa?',
-  '$6.99 в месяц или $59.99 в год.':
-    '$6.99 kuussa tai $59.99 vuodessa.',
+  'Сильвер — 14 CUBE в месяц или 120 CUBE за год. Голд — 30 CUBE в месяц или 252 CUBE за год. Точные цифры всегда в окне подписки.':
+    'Hopea on 14 CUBE kuussa tai 120 CUBE vuodessa. Kulta 30 CUBE kuussa tai 252 CUBE vuodessa. Tarkat luvut näkyvät aina tilausikkunassa.',
   'Как отменить подписку?':
     'Miten peruutan tilauksen?',
   'В любой момент: она доработает оплаченный срок и не продлится. Оплаченное за текущий срок не возвращается, кроме случаев, когда возврат требует закон.':

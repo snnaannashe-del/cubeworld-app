@@ -86,12 +86,13 @@ CW.модаль('keys', function (данные) {
       var к = document.createElement('div');
       к.className = 'кл-ключ' + (это ? ' мой' : '');
 
-      var цена = Number(п.month || 0);
+      /* В CUBE, как и везде на витрине. */
+      var цена = Number(п.month_cube || 0);
       к.innerHTML =
           '<div class="верх">'
         +   '<b>' + CW.безопасно(Т(п.name || имя)) + '</b>'
         +   (это ? '<span class="метка">' + CW.безопасно(Т('у тебя сейчас')) + '</span>'
-                 : (цена ? '<span class="цена">$' + цена + '<i>' + CW.безопасно(Т('/мес')) + '</i></span>'
+                 : (цена ? '<span class="цена">' + цена + ' CUBE<i>' + CW.безопасно(Т('/мес')) + '</i></span>'
                          : '<span class="цена">' + CW.безопасно(Т('даром')) + '</span>'))
         + '</div>';
 

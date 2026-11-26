@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Портфолио · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261125-492">
-<link rel="stylesheet" href="../shared/style.css?v=20261125-492">
-<link rel="stylesheet" href="../shared/window.css?v=20261125-492">
-<link rel="stylesheet" href="../shared/account.css?v=20261125-492">
-<script src="../shared/theme.js?v=20261125-492"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261125-492">
+<link rel="icon" href="../icons/favicon.svg?v=20261125-494">
+<link rel="stylesheet" href="../shared/style.css?v=20261125-494">
+<link rel="stylesheet" href="../shared/window.css?v=20261125-494">
+<link rel="stylesheet" href="../shared/account.css?v=20261125-494">
+<script src="../shared/theme.js?v=20261125-494"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261125-494">
 <!--
   ПРОФИЛЬ: два окна.
 
@@ -310,20 +310,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261125-492"></script>
-<script src="../shared/ui.js?v=20261125-492"></script>
-<script src="../shared/смайлы.js?v=20261125-492"></script>
-<script src="../shared/лица.js?v=20261125-492"></script>
-<script src="../shared/эфир.js?v=20261125-492"></script>
-<script src="../shared/icons.js?v=20261125-492"></script>
-<script src="../shared/window.js?v=20261125-492"></script>
-<script src="../shared/продавец.js?v=20261125-492"></script>
-<script src="../shared/без-копий.js?v=20261125-492"></script>
-<script src="../shared/time.js?v=20261125-492"></script>
-<script src="../shared/auth.js?v=20261125-492"></script>
-<script src="../shared/lang.js?v=20261125-492"></script>
-<script src="../shared/account.js?v=20261125-492"></script>
-<script src="../shared/shell.js?v=20261125-492"></script>
+<script src="../shared/api.js?v=20261125-494"></script>
+<script src="../shared/ui.js?v=20261125-494"></script>
+<script src="../shared/смайлы.js?v=20261125-494"></script>
+<script src="../shared/лица.js?v=20261125-494"></script>
+<script src="../shared/эфир.js?v=20261125-494"></script>
+<script src="../shared/icons.js?v=20261125-494"></script>
+<script src="../shared/window.js?v=20261125-494"></script>
+<script src="../shared/продавец.js?v=20261125-494"></script>
+<script src="../shared/без-копий.js?v=20261125-494"></script>
+<script src="../shared/time.js?v=20261125-494"></script>
+<script src="../shared/auth.js?v=20261125-494"></script>
+<script src="../shared/lang.js?v=20261125-494"></script>
+<script src="../shared/account.js?v=20261125-494"></script>
+<script src="../shared/shell.js?v=20261125-494"></script>
 <script>
 'use strict';
 
@@ -391,6 +391,7 @@ try {
   КТО = впП.get('user') || впП.get('кто');
 } catch (е) {}
 var ЧУЖОЙ = false;
+var ПЛАН = '';             /* свой тариф: free | silver | gold */
 
 var вкладка = 'short';     /* short | post */
 var фильтр = 'мои';        /* мои | репосты | сохранённое */
@@ -428,6 +429,8 @@ function собрать() {
     Я.avatar_url = я.avatar_url || '';
     Я.avatar_color = я.avatar_color || '';
     Я.username = я.username || '';
+    /* Тариф приезжает тем же ответом /me — своего запроса не нужно. */
+    ПЛАН = я.plan || 'free';
 
     ЧУЖОЙ = !!(КТО && String(КТО) !== String(я.id));
     if (ЧУЖОЙ) {
@@ -716,6 +719,19 @@ function портфолио() {
   var имя = ок('div', 'про-имя');
   имя.textContent = Я.display_name || номерUID();
   внутри.appendChild(имя);
+
+  /* Значок тарифа — только в своём портфолио. Чужой тариф сервер не
+     отдаёт никому, и ставить рядом с чужим лицом «Vip» наугад нельзя:
+     неверная надпись хуже отсутствующей. */
+  if (!ЧУЖОЙ && CW.значокТарифа && ПЛАН) {
+    var зт = CW.значокТарифа(ПЛАН);
+    if (зт) {
+      var полка = ок('div', 'про-тариф');
+      полка.style.cssText = 'margin:6px auto 0;display:flex;justify-content:center';
+      полка.appendChild(зт);
+      внутри.appendChild(полка);
+    }
+  }
 
   if (Я.username) {
     внутри.appendChild(ок('div', 'про-ник', '@' + CW.безопасно(Я.username)));

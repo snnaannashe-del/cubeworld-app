@@ -142,12 +142,12 @@ CW.словарь('ro', {
     'Free este baza, Silver este extins, Gold dă mai multe cuburi și statistici. Cheia se ridică cu CUBE în Magazinul de chei.',
   'Что даёт Premium?':
     'Ce dă Premium?',
-  'Долю в фонде наград по вкладу за месяц, подключение внешних кошельков для отображения, статистику и рейтинг, приоритет в сигналах, значок в профиле и чате, закрытые Premium-кубы.':
-    'O parte din fondul de recompense după contribuția ta din lună, conectarea portofelelor externe pentru afișare, statistici și clasament, prioritate la semnale, insignă în profil și în chat, cuburi Premium închise.',
+  'Долю в фонде наград, эфиры, свои сигналы, аналитику куба, создание файлов, продажу на маркетплейсе, чаевые и подарки, больше кубов и больше места под файлы. Полный список — в «Документах».':
+    'O parte din fondul de premii, transmisiuni, semnalele tale, analiza cubului, crearea de fișiere, vânzarea în piață, bacșiș și cadouri, mai multe cuburi și mai mult loc. Lista întreagă este în «Documente».',
   'Сколько стоит подписка?':
     'Cât costă abonamentul?',
-  '$6.99 в месяц или $59.99 в год.':
-    '$6.99 pe lună sau $59.99 pe an.',
+  'Сильвер — 14 CUBE в месяц или 120 CUBE за год. Голд — 30 CUBE в месяц или 252 CUBE за год. Точные цифры всегда в окне подписки.':
+    'Argint costă 14 CUBE pe lună sau 120 CUBE pe an. Aur — 30 CUBE pe lună sau 252 CUBE pe an. Cifrele exacte sunt mereu în fereastra abonamentului.',
   'Как отменить подписку?':
     'Cum anulez abonamentul?',
   'В любой момент: она доработает оплаченный срок и не продлится. Оплаченное за текущий срок не возвращается, кроме случаев, когда возврат требует закон.':

@@ -336,7 +336,6 @@ CW.словарь('sv', {
 'Оставить': 'Behåll',
 'Остальное в кубе работает как работало.': 'Resten i kuben fungerar som förut.',
 'Остаться': 'Stanna',
-'От ${цена} в месяц': 'Från ${цена} per månad',
 'Ответить': 'Svara',
 'Отклонить': 'Avvisa',
 'Открытые': 'Öppna',
@@ -1483,7 +1482,6 @@ CW.словарь('sv', {
   'Подписка есть: награды начисляются. Полный доступ к инструментам: общение, публикации, сообщества и своё цифровое пространство.': 'Abonnemang finns: belöningarna krediteras. Full tillgång',
   'ждёт': 'väntar',
   'онлайн': 'online',
-  '${цена}/мес': '${цена}/mån',
   'XP растёт от того же, за что идут награды:': 'XP växer av samma saker som belöningarna:',
   '{закрытых} закрытых · {процент}% в плюс · при равной ставке {сумма} · худшая серия убытков {серия}': '{закрытых} stängda · {процент}% på plus · vid lika insats',
   '{закрытых} закрытых · процент покажем после {всего} (осталось {надо})': '{закрытых} stängda · procenten visar vi efter {всего}',
@@ -3138,7 +3136,6 @@ CW.словарь('sv', {
   'Кнопка': 'Knapp',
 
   'Оплатить криптой': 'Betala med krypto',
-  'Оплатить криптой · ${сумма}': 'Betala med krypto · ${сумма}',
   'Чем платить': 'Vad du betalar med',
   'Приём оплаты криптой ещё не подключён': 'Betalning med krypto är inte inkopplad än',
   'Не удалось получить список монет': 'Myntlistan gick inte att hämta',
@@ -3161,5 +3158,28 @@ CW.словарь('sv', {
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'En simulator och övningsbana för kryptobörsen. Sparade pengar är tjänade pengar. Kunskap och övning. Lär dig handla i simulatorn, med testmynt och testpengar, och tänk först därefter på en riktig börs.',
   'В подписке': 'Ingår i abonnemanget',
   'Кварц пока не подключён': 'Kvarc är inte inkopplat än',
+
+
+  /* значок тарифа и поднятие объявления */
+  'Тариф': 'Abonnemang',
+  'Поднять': 'Lyft',
+  'Поднято': 'Lyft',
+  'Осталось поднятий: {н}': 'Lyft kvar: {н}',
+  'Чаевые и подарки': 'Dricks och gåvor',
+  'Продажа на маркетплейсе': 'Försäljning på torget',
+  'Поднятие объявления': 'Lyfta en annons',
+  'Создание файлов': 'Skapa filer',
+  'Свои сигналы': 'Egna signaler',
+  'На тарифе {тариф} {предел} объявлений в месяц, и они уже выставлены. Счётчик обнулится первого числа.': 'Abonnemanget {тариф} ger {предел} annonser i månaden, och de ligger redan ute. Räknaren nollas den första.',
+  'На тарифе {тариф} {предел} поднятий в месяц, и они уже использованы. Счётчик обнулится первого числа.': 'Abonnemanget {тариф} ger {предел} lyft i månaden, och de är redan använda. Räknaren nollas den första.',
+
+
+  /* цены в CUBE и записка про цену */
+  'От {цена} CUBE в месяц': 'Från {цена} CUBE i månaden',
+  '{цена} CUBE/мес': '{цена} CUBE/mån',
+  'Про цену': 'Om priset',
+  'Цена CUBE закреплена: 1 CUBE = {цена}': 'Priset på CUBE är fast: 1 CUBE = {цена}',
+  'Цена CUBE закреплена': 'Priset på CUBE är fast',
+  'Это внутренняя величина площадки, а не биржевой курс': 'Det är plattformens egen storhet, inte en börskurs',
 
 });

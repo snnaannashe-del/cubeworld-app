@@ -1428,7 +1428,6 @@ CW.словарь('en', {
   'Начисление приходит раз в сутки, за прошедший день. Пост и комментарий оплачиваются один раз, когда наберут ': 'Credits arrive once a day, for the day just gone. A post or a comment is paid once, when it reaches ',
   'Начисления': 'Credits',
   'Начисляется только подписчикам.': 'Credited to subscribers only.',
-  'От ${цена} в месяц': 'From ${цена} a month',
   'Подписка есть: награды начисляются. Полный доступ к инструментам: общение, публикации, сообщества и своё цифровое пространство.': 'Subscription active: rewards are being credited. Full access to the tools: talking, publishing, communities and your own digital space.',
   'Пост в ленте или группе': 'A post in the feed or a group',
   'активных дней': 'active days',
@@ -1442,7 +1441,6 @@ CW.словарь('en', {
 
   /* ── добавлено в в436: мир, маркетплейс, заработать, сигналы,
      портфолио, поиск, кошелёк, уведомления ───────────────────── */
-  '${цена}/мес': '${цена}/mo',
   'CUBE приходят, когда приглашённый оплатит подписку.': 'CUBE arrives when the person you invited pays for a subscription.',
   'XP растёт от того же, за что идут награды:': 'XP grows from the same things the rewards do:',
   '{закрытых} закрытых · {процент}% в плюс · при равной ставке {сумма} · худшая серия убытков {серия}': '{закрытых} closed · {процент}% in profit · at an equal stake {сумма} · worst losing streak {серия}',
@@ -3260,7 +3258,6 @@ CW.словарь('en', {
   'Кнопка': 'Button',
 
   'Оплатить криптой': 'Pay with crypto',
-  'Оплатить криптой · ${сумма}': 'Pay with crypto · ${сумма}',
   'Чем платить': 'What to pay with',
   'Приём оплаты криптой ещё не подключён': 'Crypto payment is not connected yet',
   'Не удалось получить список монет': 'Could not load the coin list',
@@ -3283,5 +3280,28 @@ CW.словарь('en', {
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'A simulator and training ground for the crypto exchange. Money saved is money earned. A body of knowledge and practice. Learn to trade on the simulator, on test coins and test money, and only then think about going out to a real exchange.',
   'В подписке': 'In the subscription',
   'Кварц пока не подключён': 'Kvarc is not connected yet',
+
+
+  /* значок тарифа и поднятие объявления */
+  'Тариф': 'Plan',
+  'Поднять': 'Bump',
+  'Поднято': 'Bumped',
+  'Осталось поднятий: {н}': 'Bumps left: {н}',
+  'Чаевые и подарки': 'Tips and gifts',
+  'Продажа на маркетплейсе': 'Selling on the marketplace',
+  'Поднятие объявления': 'Bumping a listing',
+  'Создание файлов': 'File creation',
+  'Свои сигналы': 'Your own signals',
+  'На тарифе {тариф} {предел} объявлений в месяц, и они уже выставлены. Счётчик обнулится первого числа.': 'The {тариф} plan gives {предел} listings a month, and they are already up. The counter resets on the first.',
+  'На тарифе {тариф} {предел} поднятий в месяц, и они уже использованы. Счётчик обнулится первого числа.': 'The {тариф} plan gives {предел} bumps a month, and they are already used. The counter resets on the first.',
+
+
+  /* цены в CUBE и записка про цену */
+  'От {цена} CUBE в месяц': 'From {цена} CUBE a month',
+  '{цена} CUBE/мес': '{цена} CUBE/mo',
+  'Про цену': 'About the price',
+  'Цена CUBE закреплена: 1 CUBE = {цена}': 'The price of CUBE is fixed: 1 CUBE = {цена}',
+  'Цена CUBE закреплена': 'The price of CUBE is fixed',
+  'Это внутренняя величина площадки, а не биржевой курс': 'This is the platform’s own figure, not an exchange rate',
 
 });

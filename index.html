@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>CubeWorld</title>
 <meta name="description" content="Временные зашифрованные пространства в трёхмерном мире. Без почты, без телефона, только ключ.">
-<link rel="icon" href="icons/favicon.svg?v=20261125-492">
+<link rel="icon" href="icons/favicon.svg?v=20261125-494">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261125-492">
-<link rel="stylesheet" href="shared/window.css?v=20261125-492">
-<link rel="stylesheet" href="shared/lang.css?v=20261125-492">
-<link rel="stylesheet" href="shared/ключ-окно.css?v=20261125-492">
-<script src="shared/theme.js?v=20261125-492"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261125-494">
+<link rel="stylesheet" href="shared/window.css?v=20261125-494">
+<link rel="stylesheet" href="shared/lang.css?v=20261125-494">
+<link rel="stylesheet" href="shared/ключ-окно.css?v=20261125-494">
+<script src="shared/theme.js?v=20261125-494"></script>
 <!--
   ТИТУЛКА. Та же, что на сайте: звёздное небо, знак с крутящимся кубом,
   выбор языка, заголовок, вход по ключу, три тарифа, счётчики.
@@ -488,20 +488,20 @@
 </div>
 </div>
 
-<script src="shared/api.js?v=20261125-492"></script>
-<script src="shared/ui.js?v=20261125-492"></script>
-<script src="shared/смайлы.js?v=20261125-492"></script>
-<script src="shared/лица.js?v=20261125-492"></script>
-<script src="shared/эфир.js?v=20261125-492"></script>
-<script src="shared/icons.js?v=20261125-492"></script>
-<script src="shared/window.js?v=20261125-492"></script>
-<script src="shared/без-копий.js?v=20261125-492"></script>
-<script src="shared/time.js?v=20261125-492"></script>
-<script src="shared/auth.js?v=20261125-492"></script>
-<script src="shared/words.js?v=20261125-492"></script>
-<script src="shared/небо.js?v=20261125-492"></script>
-<script src="shared/lang.js?v=20261125-492"></script>
-<script src="shared/ключ-окно.js?v=20261125-492"></script>
+<script src="shared/api.js?v=20261125-494"></script>
+<script src="shared/ui.js?v=20261125-494"></script>
+<script src="shared/смайлы.js?v=20261125-494"></script>
+<script src="shared/лица.js?v=20261125-494"></script>
+<script src="shared/эфир.js?v=20261125-494"></script>
+<script src="shared/icons.js?v=20261125-494"></script>
+<script src="shared/window.js?v=20261125-494"></script>
+<script src="shared/без-копий.js?v=20261125-494"></script>
+<script src="shared/time.js?v=20261125-494"></script>
+<script src="shared/auth.js?v=20261125-494"></script>
+<script src="shared/words.js?v=20261125-494"></script>
+<script src="shared/небо.js?v=20261125-494"></script>
+<script src="shared/lang.js?v=20261125-494"></script>
+<script src="shared/ключ-окно.js?v=20261125-494"></script>
 <script>
 'use strict';
 
@@ -555,9 +555,12 @@ function показатьЦены() {
   ['free', 'silver', 'gold'].forEach(function (имя) {
     var ц = $('цена-' + имя), с = $('срок-' + имя);
     if (!ТАРИФЫ || !ТАРИФЫ[имя]) { ц.textContent = '-'; с.textContent = ''; return; }
-    var вМесяц = ТАРИФЫ[имя].month;
+    /* В CUBE, а не в долларах: площадка считает своей валютой, и на
+       витрине должна стоять она. Доллар остался внутри — им платит
+       провайдер, человеку его знать незачем. */
+    var вМесяц = ТАРИФЫ[имя].month_cube;
     if (!вМесяц) { ц.textContent = CW.сл('tfr'); с.textContent = ''; }
-    else { ц.textContent = '$' + вМесяц; с.textContent = CW.сл('tmo'); }
+    else { ц.textContent = вМесяц + ' CUBE'; с.textContent = CW.сл('tmo'); }
   });
 }
 

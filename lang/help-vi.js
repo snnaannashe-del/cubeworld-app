@@ -142,12 +142,12 @@ CW.словарь('vi', {
     'Free là nền, Silver là mở rộng, Gold cho nhiều khối hơn và thống kê. Chìa khóa nâng bằng CUBE trong Cửa hàng chìa khóa.',
   'Что даёт Premium?':
     'Premium cho gì?',
-  'Долю в фонде наград по вкладу за месяц, подключение внешних кошельков для отображения, статистику и рейтинг, приоритет в сигналах, значок в профиле и чате, закрытые Premium-кубы.':
-    'Một phần quỹ thưởng theo đóng góp trong tháng, kết nối ví ngoài để hiển thị, thống kê và xếp hạng, ưu tiên trong tín hiệu, huy hiệu trong trang cá nhân và trò chuyện, các khối Premium khép kín.',
+  'Долю в фонде наград, эфиры, свои сигналы, аналитику куба, создание файлов, продажу на маркетплейсе, чаевые и подарки, больше кубов и больше места под файлы. Полный список — в «Документах».':
+    'Phần trong quỹ thưởng, phát trực tiếp, tín hiệu của mình, phân tích khối, tạo tệp, bán trên chợ, tiền thưởng và quà, nhiều khối hơn và nhiều chỗ hơn. Danh sách đầy đủ ở «Tài liệu».',
   'Сколько стоит подписка?':
     'Đăng ký giá bao nhiêu?',
-  '$6.99 в месяц или $59.99 в год.':
-    '$6.99 mỗi tháng hoặc $59.99 mỗi năm.',
+  'Сильвер — 14 CUBE в месяц или 120 CUBE за год. Голд — 30 CUBE в месяц или 252 CUBE за год. Точные цифры всегда в окне подписки.':
+    'Bạc là 14 CUBE mỗi tháng hoặc 120 CUBE một năm. Vàng là 30 CUBE mỗi tháng hoặc 252 CUBE một năm. Con số chính xác luôn có trong cửa sổ gói.',
   'Как отменить подписку?':
     'Hủy đăng ký thế nào?',
   'В любой момент: она доработает оплаченный срок и не продлится. Оплаченное за текущий срок не возвращается, кроме случаев, когда возврат требует закон.':

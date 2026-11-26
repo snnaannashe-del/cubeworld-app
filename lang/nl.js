@@ -336,7 +336,6 @@ CW.словарь('nl', {
 'Оставить': 'Houden',
 'Остальное в кубе работает как работало.': 'De rest van de kubus werkt zoals eerst.',
 'Остаться': 'Blijven',
-'От ${цена} в месяц': 'Vanaf ${цена} per maand',
 'Ответить': 'Antwoorden',
 'Отклонить': 'Weigeren',
 'Открытые': 'Open',
@@ -1483,7 +1482,6 @@ CW.словарь('nl', {
   'Подписка есть: награды начисляются. Полный доступ к инструментам: общение, публикации, сообщества и своё цифровое пространство.': 'Er is een abonnement: de beloningen worden bijgeschreven. Volledige toegang',
   'ждёт': 'wacht',
   'онлайн': 'online',
-  '${цена}/мес': '${цена}/mnd',
   'XP растёт от того же, за что идут награды:': 'XP groeit van hetzelfde waarvoor de beloningen komen:',
   '{закрытых} закрытых · {процент}% в плюс · при равной ставке {сумма} · худшая серия убытков {серия}': '{закрытых} gesloten · {процент}% in de plus · bij gelijke inzet',
   '{закрытых} закрытых · процент покажем после {всего} (осталось {надо})': '{закрытых} gesloten · het percentage laten we zien na {всего}',
@@ -3138,7 +3136,6 @@ CW.словарь('nl', {
   'Кнопка': 'Knop',
 
   'Оплатить криптой': 'Met crypto betalen',
-  'Оплатить криптой · ${сумма}': 'Met crypto betalen · ${сумма}',
   'Чем платить': 'Waarmee betalen',
   'Приём оплаты криптой ещё не подключён': 'Betalen met crypto is nog niet aangesloten',
   'Не удалось получить список монет': 'De muntenlijst kon niet geladen worden',
@@ -3161,5 +3158,28 @@ CW.словарь('nl', {
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Een simulator en oefenterrein voor de cryptobeurs. Gespaard geld is verdiend geld. Kennis en oefening. Leer handelen op de simulator, met testmunten en testgeld, en denk pas daarna aan een echte beurs.',
   'В подписке': 'In het abonnement',
   'Кварц пока не подключён': 'Kvarc is nog niet aangesloten',
+
+
+  /* значок тарифа и поднятие объявления */
+  'Тариф': 'Tarief',
+  'Поднять': 'Omhoog',
+  'Поднято': 'Omhoog gezet',
+  'Осталось поднятий: {н}': 'Nog omhoog zetten: {н}',
+  'Чаевые и подарки': 'Tips en cadeaus',
+  'Продажа на маркетплейсе': 'Verkopen op de markt',
+  'Поднятие объявления': 'Advertentie omhoog zetten',
+  'Создание файлов': 'Bestanden aanmaken',
+  'Свои сигналы': 'Eigen signalen',
+  'На тарифе {тариф} {предел} объявлений в месяц, и они уже выставлены. Счётчик обнулится первого числа.': 'Het tarief {тариф} geeft {предел} advertenties per maand, en die staan er al. De teller begint op de eerste opnieuw.',
+  'На тарифе {тариф} {предел} поднятий в месяц, и они уже использованы. Счётчик обнулится первого числа.': 'Het tarief {тариф} geeft {предел} keer omhoog zetten per maand, en die zijn op. De teller begint op de eerste opnieuw.',
+
+
+  /* цены в CUBE и записка про цену */
+  'От {цена} CUBE в месяц': 'Vanaf {цена} CUBE per maand',
+  '{цена} CUBE/мес': '{цена} CUBE/mnd',
+  'Про цену': 'Over de prijs',
+  'Цена CUBE закреплена: 1 CUBE = {цена}': 'De prijs van CUBE ligt vast: 1 CUBE = {цена}',
+  'Цена CUBE закреплена': 'De prijs van CUBE ligt vast',
+  'Это внутренняя величина площадки, а не биржевой курс': 'Dit is een eigen grootheid van het platform, geen beurskoers',
 
 });

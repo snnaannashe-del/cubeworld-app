@@ -1345,6 +1345,38 @@ textarea.нп-строка{ resize:vertical; min-height:92px; line-height:1.5; }
 .подп-шапка .под{
   display:block; margin-top:2px; font-size:12.5px; color:var(--текст2);
 }
+
+/* ── ЗНАК «!» У СЛОВА «ПОДПИСКА» ──
+   Цены на витрине в CUBE, и первый вопрос — «а это сколько?». Знак
+   стоит вплотную к слову, маленький и тихий: он не зовёт нажать, он
+   ждёт, когда спросят. Ответ разворачивается запиской под шапкой.
+
+   Кружок рисуем рамкой, а не берём готовый значок: буква в кружке
+   на всех языках одна и та же, а рисунок пришлось бы держать ещё и в
+   icons.js ради одной точки с палочкой. */
+.подп-кто{ display:flex; flex-wrap:wrap; align-items:center; gap:7px; }
+.подп-что{
+  flex:0 0 auto; width:17px; height:17px; padding:0;
+  border-radius:50%; border:1px solid var(--край2);
+  background:none; color:var(--текст3);
+  font:inherit; font-size:11px; font-weight:800; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:color .13s, border-color .13s, background .13s;
+}
+.подп-что:hover{ color:var(--текст); border-color:var(--текст3); }
+.подп-что.горит{
+  color:#0095F6; border-color:#0095F6; background:rgba(0,149,246,.12);
+}
+/* Записка занимает всю ширину окна и встаёт на своё место сразу: шапка
+   и витрина не прыгают, потому что между ними её не было вовсе. */
+.подп-записка{
+  margin:-6px 0 12px; padding:10px 12px;
+  border:1px solid var(--край); border-radius:12px;
+  background:var(--поле);
+  font-size:12.5px; line-height:1.45;
+}
+.подп-записка b{ display:block; color:var(--текст); font-weight:700; }
+.подп-записка span{ display:block; margin-top:3px; color:var(--текст2); }
 .подп-витрина{
   display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:2px 0 0;
 }

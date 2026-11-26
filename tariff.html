@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Тарифы · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-492">
-<link rel="stylesheet" href="shared/style.css?v=20261125-492">
-<link rel="stylesheet" href="shared/window.css?v=20261125-492">
-<link rel="stylesheet" href="shared/lang.css?v=20261125-492">
-<link rel="stylesheet" href="shared/ключ-окно.css?v=20261125-492">
-<script src="shared/theme.js?v=20261125-492"></script>
+<link rel="icon" href="icons/favicon.svg?v=20261125-494">
+<link rel="stylesheet" href="shared/style.css?v=20261125-494">
+<link rel="stylesheet" href="shared/window.css?v=20261125-494">
+<link rel="stylesheet" href="shared/lang.css?v=20261125-494">
+<link rel="stylesheet" href="shared/ключ-окно.css?v=20261125-494">
+<script src="shared/theme.js?v=20261125-494"></script>
 <!--
   ТАРИФЫ. Промежуточная страница между титулкой и входом.
 
@@ -297,20 +297,20 @@
 </div>
 </div>
 
-<script src="shared/api.js?v=20261125-492"></script>
-<script src="shared/ui.js?v=20261125-492"></script>
-<script src="shared/смайлы.js?v=20261125-492"></script>
-<script src="shared/лица.js?v=20261125-492"></script>
-<script src="shared/эфир.js?v=20261125-492"></script>
-<script src="shared/icons.js?v=20261125-492"></script>
-<script src="shared/window.js?v=20261125-492"></script>
-<script src="shared/без-копий.js?v=20261125-492"></script>
-<script src="shared/time.js?v=20261125-492"></script>
-<script src="shared/auth.js?v=20261125-492"></script>
-<script src="shared/words.js?v=20261125-492"></script>
-<script src="shared/небо.js?v=20261125-492"></script>
-<script src="shared/lang.js?v=20261125-492"></script>
-<script src="shared/ключ-окно.js?v=20261125-492"></script>
+<script src="shared/api.js?v=20261125-494"></script>
+<script src="shared/ui.js?v=20261125-494"></script>
+<script src="shared/смайлы.js?v=20261125-494"></script>
+<script src="shared/лица.js?v=20261125-494"></script>
+<script src="shared/эфир.js?v=20261125-494"></script>
+<script src="shared/icons.js?v=20261125-494"></script>
+<script src="shared/window.js?v=20261125-494"></script>
+<script src="shared/без-копий.js?v=20261125-494"></script>
+<script src="shared/time.js?v=20261125-494"></script>
+<script src="shared/auth.js?v=20261125-494"></script>
+<script src="shared/words.js?v=20261125-494"></script>
+<script src="shared/небо.js?v=20261125-494"></script>
+<script src="shared/lang.js?v=20261125-494"></script>
+<script src="shared/ключ-окно.js?v=20261125-494"></script>
 <script>
 'use strict';
 
@@ -348,14 +348,23 @@ var ЧЕРТЫ = [
   { поле: null,           слово: 'ffeed'      },
   /* У платных тарифов строка читается «Маркетплейс продавец»:
      слово для них лежит отдельно, в «словоПлатно». */
-  { поле: null,           слово: 'fmarket',   словоПлатно: 'fmarketsell' },
+  { поле: null,           слово: 'fmarket',   словоПлатно: 'fmarketsell',
+    счётПлатно: 'listings_month' },
   { поле: null,           слово: 'fwallet'    },
   { поле: 'streams',      слово: 'fstream'    },
   { поле: 'music',        слово: 'fmusic'     },
   { поле: 'signals',      слово: 'fsignal'    },
   { поле: 'analytics',    слово: 'fanalytics' },
   { поле: 'files',        слово: 'ffiles'     },
-  { поле: 'mining',       слово: 'fmining'    },
+  /* Чаевые и подарки: отправлять их — платная полка. Получать может
+     любой, в том числе на ВИПе, и это написано в документах. */
+  { поле: 'tips',         слово: 'ftips'      },
+  /* Майнинг стоит у ВСЕХ, а не только у Голда.
+     На карточке он висел в платной части, но в программе его никто не
+     закрывает: полоса в «Заработать» считает минуты в сети любому. Платной
+     остаётся доля в фонде наград — её и проверяет сервер. Обещание на
+     карточке должно совпадать с тем, что делает код. */
+  { поле: null,           слово: 'fmining'    },
   /* «Рейтинг» убран с карточки: за ним в программе не стояло ничего, а
      обещание в оплаченном тарифе должно что-то значить. Вернём строку,
      когда возможность будет написана. */
@@ -458,8 +467,11 @@ function цена() {
       if (пара[0] === СРОК) б.className = 'выбран';
 
       if (пара[0] === 'год') {
-        var полныйГод = п.month * 12;
-        var выгода = Math.round((1 - п.year / полныйГод) * 100);
+        /* Выгода считается по тем же числам, что показаны: по CUBE.
+           Иначе на карточке стояло бы «120 CUBE вместо 168», а процент
+           был бы посчитан от долларов — и он бы с ними не сходился. */
+        var полныйГод = п.month_cube * 12;
+        var выгода = Math.round((1 - п.year_cube / полныйГод) * 100);
         if (выгода > 0) {
           var в = document.createElement('span');
           в.className = 'выгода';
@@ -476,8 +488,12 @@ function цена() {
     место.appendChild(коробка);
   }
 
-  var сумма = (СРОК === 'год' && п.year) ? п.year : п.month;
-  $('цена').textContent = '$' + сумма;
+  /* Цена говорится в CUBE, а не в долларах. Доллар остался внутренней
+     величиной площадки: по нему выставляется счёт платёжного провайдера
+     и считается выгода года. На витрине его нет — там одна валюта,
+     своя, и человеку не приходится держать в голове две. */
+  var сумма = (СРОК === 'год' && п.year_cube) ? п.year_cube : п.month_cube;
+  $('цена').textContent = сумма + ' CUBE';
   $('за-срок').textContent = CW.сл(СРОК === 'год' ? 'tyr' : 'tmo');
 }
 
@@ -496,8 +512,12 @@ function черты() {
        «Маркетплейс продавец» вместо просто «Маркетплейс». Платным
        считаем тот, у кого есть цена за месяц. */
     var текст = CW.сл((ч.словоПлатно && п.month) ? ч.словоПлатно : ч.слово);
-    if (ч.счёт && п[ч.счёт] != null) {
-      текст += ': ' + п[ч.счёт] + (ч.хвост ? ' ' + CW.сл('tgb') : '');
+    /* «счётПлатно» — число, которое имеет смысл только у платного:
+       на бесплатном вышло бы «Marketplace: 0», а ноль объявлений — это
+       не свойство строки, это её отсутствие. */
+    var счёт = (ч.счётПлатно && п.month) ? ч.счётПлатно : ч.счёт;
+    if (счёт && п[счёт] != null) {
+      текст += ': ' + п[счёт] + (ч.хвост ? ' ' + CW.сл('tgb') : '');
     }
 
     var с = document.createElement('div');

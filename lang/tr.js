@@ -336,7 +336,6 @@ CW.словарь('tr', {
 'Оставить': 'Kalsın',
 'Остальное в кубе работает как работало.': 'Küpteki geri kalan her şey eskisi gibi çalışır.',
 'Остаться': 'Kal',
-'От ${цена} в месяц': 'Ayda ${цена} üzeri',
 'Ответить': 'Yanıtla',
 'Отклонить': 'Reddet',
 'Открытые': 'Açık',
@@ -1483,7 +1482,6 @@ CW.словарь('tr', {
   'Подписка есть: награды начисляются. Полный доступ к инструментам: общение, публикации, сообщества и своё цифровое пространство.': 'Abonelik var: ödüller yükleniyor. Tam erişim',
   'ждёт': 'bekliyor',
   'онлайн': 'çevrimiçi',
-  '${цена}/мес': '${цена}/ay',
   'XP растёт от того же, за что идут награды:': 'XP, ödüllerin geldiği şeylerden büyür:',
   '{закрытых} закрытых · {процент}% в плюс · при равной ставке {сумма} · худшая серия убытков {серия}': '{закрытых} kapalı · {процент}% artıda · eşit tutarla',
   '{закрытых} закрытых · процент покажем после {всего} (осталось {надо})': '{закрытых} kapalı · yüzdeyi {всего} sonra göstereceğiz',
@@ -3138,7 +3136,6 @@ CW.словарь('tr', {
   'Кнопка': 'Düğme',
 
   'Оплатить криптой': 'Kripto ile öde',
-  'Оплатить криптой · ${сумма}': 'Kripto ile öde · ${сумма}',
   'Чем платить': 'Neyle ödenecek',
   'Приём оплаты криптой ещё не подключён': 'Kripto ile ödeme henüz bağlı değil',
   'Не удалось получить список монет': 'Para birimi listesi alınamadı',
@@ -3161,5 +3158,28 @@ CW.словарь('tr', {
   'Симулятор и тренажёр для криптобиржи. Сохранённые деньги — это заработанные деньги. База знаний и практика. Научись торговать на симуляторе, на тестовых монетах и деньгах, и только потом думай, сливаться на биржу или нет.': 'Kripto borsası için simülatör ve alıştırma alanı. Korunan para, kazanılan paradır. Bilgi tabanı ve uygulama. Önce simülatörde, test paralarıyla alım satımı öğren, gerçek borsayı ancak sonra düşün.',
   'В подписке': 'Abonelikte',
   'Кварц пока не подключён': 'Kvarc henüz bağlı değil',
+
+
+  /* значок тарифа и поднятие объявления */
+  'Тариф': 'Tarife',
+  'Поднять': 'Öne çıkar',
+  'Поднято': 'Öne çıkarıldı',
+  'Осталось поднятий: {н}': 'Kalan öne çıkarma: {н}',
+  'Чаевые и подарки': 'Bahşiş ve hediyeler',
+  'Продажа на маркетплейсе': 'Pazarda satış',
+  'Поднятие объявления': 'İlanı öne çıkarma',
+  'Создание файлов': 'Dosya oluşturma',
+  'Свои сигналы': 'Kendi sinyalleri',
+  'На тарифе {тариф} {предел} объявлений в месяц, и они уже выставлены. Счётчик обнулится первого числа.': '{тариф} tarifesi ayda {предел} ilan verir ve onlar zaten duruyor. Sayaç ayın birinde sıfırlanır.',
+  'На тарифе {тариф} {предел} поднятий в месяц, и они уже использованы. Счётчик обнулится первого числа.': '{тариф} tarifesi ayda {предел} öne çıkarma verir ve onlar zaten kullanıldı. Sayaç ayın birinde sıfırlanır.',
+
+
+  /* цены в CUBE и записка про цену */
+  'От {цена} CUBE в месяц': 'Ayda {цена} CUBE’den',
+  '{цена} CUBE/мес': '{цена} CUBE/ay',
+  'Про цену': 'Fiyat hakkında',
+  'Цена CUBE закреплена: 1 CUBE = {цена}': 'CUBE’un fiyatı sabittir: 1 CUBE = {цена}',
+  'Цена CUBE закреплена': 'CUBE’un fiyatı sabittir',
+  'Это внутренняя величина площадки, а не биржевой курс': 'Bu, sitenin kendi ölçüsüdür, borsa kuru değil',
 
 });
