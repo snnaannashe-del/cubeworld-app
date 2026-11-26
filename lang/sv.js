@@ -3186,4 +3186,8 @@ CW.словарь('sv', {
   /* минуты набраны, но нужно дело */
   'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Minuterna är inne. En sak kvar: ett meddelande, ett inlägg eller en reaktion',
 
+
+  /* не хватает и минут, и дела */
+  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': '{н} min till online och en sak: ett meddelande, ett inlägg eller en reaktion',
+
 });

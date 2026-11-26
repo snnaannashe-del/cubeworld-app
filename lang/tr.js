@@ -3186,4 +3186,8 @@ CW.словарь('tr', {
   /* минуты набраны, но нужно дело */
   'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Dakikalar tamam. Geriye bir iş kaldı: bir mesaj, bir gönderi ya da bir tepki',
 
+
+  /* не хватает и минут, и дела */
+  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': '{н} dakika daha çevrimiçi ve bir iş: bir mesaj, bir gönderi ya da bir tepki',
+
 });

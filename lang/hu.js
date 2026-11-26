@@ -3186,4 +3186,8 @@ CW.словарь('hu', {
   /* минуты набраны, но нужно дело */
   'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'A percek megvannak. Egy dolog maradt: egy üzenet, egy bejegyzés vagy egy reakció',
 
+
+  /* не хватает и минут, и дела */
+  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': 'Még {н} perc online és egy dolog: egy üzenet, egy bejegyzés vagy egy reakció',
+
 });

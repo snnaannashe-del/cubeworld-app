@@ -3186,4 +3186,8 @@ CW.словарь('id', {
   /* минуты набраны, но нужно дело */
   'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Menitnya sudah cukup. Tinggal satu hal: sebuah pesan, sebuah unggahan atau sebuah reaksi',
 
+
+  /* не хватает и минут, и дела */
+  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': '{н} menit lagi daring dan satu hal: sebuah pesan, sebuah unggahan atau sebuah reaksi',
+
 });

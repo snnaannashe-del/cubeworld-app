@@ -3186,4 +3186,8 @@ CW.словарь('it', {
   /* минуты набраны, но нужно дело */
   'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'I minuti ci sono. Manca una cosa: un messaggio, un post o una reazione',
 
+
+  /* не хватает и минут, и дела */
+  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': 'Ancora {н} min online e una cosa: un messaggio, un post o una reazione',
+
 });

@@ -3186,4 +3186,8 @@ CW.словарь('nl', {
   /* минуты набраны, но нужно дело */
   'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'De minuten zijn er. Nog één ding: een bericht, een post of een reactie',
 
+
+  /* не хватает и минут, и дела */
+  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': 'Nog {н} min online en één ding: een bericht, een post of een reactie',
+
 });

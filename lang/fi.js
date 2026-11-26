@@ -3186,4 +3186,8 @@ CW.словарь('fi', {
   /* минуты набраны, но нужно дело */
   'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Minuutit ovat kasassa. Yksi juttu puuttuu: viesti, julkaisu tai reaktio',
 
+
+  /* не хватает и минут, и дела */
+  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': 'Vielä {н} min verkossa ja yksi juttu: viesti, julkaisu tai reaktio',
+
 });

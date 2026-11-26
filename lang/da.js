@@ -3186,4 +3186,8 @@ CW.словарь('da', {
   /* минуты набраны, но нужно дело */
   'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Minutterne er i hus. Én ting mangler: en besked, et opslag eller en reaktion',
 
+
+  /* не хватает и минут, и дела */
+  'Ещё {н} мин в сети и любое дело: сообщение, пост или реакция': '{н} min mere online og én ting: en besked, et opslag eller en reaktion',
+
 });
