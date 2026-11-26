@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Оформление · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261126-507">
-<link rel="stylesheet" href="../shared/style.css?v=20261126-507">
-<link rel="stylesheet" href="../shared/window.css?v=20261126-507">
-<link rel="stylesheet" href="../shared/account.css?v=20261126-507">
-<script src="../shared/theme.js?v=20261126-507"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261126-507">
+<link rel="icon" href="../icons/favicon.svg?v=20261126-508">
+<link rel="stylesheet" href="../shared/style.css?v=20261126-508">
+<link rel="stylesheet" href="../shared/window.css?v=20261126-508">
+<link rel="stylesheet" href="../shared/account.css?v=20261126-508">
+<script src="../shared/theme.js?v=20261126-508"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261126-508">
 <!--
   ОФОРМЛЕНИЕ — окно поверх программы.
   /home/claude/новое/cubeworld-app/windows/theme.html
@@ -218,6 +218,22 @@
   background:var(--поле); border:1px solid var(--край);
   aspect-ratio:16/10; display:flex; align-items:center; justify-content:center;
 }
+/* ── ЗАТЕМНЕНИЕ ВИДНО ПРЯМО НА ОКОШКЕ ──
+   v=508, Анна: «ползунок в затемнение поверх картинки не меняет цвет
+   когда двигаю».
+
+   Ползунок работал: он ставил --вуаль на страницу, и настоящая вуаль
+   честно густела. Увидеть этого было нельзя — вуаль лежит ЗА окном
+   «Оформления», а само окно её закрывает. Человек двигает ползунок и
+   смотрит на картинку, где ничего не происходит.
+
+   Теперь та же вуаль, той же густоты и того же цвета, лежит поверх
+   окошка с картинкой. Двигаешь — видишь сразу, не закрывая окна. */
+.оф-камокно{ position:relative; }
+.оф-камокно.есть::after{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:rgba(6,8,14, var(--вуаль, .45));
+}
 .оф-камокно video{ width:100%; height:100%; object-fit:cover; display:none; }
 .оф-камокно.есть video{ display:block; }
 .оф-камокно .ждём{ font-size:0.8rem; color:var(--текст3); padding:0 14px; text-align:center; }
@@ -414,21 +430,21 @@ html[data-цена-цвет="свой"] .оф-курс .цена{ color:var(--ц
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261126-507"></script>
-<script src="../shared/ui.js?v=20261126-507"></script>
-<script src="../shared/смайлы.js?v=20261126-507"></script>
-<script src="../shared/лица.js?v=20261126-507"></script>
-<script src="../shared/эфир.js?v=20261126-507"></script>
-<script src="../shared/icons.js?v=20261126-507"></script>
-<script src="../shared/window.js?v=20261126-507"></script>
-<script src="../shared/без-копий.js?v=20261126-507"></script>
-<script src="../shared/time.js?v=20261126-507"></script>
-<script src="../shared/auth.js?v=20261126-507"></script>
-<script src="../shared/lang.js?v=20261126-507"></script>
-<script src="../shared/account.js?v=20261126-507"></script>
-<script src="../shared/shell.js?v=20261126-507"></script>
-<script src="../shared/words.js?v=20261126-507"></script>
-<script src="../shared/голос.js?v=20261126-507"></script>
+<script src="../shared/api.js?v=20261126-508"></script>
+<script src="../shared/ui.js?v=20261126-508"></script>
+<script src="../shared/смайлы.js?v=20261126-508"></script>
+<script src="../shared/лица.js?v=20261126-508"></script>
+<script src="../shared/эфир.js?v=20261126-508"></script>
+<script src="../shared/icons.js?v=20261126-508"></script>
+<script src="../shared/window.js?v=20261126-508"></script>
+<script src="../shared/без-копий.js?v=20261126-508"></script>
+<script src="../shared/time.js?v=20261126-508"></script>
+<script src="../shared/auth.js?v=20261126-508"></script>
+<script src="../shared/lang.js?v=20261126-508"></script>
+<script src="../shared/account.js?v=20261126-508"></script>
+<script src="../shared/shell.js?v=20261126-508"></script>
+<script src="../shared/words.js?v=20261126-508"></script>
+<script src="../shared/голос.js?v=20261126-508"></script>
 <script>
 'use strict';
 

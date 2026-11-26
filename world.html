@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Мир · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261126-507">
+<link rel="icon" href="icons/favicon.svg?v=20261126-508">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261126-507">
-<link rel="stylesheet" href="shared/window.css?v=20261126-507">
-<link rel="stylesheet" href="shared/account.css?v=20261126-507">
-<script src="shared/theme.js?v=20261126-507"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261126-508">
+<link rel="stylesheet" href="shared/window.css?v=20261126-508">
+<link rel="stylesheet" href="shared/account.css?v=20261126-508">
+<script src="shared/theme.js?v=20261126-508"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -35,6 +35,23 @@
 -->
 <style>
 .рама{ background:#030310; }
+
+/* ── МИР ПОД КАМЕРОЙ ──
+   v=508. Мир — единственная страница со своими красками: звёздное небо
+   рисуется холстом, а не заливкой, и поэтому режим камеры его не брал.
+   Анна: «камера не передается на страницу world это надо поправить
+   раньше все работало у нас там вообще стримы напомню».
+
+   Здесь гасим три непрозрачных места, а небо на холсте гасит сам
+   рисовальщик — см. «небо» в коде ниже. Размытие за верхней полосой
+   тоже снимаем: размывать живую картинку с камеры незачем, от неё
+   остаётся муть вместо лица. */
+html[data-камера="да"] .рама{ background:transparent; }
+html[data-камера="да"] .верх{
+  background:transparent;
+  backdrop-filter:none; -webkit-backdrop-filter:none;
+}
+html[data-камера="да"] .состояние{ background:rgba(8,8,30,.34); }
 
 /* ── верхняя полоса ──────────────────────────────────────────────── */
 /* Отступы и промежуток — те же, что в полосе разделов (shell.css):
@@ -370,21 +387,21 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261126-507"></script>
-<script src="shared/ui.js?v=20261126-507"></script>
-<script src="shared/смайлы.js?v=20261126-507"></script>
-<script src="shared/лица.js?v=20261126-507"></script>
-<script src="shared/эфир.js?v=20261126-507"></script>
-<script src="shared/icons.js?v=20261126-507"></script>
-<script src="shared/window.js?v=20261126-507"></script>
-<script src="shared/без-копий.js?v=20261126-507"></script>
-<script src="shared/time.js?v=20261126-507"></script>
-<script src="shared/auth.js?v=20261126-507"></script>
-<script src="shared/lang.js?v=20261126-507"></script>
-<script src="shared/account.js?v=20261126-507"></script>
-<script src="shared/формы.js?v=20261126-507"></script>
-<script src="shared/игра.js?v=20261126-507"></script>
-<script src="shared/персонаж.js?v=20261126-507"></script>
+<script src="shared/api.js?v=20261126-508"></script>
+<script src="shared/ui.js?v=20261126-508"></script>
+<script src="shared/смайлы.js?v=20261126-508"></script>
+<script src="shared/лица.js?v=20261126-508"></script>
+<script src="shared/эфир.js?v=20261126-508"></script>
+<script src="shared/icons.js?v=20261126-508"></script>
+<script src="shared/window.js?v=20261126-508"></script>
+<script src="shared/без-копий.js?v=20261126-508"></script>
+<script src="shared/time.js?v=20261126-508"></script>
+<script src="shared/auth.js?v=20261126-508"></script>
+<script src="shared/lang.js?v=20261126-508"></script>
+<script src="shared/account.js?v=20261126-508"></script>
+<script src="shared/формы.js?v=20261126-508"></script>
+<script src="shared/игра.js?v=20261126-508"></script>
+<script src="shared/персонаж.js?v=20261126-508"></script>
 <script>
 'use strict';
 
@@ -1027,6 +1044,23 @@ function круг() {
   if (CW.игра) CW.игра.шаг();
 
   /* небо */
+  /* ── РЕЖИМ КАМЕРЫ ──
+     Небо и звёзды рисует холст, и он закрывает собой всё, что лежит
+     под страницей, — в том числе картинку с камеры. Оттого камера на
+     этой странице и «не передавалась»: она была на месте, просто
+     поверх неё каждый кадр заливалось звёздное небо.
+
+     Поэтому под камерой холст не заливаем, а ОЧИЩАЕМ: кубы и подписи
+     остаются, а между ними видно камеру. Звёзды тоже гасим — звёздное
+     небо поверх комнаты читается как грязь на стекле, а не как небо.
+
+     Метку читаем с <html> каждый кадр, а не один раз при запуске:
+     человек меняет тему, не перезагружая страницу, и мир обязан
+     откликнуться сразу. Чтение атрибута стоит доли микросекунды. */
+  var подКамерой = document.documentElement.getAttribute('data-камера') === 'да';
+  if (подКамерой) {
+    К.clearRect(0, 0, М.Ш, М.В);
+  } else {
   var небо = К.createRadialGradient(М.Ш/2, М.В/2, 0, М.Ш/2, М.В/2, Math.max(М.Ш, М.В) * 0.75);
   небо.addColorStop(0, '#0c0a2e');
   небо.addColorStop(0.55, '#050518');
@@ -1041,6 +1075,7 @@ function круг() {
     К.fillStyle = 'rgba(255,255,255,' + (з.я * мерц).toFixed(2) + ')';
     К.fill();
   });
+  }
 
   /* что под носом */
   М.подНосом = null;
