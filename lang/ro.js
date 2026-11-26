@@ -3182,4 +3182,8 @@ CW.словарь('ro', {
   'Цена CUBE закреплена': 'Prețul CUBE este fix',
   'Это внутренняя величина площадки, а не биржевой курс': 'Este o mărime proprie a site-ului, nu un curs de bursă',
 
+
+  /* минуты набраны, но нужно дело */
+  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Minutele sunt strânse. A mai rămas un lucru: un mesaj, o postare sau o reacție',
+
 });

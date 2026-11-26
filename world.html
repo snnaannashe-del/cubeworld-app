@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Мир · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-494">
+<link rel="icon" href="icons/favicon.svg?v=20261125-495">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261125-494">
-<link rel="stylesheet" href="shared/window.css?v=20261125-494">
-<link rel="stylesheet" href="shared/account.css?v=20261125-494">
-<script src="shared/theme.js?v=20261125-494"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261125-495">
+<link rel="stylesheet" href="shared/window.css?v=20261125-495">
+<link rel="stylesheet" href="shared/account.css?v=20261125-495">
+<script src="shared/theme.js?v=20261125-495"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -334,11 +334,7 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
        доли. Анна: «тут иконка сначала большая, потом нормальная, она
        не должна дёргаться». С классом в самой разметке доля
        применяется с первого же кадра, и ужиматься нечему. -->
-  <!-- Гнездо нужно значку тарифа: он висит под кружком и считает
-       своё место от кружка, а не от всей полосы. -->
-  <span id="лицо-гнездо" style="position:relative;display:inline-flex">
-    <button id="лицо-кнопка" class="cw-кружок" data-намёк="Аккаунт" title="Аккаунт"></button>
-  </span>
+  <button id="лицо-кнопка" class="cw-кружок" data-намёк="Аккаунт" title="Аккаунт"></button>
   <!-- Счётчика «N онлайн · N кубов» здесь больше нет. Он занимал место
        в полосе, а сказать мог только то, что и так видно: кубы на небе
        можно пересчитать глазами, а число людей рядом ни на что не
@@ -374,21 +370,21 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261125-494"></script>
-<script src="shared/ui.js?v=20261125-494"></script>
-<script src="shared/смайлы.js?v=20261125-494"></script>
-<script src="shared/лица.js?v=20261125-494"></script>
-<script src="shared/эфир.js?v=20261125-494"></script>
-<script src="shared/icons.js?v=20261125-494"></script>
-<script src="shared/window.js?v=20261125-494"></script>
-<script src="shared/без-копий.js?v=20261125-494"></script>
-<script src="shared/time.js?v=20261125-494"></script>
-<script src="shared/auth.js?v=20261125-494"></script>
-<script src="shared/lang.js?v=20261125-494"></script>
-<script src="shared/account.js?v=20261125-494"></script>
-<script src="shared/формы.js?v=20261125-494"></script>
-<script src="shared/игра.js?v=20261125-494"></script>
-<script src="shared/персонаж.js?v=20261125-494"></script>
+<script src="shared/api.js?v=20261125-495"></script>
+<script src="shared/ui.js?v=20261125-495"></script>
+<script src="shared/смайлы.js?v=20261125-495"></script>
+<script src="shared/лица.js?v=20261125-495"></script>
+<script src="shared/эфир.js?v=20261125-495"></script>
+<script src="shared/icons.js?v=20261125-495"></script>
+<script src="shared/window.js?v=20261125-495"></script>
+<script src="shared/без-копий.js?v=20261125-495"></script>
+<script src="shared/time.js?v=20261125-495"></script>
+<script src="shared/auth.js?v=20261125-495"></script>
+<script src="shared/lang.js?v=20261125-495"></script>
+<script src="shared/account.js?v=20261125-495"></script>
+<script src="shared/формы.js?v=20261125-495"></script>
+<script src="shared/игра.js?v=20261125-495"></script>
+<script src="shared/персонаж.js?v=20261125-495"></script>
 <script>
 'use strict';
 
@@ -1808,16 +1804,6 @@ function показатьМеня(я) {
                        && я.avatar_url && !CW.картинкаЛи(я.avatar_url))
       ? CW.тонЗнака(я.avatar_color) : '';
     CW.лица.одеть(кн, я.id);
-  }
-  /* Значок тарифа под кружком лица. Кладём его в гнездо кнопки, а не в
-     саму кнопку: внутри кнопки лежит лицо, и значок внутри неё
-     перекрывал бы снимок. */
-  if (CW.значокТарифаВ) {
-    var гн = $('лицо-гнездо');
-    if (гн) {
-      var з = CW.значокТарифаВ(гн, я.plan);
-      if (з) з.classList.add('тариф-под-лицом');
-    }
   }
 }
 

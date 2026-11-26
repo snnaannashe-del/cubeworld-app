@@ -3182,4 +3182,8 @@ CW.словарь('it', {
   'Цена CUBE закреплена': 'Il prezzo di CUBE è fisso',
   'Это внутренняя величина площадки, а не биржевой курс': 'È una grandezza interna del sito, non una quotazione di borsa',
 
+
+  /* минуты набраны, но нужно дело */
+  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'I minuti ci sono. Manca una cosa: un messaggio, un post o una reazione',
+
 });

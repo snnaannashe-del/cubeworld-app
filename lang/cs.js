@@ -3182,4 +3182,8 @@ CW.словарь('cs', {
   'Цена CUBE закреплена': 'Cena CUBE je pevná',
   'Это внутренняя величина площадки, а не биржевой курс': 'Je to vnitřní veličina platformy, ne burzovní kurz',
 
+
+  /* минуты набраны, но нужно дело */
+  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Minuty jsou. Zbývá jedna věc: zpráva, příspěvek nebo reakce',
+
 });

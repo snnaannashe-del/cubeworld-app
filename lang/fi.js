@@ -3182,4 +3182,8 @@ CW.словарь('fi', {
   'Цена CUBE закреплена': 'CUBEn hinta on kiinteä',
   'Это внутренняя величина площадки, а не биржевой курс': 'Tämä on alustan oma suure, ei pörssikurssi',
 
+
+  /* минуты набраны, но нужно дело */
+  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Minuutit ovat kasassa. Yksi juttu puuttuu: viesti, julkaisu tai reaktio',
+
 });

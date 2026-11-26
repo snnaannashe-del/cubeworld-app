@@ -3182,4 +3182,8 @@ CW.словарь('hu', {
   'Цена CUBE закреплена': 'A CUBE ára rögzített',
   'Это внутренняя величина площадки, а не биржевой курс': 'Ez a felület saját mérőszáma, nem tőzsdei árfolyam',
 
+
+  /* минуты набраны, но нужно дело */
+  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'A percek megvannak. Egy dolog maradt: egy üzenet, egy bejegyzés vagy egy reakció',
+
 });

@@ -3182,4 +3182,8 @@ CW.словарь('nb', {
   'Цена CUBE закреплена': 'Prisen på CUBE er fast',
   'Это внутренняя величина площадки, а не биржевой курс': 'Det er plattformens egen størrelse, ikke en børskurs',
 
+
+  /* минуты набраны, но нужно дело */
+  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Minuttene er i boks. Én ting gjenstår: en melding, et innlegg eller en reaksjon',
+
 });

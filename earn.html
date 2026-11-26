@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Заработать · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261125-494">
-<link rel="stylesheet" href="shared/style.css?v=20261125-494">
-<link rel="stylesheet" href="shared/window.css?v=20261125-494">
-<link rel="stylesheet" href="shared/account.css?v=20261125-494">
-<script src="shared/theme.js?v=20261125-494"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261125-494">
+<link rel="icon" href="icons/favicon.svg?v=20261125-495">
+<link rel="stylesheet" href="shared/style.css?v=20261125-495">
+<link rel="stylesheet" href="shared/window.css?v=20261125-495">
+<link rel="stylesheet" href="shared/account.css?v=20261125-495">
+<script src="shared/theme.js?v=20261125-495"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261125-495">
 <!--
   ЗАРАБОТАТЬ.
 
@@ -263,20 +263,20 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261125-494"></script>
-<script src="shared/ui.js?v=20261125-494"></script>
-<script src="shared/смайлы.js?v=20261125-494"></script>
-<script src="shared/лица.js?v=20261125-494"></script>
-<script src="shared/эфир.js?v=20261125-494"></script>
-<script src="shared/icons.js?v=20261125-494"></script>
-<script src="shared/window.js?v=20261125-494"></script>
-<script src="shared/без-копий.js?v=20261125-494"></script>
-<script src="shared/time.js?v=20261125-494"></script>
-<script src="shared/auth.js?v=20261125-494"></script>
-<script src="shared/lang.js?v=20261125-494"></script>
-<script src="shared/account.js?v=20261125-494"></script>
-<script src="shared/shell.js?v=20261125-494"></script>
-<script src="shared/wallets.js?v=20261125-494"></script>
+<script src="shared/api.js?v=20261125-495"></script>
+<script src="shared/ui.js?v=20261125-495"></script>
+<script src="shared/смайлы.js?v=20261125-495"></script>
+<script src="shared/лица.js?v=20261125-495"></script>
+<script src="shared/эфир.js?v=20261125-495"></script>
+<script src="shared/icons.js?v=20261125-495"></script>
+<script src="shared/window.js?v=20261125-495"></script>
+<script src="shared/без-копий.js?v=20261125-495"></script>
+<script src="shared/time.js?v=20261125-495"></script>
+<script src="shared/auth.js?v=20261125-495"></script>
+<script src="shared/lang.js?v=20261125-495"></script>
+<script src="shared/account.js?v=20261125-495"></script>
+<script src="shared/shell.js?v=20261125-495"></script>
+<script src="shared/wallets.js?v=20261125-495"></script>
 <script>
 'use strict';
 
@@ -451,6 +451,55 @@ function перечитать() {
   });
 }
 
+/* ── ПОЛОСА МАЙНИНГА ЖИВАЯ ──────────────────────────────────────────
+   Минуты в сети растут на сервере от ping раз в минуту (shared/api.js),
+   а этот экран читал их ровно один раз — при открытии. Полоса стояла
+   на месте, «Ещё 3 мин в сети» не убывало, и человек видел замерший
+   майнинг. Поймано Анной на живом сайте.
+
+   Раз в минуту переспрашиваем один лёгкий узел — /rewards/today — и
+   меняем ТОЛЬКО ширину полосы и подпись под ней. Перерисовывать весь
+   экран нельзя: он длинный, и прокрутка прыгала бы под руками каждую
+   минуту.
+
+   Ширину ставим тому же узлу, а не новому: у него в стилях
+   transition .6s, и полоса доезжает плавно, а не скачет.
+
+   Молчим в двух случаях: вкладка не на виду (там и ping молчит, минуты
+   не растут, спрашивать нечего) и день уже засчитан — полоса полна,
+   дальше ей некуда. */
+function обновитьПолосу() {
+  var у = тело.querySelector('.майнинг');
+  if (!у) return;
+  var свежая = кускомМайнинг();
+  var старая = у.querySelector('.жёлоб i');
+  var новая = свежая.querySelector('.жёлоб i');
+  if (старая && новая) {
+    старая.className = новая.className;
+    старая.style.width = новая.style.width;
+  }
+  var под = у.querySelector('.под');
+  var новПод = свежая.querySelector('.под');
+  if (под && новПод) под.textContent = новПод.textContent;
+}
+
+(function полосаЖивая() {
+  var часы = null;
+  function шаг() {
+    if (document.hidden || С.сегодня.active) return;
+    CW.спросить('/rewards/today', { тихо: true })
+      .then(function (д) { if (д) { С.сегодня = д; обновитьПолосу(); } })
+      .catch(function () { /* нет связи — следующая минута своё возьмёт */ });
+  }
+  function завести() { if (!часы) часы = window.setInterval(шаг, 60000); }
+  function погасить() { if (часы) { window.clearInterval(часы); часы = null; } }
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) погасить();
+    else { завести(); шаг(); }
+  });
+  завести();
+})();
+
 /* ── майнинг ── */
 function кускомМайнинг() {
   var счёт = С.сегодня.counters || {};
@@ -472,8 +521,13 @@ function кускомМайнинг() {
      майнинг или нет, и сколько ещё быть в сети. Теперь это доля
      набранных минут от порога, а когда день засчитан — полная полоса,
      и блик по ней идёт дальше, чтобы было видно: майнинг не кончился. */
+  /* Пока день не засчитан, полоса не доходит до края. Это не украшение:
+     минут может хватить, а день всё равно не засчитается — сервер
+     требует ещё и ДЕЛО (сообщение, пост, голосовое, реакция или
+     приглашённый). Полная полоса при незасчитанном дне читалась как
+     «готово», и человек ждал награды, которой не будет. */
   var доля = засчитан ? 100
-           : (порог > 0 ? Math.max(4, Math.min(100, Math.round(минут * 100 / порог)))
+           : (порог > 0 ? Math.max(4, Math.min(94, Math.round(минут * 94 / порог)))
                         : 4);
   var осталось = Math.max(0, порог - минут);
 
@@ -481,7 +535,7 @@ function кускомМайнинг() {
     ? Т('Активный день засчитан. Награды и уровень растут от вашей активности в сети')
     : (осталось > 0
         ? Т.с('Ещё {н} мин в сети, и день засчитается', { н: осталось })
-        : Т('Награды и уровень растут от вашей') + ' ' + Т('активности в сети'));
+        : Т('Минуты набраны. Осталось любое дело: сообщение, пост или реакция'));
 
   return кусок('майнинг',
       '<div class="надпись">'

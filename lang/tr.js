@@ -3182,4 +3182,8 @@ CW.словарь('tr', {
   'Цена CUBE закреплена': 'CUBE’un fiyatı sabittir',
   'Это внутренняя величина площадки, а не биржевой курс': 'Bu, sitenin kendi ölçüsüdür, borsa kuru değil',
 
+
+  /* минуты набраны, но нужно дело */
+  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Dakikalar tamam. Geriye bir iş kaldı: bir mesaj, bir gönderi ya da bir tepki',
+
 });

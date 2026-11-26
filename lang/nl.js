@@ -3182,4 +3182,8 @@ CW.словарь('nl', {
   'Цена CUBE закреплена': 'De prijs van CUBE ligt vast',
   'Это внутренняя величина площадки, а не биржевой курс': 'Dit is een eigen grootheid van het platform, geen beurskoers',
 
+
+  /* минуты набраны, но нужно дело */
+  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'De minuten zijn er. Nog één ding: een bericht, een post of een reactie',
+
 });

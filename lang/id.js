@@ -3182,4 +3182,8 @@ CW.словарь('id', {
   'Цена CUBE закреплена': 'Harga CUBE tetap',
   'Это внутренняя величина площадки, а не биржевой курс': 'Ini ukuran milik situs, bukan kurs bursa',
 
+
+  /* минуты набраны, но нужно дело */
+  'Минуты набраны. Осталось любое дело: сообщение, пост или реакция': 'Menitnya sudah cukup. Tinggal satu hal: sebuah pesan, sebuah unggahan atau sebuah reaksi',
+
 });

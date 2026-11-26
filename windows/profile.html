@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Портфолио · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261125-494">
-<link rel="stylesheet" href="../shared/style.css?v=20261125-494">
-<link rel="stylesheet" href="../shared/window.css?v=20261125-494">
-<link rel="stylesheet" href="../shared/account.css?v=20261125-494">
-<script src="../shared/theme.js?v=20261125-494"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261125-494">
+<link rel="icon" href="../icons/favicon.svg?v=20261125-495">
+<link rel="stylesheet" href="../shared/style.css?v=20261125-495">
+<link rel="stylesheet" href="../shared/window.css?v=20261125-495">
+<link rel="stylesheet" href="../shared/account.css?v=20261125-495">
+<script src="../shared/theme.js?v=20261125-495"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261125-495">
 <!--
   ПРОФИЛЬ: два окна.
 
@@ -70,6 +70,16 @@
 .лицо-кольцо .правка svg{ width:13px; height:13px; }
 
 /* ── портфолио ───────────────────────────────────────────────────── */
+/* Значок тарифа над именем: своя строка, по центру, с воздухом снизу.
+   Ставится только в своём портфолио — чужой тариф сервер не отдаёт. */
+.про-тариф{
+  display:flex; justify-content:center;
+  margin:16px 0 0;
+}
+/* У имени своя верхняя отбивка в 18 точек — она была рассчитана на то,
+   что над ним сразу лицо. Со значком между ними воздуха выходило вдвое
+   больше, и имя отрывалось от кружка. */
+.про-тариф + .про-имя{ margin-top:7px; }
 .про-имя{
   text-align:center; font-size:1.8rem; font-weight:700; margin:18px 0 0;
   letter-spacing:-.02em; word-break:break-word;
@@ -310,20 +320,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261125-494"></script>
-<script src="../shared/ui.js?v=20261125-494"></script>
-<script src="../shared/смайлы.js?v=20261125-494"></script>
-<script src="../shared/лица.js?v=20261125-494"></script>
-<script src="../shared/эфир.js?v=20261125-494"></script>
-<script src="../shared/icons.js?v=20261125-494"></script>
-<script src="../shared/window.js?v=20261125-494"></script>
-<script src="../shared/продавец.js?v=20261125-494"></script>
-<script src="../shared/без-копий.js?v=20261125-494"></script>
-<script src="../shared/time.js?v=20261125-494"></script>
-<script src="../shared/auth.js?v=20261125-494"></script>
-<script src="../shared/lang.js?v=20261125-494"></script>
-<script src="../shared/account.js?v=20261125-494"></script>
-<script src="../shared/shell.js?v=20261125-494"></script>
+<script src="../shared/api.js?v=20261125-495"></script>
+<script src="../shared/ui.js?v=20261125-495"></script>
+<script src="../shared/смайлы.js?v=20261125-495"></script>
+<script src="../shared/лица.js?v=20261125-495"></script>
+<script src="../shared/эфир.js?v=20261125-495"></script>
+<script src="../shared/icons.js?v=20261125-495"></script>
+<script src="../shared/window.js?v=20261125-495"></script>
+<script src="../shared/продавец.js?v=20261125-495"></script>
+<script src="../shared/без-копий.js?v=20261125-495"></script>
+<script src="../shared/time.js?v=20261125-495"></script>
+<script src="../shared/auth.js?v=20261125-495"></script>
+<script src="../shared/lang.js?v=20261125-495"></script>
+<script src="../shared/account.js?v=20261125-495"></script>
+<script src="../shared/shell.js?v=20261125-495"></script>
 <script>
 'use strict';
 
@@ -716,22 +726,24 @@ function портфолио() {
   /* Имени может не быть — тогда на экране стоит UID, как в работающей
      программе: «00001212331», а не «#1618». Номер один и тот же, просто
      показан тем же видом, к которому человек привык. */
-  var имя = ок('div', 'про-имя');
-  имя.textContent = Я.display_name || номерUID();
-  внутри.appendChild(имя);
+  /* Значок тарифа стоит НАД именем — так просила Анна: сперва чем
+     человек тут является, потом как его зовут.
 
-  /* Значок тарифа — только в своём портфолио. Чужой тариф сервер не
-     отдаёт никому, и ставить рядом с чужим лицом «Vip» наугад нельзя:
-     неверная надпись хуже отсутствующей. */
+     Только в своём портфолио. Чужой тариф сервер не отдаёт никому, и
+     ставить рядом с чужим лицом «Vip» наугад нельзя: неверная надпись
+     хуже отсутствующей. */
   if (!ЧУЖОЙ && CW.значокТарифа && ПЛАН) {
     var зт = CW.значокТарифа(ПЛАН);
     if (зт) {
       var полка = ок('div', 'про-тариф');
-      полка.style.cssText = 'margin:6px auto 0;display:flex;justify-content:center';
       полка.appendChild(зт);
       внутри.appendChild(полка);
     }
   }
+
+  var имя = ок('div', 'про-имя');
+  имя.textContent = Я.display_name || номерUID();
+  внутри.appendChild(имя);
 
   if (Я.username) {
     внутри.appendChild(ок('div', 'про-ник', '@' + CW.безопасно(Я.username)));
