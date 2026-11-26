@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>Мир · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261126-506">
+<link rel="icon" href="icons/favicon.svg?v=20261126-507">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261126-506">
-<link rel="stylesheet" href="shared/window.css?v=20261126-506">
-<link rel="stylesheet" href="shared/account.css?v=20261126-506">
-<script src="shared/theme.js?v=20261126-506"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261126-507">
+<link rel="stylesheet" href="shared/window.css?v=20261126-507">
+<link rel="stylesheet" href="shared/account.css?v=20261126-507">
+<script src="shared/theme.js?v=20261126-507"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -370,21 +370,21 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261126-506"></script>
-<script src="shared/ui.js?v=20261126-506"></script>
-<script src="shared/смайлы.js?v=20261126-506"></script>
-<script src="shared/лица.js?v=20261126-506"></script>
-<script src="shared/эфир.js?v=20261126-506"></script>
-<script src="shared/icons.js?v=20261126-506"></script>
-<script src="shared/window.js?v=20261126-506"></script>
-<script src="shared/без-копий.js?v=20261126-506"></script>
-<script src="shared/time.js?v=20261126-506"></script>
-<script src="shared/auth.js?v=20261126-506"></script>
-<script src="shared/lang.js?v=20261126-506"></script>
-<script src="shared/account.js?v=20261126-506"></script>
-<script src="shared/формы.js?v=20261126-506"></script>
-<script src="shared/игра.js?v=20261126-506"></script>
-<script src="shared/персонаж.js?v=20261126-506"></script>
+<script src="shared/api.js?v=20261126-507"></script>
+<script src="shared/ui.js?v=20261126-507"></script>
+<script src="shared/смайлы.js?v=20261126-507"></script>
+<script src="shared/лица.js?v=20261126-507"></script>
+<script src="shared/эфир.js?v=20261126-507"></script>
+<script src="shared/icons.js?v=20261126-507"></script>
+<script src="shared/window.js?v=20261126-507"></script>
+<script src="shared/без-копий.js?v=20261126-507"></script>
+<script src="shared/time.js?v=20261126-507"></script>
+<script src="shared/auth.js?v=20261126-507"></script>
+<script src="shared/lang.js?v=20261126-507"></script>
+<script src="shared/account.js?v=20261126-507"></script>
+<script src="shared/формы.js?v=20261126-507"></script>
+<script src="shared/игра.js?v=20261126-507"></script>
+<script src="shared/персонаж.js?v=20261126-507"></script>
 <script>
 'use strict';
 
@@ -1393,6 +1393,19 @@ function перемерить() {
     рука.vX = рука.vY = 0;
     CW.игра.схватить(т);
     if (CW.вибро) CW.вибро(1, 'тихо');
+    /* ── ЗВУК КУБА ──
+       Анна: «когда я дотрагиваюсь до кубов... если одним касанием то
+       может быть как несколько звуков». Нота на каждый задетый куб —
+       одна, если куб один; перебор, если задето несколько.
+
+       Нота идёт туда же, куда и дрожь, и по той же причине: на
+       телефоне это единственное подтверждение, что палец попал в куб,
+       а не в пустое небо. Дрожь это говорила только андроиду, звук
+       говорит всем.
+
+       Во время эфира ничего отдельно включать не надо: эфир
+       показывает эту же страницу, и касания здесь те же самые. */
+    if (CW.звякнуть) CW.звякнуть('куб', 1);
     return т;
   }
 
@@ -1411,6 +1424,7 @@ function перемерить() {
     if (задело && CW.вибро && теперь - рука.когда > 200) {
       рука.когда = теперь;
       CW.вибро(задело);
+      if (CW.звякнуть) CW.звякнуть('куб', задело);
     }
     return true;
   }
@@ -1422,10 +1436,14 @@ function перемерить() {
       /* Не вели, а стукнули: прямой удар от себя. */
       var задето = CW.игра.ударить(т, отНас(), 1);
       if (CW.вибро) CW.вибро(задето, задето > 1 ? '' : 'сильно');
+      /* Сколько кубов задето — столько нот. Это и есть просьба
+         Анны: одним касанием несколько звуков. */
+      if (CW.звякнуть) CW.звякнуть('куб', задето);
     } else {
       var д = вМир(рука.vX * 2.2, рука.vY * 2.2, т);
       CW.игра.бросить(т, д.x, д.y, д.z);
       if (CW.вибро) CW.вибро(1);
+      if (CW.звякнуть) CW.звякнуть('куб', 1);
     }
     return true;
   }
@@ -1464,6 +1482,7 @@ function перемерить() {
          на телефоне это единственное подтверждение, что палец попал
          именно в куб, а не в пустое небо. */
       if (М.подНосом && CW.вибро) CW.вибро(1, 'тихо');
+      if (М.подНосом && CW.звякнуть) CW.звякнуть('куб', 1);
       if (!играем()) войтиВКуб();
     }
   });
