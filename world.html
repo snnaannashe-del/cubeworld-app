@@ -11,12 +11,12 @@
      обязана стоять в странице: iOS читает её при добавлении значка. -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Мир · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261128-541">
+<link rel="icon" href="icons/favicon.svg?v=20261128-542">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261128-541">
-<link rel="stylesheet" href="shared/window.css?v=20261128-541">
-<link rel="stylesheet" href="shared/account.css?v=20261128-541">
-<script src="shared/theme.js?v=20261128-541"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261128-542">
+<link rel="stylesheet" href="shared/window.css?v=20261128-542">
+<link rel="stylesheet" href="shared/account.css?v=20261128-542">
+<script src="shared/theme.js?v=20261128-542"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -406,21 +406,21 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261128-541"></script>
-<script src="shared/ui.js?v=20261128-541"></script>
-<script src="shared/смайлы.js?v=20261128-541"></script>
-<script src="shared/лица.js?v=20261128-541"></script>
-<script src="shared/эфир.js?v=20261128-541"></script>
-<script src="shared/icons.js?v=20261128-541"></script>
-<script src="shared/window.js?v=20261128-541"></script>
-<script src="shared/без-копий.js?v=20261128-541"></script>
-<script src="shared/time.js?v=20261128-541"></script>
-<script src="shared/auth.js?v=20261128-541"></script>
-<script src="shared/lang.js?v=20261128-541"></script>
-<script src="shared/account.js?v=20261128-541"></script>
-<script src="shared/формы.js?v=20261128-541"></script>
-<script src="shared/игра.js?v=20261128-541"></script>
-<script src="shared/персонаж.js?v=20261128-541"></script>
+<script src="shared/api.js?v=20261128-542"></script>
+<script src="shared/ui.js?v=20261128-542"></script>
+<script src="shared/смайлы.js?v=20261128-542"></script>
+<script src="shared/лица.js?v=20261128-542"></script>
+<script src="shared/эфир.js?v=20261128-542"></script>
+<script src="shared/icons.js?v=20261128-542"></script>
+<script src="shared/window.js?v=20261128-542"></script>
+<script src="shared/без-копий.js?v=20261128-542"></script>
+<script src="shared/time.js?v=20261128-542"></script>
+<script src="shared/auth.js?v=20261128-542"></script>
+<script src="shared/lang.js?v=20261128-542"></script>
+<script src="shared/account.js?v=20261128-542"></script>
+<script src="shared/формы.js?v=20261128-542"></script>
+<script src="shared/игра.js?v=20261128-542"></script>
+<script src="shared/персонаж.js?v=20261128-542"></script>
 <script>
 'use strict';
 
@@ -1070,8 +1070,9 @@ function круг() {
      поверх неё каждый кадр заливалось звёздное небо.
 
      Поэтому под камерой холст не заливаем, а ОЧИЩАЕМ: кубы и подписи
-     остаются, а между ними видно камеру. Звёзды тоже гасим — звёздное
-     небо поверх комнаты читается как грязь на стекле, а не как небо.
+     остаются, а между ними видно камеру. А звёзды рисуем в обоих
+     случаях: гасить их незачем — заливки под ними нет, и сквозь них
+     камера видна по-прежнему.
 
      Метку читаем с <html> каждый кадр, а не один раз при запуске:
      человек меняет тему, не перезагружая страницу, и мир обязан
@@ -1085,6 +1086,7 @@ function круг() {
   небо.addColorStop(0.55, '#050518');
   небо.addColorStop(1, '#030310');
   К.fillStyle = небо; К.fillRect(0, 0, М.Ш, М.В);
+  }
 
   /* звёзды мерцают */
   М.звёзды.forEach(function (з) {
@@ -1094,7 +1096,6 @@ function круг() {
     К.fillStyle = 'rgba(255,255,255,' + (з.я * мерц).toFixed(2) + ')';
     К.fill();
   });
-  }
 
   /* что под носом */
   М.подНосом = null;
