@@ -2128,7 +2128,7 @@ CW.словарь('tr', {
   'M: Средний': 'M: Orta',
   'MP4, WebM, MOV · до 50 МБ': 'MP4, WebM, MOV · 50 MB\'a kadar',
   'Б': 'B',
-  'ВИП': 'VIP',
+  'Вип': 'Vip',
   'Вертикальный 9:16 — так его увидят': 'Dikey 9:16 — onu böyle görecekler',
   'Войти по ключу': 'Anahtarla gir',
   'Время жизни куба': 'Küpün yaşam süresi',

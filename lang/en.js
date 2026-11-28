@@ -2250,7 +2250,7 @@ CW.словарь('en', {
   'M: Средний': 'M: Medium',
   'MP4, WebM, MOV · до 50 МБ': 'MP4, WebM, MOV · up to 50 MB',
   'Б': 'B',
-  'ВИП': 'VIP',
+  'Вип': 'Vip',
   'Вертикальный 9:16 — так его увидят': 'Vertical 9:16 — that is how people will see it',
   'Войти по ключу': 'Enter with a key',
   'Время жизни куба': 'Cube lifetime',

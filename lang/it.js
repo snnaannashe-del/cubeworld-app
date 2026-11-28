@@ -2128,7 +2128,7 @@ CW.словарь('it', {
   'M: Средний': 'M: Medio',
   'MP4, WebM, MOV · до 50 МБ': 'MP4, WebM, MOV · fino a 50 MB',
   'Б': 'B',
-  'ВИП': 'VIP',
+  'Вип': 'Vip',
   'Вертикальный 9:16 — так его увидят': 'Verticale 9:16 — così lo vedranno',
   'Войти по ключу': 'Entrare con la chiave',
   'Время жизни куба': 'Durata del cubo',

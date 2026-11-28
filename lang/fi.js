@@ -2128,7 +2128,7 @@ CW.словарь('fi', {
   'M: Средний': 'M: Keskikoko',
   'MP4, WebM, MOV · до 50 МБ': 'MP4, WebM, MOV · 50 Mt asti',
   'Б': 't',
-  'ВИП': 'VIP',
+  'Вип': 'Vip',
   'Вертикальный 9:16 — так его увидят': 'Pysty 9:16 — niin sen näkevät',
   'Войти по ключу': 'Mene sisään avaimella',
   'Время жизни куба': 'Kuution elinikä',

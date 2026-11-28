@@ -2137,7 +2137,7 @@ CW.словарь('de', {
   'M: Средний': 'M: Mittel',
   'MP4, WebM, MOV · до 50 МБ': 'MP4, WebM, MOV · bis 50 MB',
   'Б': 'B',
-  'ВИП': 'VIP',
+  'Вип': 'Vip',
   'Вертикальный 9:16 — так его увидят': 'Hochkant 9:16 — so sehen es die anderen',
   'Войти по ключу': 'Mit Schlüssel eintreten',
   'Время жизни куба': 'Lebensdauer des Würfels',

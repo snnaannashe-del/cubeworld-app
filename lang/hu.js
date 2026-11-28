@@ -2128,7 +2128,7 @@ CW.словарь('hu', {
   'M: Средний': 'M: Közepes',
   'MP4, WebM, MOV · до 50 МБ': 'MP4, WebM, MOV · 50 MB-ig',
   'Б': 'B',
-  'ВИП': 'VIP',
+  'Вип': 'Vip',
   'Вертикальный 9:16 — так его увидят': 'Álló 9:16 — így fogják látni',
   'Войти по ключу': 'Belépés kulccsal',
   'Время жизни куба': 'A kocka élettartama',

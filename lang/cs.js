@@ -2128,7 +2128,7 @@ CW.словарь('cs', {
   'M: Средний': 'M: Střední',
   'MP4, WebM, MOV · до 50 МБ': 'MP4, WebM, MOV · do 50 MB',
   'Б': 'B',
-  'ВИП': 'VIP',
+  'Вип': 'Vip',
   'Вертикальный 9:16 — так его увидят': 'Na výšku 9:16 — tak to uvidí',
   'Войти по ключу': 'Vstoupit klíčem',
   'Время жизни куба': 'Doba života kostky',

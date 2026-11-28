@@ -2128,7 +2128,7 @@ CW.словарь('id', {
   'M: Средний': 'M: Sedang',
   'MP4, WebM, MOV · до 50 МБ': 'MP4, WebM, MOV · sampai 50 MB',
   'Б': 'B',
-  'ВИП': 'VIP',
+  'Вип': 'Vip',
   'Вертикальный 9:16 — так его увидят': 'Tegak 9:16 — begitu orang akan melihatnya',
   'Войти по ключу': 'Masuk dengan kunci',
   'Время жизни куба': 'Umur kubus',

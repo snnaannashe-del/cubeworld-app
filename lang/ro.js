@@ -2128,7 +2128,7 @@ CW.словарь('ro', {
   'M: Средний': 'M: Mediu',
   'MP4, WebM, MOV · до 50 МБ': 'MP4, WebM, MOV · până la 50 MB',
   'Б': 'B',
-  'ВИП': 'VIP',
+  'Вип': 'Vip',
   'Вертикальный 9:16 — так его увидят': 'Vertical 9:16 — așa îl vor vedea',
   'Войти по ключу': 'Intră cu cheia',
   'Время жизни куба': 'Durata de viață a cubului',

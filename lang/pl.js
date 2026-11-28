@@ -2128,7 +2128,7 @@ CW.словарь('pl', {
   'M: Средний': 'M: Średni',
   'MP4, WebM, MOV · до 50 МБ': 'MP4, WebM, MOV · do 50 MB',
   'Б': 'B',
-  'ВИП': 'VIP',
+  'Вип': 'Vip',
   'Вертикальный 9:16 — так его увидят': 'Pionowo 9:16 — tak to zobaczą',
   'Войти по ключу': 'Wejść kluczem',
   'Время жизни куба': 'Czas życia kostki',

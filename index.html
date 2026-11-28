@@ -12,13 +12,13 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>CubeWorld</title>
 <meta name="description" content="Временные зашифрованные пространства в трёхмерном мире. Без почты, без телефона, только ключ.">
-<link rel="icon" href="icons/favicon.svg?v=20261128-544">
+<link rel="icon" href="icons/favicon.svg?v=20261128-545">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261128-544">
-<link rel="stylesheet" href="shared/window.css?v=20261128-544">
-<link rel="stylesheet" href="shared/lang.css?v=20261128-544">
-<link rel="stylesheet" href="shared/ключ-окно.css?v=20261128-544">
-<script src="shared/theme.js?v=20261128-544"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261128-545">
+<link rel="stylesheet" href="shared/window.css?v=20261128-545">
+<link rel="stylesheet" href="shared/lang.css?v=20261128-545">
+<link rel="stylesheet" href="shared/ключ-окно.css?v=20261128-545">
+<script src="shared/theme.js?v=20261128-545"></script>
 <script>
 /* Завеса. Ставится до первой отрисовки, снимается в самом низу
    страницы, когда слова, цены и счётчики на местах.
@@ -326,12 +326,13 @@
    ровно той же высоты: 3.36rem — это высота самой строки (число и
    подпись под ним), плюс тот же промежуток, что был между нею и
    карточками. Заглавие, кнопка и карточки от этого не двигаются ни на
-   точку. */
-@media (min-width:641px){
-  .счётчики{ position:absolute; left:20px; right:20px; bottom:19px;
-    margin:0; }
-  .низ-страницы{ padding-bottom:calc(3.36rem + clamp(16px,2.6vh,30px)); }
-}
+   точку.
+
+   Так теперь везде, и на телефоне тоже: прежде там счётчики шли сразу
+   под карточками, и под ними оставалась пустая треть экрана. */
+.счётчики{ position:absolute; left:20px; right:20px; bottom:19px;
+  margin:0; }
+.низ-страницы{ padding-bottom:calc(3.36rem + clamp(16px,2.6vh,30px)); }
 .счётчики .число{ font-size:1.4rem; font-weight:700; letter-spacing:-.02em; }
 .счётчики .подпись{ margin-top:3px; font-size:0.7667rem; color:var(--текст3); }
 
@@ -383,7 +384,29 @@ html.наливается .экран{ opacity:0; }
      столбиком и страница не влезала в экран. Теперь влезает — колонка
      снова стоит по середине, как на большом окне, и под счётчиками не
      зияет пустая половина экрана. */
-  .счётчики{ grid-template-columns:repeat(3,1fr); gap:10px; }
+  /* Между тремя числами стало в полтора раза просторнее: было десять
+     точек, стало пятнадцать. */
+  .счётчики{ gap:15px; }
+
+  /* ── ЗАГЛАВИЕ НА ТЕЛЕФОНЕ КРУПНЕЕ ──
+     Было ровно 30 точек на любом телефоне: правило 4.6vw на такой
+     ширине всегда упиралось в нижний край. Теперь кегль растёт
+     вместе с экраном — 8.25vw, — и на большом телефоне заглавие
+     становится заметно крупнее.
+
+     Число выбрано по переносам, а не на глаз: при большем кегле
+     «Цифровая Вселенная» (а на 375 точках ещё и польское заглавие)
+     разваливается на лишнюю строку. При 8.25vw ни один из языков не
+     набирает строк больше, чем набирал прежде. */
+  .заглавие h1{ font-size:clamp(30px,8.25vw,36px); }
+
+  /* Карточки стоят ближе к кнопке: и промежуток между заглавием и
+     низом страницы, и отступ под заглавием — ровно вдвое меньше
+     прежних. Подъём самого заглавия не трогаем, он считается от
+     высоты окна. */
+  #экран-главный.открыт{ gap:clamp(10px,1.7vh,21px); }
+  #экран-главный.открыт > .заглавие{
+    margin-bottom:clamp(0px, calc((47vh - 307px) / 2), 19px); }
 
   .тарифы{ flex-wrap:nowrap; align-items:stretch; gap:8px; width:100%; }
   /* flex:1 1 0 с min-width:0 — три равных столбца, которые ужимаются
@@ -558,20 +581,20 @@ html.наливается .экран{ opacity:0; }
 </div>
 </div>
 
-<script src="shared/api.js?v=20261128-544"></script>
-<script src="shared/ui.js?v=20261128-544"></script>
-<script src="shared/смайлы.js?v=20261128-544"></script>
-<script src="shared/лица.js?v=20261128-544"></script>
-<script src="shared/эфир.js?v=20261128-544"></script>
-<script src="shared/icons.js?v=20261128-544"></script>
-<script src="shared/window.js?v=20261128-544"></script>
-<script src="shared/без-копий.js?v=20261128-544"></script>
-<script src="shared/time.js?v=20261128-544"></script>
-<script src="shared/auth.js?v=20261128-544"></script>
-<script src="shared/words.js?v=20261128-544"></script>
-<script src="shared/небо.js?v=20261128-544"></script>
-<script src="shared/lang.js?v=20261128-544"></script>
-<script src="shared/ключ-окно.js?v=20261128-544"></script>
+<script src="shared/api.js?v=20261128-545"></script>
+<script src="shared/ui.js?v=20261128-545"></script>
+<script src="shared/смайлы.js?v=20261128-545"></script>
+<script src="shared/лица.js?v=20261128-545"></script>
+<script src="shared/эфир.js?v=20261128-545"></script>
+<script src="shared/icons.js?v=20261128-545"></script>
+<script src="shared/window.js?v=20261128-545"></script>
+<script src="shared/без-копий.js?v=20261128-545"></script>
+<script src="shared/time.js?v=20261128-545"></script>
+<script src="shared/auth.js?v=20261128-545"></script>
+<script src="shared/words.js?v=20261128-545"></script>
+<script src="shared/небо.js?v=20261128-545"></script>
+<script src="shared/lang.js?v=20261128-545"></script>
+<script src="shared/ключ-окно.js?v=20261128-545"></script>
 <script>
 'use strict';
 

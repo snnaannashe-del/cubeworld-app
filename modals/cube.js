@@ -115,7 +115,7 @@ CW.модаль('cube', function (данные) {
   }
 
   function названиеТарифа(в) {
-    return Т({ free: 'ВИП', silver: 'Сильвер', gold: 'Голд' }[в] || в);
+    return Т({ free: 'Вип', silver: 'Сильвер', gold: 'Голд' }[в] || в);
   }
 
   function рядами(о) {

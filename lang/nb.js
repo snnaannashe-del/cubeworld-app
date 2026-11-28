@@ -2128,7 +2128,7 @@ CW.словарь('nb', {
   'M: Средний': 'M: Middels',
   'MP4, WebM, MOV · до 50 МБ': 'MP4, WebM, MOV · opp til 50 MB',
   'Б': 'B',
-  'ВИП': 'VIP',
+  'Вип': 'Vip',
   'Вертикальный 9:16 — так его увидят': 'Stående 9:16 — slik ser andre det',
   'Войти по ключу': 'Gå inn med nøkkel',
   'Время жизни куба': 'Kubens levetid',
