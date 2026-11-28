@@ -556,6 +556,8 @@
      Хранить нечего, показывать нечего. */
   var цветЧасы = null;
 
+  var КАДР = 'cw_камера_кадр';
+
   function цветСнять() {
     if (!видео || !видео.videoWidth) return;
     try {
@@ -569,6 +571,15 @@
         var м = документ.querySelector('meta[name="theme-color"]');
         if (м) м.setAttribute('content', полосыКамеры(взять()));
       }
+      /* Тем же заходом — кадр для следующей страницы. Снимаем в
+         размер самой камеры: подложка и живая картинка окажутся одной
+         резкости, и смены качества не видно. */
+      var ш = Math.min(960, видео.videoWidth);
+      var в = Math.max(1, Math.round(ш * видео.videoHeight / видео.videoWidth));
+      var х = документ.createElement('canvas');
+      х.width = ш; х.height = в;
+      х.getContext('2d').drawImage(видео, 0, 0, ш, в);
+      окно.sessionStorage.setItem(КАДР, х.toDataURL('image/jpeg', 0.72));
     } catch (е) {}
   }
 
@@ -667,7 +678,27 @@
   }
 
   function мостик(надо) {
-    документ.documentElement.style.backgroundColor = надо ? '#01010c' : '';
+    var корень = документ.documentElement;
+    if (!надо) {
+      корень.style.backgroundColor = '';
+      корень.style.removeProperty('--кадр');
+      return;
+    }
+    var к = '';
+    try { к = окно.sessionStorage.getItem(КАДР) || ''; } catch (е) {}
+    if (к) {
+      /* Есть кадр — он и держит место, чёрного фона не нужно. */
+      корень.style.setProperty('--кадр', 'url("' + к + '")');
+      корень.style.backgroundColor = '';
+    } else {
+      /* Кадра ещё нет: самый первый заход в режим камеры за эту
+         вкладку. Тогда под страницей наша обычная тёмная подложка, а
+         не чёрное дно браузера. Это один раз: дальше кадр есть
+         всегда. */
+      корень.style.removeProperty('--кадр');
+      корень.style.backgroundColor = '#01010c';
+    }
+    видеоНаше();
   }
 
   var поток = null, видео = null;
@@ -739,9 +770,12 @@
   }
   документ.addEventListener('visibilitychange', function () {
     if (взять().тема !== 'камера') return;
-    if (документ.hidden) погасить(true);
+    if (документ.hidden) { цветСнять(); погасить(true); }
     else камеру(взять());
   });
+  /* Уходим со страницы — снимаем кадр прямо сейчас: его подложкой
+     увидит следующая страница, и чем он свежее, тем незаметнее. */
+  окно.addEventListener('pagehide', цветСнять);
 
   /* Ставим немедленно — до того, как страница нарисуется. */
   применить();
