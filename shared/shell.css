@@ -93,14 +93,11 @@ body{ background:var(--вне-рамы); }
 /* ── верхняя полоса ──────────────────────────────────────────────── */
 .об-верх{
   flex:0 0 auto; z-index:40;
-  height:calc(var(--полоса-верх) + var(--верх-край));
-  padding-top:var(--верх-край);
+  height:calc(var(--полоса-верх) + env(safe-area-inset-top));
+  padding-top:env(safe-area-inset-top);
   display:flex; align-items:center; gap:12px; padding-inline-start:16px; padding-inline-end:16px;
-  /* Размытия подложки здесь нет нарочно: см. world.html, .верх.
-     У верхнего края оно втягивает в полосу фон страницы, и в светлой
-     теме сверху получалась серая растяжка. Полоса и так почти
-     глухая. */
   background:var(--полоса-цвет);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   border-bottom:1px solid var(--край);
 }
 
@@ -472,27 +469,16 @@ body{ background:var(--вне-рамы); }
        тонкая. Оставляем восемь точек — подписи её не задевают, а
        пустоты под полосой больше нет. В браузере min() даёт ноль, и
        там ничего не меняется. */
-    height:60px; box-sizing:border-box;
+    height:calc(60px + min(8px, var(--низ-край))); box-sizing:border-box;
     /* Отступы сверху и снизу поровну: ряд кнопок стоит ровно по
        середине полосы. Прежде книзу было на пять точек меньше, и
        сверху оставалось заметно больше пустоты, чем снизу. */
-    padding:4px 6px 4px;
+    padding:4px 6px calc(4px + min(8px, var(--низ-край)));
     /* Полка выехала - полоса уезжает вниз. Знак на раме ставит
        shared/shell.js, когда открывает полку. */
     transition:transform .24s cubic-bezier(.2,.8,.3,1);
     border-top:1px solid var(--край); background:var(--полоса-цвет);
     backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-    position:relative;
-  }
-  /* ── ПОЛОСА ПРОДОЛЖАЕТСЯ НИЖЕ КРАЯ ОКНА ──
-     v=526. Окно страницы на айфоне короче экрана на полоску жестов.
-     Полоса стоит вплотную к низу ОКНА, а под ней до края экрана
-     оставалась чужая краска — Анна сняла её ровным rgb(1,1,11).
-     Продолжаем полосу вниз её собственным цветом. Слой тонкий, ничего
-     не ловит и ничего не двигает: кнопки остаются на месте. */
-  .об-низ::after{
-    content:''; position:absolute; left:0; right:0; top:100%;
-    height:120px; background:var(--полоса-цвет); pointer-events:none;
   }
   .об-низ-кн{
     flex:1 1 0; min-width:0; border:none; background:none; cursor:pointer;
