@@ -11,12 +11,12 @@
      обязана стоять в странице: iOS читает её при добавлении значка. -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Лента · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261128-539">
-<link rel="stylesheet" href="shared/style.css?v=20261128-539">
-<link rel="stylesheet" href="shared/window.css?v=20261128-539">
-<link rel="stylesheet" href="shared/account.css?v=20261128-539">
-<script src="shared/theme.js?v=20261128-539"></script>
-<link rel="stylesheet" href="shared/shell.css?v=20261128-539">
+<link rel="icon" href="icons/favicon.svg?v=20261128-540">
+<link rel="stylesheet" href="shared/style.css?v=20261128-540">
+<link rel="stylesheet" href="shared/window.css?v=20261128-540">
+<link rel="stylesheet" href="shared/account.css?v=20261128-540">
+<script src="shared/theme.js?v=20261128-540"></script>
+<link rel="stylesheet" href="shared/shell.css?v=20261128-540">
 <!--
   ЛЕНТА.
 
@@ -77,6 +77,16 @@
    общем файле у .левая отступ 18: там внутри рамка со своими полями,
    а здесь рамка и есть сам столб. */
 .две-колонки > .левая{ padding:21px 0; }
+
+/* ── НА ЛЕНТЕ НЕТ ВЕРХНЕЙ ПОЛОСЫ С АВАТАРОМ ──
+   v=540. Анна: «только для блока лента удалить верхний блок с
+   аватаром. Повторяю, только для блока лента».
+
+   Правило стоит здесь, в самой ленте, а не в общем файле — значит
+   на остальные страницы не действует вовсе. Колонка с роликом
+   занимает освободившееся место сама: она и так растягивается по
+   высоте рамы. */
+.об-верх{ display:none; }
 
 /* ── вкладки поверх колонки ──────────────────────────────────────── */
 .вкладки{
@@ -256,8 +266,15 @@
   position:absolute; left:0; right:0; bottom:0; z-index:10;
   display:flex; align-items:flex-end; gap:12px;
   /* Запас сверху — это не отступ, это длина затемнения: на ярком кадре
-     белые буквы без него теряются. Снизу считаем полосу дома на айфоне. */
-  padding:54px 14px calc(16px + var(--низ-край));
+     белые буквы без него теряются.
+
+     Снизу — только восемь точек. Было шестнадцать плюс полоса жестов
+     айфона, и ряд с автором и кнопками висел заметно выше края кадра.
+     Анна: «нижний блок, аватар, описание видео, комент, лайк,
+     действия — опустить в самый низ». Полосу жестов здесь держать
+     незачем: ниже ряда идёт полоса разделов, она это место и
+     занимает. */
+  padding:54px 14px 8px;
   pointer-events:none;
   background:linear-gradient(0deg,rgba(0,0,0,.78),rgba(0,0,0,.45) 45%,rgba(0,0,0,0));
 }
@@ -374,20 +391,20 @@
 </head>
 <body>
 
-<script src="shared/api.js?v=20261128-539"></script>
-<script src="shared/ui.js?v=20261128-539"></script>
-<script src="shared/смайлы.js?v=20261128-539"></script>
-<script src="shared/лица.js?v=20261128-539"></script>
-<script src="shared/эфир.js?v=20261128-539"></script>
-<script src="shared/icons.js?v=20261128-539"></script>
-<script src="shared/window.js?v=20261128-539"></script>
-<script src="shared/без-копий.js?v=20261128-539"></script>
-<script src="shared/time.js?v=20261128-539"></script>
-<script src="shared/auth.js?v=20261128-539"></script>
-<script src="shared/lang.js?v=20261128-539"></script>
-<script src="shared/account.js?v=20261128-539"></script>
-<script src="shared/shell.js?v=20261128-539"></script>
-<script src="shared/shelf.js?v=20261128-539"></script>
+<script src="shared/api.js?v=20261128-540"></script>
+<script src="shared/ui.js?v=20261128-540"></script>
+<script src="shared/смайлы.js?v=20261128-540"></script>
+<script src="shared/лица.js?v=20261128-540"></script>
+<script src="shared/эфир.js?v=20261128-540"></script>
+<script src="shared/icons.js?v=20261128-540"></script>
+<script src="shared/window.js?v=20261128-540"></script>
+<script src="shared/без-копий.js?v=20261128-540"></script>
+<script src="shared/time.js?v=20261128-540"></script>
+<script src="shared/auth.js?v=20261128-540"></script>
+<script src="shared/lang.js?v=20261128-540"></script>
+<script src="shared/account.js?v=20261128-540"></script>
+<script src="shared/shell.js?v=20261128-540"></script>
+<script src="shared/shelf.js?v=20261128-540"></script>
 <script>
 'use strict';
 
