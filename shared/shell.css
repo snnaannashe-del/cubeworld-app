@@ -93,8 +93,8 @@ body{ background:var(--вне-рамы); }
 /* ── верхняя полоса ──────────────────────────────────────────────── */
 .об-верх{
   flex:0 0 auto; z-index:40;
-  height:calc(var(--полоса-верх) + env(safe-area-inset-top));
-  padding-top:env(safe-area-inset-top);
+  height:calc(var(--полоса-верх) + var(--верх-край));
+  padding-top:var(--верх-край);
   display:flex; align-items:center; gap:12px; padding-inline-start:16px; padding-inline-end:16px;
   background:var(--полоса-цвет);
   backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
