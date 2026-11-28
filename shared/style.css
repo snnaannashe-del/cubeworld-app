@@ -705,7 +705,7 @@ html[data-цена-цвет="свой"] .курс .цена{ color:var(--цен�
      между краями оно само не растягивается, и нижний край его не
      держит. Проба это и поймала: слой кончался на 873 при окне 932. */
   width:100%;
-  height:calc(100% + var(--верх-край, 0px) + var(--низ-край, 0px));
+  height:calc(100% + var(--верх-край, 0px) + var(--низ-край, 0px) + var(--недобор, 0px));
   object-fit:cover;
   z-index:0; pointer-events:none;
 }
@@ -732,7 +732,7 @@ html[data-цена-цвет="свой"] .курс .цена{ color:var(--цен�
 html[data-камера="да"]::before{
   content:''; position:fixed; left:0; right:0;
   top:calc(-1 * var(--верх-край, 0px));
-  bottom:calc(-1 * var(--низ-край, 0px));
+  bottom:calc(-1 * (var(--низ-край, 0px) + var(--недобор, 0px)));
   z-index:-1; pointer-events:none;
   background-image:var(--мост, none);
   background-size:cover; background-position:center; background-repeat:no-repeat;
@@ -757,7 +757,7 @@ html[data-камера="да"] body{ background:transparent; }
 html[data-камера="да"] body::after{
   content:''; position:fixed; left:0; right:0;
   top:calc(-1 * var(--верх-край, 0px));
-  bottom:calc(-1 * var(--низ-край, 0px));
+  bottom:calc(-1 * (var(--низ-край, 0px) + var(--недобор, 0px)));
   z-index:1; pointer-events:none;
   background:rgba(6,8,14, var(--вуаль, .45));
 }
