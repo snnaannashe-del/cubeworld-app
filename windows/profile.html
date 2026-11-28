@@ -11,12 +11,12 @@
      обязана стоять в странице: iOS читает её при добавлении значка. -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Портфолио · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261128-547">
-<link rel="stylesheet" href="../shared/style.css?v=20261128-547">
-<link rel="stylesheet" href="../shared/window.css?v=20261128-547">
-<link rel="stylesheet" href="../shared/account.css?v=20261128-547">
-<script src="../shared/theme.js?v=20261128-547"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261128-547">
+<link rel="icon" href="../icons/favicon.svg?v=20261128-548">
+<link rel="stylesheet" href="../shared/style.css?v=20261128-548">
+<link rel="stylesheet" href="../shared/window.css?v=20261128-548">
+<link rel="stylesheet" href="../shared/account.css?v=20261128-548">
+<script src="../shared/theme.js?v=20261128-548"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261128-548">
 <!--
   ПРОФИЛЬ: два окна.
 
@@ -77,16 +77,20 @@
 .лицо-кольцо .правка svg{ width:13px; height:13px; }
 
 /* ── портфолио ───────────────────────────────────────────────────── */
-/* Значок тарифа над именем: своя строка, по центру, с воздухом снизу.
-   Ставится только в своём портфолио — чужой тариф сервер не отдаёт. */
-.про-тариф{
-  display:flex; justify-content:center;
-  margin:16px 0 0;
+/* ── ЗНАЧОК ТАРИФА В УГЛУ ЛИЦА ──
+   Прежде он стоял отдельной строкой под кружком, над именем. Анна
+   показала стрелкой: его место — правый верхний угол лица, как у
+   пометки на значке приложения. Там он не отодвигает имя и читается
+   как свойство самого лица, а не как ещё одна строка портфолио.
+
+   Подложка — цвет окна: значок наполовину лежит на цветном кольце
+   лица, и сквозь прозрачную рамку кольцо просвечивало полосой.
+   Цветная заливка тарифа остаётся поверх неё. */
+.лицо-кольцо > .тариф-значок{
+  position:absolute; top:-4px; left:calc(100% - 9px); z-index:2;
+  box-shadow:0 0 0 2px var(--фон);
 }
-/* У имени своя верхняя отбивка в 18 точек — она была рассчитана на то,
-   что над ним сразу лицо. Со значком между ними воздуха выходило вдвое
-   больше, и имя отрывалось от кружка. */
-.про-тариф + .про-имя{ margin-top:7px; }
+/* Ставится только в своём портфолио — чужой тариф сервер не отдаёт. */
 .про-имя{
   text-align:center; font-size:1.8rem; font-weight:700; margin:18px 0 0;
   letter-spacing:-.02em; word-break:break-word;
@@ -327,20 +331,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261128-547"></script>
-<script src="../shared/ui.js?v=20261128-547"></script>
-<script src="../shared/смайлы.js?v=20261128-547"></script>
-<script src="../shared/лица.js?v=20261128-547"></script>
-<script src="../shared/эфир.js?v=20261128-547"></script>
-<script src="../shared/icons.js?v=20261128-547"></script>
-<script src="../shared/window.js?v=20261128-547"></script>
-<script src="../shared/продавец.js?v=20261128-547"></script>
-<script src="../shared/без-копий.js?v=20261128-547"></script>
-<script src="../shared/time.js?v=20261128-547"></script>
-<script src="../shared/auth.js?v=20261128-547"></script>
-<script src="../shared/lang.js?v=20261128-547"></script>
-<script src="../shared/account.js?v=20261128-547"></script>
-<script src="../shared/shell.js?v=20261128-547"></script>
+<script src="../shared/api.js?v=20261128-548"></script>
+<script src="../shared/ui.js?v=20261128-548"></script>
+<script src="../shared/смайлы.js?v=20261128-548"></script>
+<script src="../shared/лица.js?v=20261128-548"></script>
+<script src="../shared/эфир.js?v=20261128-548"></script>
+<script src="../shared/icons.js?v=20261128-548"></script>
+<script src="../shared/window.js?v=20261128-548"></script>
+<script src="../shared/продавец.js?v=20261128-548"></script>
+<script src="../shared/без-копий.js?v=20261128-548"></script>
+<script src="../shared/time.js?v=20261128-548"></script>
+<script src="../shared/auth.js?v=20261128-548"></script>
+<script src="../shared/lang.js?v=20261128-548"></script>
+<script src="../shared/account.js?v=20261128-548"></script>
+<script src="../shared/shell.js?v=20261128-548"></script>
 <script>
 'use strict';
 
@@ -728,24 +732,22 @@ function портфолио() {
   }
 
   внутри.innerHTML = '';
-  внутри.appendChild(лицо(false));
+  var кольцоЛица = лицо(false);
+  внутри.appendChild(кольцоЛица);
 
   /* Имени может не быть — тогда на экране стоит UID, как в работающей
      программе: «00001212331», а не «#1618». Номер один и тот же, просто
      показан тем же видом, к которому человек привык. */
-  /* Значок тарифа стоит НАД именем — так просила Анна: сперва чем
-     человек тут является, потом как его зовут.
+  /* Значок тарифа висит в правом верхнем углу лица — так показала
+     Анна стрелкой. Прежде он стоял отдельной строкой между кружком и
+     именем.
 
      Только в своём портфолио. Чужой тариф сервер не отдаёт никому, и
      ставить рядом с чужим лицом «Vip» наугад нельзя: неверная надпись
      хуже отсутствующей. */
   if (!ЧУЖОЙ && CW.значокТарифа && ПЛАН) {
     var зт = CW.значокТарифа(ПЛАН);
-    if (зт) {
-      var полка = ок('div', 'про-тариф');
-      полка.appendChild(зт);
-      внутри.appendChild(полка);
-    }
+    if (зт) кольцоЛица.appendChild(зт);
   }
 
   var имя = ок('div', 'про-имя');
