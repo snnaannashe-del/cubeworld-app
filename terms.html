@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<!-- Строка состояния айфона: страница уходит ПОД неё, и область часов
+     красит наша же шапка (.об-верх держит под неё env(safe-area-inset-top)).
+     Поэтому в светлой теме она светлая, в тёмной тёмная, а под камерой
+     сквозь неё видно картинку. Метку обязательно держать в самой
+     странице: iOS читает её один раз, при запуске программы, и то, что
+     ставит скрипт, до неё не доходит. -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Terms of Service — CubeWorld</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
