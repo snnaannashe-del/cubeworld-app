@@ -12,13 +12,29 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>CubeWorld</title>
 <meta name="description" content="Временные зашифрованные пространства в трёхмерном мире. Без почты, без телефона, только ключ.">
-<link rel="icon" href="icons/favicon.svg?v=20261128-543">
+<link rel="icon" href="icons/favicon.svg?v=20261128-544">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261128-543">
-<link rel="stylesheet" href="shared/window.css?v=20261128-543">
-<link rel="stylesheet" href="shared/lang.css?v=20261128-543">
-<link rel="stylesheet" href="shared/ключ-окно.css?v=20261128-543">
-<script src="shared/theme.js?v=20261128-543"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261128-544">
+<link rel="stylesheet" href="shared/window.css?v=20261128-544">
+<link rel="stylesheet" href="shared/lang.css?v=20261128-544">
+<link rel="stylesheet" href="shared/ключ-окно.css?v=20261128-544">
+<script src="shared/theme.js?v=20261128-544"></script>
+<script>
+/* Завеса. Ставится до первой отрисовки, снимается в самом низу
+   страницы, когда слова, цены и счётчики на местах.
+
+   Две страховки, обе обязательны: если сервер молчит — показываем
+   страницу через 0,8 с после загрузки всех файлов (пусть с прочерками,
+   это честнее пустоты навсегда); если событие load почему-то не
+   придёт — через восемь секунд от начала. */
+(function () {
+  var к = document.documentElement;
+  к.classList.add('наливается');
+  function открыть() { к.classList.remove('наливается'); }
+  addEventListener('load', function () { setTimeout(открыть, 800); });
+  setTimeout(открыть, 8000);
+})();
+</script>
 <!--
   ТИТУЛКА. Та же, что на сайте: звёздное небо, знак с крутящимся кубом,
   выбор языка, заголовок, вход по ключу, три тарифа, счётчики.
@@ -330,6 +346,18 @@
 .экран{ display:none; }
 .экран.открыт{ display:flex; flex:1; align-items:center;
   justify-content:center; padding:clamp(10px,2vh,24px) 0; }
+
+/* ── НИКАКИХ ПУСТЫХ РАМОК, ПОКА СТРАНИЦА НАЛИВАЕТСЯ ──
+   Слова приходят из словаря, цены и счётчики — с сервера, и до их
+   прихода в карточках стояли прочерки, а кнопка была пустой скобой:
+   при каждом обновлении на долю секунды показывался чужой, разобранный
+   вид страницы. Теперь до готовности показываем только небо и шапку —
+   пусто, но честно, — а содержимое проявляем разом.
+
+   Место под содержимое при этом занято (opacity, а не display), и
+   ничего не прыгает, когда оно появляется. */
+html.наливается .экран{ opacity:0; }
+.экран{ transition:opacity .18s ease; }
 /* Вид окна ключа — в shared/ключ-окно.css, он общий с тарифом. */
 
 /* ── НИЗКОЕ ОКНО ──
@@ -372,7 +400,11 @@
   .цена{ flex-direction:column; align-items:flex-start; gap:0;
     margin-bottom:6px; min-height:0; }
   .цена b{ font-size:1.0667rem; }
-  .цена span{ font-size:0.6667rem; }
+  /* Строка «в месяц» занимает место и тогда, когда её нет: у ВИПа
+     срока нет, и без этого его перечень («3 куба · Лента…») начинался
+     строкой выше, чем у соседей. Пустого слова мы не ставим — держим
+     высоту. */
+  .цена span{ font-size:0.6667rem; display:block; min-height:1.4em; }
   .тариф p{ font-size:0.6667rem; line-height:1.45; margin-bottom:9px; }
   /* В узком столбце «Получить бесплатно» обязано переноситься: на
      широком окне оно стояло одной строкой, здесь места на это нет. */
@@ -526,20 +558,20 @@
 </div>
 </div>
 
-<script src="shared/api.js?v=20261128-543"></script>
-<script src="shared/ui.js?v=20261128-543"></script>
-<script src="shared/смайлы.js?v=20261128-543"></script>
-<script src="shared/лица.js?v=20261128-543"></script>
-<script src="shared/эфир.js?v=20261128-543"></script>
-<script src="shared/icons.js?v=20261128-543"></script>
-<script src="shared/window.js?v=20261128-543"></script>
-<script src="shared/без-копий.js?v=20261128-543"></script>
-<script src="shared/time.js?v=20261128-543"></script>
-<script src="shared/auth.js?v=20261128-543"></script>
-<script src="shared/words.js?v=20261128-543"></script>
-<script src="shared/небо.js?v=20261128-543"></script>
-<script src="shared/lang.js?v=20261128-543"></script>
-<script src="shared/ключ-окно.js?v=20261128-543"></script>
+<script src="shared/api.js?v=20261128-544"></script>
+<script src="shared/ui.js?v=20261128-544"></script>
+<script src="shared/смайлы.js?v=20261128-544"></script>
+<script src="shared/лица.js?v=20261128-544"></script>
+<script src="shared/эфир.js?v=20261128-544"></script>
+<script src="shared/icons.js?v=20261128-544"></script>
+<script src="shared/window.js?v=20261128-544"></script>
+<script src="shared/без-копий.js?v=20261128-544"></script>
+<script src="shared/time.js?v=20261128-544"></script>
+<script src="shared/auth.js?v=20261128-544"></script>
+<script src="shared/words.js?v=20261128-544"></script>
+<script src="shared/небо.js?v=20261128-544"></script>
+<script src="shared/lang.js?v=20261128-544"></script>
+<script src="shared/ключ-окно.js?v=20261128-544"></script>
 <script>
 'use strict';
 
@@ -589,6 +621,18 @@ function применитьЯзык() {
    ═══════════════════════════════════════════════════════════════════════ */
 var ТАРИФЫ = null;
 
+/* ── КОГДА СНИМАТЬ ЗАВЕСУ ──
+   Страница готова, когда расставлены слова, пришли цены и пришли
+   счётчики. «Пришли» значит «ответ получен» — отказ сервера тоже
+   ответ: ждать дальше нечего, и держать человека перед пустотой
+   незачем. Завесу ставит короткий скрипт в голове страницы. */
+var ГОТОВО = { слова: false, цены: false, счёт: false };
+function готов(что) {
+  ГОТОВО[что] = true;
+  if (ГОТОВО.слова && ГОТОВО.цены && ГОТОВО.счёт)
+    document.documentElement.classList.remove('наливается');
+}
+
 function показатьЦены() {
   ['free', 'silver', 'gold'].forEach(function (имя) {
     var ц = $('цена-' + имя), с = $('срок-' + имя);
@@ -604,7 +648,8 @@ function показатьЦены() {
 
 CW.спросить('/plans', { тихо: true, сроком: 12000 }).then(function (д) {
   if (д && д.plans) { ТАРИФЫ = д.plans; показатьЦены(); }
-}).catch(function () {});
+  готов('цены');
+}).catch(function () { готов('цены'); });
 
 /* ═══════════════════════════════════════════════════════════════════════
    СЧЁТЧИКИ
@@ -615,7 +660,7 @@ CW.спросить('/stats', { тихо: true, сроком: 9000 }).then(funct
   if (д.total_cubes  != null) $('ч-кубов').textContent  = д.total_cubes.toLocaleString('ru');
   if (д.total_users  != null) $('ч-людей').textContent  = д.total_users.toLocaleString('ru');
   if (д.online_users != null) $('ч-онлайн').textContent = д.online_users.toLocaleString('ru');
-}).catch(function () {});
+}).catch(function () {}).then(function () { готов('счёт'); });
 
 /* ═══════════════════════════════════════════════════════════════════════
    ВХОД ПО КЛЮЧУ
@@ -789,6 +834,7 @@ CW.выборЯзыка.подключить({
   после: применитьЯзык
 });
 применитьЯзык();
+готов('слова');
 </script>
 </body>
 </html>
