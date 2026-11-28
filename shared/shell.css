@@ -482,6 +482,17 @@ body{ background:var(--вне-рамы); }
     transition:transform .24s cubic-bezier(.2,.8,.3,1);
     border-top:1px solid var(--край); background:var(--полоса-цвет);
     backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    position:relative;
+  }
+  /* ── ПОЛОСА ПРОДОЛЖАЕТСЯ НИЖЕ КРАЯ ОКНА ──
+     v=526. Окно страницы на айфоне короче экрана на полоску жестов.
+     Полоса стоит вплотную к низу ОКНА, а под ней до края экрана
+     оставалась чужая краска — Анна сняла её ровным rgb(1,1,11).
+     Продолжаем полосу вниз её собственным цветом. Слой тонкий, ничего
+     не ловит и ничего не двигает: кнопки остаются на месте. */
+  .об-низ::after{
+    content:''; position:absolute; left:0; right:0; top:100%;
+    height:120px; background:var(--полоса-цвет); pointer-events:none;
   }
   .об-низ-кн{
     flex:1 1 0; min-width:0; border:none; background:none; cursor:pointer;
