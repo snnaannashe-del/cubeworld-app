@@ -535,6 +535,8 @@
   .ок-подложка.стоячее .ок-окно{
     max-width:none; border:none; border-radius:0;
     max-height:none; height:100%;
+    /* Окно во весь экран начинается ниже часов. */
+    padding-top:env(safe-area-inset-top); box-sizing:border-box;
   }
   /* ── «ПОРОСТ» НА ТЕЛЕФОНЕ ПРИЖАТ К НИЗУ ──
      «Порост» - это высота по содержимому: на настольном экране у карты

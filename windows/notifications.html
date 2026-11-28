@@ -3,13 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<!-- Страница заходит ПОД полоску с часами, и красит это место наша же
+     шапка: .об-верх держит под него env(safe-area-inset-top), поэтому
+     её содержимое остаётся на прежнем месте экрана. В режиме камеры
+     шапка прозрачна — значит сквозь полоску видно картинку. Метка
+     обязана стоять в странице: iOS читает её при добавлении значка. -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Уведомления · CubeWorld</title>
-<link rel="icon" href="../icons/favicon.svg?v=20261128-538">
-<link rel="stylesheet" href="../shared/style.css?v=20261128-538">
-<link rel="stylesheet" href="../shared/window.css?v=20261128-538">
-<link rel="stylesheet" href="../shared/account.css?v=20261128-538">
-<script src="../shared/theme.js?v=20261128-538"></script>
-<link rel="stylesheet" href="../shared/shell.css?v=20261128-538">
+<link rel="icon" href="../icons/favicon.svg?v=20261128-539">
+<link rel="stylesheet" href="../shared/style.css?v=20261128-539">
+<link rel="stylesheet" href="../shared/window.css?v=20261128-539">
+<link rel="stylesheet" href="../shared/account.css?v=20261128-539">
+<script src="../shared/theme.js?v=20261128-539"></script>
+<link rel="stylesheet" href="../shared/shell.css?v=20261128-539">
 <!--
   УВЕДОМЛЕНИЯ — окно поверх программы. То же, что в меню под
   колокольчиком, но целым списком и с объяснением внизу.
@@ -80,20 +87,20 @@
 </head>
 <body>
 
-<script src="../shared/api.js?v=20261128-538"></script>
-<script src="../shared/ui.js?v=20261128-538"></script>
-<script src="../shared/смайлы.js?v=20261128-538"></script>
-<script src="../shared/лица.js?v=20261128-538"></script>
-<script src="../shared/эфир.js?v=20261128-538"></script>
-<script src="../shared/icons.js?v=20261128-538"></script>
-<script src="../shared/window.js?v=20261128-538"></script>
-<script src="../shared/без-копий.js?v=20261128-538"></script>
-<script src="../shared/time.js?v=20261128-538"></script>
-<script src="../shared/auth.js?v=20261128-538"></script>
-<script src="../shared/lang.js?v=20261128-538"></script>
-<script src="../shared/account.js?v=20261128-538"></script>
-<script src="../shared/вести.js?v=20261128-538"></script>
-<script src="../shared/shell.js?v=20261128-538"></script>
+<script src="../shared/api.js?v=20261128-539"></script>
+<script src="../shared/ui.js?v=20261128-539"></script>
+<script src="../shared/смайлы.js?v=20261128-539"></script>
+<script src="../shared/лица.js?v=20261128-539"></script>
+<script src="../shared/эфир.js?v=20261128-539"></script>
+<script src="../shared/icons.js?v=20261128-539"></script>
+<script src="../shared/window.js?v=20261128-539"></script>
+<script src="../shared/без-копий.js?v=20261128-539"></script>
+<script src="../shared/time.js?v=20261128-539"></script>
+<script src="../shared/auth.js?v=20261128-539"></script>
+<script src="../shared/lang.js?v=20261128-539"></script>
+<script src="../shared/account.js?v=20261128-539"></script>
+<script src="../shared/вести.js?v=20261128-539"></script>
+<script src="../shared/shell.js?v=20261128-539"></script>
 <script>
 'use strict';
 
