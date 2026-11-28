@@ -43,7 +43,15 @@ CW.модаль('sounds', function (данные) {
      оно в части браузеров молча не сообщает о выборе. */
   var поле = document.createElement('input');
   поле.type = 'file';
-  поле.accept = 'audio/*';
+  /* ── ПОЧЕМУ НЕ ПРОСТО audio/* ──
+     На Windows проводник гасит файл, у которого в реестре системы не
+     прописан звуковой тип: «audio/*» он понимает буквально, а .m4a,
+     .opus или .flac у многих ничем не заняты. Выходило окно, где все
+     песни серые и нажать нельзя. Перечисляем ещё и расширения —
+     браузер складывает оба списка, и файл проходит хотя бы по одному
+     из них. */
+  поле.accept = 'audio/*,.mp3,.m4a,.m4b,.aac,.wav,.wave,.ogg,.oga,.opus,'
+              + '.flac,.weba,.webm,.aif,.aiff,.wma,.amr,.mid,.midi,.mp4';
   поле.style.cssText =
     'position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
   document.body.appendChild(поле);
