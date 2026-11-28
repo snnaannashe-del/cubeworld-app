@@ -11,12 +11,12 @@
      обязана стоять в странице: iOS читает её при добавлении значка. -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Мир · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261128-546">
+<link rel="icon" href="icons/favicon.svg?v=20261128-547">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261128-546">
-<link rel="stylesheet" href="shared/window.css?v=20261128-546">
-<link rel="stylesheet" href="shared/account.css?v=20261128-546">
-<script src="shared/theme.js?v=20261128-546"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261128-547">
+<link rel="stylesheet" href="shared/window.css?v=20261128-547">
+<link rel="stylesheet" href="shared/account.css?v=20261128-547">
+<script src="shared/theme.js?v=20261128-547"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -327,6 +327,21 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
   }
   .пилюля .слово{ display:none; }
   .пилюля{ padding:7px 11px; }
+  /* ── ДЖОЙСТИК НА ТЕЛЕФОНЕ — ТАКОЙ ЖЕ ЗНАЧОК, КАК ДОМИК ──
+     Со спрятанным словом от пилюли остаётся обведённая коробочка
+     вокруг значка, и в ряду простых кружков она одна была в рамке и
+     с подложкой. Здесь «Игры» ведут себя как .круг-верх: тот же круг
+     в 32 точки, те же поля, то же нажатие. Фиолетовым остаётся сам
+     джойстик — он и был фиолетовым. */
+  .пилюля.игры{
+    width:32px; height:32px; flex:0 0 32px; padding:0;
+    border-radius:50%; border:1px solid transparent; background:none;
+    justify-content:center;
+    transition:background .13s ease, color .13s ease, transform .1s ease;
+  }
+  .пилюля.игры:hover{ background:rgba(255,255,255,.07); border-color:transparent; }
+  .пилюля.игры:active{ background:rgba(255,255,255,.14); transform:scale(.9); }
+  .пилюля.игры svg{ width:16px; height:16px; }
   /* Знак внизу опущен: было девяносто шесть точек от края, и под ним
      висела пустота в треть экрана. Пятьдесят четыре - ниже, но выше
      строки состояния, которая живёт на двадцати: сойдись они, буквы
@@ -346,10 +361,16 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
   .полка{ gap:0; }
   .круг-верх{ width:30px; height:30px; flex:0 0 30px; }
   .пилюля{ padding:6px 9px; }
-  /* Пилюли «Игры» и баланс - с рамкой, и вплотную к кружкам они бы
-     слиплись. Им хватает двух точек. */
+  /* Джойстик ужимается вместе с кружками: он теперь один из них. */
+  .пилюля.игры{ width:30px; height:30px; flex:0 0 30px; }
+  /* Пилюля баланса - с рамкой, и вплотную к кружкам она бы слиплась.
+     Ей хватает двух точек. Джойстик рамки больше не носит, поэтому
+     к домику он встаёт вплотную, как кружок к кружку, а баланс
+     отходит от него на те же три точки, что и от любого кружка. */
   .полка .пилюля + .пилюля{ margin-inline-start:2px; }
   .полка .круг-верх + .пилюля{ margin-inline-start:3px; }
+  .полка .круг-верх + .пилюля.игры{ margin-inline-start:0; }
+  .полка .пилюля.игры + .пилюля{ margin-inline-start:3px; }
 }
 </style>
 </head>
@@ -406,21 +427,21 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261128-546"></script>
-<script src="shared/ui.js?v=20261128-546"></script>
-<script src="shared/смайлы.js?v=20261128-546"></script>
-<script src="shared/лица.js?v=20261128-546"></script>
-<script src="shared/эфир.js?v=20261128-546"></script>
-<script src="shared/icons.js?v=20261128-546"></script>
-<script src="shared/window.js?v=20261128-546"></script>
-<script src="shared/без-копий.js?v=20261128-546"></script>
-<script src="shared/time.js?v=20261128-546"></script>
-<script src="shared/auth.js?v=20261128-546"></script>
-<script src="shared/lang.js?v=20261128-546"></script>
-<script src="shared/account.js?v=20261128-546"></script>
-<script src="shared/формы.js?v=20261128-546"></script>
-<script src="shared/игра.js?v=20261128-546"></script>
-<script src="shared/персонаж.js?v=20261128-546"></script>
+<script src="shared/api.js?v=20261128-547"></script>
+<script src="shared/ui.js?v=20261128-547"></script>
+<script src="shared/смайлы.js?v=20261128-547"></script>
+<script src="shared/лица.js?v=20261128-547"></script>
+<script src="shared/эфир.js?v=20261128-547"></script>
+<script src="shared/icons.js?v=20261128-547"></script>
+<script src="shared/window.js?v=20261128-547"></script>
+<script src="shared/без-копий.js?v=20261128-547"></script>
+<script src="shared/time.js?v=20261128-547"></script>
+<script src="shared/auth.js?v=20261128-547"></script>
+<script src="shared/lang.js?v=20261128-547"></script>
+<script src="shared/account.js?v=20261128-547"></script>
+<script src="shared/формы.js?v=20261128-547"></script>
+<script src="shared/игра.js?v=20261128-547"></script>
+<script src="shared/персонаж.js?v=20261128-547"></script>
 <script>
 'use strict';
 
