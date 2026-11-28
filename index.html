@@ -12,13 +12,13 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>CubeWorld</title>
 <meta name="description" content="Временные зашифрованные пространства в трёхмерном мире. Без почты, без телефона, только ключ.">
-<link rel="icon" href="icons/favicon.svg?v=20261128-542">
+<link rel="icon" href="icons/favicon.svg?v=20261128-543">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261128-542">
-<link rel="stylesheet" href="shared/window.css?v=20261128-542">
-<link rel="stylesheet" href="shared/lang.css?v=20261128-542">
-<link rel="stylesheet" href="shared/ключ-окно.css?v=20261128-542">
-<script src="shared/theme.js?v=20261128-542"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261128-543">
+<link rel="stylesheet" href="shared/window.css?v=20261128-543">
+<link rel="stylesheet" href="shared/lang.css?v=20261128-543">
+<link rel="stylesheet" href="shared/ключ-окно.css?v=20261128-543">
+<script src="shared/theme.js?v=20261128-543"></script>
 <!--
   ТИТУЛКА. Та же, что на сайте: звёздное небо, знак с крутящимся кубом,
   выбор языка, заголовок, вход по ключу, три тарифа, счётчики.
@@ -105,11 +105,14 @@
    размытием. Без черты шапка сливалась со звёздным небом, и её было
    попросту не видно.
 
-   Отрицательные поля по бокам — чтобы черта шла во всю ширину листа, а
-   не обрывалась за двадцать точек до края. */
+   Шапка лежит вне прокрутки, прямо в раме, поэтому черта и так идёт во
+   всю ширину окна. Поля по бокам считаются от середины: на широком
+   окне знак стоит ровно над левым краем листа (лист — 1120 точек плюс
+   двадцать поля), на узком — в двадцати точках от края. */
 .шапка{ display:flex; align-items:center; justify-content:space-between;
   /* Держим сверху место под часами: страница заходит под полоску. */
-  padding:calc(8px + env(safe-area-inset-top)) 20px 8px; margin:0 -20px; flex:0 0 auto;
+  padding:calc(8px + env(safe-area-inset-top)) max(20px, calc((100% - 1120px) / 2 + 20px)) 8px;
+  margin:0; flex:0 0 auto;
   border-bottom:1px solid rgba(255,255,255,.07);
   background:rgba(4,5,20,.9);
   backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
@@ -341,18 +344,40 @@
   .низ-страницы{ gap:clamp(10px,1.8vh,18px); }
 }
 
-/* На телефоне в один экран всё не уложить честно: три карточки тарифов
-   встают столбиком, и либо они нечитаемо мелкие, либо страница длиннее
-   экрана. Выбираем читаемость — там прокрутка остаётся. */
+/* ── НА ТЕЛЕФОНЕ ТАРИФЫ СТОЯТ В ОДНУ СТРОКУ ──
+   Раньше они ложились друг под друга тремя полосами: три экрана
+   прокрутки ради трёх цен. Теперь — три столбца в ряд, как на большом
+   окне, только поджатые: поля, кегли и просветы меньше, квадрат не
+   держим (высоту задаёт текст), и ни одна строчка не выброшена —
+   перечни внутри карточек просто переносятся по словам. */
 @media (max-width:640px){
-  #экран-главный.открыт{ justify-content:flex-start; gap:18px;
-    padding-top:26px; }
-  .лист{ padding-bottom:40px; }
+  /* Прижим к верху и запас снизу были нужны, пока карточки стояли
+     столбиком и страница не влезала в экран. Теперь влезает — колонка
+     снова стоит по середине, как на большом окне, и под счётчиками не
+     зияет пустая половина экрана. */
   .счётчики{ grid-template-columns:repeat(3,1fr); gap:10px; }
-  /* Квадрат на телефоне в ряд из трёх не встанет: каждая карточка
-     вышла бы шириной в палец. Там они ложатся друг под другом обычными
-     полосками, и соотношение не держим. */
-  .тариф{ width:100%; aspect-ratio:auto; }
+
+  .тарифы{ flex-wrap:nowrap; align-items:stretch; gap:8px; width:100%; }
+  /* flex:1 1 0 с min-width:0 — три равных столбца, которые ужимаются
+     под ширину экрана, а не выдавливают друг друга за край. */
+  .тариф{ flex:1 1 0; width:auto; min-width:0; aspect-ratio:auto;
+    padding:11px 9px; border-radius:13px; }
+  .тариф .значок{ margin-bottom:5px; }
+  .тариф .значок svg{ width:18px; height:18px; }
+  /* Разрядку у бирки убавляем: «SILVER» с прежними .18em не влезал в
+     столбец и переносился по буквам. */
+  .тариф .бирка{ font-size:0.6rem; letter-spacing:.08em; margin-bottom:4px; }
+  /* «в месяц» уходит под цену: в столбце шириной в палец он упирался
+     в правый край и читался как часть числа. */
+  .цена{ flex-direction:column; align-items:flex-start; gap:0;
+    margin-bottom:6px; min-height:0; }
+  .цена b{ font-size:1.0667rem; }
+  .цена span{ font-size:0.6667rem; }
+  .тариф p{ font-size:0.6667rem; line-height:1.45; margin-bottom:9px; }
+  /* В узком столбце «Получить бесплатно» обязано переноситься: на
+     широком окне оно стояло одной строкой, здесь места на это нет. */
+  .тариф .взять{ font-size:0.7333rem; white-space:normal; }
+  .тариф .ещё{ font-size:0.6667rem; }
 }
 </style>
 </head>
@@ -361,24 +386,29 @@
 <canvas id="небо"></canvas>
 <div class="свечение"></div>
 
+<!-- Шапка стоит ВНЕ прокрутки — она сестра полосы прокрутки, а не её
+     содержимое. Пока она лежала внутри, при оттяжке вниз («потянуть,
+     чтобы обновить») телефон отводил всё содержимое от верхнего края
+     вместе с нею, и над шапкой зияла полоса неба. Теперь тянется
+     только то, что под нею, а сама шапка прибита к верху. -->
+<div class="шапка">
+  <div class="знак">
+    <canvas id="знак-куб" width="36" height="36"></canvas>
+    <div class="слово">Cube<span>World</span></div>
+  </div>
+
+  <div class="язык">
+    <button class="язык-кнопка" id="язык-кнопка">
+      <span id="язык-код">RU</span>
+      <span class="уголок зн" data-знак="стрелка" data-размер="12"></span>
+    </button>
+    <div class="язык-список" id="язык-список"></div>
+  </div>
+</div>
+
 <div class="рама-прокрутка">
 
 <div class="лист">
-
-  <div class="шапка">
-    <div class="знак">
-      <canvas id="знак-куб" width="36" height="36"></canvas>
-      <div class="слово">Cube<span>World</span></div>
-    </div>
-
-    <div class="язык">
-      <button class="язык-кнопка" id="язык-кнопка">
-        <span id="язык-код">RU</span>
-        <span class="уголок зн" data-знак="стрелка" data-размер="12"></span>
-      </button>
-      <div class="язык-список" id="язык-список"></div>
-    </div>
-  </div>
 
   <!-- ─────────────────────────── главный экран ─────────────────── -->
   <div class="экран открыт" id="экран-главный">
@@ -496,20 +526,20 @@
 </div>
 </div>
 
-<script src="shared/api.js?v=20261128-542"></script>
-<script src="shared/ui.js?v=20261128-542"></script>
-<script src="shared/смайлы.js?v=20261128-542"></script>
-<script src="shared/лица.js?v=20261128-542"></script>
-<script src="shared/эфир.js?v=20261128-542"></script>
-<script src="shared/icons.js?v=20261128-542"></script>
-<script src="shared/window.js?v=20261128-542"></script>
-<script src="shared/без-копий.js?v=20261128-542"></script>
-<script src="shared/time.js?v=20261128-542"></script>
-<script src="shared/auth.js?v=20261128-542"></script>
-<script src="shared/words.js?v=20261128-542"></script>
-<script src="shared/небо.js?v=20261128-542"></script>
-<script src="shared/lang.js?v=20261128-542"></script>
-<script src="shared/ключ-окно.js?v=20261128-542"></script>
+<script src="shared/api.js?v=20261128-543"></script>
+<script src="shared/ui.js?v=20261128-543"></script>
+<script src="shared/смайлы.js?v=20261128-543"></script>
+<script src="shared/лица.js?v=20261128-543"></script>
+<script src="shared/эфир.js?v=20261128-543"></script>
+<script src="shared/icons.js?v=20261128-543"></script>
+<script src="shared/window.js?v=20261128-543"></script>
+<script src="shared/без-копий.js?v=20261128-543"></script>
+<script src="shared/time.js?v=20261128-543"></script>
+<script src="shared/auth.js?v=20261128-543"></script>
+<script src="shared/words.js?v=20261128-543"></script>
+<script src="shared/небо.js?v=20261128-543"></script>
+<script src="shared/lang.js?v=20261128-543"></script>
+<script src="shared/ключ-окно.js?v=20261128-543"></script>
 <script>
 'use strict';
 
