@@ -11,12 +11,12 @@
      самой странице: iOS читает её один раз, при запуске программы. -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Мир · CubeWorld</title>
-<link rel="icon" href="icons/favicon.svg?v=20261128-527">
+<link rel="icon" href="icons/favicon.svg?v=20261128-528">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="shared/style.css?v=20261128-527">
-<link rel="stylesheet" href="shared/window.css?v=20261128-527">
-<link rel="stylesheet" href="shared/account.css?v=20261128-527">
-<script src="shared/theme.js?v=20261128-527"></script>
+<link rel="stylesheet" href="shared/style.css?v=20261128-528">
+<link rel="stylesheet" href="shared/window.css?v=20261128-528">
+<link rel="stylesheet" href="shared/account.css?v=20261128-528">
+<script src="shared/theme.js?v=20261128-528"></script>
 <!--
   МИР. Карта кубов — та же, что в работающей программе.
 
@@ -68,8 +68,9 @@ html[data-камера="да"] .состояние{ background:rgba(8,8,30,.34);
   flex:0 0 auto; height:54px; z-index:40;
   display:flex; align-items:center; gap:12px; padding:0 16px;
   padding-top:var(--верх-край); box-sizing:content-box;
+  /* Размытия подложки нет нарочно: оно давало тень на верхней
+     полоске с часами. Подробности — shared/shell.css, .об-верх. */
   background:rgba(5,5,24,.92);
-  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   border-bottom:1px solid rgba(255,255,255,.07);
 }
 .знак-мира{ font-weight:800; font-size:1.0667rem; letter-spacing:-.4px; white-space:nowrap; }
@@ -394,21 +395,21 @@ html[data-значки-цвет="свой"] .столбик .рука.горит
 
 </div>
 
-<script src="shared/api.js?v=20261128-527"></script>
-<script src="shared/ui.js?v=20261128-527"></script>
-<script src="shared/смайлы.js?v=20261128-527"></script>
-<script src="shared/лица.js?v=20261128-527"></script>
-<script src="shared/эфир.js?v=20261128-527"></script>
-<script src="shared/icons.js?v=20261128-527"></script>
-<script src="shared/window.js?v=20261128-527"></script>
-<script src="shared/без-копий.js?v=20261128-527"></script>
-<script src="shared/time.js?v=20261128-527"></script>
-<script src="shared/auth.js?v=20261128-527"></script>
-<script src="shared/lang.js?v=20261128-527"></script>
-<script src="shared/account.js?v=20261128-527"></script>
-<script src="shared/формы.js?v=20261128-527"></script>
-<script src="shared/игра.js?v=20261128-527"></script>
-<script src="shared/персонаж.js?v=20261128-527"></script>
+<script src="shared/api.js?v=20261128-528"></script>
+<script src="shared/ui.js?v=20261128-528"></script>
+<script src="shared/смайлы.js?v=20261128-528"></script>
+<script src="shared/лица.js?v=20261128-528"></script>
+<script src="shared/эфир.js?v=20261128-528"></script>
+<script src="shared/icons.js?v=20261128-528"></script>
+<script src="shared/window.js?v=20261128-528"></script>
+<script src="shared/без-копий.js?v=20261128-528"></script>
+<script src="shared/time.js?v=20261128-528"></script>
+<script src="shared/auth.js?v=20261128-528"></script>
+<script src="shared/lang.js?v=20261128-528"></script>
+<script src="shared/account.js?v=20261128-528"></script>
+<script src="shared/формы.js?v=20261128-528"></script>
+<script src="shared/игра.js?v=20261128-528"></script>
+<script src="shared/персонаж.js?v=20261128-528"></script>
 <script>
 'use strict';
 
